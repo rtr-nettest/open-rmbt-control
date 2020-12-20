@@ -5,7 +5,7 @@ spring:
     poolSize: 20
     minIdle: 1
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1:5431/rtr
+    url: jdbc:postgresql://127.0.0.1:5432/rtr
     username: rtr
     password: password
     tomcat:
@@ -43,14 +43,14 @@ jira:
   serviceDeskId: 6
   url: https://specure.atlassian.net
   username: batalin.a@dbbest.com
-  password: HnpRkUKiKaxOaCI8ZWfV400A
+  password: SuperSecurePassword
 
 ---
 spring:
   profiles: dev
 
 measurement-server:
-  host: ${CONTROL_SERVER_HOST}
+  host: api-test.nettest.org
 
 client-tenant:
   clientTenantMapping:
@@ -61,7 +61,7 @@ datasource:
   poolSize: 20
   minIdle: 1
   driverClassName: org.postgresql.Driver
-  url: jdbc:postgresql://127.0.0.1:5431/rtr
+  url: jdbc:postgresql://127.0.0.1:5432/rtr
   username: rtr
   password: password
   tomcat:
