@@ -3,7 +3,7 @@ ARG TAG=jre-13.0.2_8-debianslim
 FROM adoptopenjdk/openjdk13:${TAG}
 
 ARG OPENPORT=8080
-ARG TOMCAT_JAR=rtr-0.0.1-SNAPSHOT.jar
+ARG TOMCAT_JAR=rtr-1.0-SNAPSHOT.jar
 ARG APPLICATION_HOME=/app
 
 RUN echo 'debconf debconf/frontend select teletype' | debconf-set-selections
