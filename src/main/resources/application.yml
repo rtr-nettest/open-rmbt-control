@@ -1,12 +1,23 @@
 spring:
   application:
     name: rtr-backend
+  datasource:
+    poolSize: 20
+    minIdle: 1
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://127.0.0.1:5431/rtr
+    username: rtr
+    password: password
+    tomcat:
+      test-while-idle: true
+      test-on-borrow: true
+      validation-query: SELECT 1
 
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: false
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: false
 
