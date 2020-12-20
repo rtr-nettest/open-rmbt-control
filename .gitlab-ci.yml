@@ -1,0 +1,59 @@
+before_script:
+  - 'export MAVEN_OPTS="-Xms4g -Xmx4g"'
+
+stages:
+  - test
+  - build
+
+.environment_dev:
+  environment:
+    name: dev
+  only:
+    - dev
+
+.environment_merge:
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /(dev)/
+
+.test:
+  image: maven:3.6-jdk-13-alpine
+  script:
+    - mvn clean test
+
+.build:
+  image: maven:3.6-jdk-13-alpine
+  artifacts:
+    untracked: false
+    paths:
+      - target/*.jar
+  script:
+    - mvn -D'maven.test.skip=true' clean install
+
+test:
+  extends:
+    - .test
+  only:
+    - dev
+  stage: test
+
+test:merge:
+  extends:
+    - .environment_merge
+    - .test
+  stage: test
+
+test:other:
+  extends:
+    - .test
+  except:
+    - dev
+  stage: test
+
+build:dev:
+  extends:
+    - .environment_dev
+    - .build
+  stage: build
