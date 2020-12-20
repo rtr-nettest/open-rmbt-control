@@ -97,11 +97,11 @@
             <artifactId>sentry-spring</artifactId>
             <version>1.7.30</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.specture</groupId>-->
-<!--            <artifactId>core</artifactId>-->
-<!--            <version>0.0.1-SNAPSHOT</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.specture</groupId>
+            <artifactId>core</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -109,14 +109,14 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-<!--                <configuration>-->
-<!--                    <requiresUnpack>-->
-<!--                        <dependency>-->
-<!--                            <groupId>com.specture</groupId>-->
-<!--                            <artifactId>sah-backend-public</artifactId>-->
-<!--                        </dependency>-->
-<!--                    </requiresUnpack>-->
-<!--                </configuration>-->
+                <configuration>
+                    <requiresUnpack>
+                        <dependency>
+                            <groupId>com.specture</groupId>
+                            <artifactId>core</artifactId>
+                        </dependency>
+                    </requiresUnpack>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
