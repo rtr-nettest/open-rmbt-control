@@ -23,7 +23,7 @@ stages:
       - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /(dev)/
 
 .test:
-  image: maven:3.6-jdk-11-alpine
+  image: maven:3.6-jdk-13-alpine
   script:
     - apk add --no-cache zip unzip 
     - mkdir -p ${CI_PROJECT_DIR}/artifacts/ && cd ${CI_PROJECT_DIR}/artifacts
@@ -45,7 +45,7 @@ stages:
     - mvn clean test -B
 
 .build:
-  image: maven:3.6-jdk-11-alpine
+  image: maven:3.6-jdk-13-alpine
   artifacts:
     untracked: false
     paths:
