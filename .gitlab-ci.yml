@@ -1,9 +1,13 @@
+variables:
+  SERVICE_NAME: backend
+
 before_script:
   - 'export MAVEN_OPTS="-Xms4g -Xmx4g"'
 
 stages:
   - test
   - build
+  - deploy
 
 .environment_dev:
   environment:
@@ -21,7 +25,24 @@ stages:
 .test:
   image: maven:3.6-jdk-13-alpine
   script:
-    - mvn clean test
+    - apk add --no-cache zip unzip 
+    - mkdir -p ${CI_PROJECT_DIR}/artifacts/ && cd ${CI_PROJECT_DIR}/artifacts
+    - 'curl --location --output ${CORE_ARTIFACT_DOWNLOAD}.zip --header "JOB-TOKEN: $CI_JOB_TOKEN" "https://gitlab.martes-specure.com/api/v4/projects/${CORE_PROJECT_ID}/jobs/artifacts/${CORE_ARTIFACT_BRANCH}/download?job=${CORE_ARTIFACT_DOWNLOAD}"'
+    - ls -lsa
+    - unzip ${CORE_ARTIFACT_DOWNLOAD}.zip -d ${CORE_ARTIFACT_DOWNLOAD}
+    - mv -f ${CI_PROJECT_DIR}/artifacts/${CORE_ARTIFACT_DOWNLOAD}/target/${CORE_ARTIFACT_NAME} ${CI_PROJECT_DIR}/
+    - rm -f ${CORE_ARTIFACT_DOWNLOAD}.zip
+
+    - cd ${CI_PROJECT_DIR} && rm -rvf "${CI_PROJECT_DIR}/artifacts/"
+    - >- 
+        mvn clean install:install-file
+        -Dfile=$CORE_ARTIFACT_NAME
+        -DgroupId=com.specture
+        -DartifactId=core
+        -Dversion=0.0.1-SNAPSHOT
+        -Dpackaging=jar
+        -DgeneratePom=true
+    - mvn clean test -B
 
 .build:
   image: maven:3.6-jdk-13-alpine
@@ -30,7 +51,55 @@ stages:
     paths:
       - target/*.jar
   script:
-    - mvn -D'maven.test.skip=true' clean install
+    - apk add --no-cache zip unzip 
+    - mkdir -p ${CI_PROJECT_DIR}/artifacts/ && cd ${CI_PROJECT_DIR}/artifacts
+
+    - 'curl --location --output ${CORE_ARTIFACT_DOWNLOAD}.zip --header "JOB-TOKEN: $CI_JOB_TOKEN" "https://gitlab.martes-specure.com/api/v4/projects/${CORE_PROJECT_ID}/jobs/artifacts/${CORE_ARTIFACT_BRANCH}/download?job=${CORE_ARTIFACT_DOWNLOAD}"'
+    - ls -lsa
+    - unzip ${CORE_ARTIFACT_DOWNLOAD}.zip -d ${CORE_ARTIFACT_DOWNLOAD}
+    - mv -f ${CI_PROJECT_DIR}/artifacts/${CORE_ARTIFACT_DOWNLOAD}/target/${CORE_ARTIFACT_NAME} ${CI_PROJECT_DIR}/
+    - rm -f ${CORE_ARTIFACT_DOWNLOAD}.zip
+
+    - cd ${CI_PROJECT_DIR} && rm -rvf "${CI_PROJECT_DIR}/artifacts/"
+    - >- 
+        mvn clean install:install-file
+        -Dfile=$CORE_ARTIFACT_NAME
+        -DgroupId=com.specture
+        -DartifactId=core
+        -Dversion=0.0.1-SNAPSHOT
+        -Dpackaging=jar
+        -DgeneratePom=true
+    - mvn -D'maven.test.skip=true' clean install -B
+
+.deploy:
+  image: alpine:3.11.3
+  variables:
+    CLUSTER_NAME: "${CI_COMMIT_REF_SLUG}"
+  before_script:
+    - 'which ssh-agent || ( apk update && apk add --no-cache openssh )'
+    - eval $(ssh-agent -s)
+    - echo "${SSH_KEY_PRIVATE}" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-add -l
+    - ssh-keyscan "${SSH_HOST}" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh -o StrictHostKeyChecking=no "${SSH_HOST}" "rm  -rf /app/rtr-${CLUSTER_NAME}/${SERVICE_NAME}"
+    - ssh -o StrictHostKeyChecking=no "${SSH_HOST}" "mkdir -p /app/rtr-${CLUSTER_NAME}/${SERVICE_NAME}"
+
+    - scp -o stricthostkeychecking=no ${CI_PROJECT_DIR}/devops/Dockerfile "${SSH_HOST}":"/app/rtr-${CLUSTER_NAME}/${SERVICE_NAME}"
+    - scp -o stricthostkeychecking=no ${CI_PROJECT_DIR}/devops/docker-entrypoint.sh "${SSH_HOST}":"/app/rtr-${CLUSTER_NAME}/${SERVICE_NAME}"
+    - scp -o stricthostkeychecking=no ${CI_PROJECT_DIR}/devops/wait-for-it.sh "${SSH_HOST}":"/app/rtr-${CLUSTER_NAME}/${SERVICE_NAME}"
+    - scp -o stricthostkeychecking=no ${CI_PROJECT_DIR}/target/*.jar "${SSH_HOST}":"/app/rtr-${CLUSTER_NAME}/${SERVICE_NAME}"
+
+    - >-
+      ssh -o StrictHostKeyChecking=no "${SSH_HOST}" "cd /app/rtr-${CLUSTER_NAME}/ &&
+      docker-compose stop ${SERVICE_NAME} &&
+      docker-compose rm -f ${SERVICE_NAME} &&
+      docker-compose build ${SERVICE_NAME} &&
+      docker-compose up -d ${SERVICE_NAME}"
+    - ssh -o StrictHostKeyChecking=no "${SSH_HOST}" "docker system prune -f"
 
 test:
   extends:
@@ -57,3 +126,11 @@ build:dev:
     - .environment_dev
     - .build
   stage: build
+
+deploy:dev:
+  extends:
+    - .environment_dev
+    - .deploy
+  needs:
+    - build:dev
+  stage: deploy
