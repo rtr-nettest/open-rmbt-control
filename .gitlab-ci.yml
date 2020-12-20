@@ -101,7 +101,7 @@ stages:
       docker-compose up -d ${SERVICE_NAME}"
     - ssh -o StrictHostKeyChecking=no "${SSH_HOST}" "docker system prune -f"
 
-test:
+test:dev:
   extends:
     - .test
   only:
