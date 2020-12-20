@@ -12,7 +12,6 @@ spring:
       test-while-idle: true
       test-on-borrow: true
       validation-query: SELECT 1
-
   jpa:
     hibernate:
       ddl-auto: none
@@ -57,3 +56,15 @@ client-tenant:
   clientTenantMapping:
     rtr: rtr_dev
   defaultTenant: rtr
+
+datasource:
+  poolSize: 20
+  minIdle: 1
+  driverClassName: org.postgresql.Driver
+  url: jdbc:postgresql://127.0.0.1:5431/rtr
+  username: rtr
+  password: password
+  tomcat:
+    test-while-idle: true
+    test-on-borrow: true
+    validation-query: SELECT 1
