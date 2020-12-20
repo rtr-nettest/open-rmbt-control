@@ -15,7 +15,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
@@ -24,27 +24,27 @@ spring:
 
 elastic-index:
   basicTenantIndexes:
-    "no": basic_test_nkom
-    bh: basic_test_bh
-    at: basic_test_aus
+    rtr: basic_test_rtr
   basicQosTenantIndexes:
-    "no": basic_qos_test_nkom
-    bh: basic_qos_test_bh
-    at: basic_qos_test_aus
+    rtr: basic_qos_test_rtr
   keepAlive: keep_alive
 
 client-tenant:
   clientTenantMapping:
-    bh: sah
-    "no": nkom
-    at: austria
-  defaultTenant: bh
+    rtr: rtr
+  defaultTenant: rtr
 
 measurement-server:
   host: http://localhost:8080
   slotWindow: 5
   defaultProviderId: 6
 
+jira:
+  requestTypeId: 49
+  serviceDeskId: 6
+  url: https://specure.atlassian.net
+  username: batalin.a@dbbest.com
+  password: HnpRkUKiKaxOaCI8ZWfV400A
 
 ---
 spring:
@@ -55,7 +55,5 @@ measurement-server:
 
 client-tenant:
   clientTenantMapping:
-    bh: bh_dev
-    "no": no_dev
-    at: at_dev
-  defaultTenant: bh
+    rtr: rtr_dev
+  defaultTenant: rtr

@@ -1,0 +1,19 @@
+version: '3'
+
+networks:
+  net-rtr:
+
+services:
+  PostgreSQLAdmin:
+    container_name: rtr
+    restart: always
+    image: postgres:11.6-alpine
+    networks:
+    - net-rtr
+    ports:
+    - 5431:5432
+    environment:
+      POSTGRES_USER: rtr
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: rtr
+
