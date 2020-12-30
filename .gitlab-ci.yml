@@ -46,7 +46,11 @@ stages:
         -Dversion=0.0.1-SNAPSHOT
         -Dpackaging=jar
         -DgeneratePom=true
-    - mvn clean test -B
+    - >-
+        mvn
+        org.jacoco:jacoco-maven-plugin:0.8.5:prepare-agent
+        test -B
+        org.jacoco:jacoco-maven-plugin:0.8.5:report
 
 .sonar:
   image: maven:3.6.3-jdk-11-slim
