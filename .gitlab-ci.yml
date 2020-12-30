@@ -2,10 +2,11 @@ variables:
   SERVICE_NAME: backend
 
 before_script:
-  - 'export MAVEN_OPTS="-Xms4g -Xmx4g"'
+  - 'export MAVEN_OPTS="-Xms4g -Xmx4g -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository"'
 
 stages:
   - test
+  - sonar
   - build
   - deploy
 
@@ -24,6 +25,9 @@ stages:
 
 .test:
   image: maven:3.6-jdk-13-alpine
+  cache:
+    key: "${CI_COMMIT_REF_SLUG}"
+    untracked: true
   script:
     - apk add --no-cache zip unzip 
     - mkdir -p ${CI_PROJECT_DIR}/artifacts/ && cd ${CI_PROJECT_DIR}/artifacts
@@ -43,6 +47,56 @@ stages:
         -Dpackaging=jar
         -DgeneratePom=true
     - mvn clean test -B
+
+.sonar:
+  image: maven:3.6.3-jdk-11-slim
+  cache:
+    key: "${CI_COMMIT_REF_SLUG}"
+    untracked: true
+    policy: pull
+  script:
+    - |
+        apt-get update && apt-get -y upgrade && apt-get install -y apt-utils jq curl unzip zip
+        apt-get clean
+        rm -rf                        \
+          /var/lib/apt/lists/*          \
+          /var/log/alternatives.log     \
+          /var/log/apt/history.log      \
+          /var/log/apt/term.log         \
+          /var/log/dpkg.log
+    - >-
+        mvn sonar:sonar
+        -Dsonar.gitlab.project_id="${CI_PROJECT_PATH}"
+        -Dsonar.gitlab.commit_sha="${CI_COMMIT_SHA}"
+        -Dsonar.gitlab.ref_name="${CI_COMMIT_REF_NAME}"
+        -Dsonar.projectKey="${SONAR_PROJECT}"
+        -Dsonar.projectName="${SONAR_PROJECT}"
+        -Dsonar.host.url="${SONAR_URL}"
+        -Dsonar.login="${SONAR_KEY}"
+    - |
+        URL="$(cat ./target/sonar/report-task.txt | grep ceTaskUrl | cut -c11-)"
+        sleep ${SONAR_WAIT}s
+        curl -# -k -u "${SONAR_KEY}":"" "${URL}" -o sonar_analysis.txt
+        export SONAR_STATUS=$(cat sonar_analysis.txt | jq -r '.task.status')
+        export SONAR_ANLYSIS_ID=$(cat sonar_analysis.txt | jq -r '.task.analysisId')
+        if [ "${SONAR_STATUS}" == "SUCCESS" ];then
+          echo -e "\e[93mSONAR ANALYSIS SUCCESSFULL...\e[0m   ANALYSING RESULTS";
+          curl -# -k -u "${SONAR_KEY}":"" "${SONAR_URL}/api/qualitygates/project_status?analysisId=${SONAR_ANLYSIS_ID}" -o sonar_result.txt
+          export SONAR_RESULT=$(cat sonar_result.txt | jq -r '.projectStatus.status');
+
+          if [ "${SONAR_RESULT}" == "ERROR" ];then
+            echo -e "\e[91mSONAR RESULTS FAILED\e[0m";
+            echo "$(cat sonar_result.txt | jq -r '.projectStatus.conditions')"
+            exit 1
+          else
+            echo -e "\e[92mSONAR RESULTS SUCCESSFULL\e[0m";
+            echo "$(cat sonar_result.txt | jq -r '.projectStatus.conditions')"
+            exit 0
+          fi
+        else 
+            echo -e "\e[91mSONAR ANALYSIS FAILED\e[0m"
+            exit 1
+        fi
 
 .build:
   image: maven:3.6-jdk-13-alpine
@@ -120,6 +174,28 @@ test:other:
   except:
     - dev
   stage: test
+
+sonar:
+  extends:
+    - .sonar
+  environment:
+    name: "${CI_COMMIT_REF_SLUG}"
+  only:
+    - dev
+  stage: sonar
+
+sonar:merge:
+  extends:
+    - .environment_merge
+    - .sonar
+  stage: sonar
+
+sonar:other:
+  extends:
+    - .sonar
+  except:
+    - dev
+  stage: sonar
 
 build:dev:
   extends:
