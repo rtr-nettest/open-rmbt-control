@@ -77,6 +77,17 @@ stages:
         -Dsonar.projectName="${SONAR_PROJECT}"
         -Dsonar.host.url="${SONAR_URL}"
         -Dsonar.login="${SONAR_KEY}"
+        -Dsonar.coverage.exclusions="src/main/java/com/rtr/nettest/**/annotation/**,
+          src/main/java/com/rtr/nettest/**/config/**,
+          src/main/java/com/rtr/nettest/**/constant/**,
+          src/main/java/com/rtr/nettest/**/enums/**,
+          src/main/java/com/rtr/nettest/**/mapper/**,
+          src/main/java/com/rtr/nettest/**/model/**,
+          src/main/java/com/rtr/nettest/**/repository/**,
+          src/main/java/com/rtr/nettest/**/request/**,
+          src/main/java/com/rtr/nettest/**/response/**,
+          srс/main/resources/**,
+          **/*Application.java"
     - |
         URL="$(cat ./target/sonar/report-task.txt | grep ceTaskUrl | cut -c11-)"
         sleep ${SONAR_WAIT}s
