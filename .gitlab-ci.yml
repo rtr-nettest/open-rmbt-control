@@ -41,7 +41,7 @@ stages:
     - >- 
         mvn clean install:install-file
         -Dfile=$CORE_ARTIFACT_NAME
-        -DgroupId=com.specture
+        -DgroupId=com.specure
         -DartifactId=core
         -Dversion=0.0.1-SNAPSHOT
         -Dpackaging=jar
@@ -133,7 +133,7 @@ stages:
     - >- 
         mvn clean install:install-file
         -Dfile=$CORE_ARTIFACT_NAME
-        -DgroupId=com.specture
+        -DgroupId=com.specure
         -DartifactId=core
         -Dversion=0.0.1-SNAPSHOT
         -Dpackaging=jar

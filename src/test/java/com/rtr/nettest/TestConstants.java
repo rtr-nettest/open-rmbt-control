@@ -1,0 +1,12 @@
+package com.rtr.nettest;
+
+public interface TestConstants {
+    String DEFAULT_LANGUAGE = "DEFAULT LANGUAGE";
+    Long DEFAULT_LAST_NEWS_UID = 13L;
+    String DEFAULT_PLATFORM = "DEFAULT PLATFORM";
+    Long DEFAULT_SOFTWARE_VERSION_CODE = 1L;
+    String DEFAULT_UUID = "DEFAULT UUID";
+    Long DEFAULT_UID = 2L;
+    String DEFAULT_NEWS_TITLE = "DEFAULT NEWS TITLE";
+    String DEFAULT_NEWS_TEXT = "DEFAULT NEWS TEXT";
+}

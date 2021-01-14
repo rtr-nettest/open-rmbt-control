@@ -98,7 +98,7 @@
             <version>1.7.30</version>
         </dependency>
         <dependency>
-            <groupId>com.specture</groupId>
+            <groupId>com.specure</groupId>
             <artifactId>core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
@@ -122,7 +122,7 @@
                 <configuration>
                     <requiresUnpack>
                         <dependency>
-                            <groupId>com.specture</groupId>
+                            <groupId>com.specure</groupId>
                             <artifactId>core</artifactId>
                         </dependency>
                     </requiresUnpack>
