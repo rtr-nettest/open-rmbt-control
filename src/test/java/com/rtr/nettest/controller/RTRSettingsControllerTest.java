@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-public class SettingsControllerTest {
+public class RTRSettingsControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
@@ -34,8 +34,8 @@ public class SettingsControllerTest {
 
     @Before
     public void setUp() {
-        SettingsController settingsController = new SettingsController(settingsService);
-        mockMvc = MockMvcBuilders.standaloneSetup(settingsController)
+        RTRSettingsController RTRSettingsController = new RTRSettingsController(settingsService);
+        mockMvc = MockMvcBuilders.standaloneSetup(RTRSettingsController)
                 .setControllerAdvice(new RtrAdvice())
                 .build();
     }

@@ -12,7 +12,7 @@ import static com.rtr.nettest.constant.URIConstants.SETTINGS_URL;
 @RestController
 @RequestMapping(SETTINGS_URL)
 @RequiredArgsConstructor
-public class SettingsController {
+public class RTRSettingsController {
 
     private final SettingsService settingsService;
 
