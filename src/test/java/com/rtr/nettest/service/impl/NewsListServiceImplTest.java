@@ -1,6 +1,6 @@
 package com.rtr.nettest.service.impl;
 
-import com.rtr.nettest.entity.News;
+import com.rtr.nettest.model.News;
 import com.rtr.nettest.mapper.NewsMapper;
 import com.rtr.nettest.repository.NewsRepository;
 import com.rtr.nettest.request.NewsParametersRequest;
@@ -45,8 +45,8 @@ public class NewsListServiceImplTest {
         when(newsParametersRequest.getLanguage()).thenReturn(DEFAULT_LANGUAGE);
         when(newsParametersRequest.getPlatform()).thenReturn(DEFAULT_PLATFORM);
         when(newsParametersRequest.getSoftwareVersionCode()).thenReturn(DEFAULT_SOFTWARE_VERSION_CODE);
-        when(newsParametersRequest.getUuid()).thenReturn(DEFAULT_UUID);
-        when(newsRepository.findActiveByUidAndPlatformAndSoftwareVersionCodeAndUuid(DEFAULT_LAST_NEWS_UID, DEFAULT_PLATFORM, DEFAULT_SOFTWARE_VERSION_CODE, DEFAULT_UUID))
+        when(newsParametersRequest.getUuid()).thenReturn(DEFAULT_NEWS_UUID);
+        when(newsRepository.findActiveByUidAndPlatformAndSoftwareVersionCodeAndUuid(DEFAULT_LAST_NEWS_UID, DEFAULT_PLATFORM, DEFAULT_SOFTWARE_VERSION_CODE, DEFAULT_NEWS_UUID))
                 .thenReturn(List.of(news));
         when(newsMapper.newsToNewsResponse(news, DEFAULT_LANGUAGE)).thenReturn(newsResponse);
 

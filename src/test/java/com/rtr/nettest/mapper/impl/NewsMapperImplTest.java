@@ -1,6 +1,6 @@
 package com.rtr.nettest.mapper.impl;
 
-import com.rtr.nettest.entity.News;
+import com.rtr.nettest.model.News;
 import com.rtr.nettest.mapper.NewsMapper;
 import org.junit.Before;
 import org.junit.Test;

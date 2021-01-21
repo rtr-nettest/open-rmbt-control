@@ -69,3 +69,6 @@ client-tenant:
   clientTenantMapping:
     rtr: rtr_dev
   defaultTenant: rtr
+
+git:
+  branch:${git.branch}
