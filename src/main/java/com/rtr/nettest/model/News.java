@@ -37,10 +37,6 @@ public class News {
 
     private boolean active = true;
 
-    private String errorLabel = "";
-
-    private boolean error = false;
-
     private boolean force;
 
     @Column(name = "plattform")
