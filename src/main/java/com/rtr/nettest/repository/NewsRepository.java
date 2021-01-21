@@ -1,13 +1,11 @@
 package com.rtr.nettest.repository;
 
-import com.rtr.nettest.entity.News;
+import com.rtr.nettest.model.News;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface NewsRepository extends JpaRepository<News, Long> {
 
     @Query(value = "SELECT * FROM news  " +

@@ -1,31 +1,43 @@
 package com.rtr.nettest.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.rtr.nettest.constant.DefaultValues;
-import lombok.*;
+import com.rtr.nettest.constant.Constants;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Optional;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @EqualsAndHashCode
 public class NewsParametersRequest {
 
-    @Builder.Default
-    private Long lastNewsUid = DefaultValues.NEWS_REQUEST_LAST_NEWS_UID;
+    private final Long lastNewsUid;
 
-    @Builder.Default
     @JsonProperty(value = "plattform")
-    private String platform = DefaultValues.NEWS_REQUEST_PLATFORM;
+    private final String platform;
 
-    @Builder.Default
-    private Long softwareVersionCode = DefaultValues.NEWS_REQUEST_SOFTWARE_VERSION_CODE;
+    private final Long softwareVersionCode;
 
-    @Builder.Default
-    private String uuid = DefaultValues.NEWS_REQUEST_UUID;
+    private final String uuid;
 
-    @Builder.Default
-    private String language = DefaultValues.NEWS_REQUEST_LANGUAGE;
+    private final String language;
 
+    @Builder
+    public NewsParametersRequest(Long lastNewsUid,
+                                 String platform,
+                                 Long softwareVersionCode,
+                                 String uuid,
+                                 String language) {
+        this.lastNewsUid = Optional.ofNullable(lastNewsUid).orElse(Constants.NEWS_REQUEST_LAST_NEWS_UID);
+        this.platform = Optional.ofNullable(platform).orElse(StringUtils.EMPTY);
+        this.softwareVersionCode = Optional.ofNullable(softwareVersionCode).orElse(Constants.NEWS_REQUEST_SOFTWARE_VERSION_CODE);
+        this.uuid = Optional.ofNullable(uuid).orElse(StringUtils.EMPTY);
+        this.language = Optional.ofNullable(language).orElse(StringUtils.EMPTY);
+    }
+
+    public NewsParametersRequest() {
+        this(null, null, null, null, null);
+    }
 }

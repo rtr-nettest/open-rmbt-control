@@ -79,7 +79,7 @@ public class NewsListControllerTest {
                 .lastNewsUid(DEFAULT_LAST_NEWS_UID)
                 .platform(DEFAULT_PLATFORM)
                 .softwareVersionCode(DEFAULT_SOFTWARE_VERSION_CODE)
-                .uuid(DEFAULT_UUID)
+                .uuid(DEFAULT_NEWS_UUID)
                 .build();
     }
 }
