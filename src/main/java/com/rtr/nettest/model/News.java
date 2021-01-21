@@ -49,4 +49,9 @@ public class News {
     private OffsetDateTime time;
 
     private UUID uuid;
+
+    @PrePersist
+    protected void preInsert() {
+        this.time = OffsetDateTime.now();
+    }
 }
