@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages = {"com.specure.core", "com.rtr.nettest"})
-@EnableJpaRepositories(basePackages = {"com.specure.core.repository", "com.rtr.nettest.repository"})
-@EntityScan(basePackages = {"com.specure.core.model", "com.rtr.nettest.model"})
+@SpringBootApplication(scanBasePackages = {"com.rtr.nettest"})
+@EnableJpaRepositories(basePackages = {"com.rtr.nettest.repository"})
+@EntityScan(basePackages = {"com.rtr.nettest.model"})
 @PropertySource({"classpath:git.properties"})
 public class RTRApplication {
 

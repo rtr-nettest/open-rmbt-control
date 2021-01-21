@@ -4,6 +4,7 @@ import com.rtr.nettest.model.Client;
 import com.rtr.nettest.repository.ClientRepository;
 import com.rtr.nettest.service.ClientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
+    @Qualifier(ClientRepository.NAME)
     private final ClientRepository clientRepository;
 
     @Override

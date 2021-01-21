@@ -67,8 +67,8 @@ public class SettingsServiceImplTest {
                 qosTestTypeDescService,
                 testService,
                 testServerService,
-                clock,
-                uuidGenerator);
+                uuidGenerator,
+                clock);
     }
 
     @Test(expected = NotSupportedClientVersionException.class)

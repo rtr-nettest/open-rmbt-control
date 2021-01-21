@@ -17,13 +17,16 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.rtr.nettest.constant.Config.SETTINGS_KEYS;
 import static com.rtr.nettest.constant.Config.SUPPORTED_CLIENT_NAMES;
 
-@Service
+@Service(SettingsService.NAME)
 @RequiredArgsConstructor
 public class SettingsServiceImpl implements SettingsService {
 
@@ -39,8 +42,8 @@ public class SettingsServiceImpl implements SettingsService {
     private final QoSTestTypeDescService qosTestTypeDescService;
     private final TestService testService;
     private final TestServerService testServerService;
-    private final Clock clock;
     private final UUIDGenerator uuidGenerator;
+    private final Clock clock;
 
     @Override
     public SettingsResponse getSettings(SettingsRequest request, String clientIpRaw) {

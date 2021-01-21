@@ -3,6 +3,7 @@ package com.rtr.nettest.controller;
 import com.rtr.nettest.TestUtils;
 import com.rtr.nettest.advice.RtrAdvice;
 import com.rtr.nettest.request.NewsParametersRequest;
+import com.rtr.nettest.request.NewsRequest;
 import com.rtr.nettest.response.NewsListResponse;
 import com.rtr.nettest.response.NewsResponse;
 import com.rtr.nettest.service.NewsListService;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 
 import static com.rtr.nettest.TestConstants.*;
+import static com.rtr.nettest.constant.URIConstants.ADMIN_NEWS;
 import static com.rtr.nettest.constant.URIConstants.NEWS_URL;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.verify;
@@ -61,6 +63,32 @@ public class NewsListControllerTest {
         verify(newsListService).getAllNews(request);
     }
 
+    @Test
+    public void createNews_whenDeLanguageRequest_expectCreated() throws Exception {
+        var request = getNewsRequest();
+
+        mockMvc.perform(MockMvcRequestBuilders.post(ADMIN_NEWS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtils.asJsonString(request)))
+                .andExpect(status().isCreated());
+
+        verify(newsListService).createNews(request);
+    }
+
+    private NewsRequest getNewsRequest() {
+        return NewsRequest.builder()
+                .title(DEFAULT_NEWS_TITLE)
+                .text(DEFAULT_NEWS_TEXT)
+                .language(DEFAULT_LANGUAGE)
+                .active(DEFAULT_FLAG_TRUE)
+                .force(DEFAULT_FLAG_TRUE)
+                .maxSoftwareVersion(DEFAULT_MAX_SOFTWARE_VERSION)
+                .minSoftwareVersion(DEFAULT_MIN_SOFTWARE_VERSION)
+                .platform(DEFAULT_PLATFORM)
+                .uuid(DEFAULT_NEWS_UUID)
+                .build();
+    }
+
     private NewsListResponse getNewsListResponse() {
         return new NewsListResponse(List.of(getNewsResponse()));
     }
@@ -79,7 +107,7 @@ public class NewsListControllerTest {
                 .lastNewsUid(DEFAULT_LAST_NEWS_UID)
                 .platform(DEFAULT_PLATFORM)
                 .softwareVersionCode(DEFAULT_SOFTWARE_VERSION_CODE)
-                .uuid(DEFAULT_NEWS_UUID)
+                .uuid(DEFAULT_NEWS_UUID.toString())
                 .build();
     }
 }
