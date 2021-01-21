@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import static com.rtr.nettest.constant.Config.SETTINGS_KEYS;
 import static com.rtr.nettest.constant.Config.SUPPORTED_CLIENT_NAMES;
 
-@Service(SettingsService.NAME)
+@Service
 @RequiredArgsConstructor
 public class SettingsServiceImpl implements SettingsService {
 
