@@ -1,12 +1,12 @@
 package com.rtr.nettest.service;
 
-import com.rtr.nettest.model.Client;
+import com.rtr.nettest.model.RtrClient;
 
 import java.util.UUID;
 
 public interface ClientService {
 
-    Client getClientByUUID(UUID uuid);
+    RtrClient getClientByUUID(UUID uuid);
 
-    Client saveClient(Client client);
+    RtrClient saveClient(RtrClient rtrClient);
 }

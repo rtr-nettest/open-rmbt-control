@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "client")
-public class Client {
+public class RtrClient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

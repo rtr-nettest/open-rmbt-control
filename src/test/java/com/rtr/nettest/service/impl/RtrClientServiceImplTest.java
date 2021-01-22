@@ -1,6 +1,6 @@
 package com.rtr.nettest.service.impl;
 
-import com.rtr.nettest.model.Client;
+import com.rtr.nettest.model.RtrClient;
 import com.rtr.nettest.repository.ClientRepository;
 import com.rtr.nettest.service.ClientService;
 import org.junit.Before;
@@ -18,16 +18,16 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-public class ClientServiceImplTest {
+public class RtrClientServiceImplTest {
     private ClientService clientService;
 
     @MockBean
     private ClientRepository clientRepository;
 
     @Mock
-    private Client client;
+    private RtrClient rtrClient;
     @Mock
-    private Client savedClient;
+    private RtrClient savedRtrClient;
 
     @Before
     public void setUp() {
@@ -36,11 +36,11 @@ public class ClientServiceImplTest {
 
     @Test
     public void getClientByUUID_whenClientExist_expectClient() {
-        when(clientRepository.findByUuid(DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(client));
+        when(clientRepository.findByUuid(DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
 
         var response = clientService.getClientByUUID(DEFAULT_CLIENT_UUID);
 
-        assertEquals(client, response);
+        assertEquals(rtrClient, response);
     }
 
     @Test
@@ -52,10 +52,10 @@ public class ClientServiceImplTest {
 
     @Test
     public void saveClient_whenCommonData_expect() {
-        when(clientRepository.save(client)).thenReturn(savedClient);
+        when(clientRepository.save(rtrClient)).thenReturn(savedRtrClient);
 
-        var response = clientService.saveClient(client);
+        var response = clientService.saveClient(rtrClient);
 
-        assertEquals(savedClient, response);
+        assertEquals(savedRtrClient, response);
     }
 }

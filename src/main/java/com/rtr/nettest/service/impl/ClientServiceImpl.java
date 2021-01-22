@@ -1,6 +1,6 @@
 package com.rtr.nettest.service.impl;
 
-import com.rtr.nettest.model.Client;
+import com.rtr.nettest.model.RtrClient;
 import com.rtr.nettest.repository.ClientRepository;
 import com.rtr.nettest.service.ClientService;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +17,13 @@ public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
 
     @Override
-    public Client getClientByUUID(UUID uuid) {
+    public RtrClient getClientByUUID(UUID uuid) {
         return clientRepository.findByUuid(uuid)
                 .orElse(null);
     }
 
     @Override
-    public Client saveClient(Client client) {
-        return clientRepository.save(client);
+    public RtrClient saveClient(RtrClient rtrClient) {
+        return clientRepository.save(rtrClient);
     }
 }

@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Getter
 @EqualsAndHashCode
-public class SettingsRequest {
+public class RtrSettingsRequest {
 
     private final String type;
 
@@ -63,7 +63,7 @@ public class SettingsRequest {
     private final CapabilitiesRequest capabilities;
 
     @Builder
-    public SettingsRequest(String type, String name, String language, String platform, String osVersion, Long apiLevel, String device, String model, String product, String timezone, String softwareRevision, Long softwareRevisionCode, String softwareVersionName, Long versionCode, String versionName, UUID uuid, boolean userServerSelection, Long termsAndConditionsAcceptedVersion, boolean isTermsAndConditionsAccepted, CapabilitiesRequest capabilities) {
+    public RtrSettingsRequest(String type, String name, String language, String platform, String osVersion, Long apiLevel, String device, String model, String product, String timezone, String softwareRevision, Long softwareRevisionCode, String softwareVersionName, Long versionCode, String versionName, UUID uuid, boolean userServerSelection, Long termsAndConditionsAcceptedVersion, boolean isTermsAndConditionsAccepted, CapabilitiesRequest capabilities) {
         this.type = Optional.ofNullable(type).orElse(StringUtils.EMPTY);
         this.name = Optional.ofNullable(name).orElse(StringUtils.EMPTY);
         this.language = Optional.ofNullable(language).orElse(StringUtils.EMPTY);
@@ -86,7 +86,7 @@ public class SettingsRequest {
         this.capabilities = capabilities;
     }
 
-    public SettingsRequest() {
+    public RtrSettingsRequest() {
         this(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, false, null, false, null);
     }
 }

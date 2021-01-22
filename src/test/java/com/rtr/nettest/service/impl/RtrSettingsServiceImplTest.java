@@ -2,10 +2,10 @@ package com.rtr.nettest.service.impl;
 
 import com.rtr.nettest.constant.Config;
 import com.rtr.nettest.exception.NotSupportedClientVersionException;
-import com.rtr.nettest.model.Client;
+import com.rtr.nettest.model.RtrClient;
 import com.rtr.nettest.model.Settings;
 import com.rtr.nettest.repository.SettingsRepository;
-import com.rtr.nettest.request.SettingsRequest;
+import com.rtr.nettest.request.RtrSettingsRequest;
 import com.rtr.nettest.response.*;
 import com.rtr.nettest.service.*;
 import org.junit.Before;
@@ -29,8 +29,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-public class SettingsServiceImplTest {
-    private SettingsService settingsService;
+public class RtrSettingsServiceImplTest {
+    private RtrSettingsService rtrSettingsService;
 
     @MockBean
     private ClientTypeService clientTypeService;
@@ -48,20 +48,20 @@ public class SettingsServiceImplTest {
     private UUIDGenerator uuidGenerator;
 
     @Mock
-    private SettingsRequest settingsRequest;
+    private RtrSettingsRequest rtrSettingsRequest;
     @Mock
-    private Client client;
+    private RtrClient rtrClient;
     @Mock
-    private Client savedClient;
+    private RtrClient savedRtrClient;
     @Mock
     private Clock clock;
     @Captor
-    private ArgumentCaptor<Client> clientArgumentCaptor;
+    private ArgumentCaptor<RtrClient> clientArgumentCaptor;
 
     @Before
     public void setUp() {
         clock = Clock.fixed(Instant.parse(DEFAULT_INSTANT_EXPECTED), ZoneId.of("UTC"));
-        settingsService = new SettingsServiceImpl(clientTypeService,
+        rtrSettingsService = new RtrSettingsServiceImpl(clientTypeService,
                 clientService,
                 settingsRepository,
                 qosTestTypeDescService,
@@ -73,24 +73,24 @@ public class SettingsServiceImplTest {
 
     @Test(expected = NotSupportedClientVersionException.class)
     public void getSettings_whenNotSupportedName_expectNotSupportedClientVersionException() {
-        when(settingsRequest.getName()).thenReturn(DEFAULT_TEXT);
-        settingsService.getSettings(settingsRequest, DEFAULT_IP_HEADER);
+        when(rtrSettingsRequest.getName()).thenReturn(DEFAULT_TEXT);
+        rtrSettingsService.getSettings(rtrSettingsRequest, DEFAULT_IP_HEADER);
     }
 
     @Test
     public void getSettings_whenAndroidPlatform_expectSettingsResponse() {
         var historyDevices = List.of(DEFAULT_HISTORY_DEVICE);
         var historyNetworks = List.of(DEFAULT_HISTORY_NETWORK);
-        when(settingsRequest.getName()).thenReturn(DEFAULT_CLIENT_NAME);
-        when(settingsRequest.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
-        when(settingsRequest.getPlatform()).thenReturn(DEFAULT_ANDROID_PLATFORM);
-        when(settingsRequest.getLanguage()).thenReturn(DEFAULT_LANGUAGE);
-        when(settingsRequest.getTermsAndConditionsAcceptedVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION);
-        when(client.getTermAndConditionsVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION - 1);
-        when(clientService.getClientByUUID(DEFAULT_CLIENT_UUID)).thenReturn(client);
-        when(clientService.saveClient(client)).thenReturn(savedClient);
-        when(savedClient.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
-        when(savedClient.getId()).thenReturn(DEFAULT_UID);
+        when(rtrSettingsRequest.getName()).thenReturn(DEFAULT_CLIENT_NAME);
+        when(rtrSettingsRequest.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
+        when(rtrSettingsRequest.getPlatform()).thenReturn(DEFAULT_ANDROID_PLATFORM);
+        when(rtrSettingsRequest.getLanguage()).thenReturn(DEFAULT_LANGUAGE);
+        when(rtrSettingsRequest.getTermsAndConditionsAcceptedVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION);
+        when(rtrClient.getTermAndConditionsVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION - 1);
+        when(clientService.getClientByUUID(DEFAULT_CLIENT_UUID)).thenReturn(rtrClient);
+        when(clientService.saveClient(rtrClient)).thenReturn(savedRtrClient);
+        when(savedRtrClient.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
+        when(savedRtrClient.getId()).thenReturn(DEFAULT_UID);
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
         when(qosTestTypeDescService.getAll(DEFAULT_LANGUAGE)).thenReturn(getQoSTestTypeDescResponses());
@@ -100,7 +100,7 @@ public class SettingsServiceImplTest {
         when(testServerService.getServersWs()).thenReturn(getServerWsResponseList());
         when(testServerService.getServersQos()).thenReturn(getServerQoSResponseList());
 
-        var response = settingsService.getSettings(settingsRequest, DEFAULT_IP_HEADER);
+        var response = rtrSettingsService.getSettings(rtrSettingsRequest, DEFAULT_IP_HEADER);
 
         assertEquals(DEFAULT_CLIENT_UUID, response.getSettings().get(0).getUuid());
         assertEquals(getAndroidTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());
@@ -119,15 +119,15 @@ public class SettingsServiceImplTest {
         var historyDevices = List.of(DEFAULT_HISTORY_DEVICE);
         var historyNetworks = List.of(DEFAULT_HISTORY_NETWORK);
         when(uuidGenerator.generateUUID()).thenReturn(DEFAULT_CLIENT_UUID_GENERATED);
-        when(settingsRequest.getName()).thenReturn(DEFAULT_CLIENT_NAME);
-        when(settingsRequest.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
-        when(settingsRequest.getPlatform()).thenReturn(DEFAULT_ANDROID_PLATFORM);
-        when(settingsRequest.getLanguage()).thenReturn(DEFAULT_LANGUAGE);
-        when(settingsRequest.getTermsAndConditionsAcceptedVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION);
-        when(client.getTermAndConditionsVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION - 1);
-        when(clientService.saveClient(any())).thenReturn(savedClient);
-        when(savedClient.getUuid()).thenReturn(DEFAULT_CLIENT_UUID_GENERATED);
-        when(savedClient.getId()).thenReturn(DEFAULT_UID);
+        when(rtrSettingsRequest.getName()).thenReturn(DEFAULT_CLIENT_NAME);
+        when(rtrSettingsRequest.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
+        when(rtrSettingsRequest.getPlatform()).thenReturn(DEFAULT_ANDROID_PLATFORM);
+        when(rtrSettingsRequest.getLanguage()).thenReturn(DEFAULT_LANGUAGE);
+        when(rtrSettingsRequest.getTermsAndConditionsAcceptedVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION);
+        when(rtrClient.getTermAndConditionsVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION - 1);
+        when(clientService.saveClient(any())).thenReturn(savedRtrClient);
+        when(savedRtrClient.getUuid()).thenReturn(DEFAULT_CLIENT_UUID_GENERATED);
+        when(savedRtrClient.getId()).thenReturn(DEFAULT_UID);
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
         when(qosTestTypeDescService.getAll(DEFAULT_LANGUAGE)).thenReturn(getQoSTestTypeDescResponses());
@@ -137,7 +137,7 @@ public class SettingsServiceImplTest {
         when(testServerService.getServersWs()).thenReturn(getServerWsResponseList());
         when(testServerService.getServersQos()).thenReturn(getServerQoSResponseList());
 
-        var response = settingsService.getSettings(settingsRequest, DEFAULT_IP_HEADER);
+        var response = rtrSettingsService.getSettings(rtrSettingsRequest, DEFAULT_IP_HEADER);
 
         verify(clientService).saveClient(clientArgumentCaptor.capture());
         assertEquals(DEFAULT_CLIENT_UUID_GENERATED, clientArgumentCaptor.getValue().getUuid());
@@ -155,20 +155,20 @@ public class SettingsServiceImplTest {
 
     @Test
     public void getSettings_whenIOSPlatform_expectSettingsResponse() {
-        when(settingsRequest.getName()).thenReturn(DEFAULT_CLIENT_NAME);
-        when(settingsRequest.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
-        when(settingsRequest.getPlatform()).thenReturn(DEFAULT_IOS_PLATFORM);
-        when(settingsRequest.getLanguage()).thenReturn(DEFAULT_LANGUAGE);
-        when(settingsRequest.getTermsAndConditionsAcceptedVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION);
-        when(client.getTermAndConditionsVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION - 1);
-        when(clientService.getClientByUUID(DEFAULT_CLIENT_UUID)).thenReturn(client);
-        when(clientService.saveClient(client)).thenReturn(savedClient);
-        when(savedClient.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
-        when(savedClient.getId()).thenReturn(DEFAULT_UID);
+        when(rtrSettingsRequest.getName()).thenReturn(DEFAULT_CLIENT_NAME);
+        when(rtrSettingsRequest.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
+        when(rtrSettingsRequest.getPlatform()).thenReturn(DEFAULT_IOS_PLATFORM);
+        when(rtrSettingsRequest.getLanguage()).thenReturn(DEFAULT_LANGUAGE);
+        when(rtrSettingsRequest.getTermsAndConditionsAcceptedVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION);
+        when(rtrClient.getTermAndConditionsVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION - 1);
+        when(clientService.getClientByUUID(DEFAULT_CLIENT_UUID)).thenReturn(rtrClient);
+        when(clientService.saveClient(rtrClient)).thenReturn(savedRtrClient);
+        when(savedRtrClient.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
+        when(savedRtrClient.getId()).thenReturn(DEFAULT_UID);
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
 
-        var response = settingsService.getSettings(settingsRequest, DEFAULT_IP_HEADER);
+        var response = rtrSettingsService.getSettings(rtrSettingsRequest, DEFAULT_IP_HEADER);
 
         assertEquals(DEFAULT_CLIENT_UUID, response.getSettings().get(0).getUuid());
         assertEquals(getIOSTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());
@@ -176,20 +176,20 @@ public class SettingsServiceImplTest {
 
     @Test
     public void getSettings_whenNotStandardPlatform_expectSettingsResponse() {
-        when(settingsRequest.getName()).thenReturn(DEFAULT_CLIENT_NAME);
-        when(settingsRequest.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
-        when(settingsRequest.getPlatform()).thenReturn(DEFAULT_PLATFORM);
-        when(settingsRequest.getLanguage()).thenReturn(DEFAULT_LANGUAGE);
-        when(settingsRequest.getTermsAndConditionsAcceptedVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION);
-        when(client.getTermAndConditionsVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION - 1);
-        when(clientService.getClientByUUID(DEFAULT_CLIENT_UUID)).thenReturn(client);
-        when(clientService.saveClient(client)).thenReturn(savedClient);
-        when(savedClient.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
-        when(savedClient.getId()).thenReturn(DEFAULT_UID);
+        when(rtrSettingsRequest.getName()).thenReturn(DEFAULT_CLIENT_NAME);
+        when(rtrSettingsRequest.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
+        when(rtrSettingsRequest.getPlatform()).thenReturn(DEFAULT_PLATFORM);
+        when(rtrSettingsRequest.getLanguage()).thenReturn(DEFAULT_LANGUAGE);
+        when(rtrSettingsRequest.getTermsAndConditionsAcceptedVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION);
+        when(rtrClient.getTermAndConditionsVersion()).thenReturn(DEFAULT_TERM_AND_CONDITION_VERSION - 1);
+        when(clientService.getClientByUUID(DEFAULT_CLIENT_UUID)).thenReturn(rtrClient);
+        when(clientService.saveClient(rtrClient)).thenReturn(savedRtrClient);
+        when(savedRtrClient.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
+        when(savedRtrClient.getId()).thenReturn(DEFAULT_UID);
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
 
-        var response = settingsService.getSettings(settingsRequest, DEFAULT_IP_HEADER);
+        var response = rtrSettingsService.getSettings(rtrSettingsRequest, DEFAULT_IP_HEADER);
 
         assertEquals(DEFAULT_CLIENT_UUID, response.getSettings().get(0).getUuid());
         assertEquals(getDefaultTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());

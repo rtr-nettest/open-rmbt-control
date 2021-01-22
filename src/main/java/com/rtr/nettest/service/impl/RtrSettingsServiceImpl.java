@@ -2,12 +2,12 @@ package com.rtr.nettest.service.impl;
 
 import com.google.common.base.Strings;
 import com.rtr.nettest.exception.NotSupportedClientVersionException;
-import com.rtr.nettest.model.Client;
+import com.rtr.nettest.model.RtrClient;
 import com.rtr.nettest.model.Settings;
 import com.rtr.nettest.repository.SettingsRepository;
 import com.rtr.nettest.request.CapabilitiesRequest;
 import com.rtr.nettest.request.RMBTHttpRequest;
-import com.rtr.nettest.request.SettingsRequest;
+import com.rtr.nettest.request.RtrSettingsRequest;
 import com.rtr.nettest.response.*;
 import com.rtr.nettest.service.*;
 import com.rtr.nettest.utils.LongUtils;
@@ -28,7 +28,7 @@ import static com.rtr.nettest.constant.Config.SUPPORTED_CLIENT_NAMES;
 
 @Service
 @RequiredArgsConstructor
-public class SettingsServiceImpl implements SettingsService {
+public class RtrSettingsServiceImpl implements RtrSettingsService {
 
     @Value("${git.branch}")
     private String branch;
@@ -46,7 +46,7 @@ public class SettingsServiceImpl implements SettingsService {
     private final Clock clock;
 
     @Override
-    public SettingsResponse getSettings(SettingsRequest request, String clientIpRaw) {
+    public SettingsResponse getSettings(RtrSettingsRequest request, String clientIpRaw) {
         var lang = request.getLanguage();
         if (!SUPPORTED_CLIENT_NAMES.contains(request.getName())) {
             throw new NotSupportedClientVersionException();
@@ -66,7 +66,7 @@ public class SettingsServiceImpl implements SettingsService {
             client.setLastSeen(now);
 
         } else if (isTermAndConditionAccepted) {
-            client = new Client();
+            client = new RtrClient();
             client.setUuid(uuidGenerator.generateUUID());
             client.setClientType(clientType);
             client.setTermAndConditionsAccepted(isTermAndConditionAccepted);
@@ -183,11 +183,11 @@ public class SettingsServiceImpl implements SettingsService {
         return testService.getDeviceHistory(clientId);
     }
 
-    private boolean isTermAndConditionAccepted(SettingsRequest settingsRequest) {
-        if (settingsRequest.getTermsAndConditionsAcceptedVersion() > 0) {
+    private boolean isTermAndConditionAccepted(RtrSettingsRequest rtrSettingsRequest) {
+        if (rtrSettingsRequest.getTermsAndConditionsAcceptedVersion() > 0) {
             return true;
         } else {
-            return settingsRequest.isTermsAndConditionsAccepted();
+            return rtrSettingsRequest.isTermsAndConditionsAccepted();
         }
     }
 
