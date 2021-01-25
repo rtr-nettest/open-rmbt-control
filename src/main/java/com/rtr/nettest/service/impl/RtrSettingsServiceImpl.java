@@ -1,13 +1,12 @@
 package com.rtr.nettest.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.rtr.nettest.exception.NotSupportedClientVersionException;
 import com.rtr.nettest.model.RtrClient;
 import com.rtr.nettest.model.Settings;
 import com.rtr.nettest.repository.SettingsRepository;
-import com.rtr.nettest.request.CapabilitiesRequest;
-import com.rtr.nettest.request.RMBTHttpRequest;
-import com.rtr.nettest.request.RtrSettingsRequest;
+import com.rtr.nettest.request.*;
 import com.rtr.nettest.response.*;
 import com.rtr.nettest.service.*;
 import com.rtr.nettest.utils.LongUtils;
@@ -17,10 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.rtr.nettest.constant.Config.SETTINGS_KEYS;
@@ -46,13 +43,13 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
     private final Clock clock;
 
     @Override
-    public SettingsResponse getSettings(RtrSettingsRequest request, String clientIpRaw) {
+    public SettingsResponse getSettings(RtrSettingsRequest request) {
         var lang = request.getLanguage();
         if (!SUPPORTED_CLIENT_NAMES.contains(request.getName())) {
             throw new NotSupportedClientVersionException();
         }
         var now = OffsetDateTime.now(clock);
-        Map<String, String> settings = getSettingsByLanguageAndKeys(lang, SETTINGS_KEYS);
+        Map<String, String> settings = getSettingsURLMapByLanguageAndKeys(lang, SETTINGS_KEYS);
         var clientType = clientTypeService.getClientTypeByName(request.getType());
 
         boolean isTermAndConditionAccepted = isTermAndConditionAccepted(request);
@@ -92,6 +89,39 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
         return SettingsResponse.builder()
                 .settings(List.of(setting))
                 .build();
+    }
+
+    @Override
+    public void createSettings(AdminSettingsRequest adminSettingsRequest) {
+        Map<String, Settings> settingsActual = getSettingsMapByLanguageAndKeys(adminSettingsRequest.getLanguage(), SETTINGS_KEYS);
+        Map<String, String> settingsNew = getNewSettingsMap(adminSettingsRequest.getSettings());
+        List<Settings> updatedSettings = new ArrayList<>();
+        settingsNew.entrySet().stream()
+                .filter(entry -> Objects.nonNull(entry.getValue()))
+                .forEach(entry -> updateOrCreateSettings(adminSettingsRequest.getLanguage(), settingsActual, updatedSettings, entry));
+
+        settingsRepository.saveAll(updatedSettings);
+    }
+
+    private void updateOrCreateSettings(String language, Map<String, Settings> settingsActual, List<Settings> updatedSettings, Map.Entry<String, String> entry) {
+        Optional.ofNullable(settingsActual.get(entry.getKey()))
+                .ifPresentOrElse(x -> {
+                            x.setValue(entry.getValue());
+                            updatedSettings.add(x);
+                        },
+                        () -> {
+                            var newSetting = new Settings();
+                            newSetting.setKey(entry.getKey());
+                            newSetting.setValue(entry.getValue());
+                            newSetting.setLang(language);
+                            updatedSettings.add(newSetting);
+                        });
+    }
+
+    private Map<String, String> getNewSettingsMap(AdminSettingsBodyRequest adminSettingsBodyRequest) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        return mapper.convertValue(adminSettingsBodyRequest, Map.class);
     }
 
     private VersionResponse getVersionResponse() {
@@ -191,8 +221,13 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
         }
     }
 
-    private Map<String, String> getSettingsByLanguageAndKeys(String lang, List<String> keys) {
+    private Map<String, String> getSettingsURLMapByLanguageAndKeys(String lang, List<String> keys) {
         return settingsRepository.findAllByLangOrLangIsNullAndKeyIn(lang, keys).stream()
                 .collect(Collectors.toMap(Settings::getKey, Settings::getValue, (val1, val2) -> val1));
+    }
+
+    private Map<String, Settings> getSettingsMapByLanguageAndKeys(String lang, List<String> keys) {
+        return settingsRepository.findAllByLangOrLangIsNullAndKeyIn(lang, keys).stream()
+                .collect(Collectors.toMap(Settings::getKey, Function.identity(), (val1, val2) -> val1));
     }
 }

@@ -5,6 +5,8 @@ import com.rtr.nettest.exception.NotSupportedClientVersionException;
 import com.rtr.nettest.model.RtrClient;
 import com.rtr.nettest.model.Settings;
 import com.rtr.nettest.repository.SettingsRepository;
+import com.rtr.nettest.request.AdminSettingsBodyRequest;
+import com.rtr.nettest.request.AdminSettingsRequest;
 import com.rtr.nettest.request.RtrSettingsRequest;
 import com.rtr.nettest.response.*;
 import com.rtr.nettest.service.*;
@@ -57,6 +59,14 @@ public class RtrSettingsServiceImplTest {
     private Clock clock;
     @Captor
     private ArgumentCaptor<RtrClient> clientArgumentCaptor;
+    @Mock
+    private AdminSettingsRequest adminSettingsRequest;
+    @Mock
+    private AdminSettingsBodyRequest adminSettingsBodyRequest;
+    @Mock
+    private Settings settings;
+    @Captor
+    private ArgumentCaptor<List<Settings>> settingsArgumentCaptor;
 
     @Before
     public void setUp() {
@@ -74,7 +84,7 @@ public class RtrSettingsServiceImplTest {
     @Test(expected = NotSupportedClientVersionException.class)
     public void getSettings_whenNotSupportedName_expectNotSupportedClientVersionException() {
         when(rtrSettingsRequest.getName()).thenReturn(DEFAULT_TEXT);
-        rtrSettingsService.getSettings(rtrSettingsRequest, DEFAULT_IP_HEADER);
+        rtrSettingsService.getSettings(rtrSettingsRequest);
     }
 
     @Test
@@ -100,7 +110,7 @@ public class RtrSettingsServiceImplTest {
         when(testServerService.getServersWs()).thenReturn(getServerWsResponseList());
         when(testServerService.getServersQos()).thenReturn(getServerQoSResponseList());
 
-        var response = rtrSettingsService.getSettings(rtrSettingsRequest, DEFAULT_IP_HEADER);
+        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
 
         assertEquals(DEFAULT_CLIENT_UUID, response.getSettings().get(0).getUuid());
         assertEquals(getAndroidTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());
@@ -137,7 +147,7 @@ public class RtrSettingsServiceImplTest {
         when(testServerService.getServersWs()).thenReturn(getServerWsResponseList());
         when(testServerService.getServersQos()).thenReturn(getServerQoSResponseList());
 
-        var response = rtrSettingsService.getSettings(rtrSettingsRequest, DEFAULT_IP_HEADER);
+        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
 
         verify(clientService).saveClient(clientArgumentCaptor.capture());
         assertEquals(DEFAULT_CLIENT_UUID_GENERATED, clientArgumentCaptor.getValue().getUuid());
@@ -168,7 +178,7 @@ public class RtrSettingsServiceImplTest {
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
 
-        var response = rtrSettingsService.getSettings(rtrSettingsRequest, DEFAULT_IP_HEADER);
+        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
 
         assertEquals(DEFAULT_CLIENT_UUID, response.getSettings().get(0).getUuid());
         assertEquals(getIOSTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());
@@ -189,10 +199,47 @@ public class RtrSettingsServiceImplTest {
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
 
-        var response = rtrSettingsService.getSettings(rtrSettingsRequest, DEFAULT_IP_HEADER);
+        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
 
         assertEquals(DEFAULT_CLIENT_UUID, response.getSettings().get(0).getUuid());
         assertEquals(getDefaultTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());
+    }
+
+    @Test
+    public void createSettings_whenSettingsExist_expectSettingsUpdated() {
+        when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
+                .thenReturn(List.of(settings));
+        when(settings.getKey()).thenReturn(DEFAULT_SETTINGS_KEY);
+        when(adminSettingsRequest.getSettings()).thenReturn(getAdminSettingsBodyRequest());
+        when(adminSettingsBodyRequest.getTcUrl()).thenReturn(DEFAULT_TC_URL_VALUE);
+        when(adminSettingsRequest.getLanguage()).thenReturn(DEFAULT_LANGUAGE);
+
+        rtrSettingsService.createSettings(adminSettingsRequest);
+
+        verify(settings).setValue(DEFAULT_TC_URL_VALUE);
+        verify(settingsRepository).saveAll(List.of(settings));
+    }
+
+    @Test
+    public void createSettings_whenSettingsNotExist_expectSettingsCreated() {
+        when(settings.getKey()).thenReturn(DEFAULT_SETTINGS_KEY);
+        when(adminSettingsRequest.getSettings()).thenReturn(getAdminSettingsBodyRequest());
+        when(adminSettingsBodyRequest.getTcUrl()).thenReturn(DEFAULT_TC_URL_VALUE);
+        when(adminSettingsRequest.getLanguage()).thenReturn(DEFAULT_LANGUAGE);
+
+        rtrSettingsService.createSettings(adminSettingsRequest);
+
+        verify(settingsRepository).saveAll(settingsArgumentCaptor.capture());
+        assertEquals(1, settingsArgumentCaptor.getValue().size());
+        assertEquals(DEFAULT_SETTINGS_KEY, settingsArgumentCaptor.getValue().get(0).getKey());
+        assertEquals(DEFAULT_TC_URL_VALUE, settingsArgumentCaptor.getValue().get(0).getValue());
+        assertEquals(DEFAULT_LANGUAGE, settingsArgumentCaptor.getValue().get(0).getLang());
+    }
+
+    private AdminSettingsBodyRequest getAdminSettingsBodyRequest() {
+        return AdminSettingsBodyRequest.builder()
+                .tcUrl(DEFAULT_TC_URL_VALUE)
+                .build();
     }
 
     private TermAndConditionsResponse getDefaultTermAndConditionsResponse() {
