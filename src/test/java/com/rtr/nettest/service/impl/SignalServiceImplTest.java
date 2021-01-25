@@ -57,6 +57,7 @@ public class SignalServiceImplTest {
         when(httpServletRequest.getRemoteAddr()).thenReturn(DEFAULT_IP);
         when(httpServletRequest.getHeader(HeaderConstants.URL)).thenReturn(DEFAULT_URL);
         when(signalRequest.getUuid()).thenReturn(DEFAULT_CLIENT_UUID);
+        when(signalRequest.getTimezone()).thenReturn(DEFAULT_TIMEZONE);
         when(clientRepository.findByUuid(DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
         when(providerRepository.getProviderNameByTestId(DEFAULT_UID)).thenReturn(DEFAULT_PROVIDER);
         when(testRepository.save(any())).thenReturn(savedTest);

@@ -69,7 +69,7 @@ public interface TestConstants {
     Long DEFAULT_MIN_SOFTWARE_VERSION = 3L;
     String DEFAULT_SETTINGS_KEY = "tc_url";
     Long DEFAULT_TIME = 110000L;
-    String DEFAULT_TIMEZONE = "DEFAULT_TIMEZONE";
+    String DEFAULT_TIMEZONE = "Europe/Bratislava";
     String DEFAULT_PROVIDER = "DEFAULT_PROVIDER";
     String DEFAULT_IP = "37.57.0.215";
     String DEFAULT_RESULT_URL = "DEFAULT_RESULT_URL";
