@@ -2,14 +2,17 @@ package com.rtr.nettest.model;
 
 
 import com.rtr.nettest.model.enums.*;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 import org.springframework.data.geo.Polygon;
 
 import javax.persistence.*;
-import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -20,6 +23,9 @@ import java.util.UUID;
 @ToString
 @Entity
 @Table(name = "test")
+@TypeDefs({
+    @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+})
 public class Test {
     @Id
     @Column(name = "uid")
@@ -238,7 +244,7 @@ public class Test {
     private Double geoAccuracy;
 
     @Column(name = "deleted")
-    private Boolean deleted;
+    private Boolean deleted = false;
 
     @Column(name = "comment")
     private String comment;
@@ -286,7 +292,7 @@ public class Test {
     private Long testulIfBytesUpload;
 
     @Column(name = "implausible")
-    private Boolean implausible;
+    private Boolean implausible = false;
 
     @Column(name = "country_geoip")
     private String countryGeoip;
@@ -362,7 +368,7 @@ public class Test {
     private String hiddenCode;
 
     @Column(name = "origin")
-    private String origin;
+    private UUID origin;
 
     @Column(name = "developer_code")
     private String developerCode;
@@ -373,15 +379,15 @@ public class Test {
     @Column(name = "gkz_obsolete")
     private Integer gkzObsolete;
 
-    @Column(name = "android_permissions")
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonStringType")
-    private String androidPermissions;
+    @Column(name = "android_permissions", columnDefinition = "jsonb")
+    @Type(type = "jsonb")
+    private List<AndroidPermission> androidPermissions;
 
     @Column(name = "dual_sim_detection_method")
     private String dualSimDetectionMethod;
 
     @Column(name = "pinned")
-    private Boolean pinned;
+    private Boolean pinned = false;
 
     @Column(name = "similar_test_uid")
     private Long similarTestUid;
