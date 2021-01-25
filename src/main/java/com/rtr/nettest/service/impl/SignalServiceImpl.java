@@ -9,7 +9,7 @@ import com.rtr.nettest.repository.TestRepository;
 import com.rtr.nettest.request.SignalRequest;
 import com.rtr.nettest.response.SignalResponse;
 import com.rtr.nettest.service.SignalService;
-import com.rtr.nettest.utils.Helperfunctions;
+import com.rtr.nettest.utils.HelperFunctions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -45,20 +45,20 @@ public class SignalServiceImpl implements SignalService {
         var clientAddress = InetAddresses.forString(ip);
         var clientIpString = InetAddresses.toAddrString(clientAddress);
 
-        var asInformation = Helperfunctions.getASInformationForSignalRequest(clientAddress);
+        var asInformation = HelperFunctions.getASInformationForSignalRequest(clientAddress);
 
         var test = Test.builder()
                 .uuid(uuid)
                 .openTestUUID(openTestUUID)
                 .clientId(client.getId())
                 .clientPublicIp(clientIpString)
-                .clientPublicIpAnonymized(Helperfunctions.anonymizeIp(clientAddress))
+                .clientPublicIpAnonymized(HelperFunctions.anonymizeIp(clientAddress))
                 .timezone(signalRequest.getTimezone())
                 .clientTime(getClientTime(signalRequest))
                 .publicIpAsNumber(asInformation.getNumber())
                 .publicIpAsName(asInformation.getName())
                 .countryAsn(asInformation.getCountry())
-                .publicIpRDNS(Helperfunctions.getReverseDNS(clientAddress))
+                .publicIpRDNS(HelperFunctions.getReverseDNS(clientAddress))
                 .status(STATUS_SIGNAL_STARTED)
                 .lastSequenceNumber(-1L)
                 .build();

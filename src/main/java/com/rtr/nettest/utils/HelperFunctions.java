@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 @UtilityClass
-public class Helperfunctions {
+public class HelperFunctions {
 
     private static final int DNS_TIMEOUT = 1;
 
@@ -247,17 +247,17 @@ public class Helperfunctions {
         Long asNumber;
         String asName;
         String asCountry;
-        var firstServiceTryAsInformation = Helperfunctions.getASInformation(addr);
+        var firstServiceTryAsInformation = HelperFunctions.getASInformation(addr);
         if (Objects.nonNull(firstServiceTryAsInformation)) {
             return firstServiceTryAsInformation;
         } else {
-            asNumber = Helperfunctions.getASN(addr);
+            asNumber = HelperFunctions.getASN(addr);
             if (Objects.isNull(asNumber)) {
                 asName = null;
                 asCountry = null;
             } else {
-                asName = Helperfunctions.getASName(asNumber);
-                asCountry = Helperfunctions.getAScountry(asNumber);
+                asName = HelperFunctions.getASName(asNumber);
+                asCountry = HelperFunctions.getAScountry(asNumber);
             }
             return ASInformation.builder()
                     .number(asNumber)
