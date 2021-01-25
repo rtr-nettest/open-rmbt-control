@@ -2,6 +2,7 @@ package com.rtr.nettest.controller;
 
 import com.rtr.nettest.TestUtils;
 import com.rtr.nettest.advice.RtrAdvice;
+import com.rtr.nettest.model.enums.ClientType;
 import com.rtr.nettest.request.AdminSettingsBodyRequest;
 import com.rtr.nettest.request.AdminSettingsRequest;
 import com.rtr.nettest.request.RtrSettingsRequest;
@@ -198,7 +199,7 @@ public class RTRSettingsControllerTest {
 
     private RtrSettingsRequest getSettingsRequest() {
         return RtrSettingsRequest.builder()
-                .type("DESKTOP")
+                .type(ClientType.DESKTOP)
                 .language(DEFAULT_LANGUAGE)
                 .uuid(DEFAULT_CLIENT_UUID)
                 .build();

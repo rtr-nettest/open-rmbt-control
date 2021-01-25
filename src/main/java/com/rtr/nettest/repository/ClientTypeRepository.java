@@ -6,6 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ClientTypeRepository extends JpaRepository<ClientType, Long> {
-
-    Optional<ClientType> findByName(String name);
+    Optional<ClientType> findByClientType(com.rtr.nettest.model.enums.ClientType clientType);
 }

@@ -7,6 +7,5 @@ import java.util.Collection;
 import java.util.List;
 
 public interface SettingsRepository extends JpaRepository<Settings, Long> {
-
     List<Settings> findAllByLangOrLangIsNullAndKeyIn(String lang, Collection<String> keys);
 }

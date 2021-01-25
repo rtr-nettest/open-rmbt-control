@@ -1,7 +1,7 @@
 package com.rtr.nettest.mapper.impl;
 
-import com.rtr.nettest.model.TestServer;
 import com.rtr.nettest.mapper.TestServerMapper;
+import com.rtr.nettest.model.TestServer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +32,7 @@ public class TestServerMapperImplTest {
 
         var actualResponse = testServerMapper.testServerToTestServerResponse(testServer);
 
-        assertEquals(DEFAULT_TEST_SERVER_UUID,actualResponse.getUuid());
+        assertEquals(DEFAULT_TEST_SERVER_UUID.toString(),actualResponse.getUuid());
         assertEquals(DEFAULT_TEST_SERVER_NAME,actualResponse.getName());
     }
 }

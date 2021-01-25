@@ -1,6 +1,7 @@
 package com.rtr.nettest.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.rtr.nettest.model.enums.ClientType;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class RtrSettingsRequest {
 
-    private final String type;
+    private final ClientType type;
 
     private final String name;
 
@@ -63,8 +64,8 @@ public class RtrSettingsRequest {
     private final CapabilitiesRequest capabilities;
 
     @Builder
-    public RtrSettingsRequest(String type, String name, String language, String platform, String osVersion, Long apiLevel, String device, String model, String product, String timezone, String softwareRevision, Long softwareRevisionCode, String softwareVersionName, Long versionCode, String versionName, UUID uuid, boolean userServerSelection, Long termsAndConditionsAcceptedVersion, boolean isTermsAndConditionsAccepted, CapabilitiesRequest capabilities) {
-        this.type = Optional.ofNullable(type).orElse(StringUtils.EMPTY);
+    public RtrSettingsRequest(ClientType type, String name, String language, String platform, String osVersion, Long apiLevel, String device, String model, String product, String timezone, String softwareRevision, Long softwareRevisionCode, String softwareVersionName, Long versionCode, String versionName, UUID uuid, boolean userServerSelection, Long termsAndConditionsAcceptedVersion, boolean isTermsAndConditionsAccepted, CapabilitiesRequest capabilities) {
+        this.type = type;
         this.name = Optional.ofNullable(name).orElse(StringUtils.EMPTY);
         this.language = Optional.ofNullable(language).orElse(StringUtils.EMPTY);
         this.platform = Optional.ofNullable(platform).orElse(StringUtils.EMPTY);

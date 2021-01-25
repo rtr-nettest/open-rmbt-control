@@ -8,7 +8,7 @@ import lombok.experimental.UtilityClass;
 public class TestUtils {
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public String asJsonString(final Object obj) throws JsonProcessingException {
+    public static String asJsonString(final Object obj) throws JsonProcessingException {
             return mapper.writeValueAsString(obj);
     }
 }

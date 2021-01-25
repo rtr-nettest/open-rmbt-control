@@ -61,7 +61,7 @@ public class SignalServiceImplTest {
         when(clientRepository.findByUuid(DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
         when(providerRepository.getProviderNameByTestId(DEFAULT_UID)).thenReturn(DEFAULT_PROVIDER);
         when(testRepository.save(any())).thenReturn(savedTest);
-        when(savedTest.getId()).thenReturn(DEFAULT_UID);
+        when(savedTest.getUid()).thenReturn(DEFAULT_UID);
         when(savedTest.getUuid()).thenReturn(DEFAULT_UUID);
 
         var actualResponse = signalService.registerSignal(signalRequest, httpServletRequest);

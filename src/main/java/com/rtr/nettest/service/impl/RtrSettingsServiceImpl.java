@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -48,26 +48,26 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
         if (!SUPPORTED_CLIENT_NAMES.contains(request.getName())) {
             throw new NotSupportedClientVersionException();
         }
-        var now = OffsetDateTime.now(clock);
+        var now = ZonedDateTime.now(clock);
         Map<String, String> settings = getSettingsURLMapByLanguageAndKeys(lang, SETTINGS_KEYS);
-        var clientType = clientTypeService.getClientTypeByName(request.getType());
+        var clientType = clientTypeService.findByClientType(request.getType());
 
         boolean isTermAndConditionAccepted = isTermAndConditionAccepted(request);
 
         var client = clientService.getClientByUUID(request.getUuid());
         if (Objects.nonNull(client)) {
-            if (client.getTermAndConditionsVersion() < request.getTermsAndConditionsAcceptedVersion()) {
-                client.setTermAndConditionsVersion(request.getTermsAndConditionsAcceptedVersion());
-                client.setTermAndConditionsVersionAcceptedTimestamp(now);
+            if (client.getTermsAndConditionsAcceptedVersion() < request.getTermsAndConditionsAcceptedVersion()) {
+                client.setTermsAndConditionsAcceptedVersion(request.getTermsAndConditionsAcceptedVersion());
+                client.setTermsAndConditionsAcceptedTimestamp(now);
             }
             client.setLastSeen(now);
 
         } else if (isTermAndConditionAccepted) {
             client = new RtrClient();
             client.setUuid(uuidGenerator.generateUUID());
-            client.setClientType(clientType);
-            client.setTermAndConditionsAccepted(isTermAndConditionAccepted);
-            client.setTermAndConditionsVersion(request.getTermsAndConditionsAcceptedVersion());
+            client.setClientType(clientType.orElse(null));
+            client.setTermsAndConditionsAccepted(isTermAndConditionAccepted);
+            client.setTermsAndConditionsAcceptedVersion(request.getTermsAndConditionsAcceptedVersion());
             client.setTime(now);
             client.setLastSeen(now);
         }
@@ -78,7 +78,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .uuid(savedClient.getUuid())
                 .qosTestTypeDescResponse(qosTestTypeDescService.getAll(lang))
                 .urls(getUrlsResponse(settings))
-                .history(getHistoryResponse(savedClient.getId()))
+                .history(getHistoryResponse(savedClient.getUid()))
                 .servers(getServers(request.getCapabilities()))
                 .serverWSResponseList(testServerService.getServersWs())
                 .serverQoSResponseList(testServerService.getServersQos())

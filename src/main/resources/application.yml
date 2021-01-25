@@ -25,6 +25,32 @@ spring:
   flyway:
     enabled: false
 
+app:
+  rmbt:
+    duration: 7
+    pings: 10
+    threads: 3
+    version: 0.1.0 || 0.3.0 || ^1.0.0
+    language:
+      supportedLanguages:
+        - de
+        - en
+        - hr
+        - sv
+        - pl
+        - es
+        - is
+        - fr
+        - nb
+        - cs
+      defaultLanguage: en
+    clientNames:
+      - RMBT
+      - RMBTjs
+      - Open-RMBT
+      - RMBTws
+      - HW-PROBE
+
 elastic-index:
   basicTenantIndexes:
     rtr: basic_test_rtr

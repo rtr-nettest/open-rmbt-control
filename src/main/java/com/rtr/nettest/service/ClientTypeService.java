@@ -2,7 +2,8 @@ package com.rtr.nettest.service;
 
 import com.rtr.nettest.model.ClientType;
 
-public interface ClientTypeService {
+import java.util.Optional;
 
-    ClientType getClientTypeByName(String name);
+public interface ClientTypeService {
+    Optional<ClientType> findByClientType(com.rtr.nettest.model.enums.ClientType clientType);
 }
