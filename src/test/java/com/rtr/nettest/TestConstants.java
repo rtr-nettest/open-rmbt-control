@@ -66,4 +66,5 @@ public interface TestConstants {
     String DEFAULT_INSTANT_EXPECTED = "2021-12-03T10:15:30.00Z";
     Long DEFAULT_MAX_SOFTWARE_VERSION = 5L;
     Long DEFAULT_MIN_SOFTWARE_VERSION = 3L;
+    String DEFAULT_SETTINGS_KEY = "tc_url";
 }
