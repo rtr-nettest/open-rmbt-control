@@ -3,11 +3,15 @@ package com.rtr.nettest.utils;
 import com.google.common.net.InetAddresses;
 import com.rtr.nettest.dto.ASInformation;
 import lombok.experimental.UtilityClass;
+import org.postgresql.util.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.xbill.DNS.*;
-import org.xbill.DNS.Record;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,13 +19,55 @@ import java.net.HttpURLConnection;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.URL;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 
 @UtilityClass
 public class HelperFunctions {
 
     private static final int DNS_TIMEOUT = 1;
+    private static Logger logger = LoggerFactory.getLogger(HelperFunctions.class);
+
+    public String getTimeZoneId() {
+        return TimeZone.getDefault().getID();
+    }
+
+    public static String calculateHMAC(final byte[] secret, final String data) {
+        try {
+            final SecretKeySpec signingKey = new SecretKeySpec(secret, "HmacSHA1");
+            final Mac mac = Mac.getInstance("HmacSHA1");
+            mac.init(signingKey);
+            final byte[] rawHmac = mac.doFinal(data.getBytes());
+            return Base64.encodeBytes(rawHmac);
+        } catch (final GeneralSecurityException e) {
+
+            logger.error("Unexpected error while creating hash: " + e.getMessage());
+            return "";
+        }
+    }
+
+    public static String reverseDNSLookup(final InetAddress adr) {
+        try {
+            final Name name = ReverseMap.fromAddress(adr);
+
+            final Lookup lookup = new Lookup(name, Type.PTR);
+            SimpleResolver simpleResolver = new SimpleResolver();
+            simpleResolver.setTimeout(DNS_TIMEOUT);
+            lookup.setResolver(simpleResolver);
+            lookup.setCache(null);
+            final Record[] records = lookup.run();
+            if (lookup.getResult() == Lookup.SUCCESSFUL)
+                for (final Record record : records)
+                    if (record instanceof PTRRecord) {
+                        final PTRRecord ptr = (PTRRecord) record;
+                        return ptr.getTarget().toString();
+                    }
+        } catch (final Exception ignored) {
+        }
+        return null;
+    }
 
     public String anonymizeIp(final InetAddress inetAddress) {
         try {
@@ -64,10 +110,10 @@ public class HelperFunctions {
                 return null;
             }
             return ASInformation.builder()
-                    .name(jo.optString("as_description", null))
-                    .country(jo.optString("as_country_code", null))
-                    .number(jo.optLong("as_number", 0))
-                    .build();
+                .name(jo.optString("as_description", null))
+                .country(jo.optString("as_country_code", null))
+                .number(jo.optLong("as_number", 0))
+                .build();
 
         } catch (JSONException | RuntimeException | IOException e) {
             e.printStackTrace();
@@ -96,10 +142,8 @@ public class HelperFunctions {
         return null;
     }
 
-    public static Long getASN(final InetAddress adr)
-    {
-        try
-        {
+    public static Long getASN(final InetAddress adr) {
+        try {
             final Name postfix;
             if (adr instanceof Inet6Address)
                 postfix = Name.fromConstantString("origin6.asn.cymru.com");
@@ -117,66 +161,51 @@ public class HelperFunctions {
             final Record[] records = lookup.run();
             if (lookup.getResult() == Lookup.SUCCESSFUL)
                 for (final Record record : records)
-                    if (record instanceof TXTRecord)
-                    {
+                    if (record instanceof TXTRecord) {
                         final TXTRecord txt = (TXTRecord) record;
-                        @SuppressWarnings("unchecked")
-                        final List<String> strings = txt.getStrings();
-                        if (strings != null && !strings.isEmpty())
-                        {
+                        @SuppressWarnings("unchecked") final List<String> strings = txt.getStrings();
+                        if (strings != null && !strings.isEmpty()) {
                             final String result = strings.get(0);
                             final String[] parts = result.split(" ?\\| ?");
                             if (parts != null && parts.length >= 1)
                                 return new Long(parts[0].split(" ")[0]);
                         }
                     }
-        }
-        catch (final Exception e)
-        {
+        } catch (final Exception e) {
         }
         return null;
     }
 
-    public static Name getReverseIPName(final InetAddress adr, final Name postfix)
-    {
+    public static Name getReverseIPName(final InetAddress adr, final Name postfix) {
         final byte[] addr = adr.getAddress();
         final StringBuilder sb = new StringBuilder();
         if (addr.length == 4)
-            for (int i = addr.length - 1; i >= 0; i--)
-            {
+            for (int i = addr.length - 1; i >= 0; i--) {
                 sb.append(addr[i] & 0xFF);
                 if (i > 0)
                     sb.append(".");
             }
-        else
-        {
+        else {
             final int[] nibbles = new int[2];
-            for (int i = addr.length - 1; i >= 0; i--)
-            {
+            for (int i = addr.length - 1; i >= 0; i--) {
                 nibbles[0] = (addr[i] & 0xFF) >> 4;
                 nibbles[1] = addr[i] & 0xFF & 0xF;
-                for (int j = nibbles.length - 1; j >= 0; j--)
-                {
+                for (int j = nibbles.length - 1; j >= 0; j--) {
                     sb.append(Integer.toHexString(nibbles[j]));
                     if (i > 0 || j > 0)
                         sb.append(".");
                 }
             }
         }
-        try
-        {
+        try {
             return Name.fromString(sb.toString(), postfix);
-        }
-        catch (final TextParseException e)
-        {
+        } catch (final TextParseException e) {
             throw new IllegalStateException("name cannot be invalid");
         }
     }
 
-    public static String getASName(final long asn)
-    {
-        try
-        {
+    public static String getASName(final long asn) {
+        try {
             final Name postfix = Name.fromConstantString("asn.cymru.com.");
             final Name name = new Name(String.format("AS%d", asn), postfix);
             System.out.println("lookup: " + name);
@@ -187,13 +216,10 @@ public class HelperFunctions {
             final Record[] records = lookup.run();
             if (lookup.getResult() == Lookup.SUCCESSFUL)
                 for (final Record record : records)
-                    if (record instanceof TXTRecord)
-                    {
+                    if (record instanceof TXTRecord) {
                         final TXTRecord txt = (TXTRecord) record;
-                        @SuppressWarnings("unchecked")
-                        final List<String> strings = txt.getStrings();
-                        if (strings != null && !strings.isEmpty())
-                        {
+                        @SuppressWarnings("unchecked") final List<String> strings = txt.getStrings();
+                        if (strings != null && !strings.isEmpty()) {
                             System.out.println(strings);
 
                             final String result = strings.get(0);
@@ -202,17 +228,13 @@ public class HelperFunctions {
                                 return parts[4];
                         }
                     }
-        }
-        catch (final Exception e)
-        {
+        } catch (final Exception e) {
         }
         return null;
     }
 
-    public static String getAScountry(final long asn)
-    {
-        try
-        {
+    public static String getAScountry(final long asn) {
+        try {
             final Name postfix = Name.fromConstantString("asn.cymru.com.");
             final Name name = new Name(String.format("AS%d", asn), postfix);
             System.out.println("lookup: " + name);
@@ -223,22 +245,17 @@ public class HelperFunctions {
             final Record[] records = lookup.run();
             if (lookup.getResult() == Lookup.SUCCESSFUL)
                 for (final Record record : records)
-                    if (record instanceof TXTRecord)
-                    {
+                    if (record instanceof TXTRecord) {
                         final TXTRecord txt = (TXTRecord) record;
-                        @SuppressWarnings("unchecked")
-                        final List<String> strings = txt.getStrings();
-                        if (strings != null && !strings.isEmpty())
-                        {
+                        @SuppressWarnings("unchecked") final List<String> strings = txt.getStrings();
+                        if (strings != null && !strings.isEmpty()) {
                             final String result = strings.get(0);
                             final String[] parts = result.split(" ?\\| ?");
                             if (parts != null && parts.length >= 1)
                                 return parts[1];
                         }
                     }
-        }
-        catch (final Exception e)
-        {
+        } catch (final Exception e) {
         }
         return null;
     }
@@ -260,10 +277,10 @@ public class HelperFunctions {
                 asCountry = HelperFunctions.getAScountry(asNumber);
             }
             return ASInformation.builder()
-                    .number(asNumber)
-                    .name(asName)
-                    .country(asCountry)
-                    .build();
+                .number(asNumber)
+                .name(asName)
+                .country(asCountry)
+                .build();
         }
     }
 }

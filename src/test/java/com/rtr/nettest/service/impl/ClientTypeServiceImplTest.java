@@ -1,6 +1,5 @@
 package com.rtr.nettest.service.impl;
 
-import com.rtr.nettest.exception.ClientNotFoundByNameException;
 import com.rtr.nettest.model.ClientType;
 import com.rtr.nettest.repository.ClientTypeRepository;
 import com.rtr.nettest.service.ClientTypeService;
@@ -13,7 +12,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
-import static com.rtr.nettest.TestConstants.DEFAULT_CLIENT_TYPE_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -34,16 +32,10 @@ public class ClientTypeServiceImplTest {
 
     @Test
     public void getClientTypeByName_whenValidClientTypeName_expectClientType() {
-        when(clientTypeRepository.findByName(DEFAULT_CLIENT_TYPE_NAME)).thenReturn(Optional.of(clientType));
+        when(clientTypeRepository.findByClientType(com.rtr.nettest.model.enums.ClientType.DESKTOP)).thenReturn(Optional.of(clientType));
 
-        var response = clientTypeService.getClientTypeByName(DEFAULT_CLIENT_TYPE_NAME);
+        var response = clientTypeService.findByClientType(com.rtr.nettest.model.enums.ClientType.DESKTOP);
 
-        assertEquals(clientType, response);
-    }
-
-    @Test(expected = ClientNotFoundByNameException.class)
-    public void getClientTypeByName_whenInvalidClientTypeName_expectClientType() {
-
-        clientTypeService.getClientTypeByName(DEFAULT_CLIENT_TYPE_NAME);
+        assertEquals(clientType, response.get());
     }
 }

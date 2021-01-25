@@ -1,11 +1,13 @@
 package com.rtr.nettest.response;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 public class ErrorResponse {
 
     private final List<String> error = new ArrayList<>();

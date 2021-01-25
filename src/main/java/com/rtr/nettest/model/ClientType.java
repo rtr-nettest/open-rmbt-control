@@ -14,12 +14,13 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Table(name = "client_type")
 public class ClientType {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "uid")
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_type_seq")
+    @SequenceGenerator(name = "client_type_seq", sequenceName = "client_type_uid_seq", allocationSize = 1)
+    private Long uid;
 
     @Column(name = "name")
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private com.rtr.nettest.model.enums.ClientType clientType;
 }

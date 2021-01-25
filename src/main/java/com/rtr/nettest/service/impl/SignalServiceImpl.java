@@ -3,6 +3,7 @@ package com.rtr.nettest.service.impl;
 import com.google.common.net.InetAddresses;
 import com.rtr.nettest.exception.ClientNotFoundException;
 import com.rtr.nettest.model.Test;
+import com.rtr.nettest.model.enums.TestStatus;
 import com.rtr.nettest.repository.ClientRepository;
 import com.rtr.nettest.repository.RTRProviderRepository;
 import com.rtr.nettest.repository.TestRepository;
@@ -15,11 +16,10 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
-import static com.rtr.nettest.constant.Constants.STATUS_SIGNAL_STARTED;
 import static com.rtr.nettest.constant.HeaderConstants.URL;
 import static com.rtr.nettest.constant.URIConstants.SIGNAL_RESULT;
 
@@ -49,32 +49,32 @@ public class SignalServiceImpl implements SignalService {
 
         var test = Test.builder()
                 .uuid(uuid)
-                .openTestUUID(openTestUUID)
-                .clientId(client.getId())
+                .openTestUuid(openTestUUID)
+                .clientId(client.getUid())
                 .clientPublicIp(clientIpString)
                 .clientPublicIpAnonymized(HelperFunctions.anonymizeIp(clientAddress))
                 .timezone(signalRequest.getTimezone())
                 .clientTime(getClientTime(signalRequest))
-                .publicIpAsNumber(asInformation.getNumber())
+                .publicIpAsn(asInformation.getNumber())
                 .publicIpAsName(asInformation.getName())
                 .countryAsn(asInformation.getCountry())
-                .publicIpRDNS(HelperFunctions.getReverseDNS(clientAddress))
-                .status(STATUS_SIGNAL_STARTED)
-                .lastSequenceNumber(-1L)
+                .publicIpRdns(HelperFunctions.getReverseDNS(clientAddress))
+                .status(TestStatus.STARTED)
+                .lastSequenceNumber(-1)
                 .build();
 
         var savedTest = testRepository.save(test);
 
         return SignalResponse.builder()
-                .provider(providerRepository.getProviderNameByTestId(savedTest.getId()))
+                .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
                 .clientRemoteIp(ip)
                 .resultUrl(getResultUrl(httpServletRequest))
                 .testUUID(savedTest.getUuid())
                 .build();
     }
 
-    private OffsetDateTime getClientTime(SignalRequest signalRequest) {
-        return OffsetDateTime.ofInstant(Instant.ofEpochMilli(signalRequest.getTime()),
+    private ZonedDateTime getClientTime(SignalRequest signalRequest) {
+        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(signalRequest.getTime()),
                 ZoneId.of(signalRequest.getTimezone()));
     }
 

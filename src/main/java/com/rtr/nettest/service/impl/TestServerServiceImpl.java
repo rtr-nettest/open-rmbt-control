@@ -1,6 +1,8 @@
 package com.rtr.nettest.service.impl;
 
 import com.rtr.nettest.mapper.TestServerMapper;
+import com.rtr.nettest.model.TestServer;
+import com.rtr.nettest.model.enums.ServerType;
 import com.rtr.nettest.repository.TestServerRepository;
 import com.rtr.nettest.response.TestServerResponse;
 import com.rtr.nettest.service.TestServerService;
@@ -8,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.rtr.nettest.constant.Config.*;
@@ -18,6 +22,16 @@ public class TestServerServiceImpl implements TestServerService {
 
     private final TestServerRepository testServerRepository;
     private final TestServerMapper testServerMapper;
+
+    @Override
+    public Optional<TestServer> findByUuidAndActive(UUID preferServer, boolean active) {
+        return testServerRepository.findByUuidAndActive(preferServer, active);
+    }
+
+    @Override
+    public TestServer findActiveByServerTypeInAndCountry(List<ServerType> serverTypes, String country) {
+        return testServerRepository.findActiveByServerTypeInAndCountries(serverTypes, country);
+    }
 
     @Override
     public List<TestServerResponse> getServers() {
@@ -41,7 +55,7 @@ public class TestServerServiceImpl implements TestServerService {
 
     private List<TestServerResponse> getServers(List<String> serverTypes) {
         return testServerRepository.getByActiveTrueAndSelectableTrueAndServerTypeIn(serverTypes).stream()
-                .map(testServerMapper::testServerToTestServerResponse)
-                .collect(Collectors.toList());
+            .map(testServerMapper::testServerToTestServerResponse)
+            .collect(Collectors.toList());
     }
 }

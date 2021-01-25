@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
@@ -16,37 +16,43 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = "client")
 public class RtrClient {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
+    @SequenceGenerator(name = "client_seq", sequenceName = "client_uid_seq", allocationSize = 1)
     @Column(name = "uid")
-    private Long id;
+    private Long uid;
 
     @Column(name = "uuid")
     private UUID uuid;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_type_id")
     private ClientType clientType;
 
     @Column(name = "time")
-    private OffsetDateTime time;
+    private ZonedDateTime time;
 
     @Column(name = "sync_group_id")
-    private Long syncGroupId;
+    private Integer syncGroupId;
 
     @Column(name = "sync_code")
     private String syncCode;
 
     @Column(name = "terms_and_conditions_accepted")
-    private boolean isTermAndConditionsAccepted;
+    private Boolean termsAndConditionsAccepted;
+
+    @Column(name = "sync_code_timestamp")
+    private ZonedDateTime syncCodeTimestamp;
+
+    @Column(name = "blacklisted")
+    private Boolean blacklisted;
 
     @Column(name = "terms_and_conditions_accepted_version")
-    private Long termAndConditionsVersion;
-
-    @Column(name = "terms_and_conditions_accepted_timestamp")
-    private OffsetDateTime termAndConditionsVersionAcceptedTimestamp;
+    private Long termsAndConditionsAcceptedVersion;
 
     @Column(name = "last_seen")
-    private OffsetDateTime lastSeen;
+    private ZonedDateTime lastSeen;
+
+    @Column(name = "terms_and_conditions_accepted_timestamp")
+    private ZonedDateTime termsAndConditionsAcceptedTimestamp;
 }
