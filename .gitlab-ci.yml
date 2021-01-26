@@ -77,15 +77,15 @@ stages:
         -Dsonar.projectName="${SONAR_PROJECT}"
         -Dsonar.host.url="${SONAR_URL}"
         -Dsonar.login="${SONAR_KEY}"
-        -Dsonar.coverage.exclusions="src/main/java/com/rtr/nettest/**/annotation/**,
-          src/main/java/com/rtr/nettest/**/config/**,
-          src/main/java/com/rtr/nettest/**/constant/**,
-          src/main/java/com/rtr/nettest/**/enums/**,
-          src/main/java/com/rtr/nettest/**/mapper/**,
-          src/main/java/com/rtr/nettest/**/model/**,
-          src/main/java/com/rtr/nettest/**/repository/**,
-          src/main/java/com/rtr/nettest/**/request/**,
-          src/main/java/com/rtr/nettest/**/response/**,
+        -Dsonar.coverage.exclusions="src/main/java/at/rtr/rmbt/**/annotation/**,
+          src/main/java/at/rtr/rmbt/**/config/**,
+          src/main/java/at/rtr/rmbt/**/constant/**,
+          src/main/java/at/rtr/rmbt/**/enums/**,
+          src/main/java/at/rtr/rmbt/**/mapper/**,
+          src/main/java/at/rtr/rmbt/**/model/**,
+          src/main/java/at/rtr/rmbt/**/repository/**,
+          src/main/java/at/rtr/rmbt/**/request/**,
+          src/main/java/at/rtr/rmbt/**/response/**,
           srс/main/resources/**,
           **/*Application.java"
     - |
@@ -199,18 +199,18 @@ sonar:
     - dev
   stage: sonar
 
-sonar:merge:
-  extends:
-    - .environment_merge
-    - .sonar
-  stage: sonar
-
-sonar:other:
-  extends:
-    - .sonar
-  except:
-    - dev
-  stage: sonar
+#sonar:merge:
+#  extends:
+#    - .environment_merge
+#    - .sonar
+#  stage: sonar
+#
+#sonar:other:
+#  extends:
+#    - .sonar
+#  except:
+#    - dev
+#  stage: sonar
 
 build:dev:
   extends:
