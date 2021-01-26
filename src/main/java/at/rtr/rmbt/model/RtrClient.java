@@ -45,7 +45,7 @@ public class RtrClient {
     private ZonedDateTime syncCodeTimestamp;
 
     @Column(name = "blacklisted")
-    private Boolean blacklisted;
+    private boolean blacklisted;
 
     @Column(name = "terms_and_conditions_accepted_version")
     private Long termsAndConditionsAcceptedVersion;
