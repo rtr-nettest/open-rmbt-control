@@ -222,8 +222,30 @@ public class RtrSettingsServiceImplTest {
         rtrSettingsService.createSettings(adminSettingsRequest);
 
         verify(settings).setValue(TestConstants.DEFAULT_TC_URL_VALUE);
-        verify(settingsRepository).saveAll(List.of(settings));
-    }
+        verify(settingsRepository).saveAll(settingsArgumentCaptor.capture());
+        List<Settings> actual = settingsArgumentCaptor.getValue();
+        assertEquals(settings, actual.get(0));
+        assertEquals("port_map_server", actual.get(1).getKey());
+        assertEquals("123", actual.get(1).getValue());    }
+
+    @Test
+    public void createSettings_whenSettingsLongExist_expectSettingsUpdated() {
+        when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
+                .thenReturn(List.of(settings));
+        when(settings.getKey()).thenReturn(TestConstants.DEFAULT_SETTINGS_KEY);
+        when(adminSettingsRequest.getSettings()).thenReturn(getAdminSettingsBodyRequest());
+        when(adminSettingsBodyRequest.getTcUrl()).thenReturn(TestConstants.DEFAULT_TC_URL_VALUE);
+        when(adminSettingsRequest.getLanguage()).thenReturn(TestConstants.DEFAULT_LANGUAGE);
+
+        rtrSettingsService.createSettings(adminSettingsRequest);
+
+        verify(settings).setValue(TestConstants.DEFAULT_TC_URL_VALUE);
+        verify(settingsRepository).saveAll(settingsArgumentCaptor.capture());
+        List<Settings> actual = settingsArgumentCaptor.getValue();
+        assertEquals(settings, actual.get(0));
+        assertEquals("port_map_server", actual.get(1).getKey());
+        assertEquals("123", actual.get(1).getValue());
+     }
 
     @Test
     public void createSettings_whenSettingsNotExist_expectSettingsCreated() {
@@ -235,7 +257,10 @@ public class RtrSettingsServiceImplTest {
         rtrSettingsService.createSettings(adminSettingsRequest);
 
         verify(settingsRepository).saveAll(settingsArgumentCaptor.capture());
-        assertEquals(1, settingsArgumentCaptor.getValue().size());
+        List<Settings> actual = settingsArgumentCaptor.getValue();
+        assertEquals("port_map_server", actual.get(1).getKey());
+        assertEquals("123", actual.get(1).getValue());
+        assertEquals(2, settingsArgumentCaptor.getValue().size());
         Assert.assertEquals(TestConstants.DEFAULT_SETTINGS_KEY, settingsArgumentCaptor.getValue().get(0).getKey());
         Assert.assertEquals(TestConstants.DEFAULT_TC_URL_VALUE, settingsArgumentCaptor.getValue().get(0).getValue());
         Assert.assertEquals(TestConstants.DEFAULT_LANGUAGE, settingsArgumentCaptor.getValue().get(0).getLang());
@@ -244,6 +269,7 @@ public class RtrSettingsServiceImplTest {
     private AdminSettingsBodyRequest getAdminSettingsBodyRequest() {
         return AdminSettingsBodyRequest.builder()
                 .tcUrl(TestConstants.DEFAULT_TC_URL_VALUE)
+                .port(123L)
                 .build();
     }
 

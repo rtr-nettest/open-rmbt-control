@@ -11,6 +11,7 @@ import com.google.common.base.Strings;
 import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.repository.SettingsRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -98,6 +99,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
         List<Settings> updatedSettings = new ArrayList<>();
         settingsNew.entrySet().stream()
                 .filter(entry -> Objects.nonNull(entry.getValue()))
+                .map(l-> Pair.of(l.getKey(), String.valueOf(l.getValue())))
                 .forEach(entry -> updateOrCreateSettings(adminSettingsRequest.getLanguage(), settingsActual, updatedSettings, entry));
 
         settingsRepository.saveAll(updatedSettings);
