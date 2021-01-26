@@ -1,14 +1,16 @@
 package at.rtr.rmbt.response;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import at.rtr.rmbt.model.enums.ServerType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @ApiModel(description = "Configuration for basic test")
 @Builder
@@ -34,7 +36,7 @@ public class TestSettingsResponse {
 
     @JsonProperty("test_duration")
     @ApiModelProperty(notes = "Duration of each main part of the test in seconds [download, upload phase]", example = "7")
-    private Integer testDuration;
+    private String testDuration;
 
     @JsonProperty("test_server_name")
     @ApiModelProperty(notes = "Name of the measurement server", example = "RTR dev rmbt (Vienna)")
@@ -50,7 +52,7 @@ public class TestSettingsResponse {
 
     @JsonProperty("test_numthreads")
     @ApiModelProperty(notes = "Number of threads to be used for test execution", example = "5")
-    private Integer testNumberOfThreads;
+    private String testNumberOfThreads;
 
     @JsonProperty("test_server_port")
     @ApiModelProperty(notes = "Server port of the test server", example = "443")
@@ -74,7 +76,7 @@ public class TestSettingsResponse {
 
     @JsonProperty("test_numpings")
     @ApiModelProperty(notes = "Number of pings executed during the test", example = "10")
-    private Integer testNumberOfPings;
+    private String testNumberOfPings;
 
     @JsonProperty("test_id")
     @ApiModelProperty(notes = "Id of the test", example = "8772493")
@@ -94,5 +96,5 @@ public class TestSettingsResponse {
 
     @JsonProperty("error")
     @ApiModelProperty(notes = "Error list", example = "[\"First error\", \"Second error\"]")
-    private ErrorResponse errorList;
+    private List<String> errorList;
 }

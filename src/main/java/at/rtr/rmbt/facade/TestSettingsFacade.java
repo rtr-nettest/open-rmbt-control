@@ -1,18 +1,18 @@
 package at.rtr.rmbt.facade;
 
-import at.rtr.rmbt.model.*;
-import at.rtr.rmbt.service.*;
-import at.rtr.rmbt.utils.HelperFunctions;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import at.rtr.rmbt.exception.TestServerNotFoundException;
+import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.model.enums.ServerType;
 import at.rtr.rmbt.model.enums.TestStatus;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.TestSettingsResponse;
+import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.GeoIpHelper;
+import at.rtr.rmbt.utils.HelperFunctions;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vdurmont.semver4j.Requirement;
 import com.vdurmont.semver4j.Semver;
 import com.vdurmont.semver4j.SemverException;
@@ -191,9 +191,9 @@ public class TestSettingsFacade {
                         .testServerName(testServer.getName() + " (" + testServer.getCity() + ")")
                         .testServerEncryption(testServerEncryption)
                         .testServerType(testServer.getServerType())
-                        .testDuration(applicationProperties.getDuration())
-                        .testNumberOfThreads(numberOfThreads)
-                        .testNumberOfPings(applicationProperties.getPings())
+                        .testDuration(String.valueOf(applicationProperties.getDuration()))
+                        .testNumberOfThreads(String.valueOf(numberOfThreads))
+                        .testNumberOfPings(String.valueOf(applicationProperties.getPings()))
                         .clientRemoteIp(clientIpAddress);
 
                     String resultUrl;
@@ -257,7 +257,7 @@ public class TestSettingsFacade {
             errorResponse.getError().add(getErrorMessageAndRollback("ERROR_TEST_SERVER", locale));
         }
 
-        TestSettingsResponse response = builder.errorList(errorResponse).build();
+        TestSettingsResponse response = builder.errorList(errorResponse.getError()).build();
 
         logger.info(messageSource.getMessage("NEW_REQUEST_SUCCESS", null, Locale.forLanguageTag("en")), clientIpAddress, System.currentTimeMillis() - startTime);
         try {

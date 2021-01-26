@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringRunner.class)
 @Transactional
 @Rollback
-@EnableJpaRepositories(basePackages = "com.rtr.nettest.repository")
+@EnableJpaRepositories(basePackages = "at.rtr.rmbt.repository")
 @ContextConfiguration(classes = TestDatabaseConfig.class)
 public abstract class AbstractRepositoryTest<T> {
 

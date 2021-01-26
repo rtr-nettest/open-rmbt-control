@@ -30,7 +30,7 @@ public class TestDatabaseConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
-        em.setPackagesToScan("com.rtr.nettest.model");
+        em.setPackagesToScan("at.rtr.rmbt.model");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         return em;
     }
