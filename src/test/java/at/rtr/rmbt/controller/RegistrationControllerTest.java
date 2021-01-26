@@ -1,8 +1,8 @@
 package at.rtr.rmbt.controller;
 
+import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.advice.RtrAdvice;
 import at.rtr.rmbt.facade.TestSettingsFacade;
-import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.model.enums.ClientType;
 import at.rtr.rmbt.model.enums.ServerType;
 import at.rtr.rmbt.model.enums.TestPlatform;
@@ -10,6 +10,7 @@ import at.rtr.rmbt.model.enums.TestStatus;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.TestSettingsResponse;
+import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,22 +82,22 @@ public class RegistrationControllerTest {
             "41ab60bd-becf-45c8-abbc-0e85b59d65ca",
             "https://test-server.rtr.com/test",
             "https://test-server.rtr.com/testQoS",
-            1000,
+            "1000",
             "OpenRMBT Server",
             0,
             "dev-rmbt.rtr.com",
-            3,
+            "3",
             22,
             "5bd11dd8-992a-4429-b1e0-e93da81e5118",
             ServerType.RMBT,
             true,
             "test_token",
-            5,
+            "5",
             1L,
             "a165c0a4-cc23-4e39-a1b3-8a111a32e755",
             "provider",
             new ErrorResponse(),
-            new ErrorResponse()
+            Lists.emptyList()
         );
 
         when(testSettingsFacade.updateTestSettings(eq(testSettingsRequest), any())).thenReturn(testSettingsResponse);
