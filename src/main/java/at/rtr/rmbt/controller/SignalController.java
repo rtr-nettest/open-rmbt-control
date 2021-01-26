@@ -5,6 +5,7 @@ import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.response.SignalResponse;
 import at.rtr.rmbt.service.SignalService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ public class SignalController {
     private final SignalService signalService;
 
     @PostMapping(URIConstants.SIGNAL_REQUEST)
+    @ApiOperation(value = "Register signal", notes = "Request to obtain configuration for signal monitoring")
     @ResponseStatus(HttpStatus.CREATED)
     public SignalResponse registerSignal(HttpServletRequest httpServletRequest, @RequestBody SignalRequest signalRequest) {
         return signalService.registerSignal(signalRequest, httpServletRequest);
