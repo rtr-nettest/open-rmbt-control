@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -17,13 +18,18 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         return new RestTemplate();
     }
 
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**");
+    }
+
     @Configuration
     public static class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
         @Override
         protected void configure(HttpSecurity httpSecurity) throws Exception {
-
+            httpSecurity.cors();
         }
 
         @Override
