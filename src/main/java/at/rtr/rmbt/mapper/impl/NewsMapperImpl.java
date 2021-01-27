@@ -6,6 +6,8 @@ import at.rtr.rmbt.request.NewsRequest;
 import at.rtr.rmbt.response.NewsResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class NewsMapperImpl implements NewsMapper {
 
@@ -31,7 +33,7 @@ public class NewsMapperImpl implements NewsMapper {
                 .active(newsRequest.isActive())
                 .force(newsRequest.isForce())
                 .platform(newsRequest.getPlatform())
-                .uuid(newsRequest.getUuid());
+                .uuid(newsRequest.getUuid() != null ? newsRequest.getUuid() : UUID.randomUUID());
         if (newsRequest.getLanguage().equals("de")) {
             news.titleDe(newsRequest.getTitle());
             news.textDe(newsRequest.getText());

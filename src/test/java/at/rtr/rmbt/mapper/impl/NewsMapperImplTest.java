@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -56,16 +57,18 @@ public class NewsMapperImplTest {
     }
 
     @Test
+    public void newsToNewsResponse_whenUuidIsNull_expectUuidIsGenerated() {
+        prepareNewsRequestDe();
+        when(newsRequest.getUuid()).thenReturn(null);
+
+        var result = newsMapper.newsRequestToNews(newsRequest);
+
+        assertNotNull(result.getUuid());
+    }
+
+    @Test
     public void newsRequestToNews_whenDeLanguage_expectNews() {
-        when(newsRequest.getTitle()).thenReturn(TestConstants.DEFAULT_NEWS_TITLE_DE);
-        when(newsRequest.getText()).thenReturn(TestConstants.DEFAULT_NEWS_TEXT_DE);
-        when(newsRequest.getLanguage()).thenReturn("de");
-        when(newsRequest.getPlatform()).thenReturn(TestConstants.DEFAULT_PLATFORM);
-        when(newsRequest.getUuid()).thenReturn(TestConstants.DEFAULT_NEWS_UUID);
-        when(newsRequest.getMaxSoftwareVersion()).thenReturn(TestConstants.DEFAULT_MAX_SOFTWARE_VERSION);
-        when(newsRequest.getMinSoftwareVersion()).thenReturn(TestConstants.DEFAULT_MIN_SOFTWARE_VERSION);
-        when(newsRequest.isActive()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
-        when(newsRequest.isForce()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        prepareNewsRequestDe();
 
         var news = newsMapper.newsRequestToNews(newsRequest);
 
@@ -83,15 +86,7 @@ public class NewsMapperImplTest {
 
     @Test
     public void newsRequestToNews_whenNotDeLanguage_expectNews() {
-        when(newsRequest.getTitle()).thenReturn(TestConstants.DEFAULT_NEWS_TITLE_EN);
-        when(newsRequest.getText()).thenReturn(TestConstants.DEFAULT_NEWS_TEXT_EN);
-        when(newsRequest.getLanguage()).thenReturn("en");
-        when(newsRequest.getPlatform()).thenReturn(TestConstants.DEFAULT_PLATFORM);
-        when(newsRequest.getUuid()).thenReturn(TestConstants.DEFAULT_NEWS_UUID);
-        when(newsRequest.getMaxSoftwareVersion()).thenReturn(TestConstants.DEFAULT_MAX_SOFTWARE_VERSION);
-        when(newsRequest.getMinSoftwareVersion()).thenReturn(TestConstants.DEFAULT_MIN_SOFTWARE_VERSION);
-        when(newsRequest.isActive()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
-        when(newsRequest.isForce()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        prepareNewsRequestEn();
 
         var news = newsMapper.newsRequestToNews(newsRequest);
 
@@ -105,5 +100,29 @@ public class NewsMapperImplTest {
         Assert.assertEquals(TestConstants.DEFAULT_MIN_SOFTWARE_VERSION, news.getMinSoftwareVersionCode());
         Assert.assertEquals(TestConstants.DEFAULT_FLAG_TRUE, news.isActive());
         Assert.assertEquals(TestConstants.DEFAULT_FLAG_TRUE, news.isForce());
+    }
+
+
+    private void prepareNewsRequestDe() {
+        when(newsRequest.getTitle()).thenReturn(TestConstants.DEFAULT_NEWS_TITLE_DE);
+        when(newsRequest.getText()).thenReturn(TestConstants.DEFAULT_NEWS_TEXT_DE);
+        when(newsRequest.getLanguage()).thenReturn("de");
+        prepareNewsRequest();
+    }
+
+    private void prepareNewsRequestEn() {
+        when(newsRequest.getTitle()).thenReturn(TestConstants.DEFAULT_NEWS_TITLE_EN);
+        when(newsRequest.getText()).thenReturn(TestConstants.DEFAULT_NEWS_TEXT_EN);
+        when(newsRequest.getLanguage()).thenReturn("en");
+        prepareNewsRequest();
+    }
+
+    private void prepareNewsRequest() {
+        when(newsRequest.getPlatform()).thenReturn(TestConstants.DEFAULT_PLATFORM);
+        when(newsRequest.getUuid()).thenReturn(TestConstants.DEFAULT_NEWS_UUID);
+        when(newsRequest.getMaxSoftwareVersion()).thenReturn(TestConstants.DEFAULT_MAX_SOFTWARE_VERSION);
+        when(newsRequest.getMinSoftwareVersion()).thenReturn(TestConstants.DEFAULT_MIN_SOFTWARE_VERSION);
+        when(newsRequest.isActive()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        when(newsRequest.isForce()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
     }
 }

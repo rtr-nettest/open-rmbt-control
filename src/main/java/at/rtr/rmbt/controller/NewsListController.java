@@ -8,6 +8,7 @@ import at.rtr.rmbt.service.NewsListService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,7 +30,7 @@ public class NewsListController {
     @ApiOperation(value = "Add news")
     @PostMapping(URIConstants.ADMIN_NEWS)
     @ResponseStatus(HttpStatus.CREATED)
-    public void createNews(@RequestBody NewsRequest newsRequest) {
+    public void createNews(@Validated @RequestBody NewsRequest newsRequest) {
         newsListService.createNews(newsRequest);
     }
 }

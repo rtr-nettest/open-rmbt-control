@@ -1,5 +1,6 @@
 package at.rtr.rmbt.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -15,10 +16,12 @@ public class NewsRequest {
 
     @NotNull
     @ApiModelProperty(notes = "News title", example = "en")
+    @JsonProperty("title")
     private final String title;
 
     @NotNull
     @ApiModelProperty(notes = "News text", example = "en")
+    @JsonProperty("content")
     private final String text;
 
     @NotNull
@@ -34,13 +37,12 @@ public class NewsRequest {
     @ApiModelProperty(notes = "Client platform", example = "Android")
     private final String platform;
 
-    @ApiModelProperty(notes = "Min software version", example = "3.alfa")
+    @ApiModelProperty(notes = "Min software version", example = "1")
     private final Long minSoftwareVersion;
 
-    @ApiModelProperty(notes = "Max software version", example = "6.rc")
+    @ApiModelProperty(notes = "Max software version", example = "1")
     private final Long maxSoftwareVersion;
 
-    @NotNull
     @ApiModelProperty(notes = "UUID of news", example = "68796996-5f40-11eb-ae93-0242ac130002")
     private final UUID uuid;
 }
