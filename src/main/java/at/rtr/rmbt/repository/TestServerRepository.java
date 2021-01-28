@@ -30,5 +30,5 @@ public interface TestServerRepository extends JpaRepository<TestServer, Long> {
         @Param("country") String country
     );
 
-    List<TestServer> getByActiveTrueAndSelectableTrueAndServerTypeIn(Collection<String> serverTypes);
+    List<TestServer> getByActiveTrueAndSelectableTrueAndServerTypeIn(Collection<ServerType> serverTypes);
 }

@@ -53,7 +53,7 @@ public class TestServerServiceImpl implements TestServerService {
         return getServers(SERVER_QOS_TEST_SERVER_TYPES);
     }
 
-    private List<TestServerResponse> getServers(List<String> serverTypes) {
+    private List<TestServerResponse> getServers(List<ServerType> serverTypes) {
         return testServerRepository.getByActiveTrueAndSelectableTrueAndServerTypeIn(serverTypes).stream()
             .map(testServerMapper::testServerToTestServerResponse)
             .collect(Collectors.toList());

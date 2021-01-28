@@ -1,5 +1,7 @@
 package at.rtr.rmbt.constant;
 
+import at.rtr.rmbt.model.enums.ServerType;
+
 import java.util.List;
 
 public interface Config {
@@ -31,8 +33,8 @@ public interface Config {
             "RMBTws",
             "HW-PROBE");
 
-    List<String> SERVER_TEST_SERVER_TYPES = List.of("RMBT");
-    List<String> SERVER_HTTP_TEST_SERVER_TYPES = List.of("RMBT", "RMBThttp");
-    List<String> SERVER_WS_TEST_SERVER_TYPES = List.of("RMBTws", "RMBThttp");
-    List<String> SERVER_QOS_TEST_SERVER_TYPES = List.of("QoS");
+    List<ServerType> SERVER_TEST_SERVER_TYPES = List.of(ServerType.RMBT);
+    List<ServerType> SERVER_HTTP_TEST_SERVER_TYPES = List.of(ServerType.RMBT, ServerType.RMBT_HTTP);
+    List<ServerType> SERVER_WS_TEST_SERVER_TYPES = List.of(ServerType.RMBT_WS, ServerType.RMBT_HTTP);
+    List<ServerType> SERVER_QOS_TEST_SERVER_TYPES = List.of(ServerType.QOS);
 }

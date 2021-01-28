@@ -1,10 +1,7 @@
 package at.rtr.rmbt.model;
 
 import at.rtr.rmbt.model.enums.ServerType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -14,6 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "test_server")
 public class TestServer {
     @Id
@@ -46,8 +44,8 @@ public class TestServer {
     @Column(name = "geo_long")
     private Double longitude;
 
-//    @Column(name = "location")
-//    private Geometry location;
+//    @Column(columnDefinition = "POINT")
+//    private Point location;
 
     @Column(name = "web_address_ipv4")
     private String webAddressIpV4;
@@ -56,6 +54,7 @@ public class TestServer {
     private String webAddressIpV6;
 
     @Column(name = "server_type")
+    @Enumerated(EnumType.STRING)
     private ServerType serverType;
 
     @Column(name = "priority")
