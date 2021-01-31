@@ -316,24 +316,24 @@ public class RtrSettingsServiceImplTest {
                 .build();
     }
 
-    private List<TestServerResponse> getServerResponseList() {
-        var testServerResponse = TestServerResponse.builder()
+    private List<TestServerResponseForSettings> getServerResponseList() {
+        var testServerResponse = TestServerResponseForSettings.builder()
                 .name(TestConstants.DEFAULT_TEST_SERVER_NAME)
                 .uuid(TestConstants.DEFAULT_SERVER_UUID)
                 .build();
         return List.of(testServerResponse);
     }
 
-    private List<TestServerResponse> getServerWsResponseList() {
-        var testServerResponse = TestServerResponse.builder()
+    private List<TestServerResponseForSettings> getServerWsResponseList() {
+        var testServerResponse = TestServerResponseForSettings.builder()
                 .name(TestConstants.DEFAULT_TEST_SERVER_WS_NAME)
                 .uuid(TestConstants.DEFAULT_SERVER_WS_UUID)
                 .build();
         return List.of(testServerResponse);
     }
 
-    private List<TestServerResponse> getServerQoSResponseList() {
-        var testServerResponse = TestServerResponse.builder()
+    private List<TestServerResponseForSettings> getServerQoSResponseList() {
+        var testServerResponse = TestServerResponseForSettings.builder()
                 .name(TestConstants.DEFAULT_TEST_SERVER_WS_NAME)
                 .uuid(TestConstants.DEFAULT_SERVER_WS_UUID)
                 .build();

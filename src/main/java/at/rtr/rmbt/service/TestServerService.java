@@ -2,7 +2,9 @@ package at.rtr.rmbt.service;
 
 import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.model.enums.ServerType;
+import at.rtr.rmbt.request.TestServerRequest;
 import at.rtr.rmbt.response.TestServerResponse;
+import at.rtr.rmbt.response.TestServerResponseForSettings;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,11 +15,15 @@ public interface TestServerService {
 
     TestServer findActiveByServerTypeInAndCountry(List<ServerType> serverTypes, String countries);
 
-    List<TestServerResponse> getServers();
+    List<TestServerResponseForSettings> getServers();
 
-    List<TestServerResponse> getServersHttp();
+    List<TestServerResponseForSettings> getServersHttp();
 
-    List<TestServerResponse> getServersWs();
+    List<TestServerResponseForSettings> getServersWs();
 
-    List<TestServerResponse> getServersQos();
+    List<TestServerResponseForSettings> getServersQos();
+
+    void createTestServer(TestServerRequest testServerRequest);
+
+    List<TestServerResponse> getAllTestServer();
 }

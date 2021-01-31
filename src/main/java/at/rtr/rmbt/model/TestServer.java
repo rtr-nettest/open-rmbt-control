@@ -2,6 +2,7 @@ package at.rtr.rmbt.model;
 
 import at.rtr.rmbt.model.enums.ServerType;
 import lombok.*;
+import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -44,8 +45,8 @@ public class TestServer {
     @Column(name = "geo_long")
     private Double longitude;
 
-//    @Column(columnDefinition = "POINT")
-//    private Point location;
+    @Column(name = "location")
+    private Geometry location;
 
     @Column(name = "web_address_ipv4")
     private String webAddressIpV4;

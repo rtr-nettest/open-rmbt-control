@@ -34,7 +34,7 @@ public interface Config {
             "HW-PROBE");
 
     List<ServerType> SERVER_TEST_SERVER_TYPES = List.of(ServerType.RMBT);
-    List<ServerType> SERVER_HTTP_TEST_SERVER_TYPES = List.of(ServerType.RMBT, ServerType.RMBT_HTTP);
-    List<ServerType> SERVER_WS_TEST_SERVER_TYPES = List.of(ServerType.RMBT_WS, ServerType.RMBT_HTTP);
-    List<ServerType> SERVER_QOS_TEST_SERVER_TYPES = List.of(ServerType.QOS);
+    List<ServerType> SERVER_HTTP_TEST_SERVER_TYPES = List.of(ServerType.RMBT, ServerType.RMBThttp);
+    List<ServerType> SERVER_WS_TEST_SERVER_TYPES = List.of(ServerType.RMBTws, ServerType.RMBThttp);
+    List<ServerType> SERVER_QOS_TEST_SERVER_TYPES = List.of(ServerType.QoS);
 }
