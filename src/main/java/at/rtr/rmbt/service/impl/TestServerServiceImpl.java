@@ -4,7 +4,9 @@ import at.rtr.rmbt.mapper.TestServerMapper;
 import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.model.enums.ServerType;
 import at.rtr.rmbt.repository.TestServerRepository;
+import at.rtr.rmbt.request.TestServerRequest;
 import at.rtr.rmbt.response.TestServerResponse;
+import at.rtr.rmbt.response.TestServerResponseForSettings;
 import at.rtr.rmbt.service.TestServerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,28 +36,42 @@ public class TestServerServiceImpl implements TestServerService {
     }
 
     @Override
-    public List<TestServerResponse> getServers() {
+    public List<TestServerResponseForSettings> getServers() {
         return getServers(SERVER_TEST_SERVER_TYPES);
     }
 
     @Override
-    public List<TestServerResponse> getServersHttp() {
+    public List<TestServerResponseForSettings> getServersHttp() {
         return getServers(SERVER_HTTP_TEST_SERVER_TYPES);
     }
 
     @Override
-    public List<TestServerResponse> getServersWs() {
+    public List<TestServerResponseForSettings> getServersWs() {
         return getServers(SERVER_WS_TEST_SERVER_TYPES);
     }
 
     @Override
-    public List<TestServerResponse> getServersQos() {
+    public List<TestServerResponseForSettings> getServersQos() {
         return getServers(SERVER_QOS_TEST_SERVER_TYPES);
     }
 
-    private List<TestServerResponse> getServers(List<ServerType> serverTypes) {
+    @Override
+    public void createTestServer(TestServerRequest testServerRequest) {
+        Optional.of(testServerRequest)
+                .map(testServerMapper::testServerRequestToTestServer)
+                .ifPresent(testServerRepository::save);
+    }
+
+    @Override
+    public List<TestServerResponse> getAllTestServer() {
+        return testServerRepository.findAll().stream()
+                .map(testServerMapper::testServerToTestServerResponse)
+                .collect(Collectors.toList());
+    }
+
+    private List<TestServerResponseForSettings> getServers(List<ServerType> serverTypes) {
         return testServerRepository.getByActiveTrueAndSelectableTrueAndServerTypeIn(serverTypes).stream()
-            .map(testServerMapper::testServerToTestServerResponse)
-            .collect(Collectors.toList());
+                .map(testServerMapper::testServerToTestServerResponseForSettings)
+                .collect(Collectors.toList());
     }
 }

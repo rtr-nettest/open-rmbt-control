@@ -22,13 +22,13 @@ public class SettingResponse {
     private final VersionResponse versions;
 
     @JsonProperty(value = "servers")
-    private final List<TestServerResponse> servers;
+    private final List<TestServerResponseForSettings> servers;
 
     @JsonProperty(value = "servers_ws")
-    private final List<TestServerResponse> serverWSResponseList;
+    private final List<TestServerResponseForSettings> serverWSResponseList;
 
     @JsonProperty(value = "servers_qos")
-    private final List<TestServerResponse> serverQoSResponseList;
+    private final List<TestServerResponseForSettings> serverQoSResponseList;
 
     private final HistoryResponse history;
 

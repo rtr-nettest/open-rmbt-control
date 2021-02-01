@@ -116,7 +116,7 @@
         <dependency>
             <groupId>dnsjava</groupId>
             <artifactId>dnsjava</artifactId>
-            <version>2.1.7</version>
+            <version>3.3.1</version>
         </dependency>
         <dependency>
             <groupId>com.vdurmont</groupId>
@@ -149,11 +149,6 @@
             <version>${flyway.version}</version>
         </dependency>
         <dependency>
-            <groupId>dnsjava</groupId>
-            <artifactId>dnsjava</artifactId>
-            <version>3.3.1</version>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.12.1</version>
@@ -167,6 +162,16 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>2.12.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.graphhopper.external</groupId>
+            <artifactId>jackson-datatype-jts</artifactId>
+            <version>1.0-2.7</version>
         </dependency>
     </dependencies>
 

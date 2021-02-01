@@ -157,9 +157,9 @@ public class TestSettingsFacade {
                     List<ServerType> serverTypes;
 
                     if (testSettingsRequest.getCapabilities().getRmbtHttp()) {
-                        serverTypes = List.of(ServerType.RMBT_HTTP, ServerType.RMBT);
-                    } else if (ServerType.RMBT_WS.equals(testSettingsRequest.getServerType())) {
-                        serverTypes = List.of(ServerType.RMBT_HTTP, ServerType.RMBT_WS);
+                        serverTypes = List.of(ServerType.RMBThttp, ServerType.RMBT);
+                    } else if (ServerType.RMBTws.equals(testSettingsRequest.getServerType())) {
+                        serverTypes = List.of(ServerType.RMBThttp, ServerType.RMBTws);
                     } else if (ServerType.HW_PROBE.equals(testSettingsRequest.getServerType())) {
                         serverTypes = List.of(ServerType.RMBT);
                         testServerEncryption = false;

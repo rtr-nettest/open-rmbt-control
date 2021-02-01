@@ -21,7 +21,7 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: false
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
   flyway:
     enabled: false
 
@@ -100,3 +100,4 @@ client-tenant:
 
 git:
   branch:${git.branch}
+

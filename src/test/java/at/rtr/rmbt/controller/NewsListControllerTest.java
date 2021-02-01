@@ -1,8 +1,8 @@
 package at.rtr.rmbt.controller;
 
+import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.advice.RtrAdvice;
 import at.rtr.rmbt.request.NewsParametersRequest;
-import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.request.NewsRequest;
 import at.rtr.rmbt.response.NewsListResponse;
 import at.rtr.rmbt.response.NewsResponse;

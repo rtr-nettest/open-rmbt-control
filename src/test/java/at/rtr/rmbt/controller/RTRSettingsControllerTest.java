@@ -143,17 +143,17 @@ public class RTRSettingsControllerTest {
                 .name(DEFAULT_QOS_TEST_TYPE_DESC_NAME)
                 .build();
 
-        var server = TestServerResponse.builder()
+        var server = TestServerResponseForSettings.builder()
                 .name(DEFAULT_TEST_SERVER_NAME)
                 .uuid(DEFAULT_SERVER_UUID)
                 .build();
 
-        var serverWSResponseList = TestServerResponse.builder()
+        var serverWSResponseList = TestServerResponseForSettings.builder()
                 .name(DEFAULT_TEST_SERVER_WS_NAME)
                 .uuid(DEFAULT_SERVER_WS_UUID)
                 .build();
 
-        var serverQoSResponseList = TestServerResponse.builder()
+        var serverQoSResponseList = TestServerResponseForSettings.builder()
                 .name(DEFAULT_TEST_SERVER_QOS_NAME)
                 .uuid(DEFAULT_SERVER_QOS_UUID)
                 .build();

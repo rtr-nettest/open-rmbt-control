@@ -173,7 +173,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .build();
     }
 
-    private List<TestServerResponse> getServers(CapabilitiesRequest capabilitiesRequest) {
+    private List<TestServerResponseForSettings> getServers(CapabilitiesRequest capabilitiesRequest) {
         var isRmbtHttp = Optional.ofNullable(capabilitiesRequest)
                 .map(CapabilitiesRequest::getRmbtHttpRequest)
                 .map(RMBTHttpRequest::isRmbtHttp)

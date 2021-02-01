@@ -1,6 +1,10 @@
 package at.rtr.rmbt;
 
 import at.rtr.rmbt.enums.TestType;
+import at.rtr.rmbt.model.enums.ServerType;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -74,6 +78,21 @@ public interface TestConstants {
     String DEFAULT_IP = "37.57.0.215";
     String DEFAULT_RESULT_URL = "DEFAULT_RESULT_URL";
     String DEFAULT_URL = "DEFAULT_RESULT_URL";
+    String DEFAULT_TEST_SERVER_WEB_ADDRESS = "DEFAULT_TEST_SERVER_WEB_ADDRESS";
+    Integer DEFAULT_TEST_SERVER_PORT = 443;
+    Integer DEFAULT_TEST_SERVER_PORT_SSL = 443;
+    String DEFAULT_TEST_SERVER_CITY = "DEFAULT_TEST_SERVER_CITY";
+    String DEFAULT_TEST_SERVER_COUNTRY = "DEFAULT_TEST_SERVER_COUNTRY";
+    Double DEFAULT_TEST_SERVER_LATITUDE = 56.9;
+    Double DEFAULT_TEST_SERVER_LONGITUDE = 87.3;
+    Point DEFAULT_TEST_SERVER_LOCATION = new GeometryFactory().createPoint(new Coordinate(DEFAULT_TEST_SERVER_LONGITUDE, DEFAULT_TEST_SERVER_LATITUDE));
+    String DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4 = "DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4";
+    String DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6 = "DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6";
+    ServerType DEFAULT_TEST_SERVER_SERVER_TYPE = ServerType.RMBT;
+    Integer DEFAULT_TEST_SERVER_PRIORITY = 5;
+    Integer DEFAULT_TEST_SERVER_WEIGHT = 3;
+    String DEFAULT_TEST_SERVER_KEY = "DEFAULT_TEST_SERVER_KEY";
+    String DEFAULT_TEST_SERVER_NODE = "DEFAULT_TEST_SERVER_NODE";
 
     interface Database {
         long CLIENT_TYPE_DESKTOP_UID = 1L;
