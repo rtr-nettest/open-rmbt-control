@@ -1,5 +1,6 @@
 package at.rtr.rmbt.service.impl;
 
+import at.rtr.rmbt.exception.TestServerNotFoundException;
 import at.rtr.rmbt.mapper.TestServerMapper;
 import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.model.enums.ServerType;
@@ -67,6 +68,26 @@ public class TestServerServiceImpl implements TestServerService {
         return testServerRepository.findAll().stream()
                 .map(testServerMapper::testServerToTestServerResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateTestServer(Long id, TestServerRequest testServerRequest) {
+        var formerTestServer = getTestServerById(id);
+        var updatedTestServer = testServerMapper.testServerRequestToTestServer(testServerRequest);
+        updatedTestServer.setUid(id);
+        updatedTestServer.setUuid(formerTestServer.getUuid());
+        testServerRepository.save(updatedTestServer);
+    }
+
+    @Override
+    public void deleteTestServer(Long id) {
+        var testServer = getTestServerById(id);
+        testServerRepository.delete(testServer);
+    }
+
+    private TestServer getTestServerById(Long id) {
+        return testServerRepository.findById(id)
+                .orElseThrow(TestServerNotFoundException::new);
     }
 
     private List<TestServerResponseForSettings> getServers(List<ServerType> serverTypes) {

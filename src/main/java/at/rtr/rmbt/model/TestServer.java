@@ -14,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Builder
 @Table(name = "test_server")
+@EqualsAndHashCode
 public class TestServer {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "test_server_seq")

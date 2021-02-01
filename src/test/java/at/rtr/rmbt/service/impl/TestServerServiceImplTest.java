@@ -1,5 +1,6 @@
 package at.rtr.rmbt.service.impl;
 
+import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.mapper.TestServerMapper;
 import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.repository.TestServerRepository;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
+import java.util.Optional;
 
 import static at.rtr.rmbt.constant.Config.*;
 import static org.junit.Assert.assertEquals;
@@ -38,6 +40,8 @@ public class TestServerServiceImplTest {
     private TestServerRequest testServerRequest;
     @Mock
     private TestServerResponse testServerResponse;
+    @Mock
+    private TestServer updatedTestServer;
 
     @Before
     public void setUp() {
@@ -103,5 +107,27 @@ public class TestServerServiceImplTest {
         var responseList = testServerService.getAllTestServer();
 
         assertEquals(testServerResponseList, responseList);
+    }
+
+    @Test
+    public void updateTestServer_whenExistOneTestServer_expectUpdated() {
+        when(testServerRepository.findById(TestConstants.DEFAULT_UID)).thenReturn(Optional.of(testServer));
+        when(testServer.getUuid()).thenReturn(TestConstants.DEFAULT_UUID);
+        when(testServer.getUid()).thenReturn(TestConstants.DEFAULT_UID);
+        when(testServerMapper.testServerRequestToTestServer(testServerRequest)).thenReturn(updatedTestServer);
+
+        testServerService.updateTestServer(TestConstants.DEFAULT_UID, testServerRequest);
+
+        verify(updatedTestServer).setUuid(TestConstants.DEFAULT_UUID);
+        verify(testServerRepository).save(updatedTestServer);
+    }
+
+    @Test
+    public void deleteTestServer_whenExistTestServer_expectDeleted() {
+        when(testServerRepository.findById(TestConstants.DEFAULT_UID)).thenReturn(Optional.of(testServer));
+
+        testServerService.deleteTestServer(TestConstants.DEFAULT_UID);
+
+        verify(testServerRepository).delete(testServer);
     }
 }
