@@ -26,4 +26,8 @@ public interface TestServerService {
     void createTestServer(TestServerRequest testServerRequest);
 
     List<TestServerResponse> getAllTestServer();
+
+    void updateTestServer(Long id, TestServerRequest testServerRequest);
+
+    void deleteTestServer(Long id);
 }

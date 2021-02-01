@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static at.rtr.rmbt.constant.URIConstants.BY_ID;
 import static at.rtr.rmbt.constant.URIConstants.TEST_SERVER;
 
 @RestController
@@ -23,7 +24,7 @@ public class TestServerController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Create new test server.")
     @PostMapping
-    public void createMeasurementServer(@Validated @RequestBody TestServerRequest testServerRequest) {
+    public void createTestServer(@Validated @RequestBody TestServerRequest testServerRequest) {
         testServerService.createTestServer(testServerRequest);
     }
 
@@ -31,5 +32,19 @@ public class TestServerController {
     @GetMapping
     public List<TestServerResponse> getAllTestServers() {
         return testServerService.getAllTestServer();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Update existing test server")
+    @PutMapping(BY_ID)
+    public void updateTestServer(@PathVariable Long id, @Validated @RequestBody TestServerRequest testServerRequest) {
+        testServerService.updateTestServer(id, testServerRequest);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = BY_ID)
+    @ApiOperation("Delete existing test server by id")
+    public void deleteTestServerById(@PathVariable Long id) {
+        testServerService.deleteTestServer(id);
     }
 }

@@ -5,59 +5,33 @@ import at.rtr.rmbt.advice.RtrAdvice;
 import at.rtr.rmbt.request.TestServerRequest;
 import at.rtr.rmbt.response.TestServerResponse;
 import at.rtr.rmbt.service.TestServerService;
-import com.bedatadriven.jackson.datatype.jts.parsers.PointParser;
-import com.bedatadriven.jackson.datatype.jts.serialization.GeometryDeserializer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
+import static at.rtr.rmbt.constant.URIConstants.BY_ID;
 import static at.rtr.rmbt.constant.URIConstants.TEST_SERVER;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class)
 public class TestServerControllerTest {
-
-    @Configuration
-    static class ContextConfiguration {
-
-        // this bean will be injected into the OrderServiceTest class
-        @Bean
-        public GeometryDeserializer orderService() {
-            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 900913);
-            var geometryParser = new PointParser(geometryFactory);
-            GeometryDeserializer geometryDeserializer = new GeometryDeserializer(geometryParser);
-            // set properties, etc.
-            return geometryDeserializer;
-        }
-    }
 
     private MockMvc mockMvc;
 
     @MockBean
     private TestServerService testServerService;
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     @Before
     public void setUp() {
@@ -101,6 +75,16 @@ public class TestServerControllerTest {
 
     }
 
+    @Test
+    public void deleteTestServerById_whenExistOneTestServer_expectDeleted() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.delete(TEST_SERVER + BY_ID, TestConstants.DEFAULT_UID))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        verify(testServerService).deleteTestServer(TestConstants.DEFAULT_UID);
+    }
+
     private TestServerResponse getTestServerResponse() {
         return TestServerResponse.builder()
                 .uid(TestConstants.DEFAULT_UID)
@@ -128,23 +112,23 @@ public class TestServerControllerTest {
     private TestServerRequest getTestServerRequest() {
         return TestServerRequest.builder()
                 .name(TestConstants.DEFAULT_TEST_SERVER_NAME)
-//                .webAddress(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS)
-//                .port(TestConstants.DEFAULT_TEST_SERVER_PORT)
-//                .portSsl(TestConstants.DEFAULT_TEST_SERVER_PORT_SSL)
-//                .city(TestConstants.DEFAULT_TEST_SERVER_CITY)
-//                .country(TestConstants.DEFAULT_TEST_SERVER_COUNTRY)
-//                .latitude(TestConstants.DEFAULT_TEST_SERVER_LATITUDE)
-//                .longitude(TestConstants.DEFAULT_TEST_SERVER_LONGITUDE)
-//                .location(TestConstants.DEFAULT_TEST_SERVER_LOCATION)
-//                .webAddressIpV4(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4)
-//                .webAddressIpV6(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6)
-//                .serverType(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE)
-//                .priority(TestConstants.DEFAULT_TEST_SERVER_PRIORITY)
-//                .weight(TestConstants.DEFAULT_TEST_SERVER_WEIGHT)
-//                .active(TestConstants.DEFAULT_FLAG_TRUE)
-//                .key(TestConstants.DEFAULT_TEST_SERVER_KEY)
-//                .selectable(TestConstants.DEFAULT_FLAG_TRUE)
-//                .node(TestConstants.DEFAULT_TEST_SERVER_NODE)
+                .webAddress(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS)
+                .port(TestConstants.DEFAULT_TEST_SERVER_PORT)
+                .portSsl(TestConstants.DEFAULT_TEST_SERVER_PORT_SSL)
+                .city(TestConstants.DEFAULT_TEST_SERVER_CITY)
+                .country(TestConstants.DEFAULT_TEST_SERVER_COUNTRY)
+                .latitude(TestConstants.DEFAULT_TEST_SERVER_LATITUDE)
+                .longitude(TestConstants.DEFAULT_TEST_SERVER_LONGITUDE)
+                .location(TestConstants.DEFAULT_TEST_SERVER_LOCATION)
+                .webAddressIpV4(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4)
+                .webAddressIpV6(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6)
+                .serverType(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE)
+                .priority(TestConstants.DEFAULT_TEST_SERVER_PRIORITY)
+                .weight(TestConstants.DEFAULT_TEST_SERVER_WEIGHT)
+                .active(TestConstants.DEFAULT_FLAG_TRUE)
+                .key(TestConstants.DEFAULT_TEST_SERVER_KEY)
+                .selectable(TestConstants.DEFAULT_FLAG_TRUE)
+                .node(TestConstants.DEFAULT_TEST_SERVER_NODE)
                 .build();
     }
 }
