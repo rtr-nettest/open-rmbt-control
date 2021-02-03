@@ -1,6 +1,6 @@
 server:
   servlet:
-    context-path: /rtr
+    context-path: /RMBTControlServer
 spring:
   main:
     allow-bean-definition-overriding: true
