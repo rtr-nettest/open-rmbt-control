@@ -9,12 +9,15 @@ import org.locationtech.jts.geom.Point;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public interface TestConstants {
     String DEFAULT_LANGUAGE = "DEFAULT LANGUAGE";
+    String LANGUAGE_EN = "en";
+    String LANGUAGE_DE = "de";
     Long DEFAULT_LAST_NEWS_UID = 13L;
-    String DEFAULT_PLATFORM = "DEFAULT PLATFORM";
+    String DEFAULT_PLATFORM = "Android";
     Long DEFAULT_SOFTWARE_VERSION_CODE = 1L;
     UUID DEFAULT_NEWS_UUID = UUID.fromString("8fa5fb1c-5bf6-11eb-ae93-0242ac130002");
     UUID DEFAULT_UUID = UUID.fromString("88ab584e-5ef2-11eb-ae93-0242ac130002");
@@ -78,6 +81,7 @@ public interface TestConstants {
     String DEFAULT_IP = "37.57.0.215";
     String DEFAULT_RESULT_URL = "DEFAULT_RESULT_URL";
     String DEFAULT_URL = "DEFAULT_RESULT_URL";
+    ZonedDateTime ZONED_DATE_TIME = ZonedDateTime.now();
     String DEFAULT_TEST_SERVER_WEB_ADDRESS = "DEFAULT_TEST_SERVER_WEB_ADDRESS";
     Integer DEFAULT_TEST_SERVER_PORT = 443;
     Integer DEFAULT_TEST_SERVER_PORT_SSL = 443;

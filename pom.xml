@@ -20,7 +20,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <flyway.version>6.2.3</flyway.version>
+        <flyway.version>7.5.2</flyway.version>
         <swagger.version>3.0.0</swagger.version>
         <org.mapstruct.version>1.3.1.Final</org.mapstruct.version>
         <org.projectlombok.version>1.18.12</org.projectlombok.version>

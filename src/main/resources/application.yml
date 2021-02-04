@@ -23,7 +23,7 @@ spring:
     show-sql: false
     database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
   flyway:
-    enabled: false
+    enabled: true
 
 app:
   rmbt:

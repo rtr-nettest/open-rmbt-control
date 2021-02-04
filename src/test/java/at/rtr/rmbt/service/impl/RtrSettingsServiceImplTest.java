@@ -1,15 +1,15 @@
 package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.TestConstants;
-import at.rtr.rmbt.model.RtrClient;
-import at.rtr.rmbt.model.Settings;
-import at.rtr.rmbt.request.AdminSettingsRequest;
-import at.rtr.rmbt.request.RtrSettingsRequest;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.exception.NotSupportedClientVersionException;
+import at.rtr.rmbt.model.RtrClient;
+import at.rtr.rmbt.model.Settings;
 import at.rtr.rmbt.model.enums.ClientType;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.AdminSettingsBodyRequest;
+import at.rtr.rmbt.request.AdminSettingsRequest;
+import at.rtr.rmbt.request.RtrSettingsRequest;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.*;
 import org.junit.Assert;
@@ -207,7 +207,7 @@ public class RtrSettingsServiceImplTest {
         var response = rtrSettingsService.getSettings(rtrSettingsRequest);
 
         assertEquals(TestConstants.DEFAULT_CLIENT_UUID, response.getSettings().get(0).getUuid());
-        assertEquals(getDefaultTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());
+        assertEquals(getAndroidTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());
     }
 
     @Test

@@ -7,6 +7,7 @@ public interface URIConstants {
     String RESULT_QOS_URL = "/resultQoS";
     String SETTINGS_URL = "/settings";
     String ADMIN_NEWS = "/admin/news";
+    String ADMIN_NEWS_ITEM = ADMIN_NEWS + "/{newsId}";
     String ADMIN_SETTING = "/admin/settings";
     String SIGNAL_REQUEST = "/signalRequest";
     String SIGNAL_RESULT = "/signalResult";

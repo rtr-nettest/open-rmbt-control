@@ -3,27 +3,21 @@ package at.rtr.rmbt.mapper.impl;
 import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.mapper.NewsMapper;
 import at.rtr.rmbt.model.News;
-import at.rtr.rmbt.request.NewsRequest;
-import org.junit.Assert;
+import at.rtr.rmbt.response.NewsListItemResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static at.rtr.rmbt.TestConstants.LANGUAGE_DE;
+import static at.rtr.rmbt.TestConstants.LANGUAGE_EN;
+import static at.rtr.rmbt.TestFixtures.*;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class NewsMapperImplTest {
     private NewsMapper newsMapper;
-
-    @Mock
-    private News news;
-    @Mock
-    private NewsRequest newsRequest;
 
     @Before
     public void setUp() {
@@ -32,97 +26,82 @@ public class NewsMapperImplTest {
 
     @Test
     public void newsToNewsResponse_whenDeLanguage_expectDeNewsResponse() {
-        when(news.getId()).thenReturn(TestConstants.DEFAULT_UID);
-        when(news.getTitleDe()).thenReturn(TestConstants.DEFAULT_NEWS_TITLE);
-        when(news.getTextDe()).thenReturn(TestConstants.DEFAULT_NEWS_TEXT);
-
-        var actualNewsResponse = newsMapper.newsToNewsResponse(news, "de");
+        var actualNewsResponse = newsMapper.newsToNewsResponse(newsDe, LANGUAGE_DE);
 
         assertEquals(TestConstants.DEFAULT_UID, actualNewsResponse.getUid());
-        assertEquals(TestConstants.DEFAULT_NEWS_TITLE, actualNewsResponse.getTitle());
-        assertEquals(TestConstants.DEFAULT_NEWS_TEXT, actualNewsResponse.getText());
+        assertEquals(TestConstants.DEFAULT_NEWS_TITLE_DE, actualNewsResponse.getTitle());
+        assertEquals(TestConstants.DEFAULT_NEWS_TEXT_DE, actualNewsResponse.getText());
     }
 
     @Test
     public void newsToNewsResponse_whenNotDeLanguage_expectEnNewsResponse() {
-        when(news.getId()).thenReturn(TestConstants.DEFAULT_UID);
-        when(news.getTitleEn()).thenReturn(TestConstants.DEFAULT_NEWS_TITLE);
-        when(news.getTextEn()).thenReturn(TestConstants.DEFAULT_NEWS_TEXT);
-
-        var actualNewsResponse = newsMapper.newsToNewsResponse(news, "en");
+        var actualNewsResponse = newsMapper.newsToNewsResponse(newsEn, LANGUAGE_EN);
 
         assertEquals(TestConstants.DEFAULT_UID, actualNewsResponse.getUid());
-        assertEquals(TestConstants.DEFAULT_NEWS_TITLE, actualNewsResponse.getTitle());
-        assertEquals(TestConstants.DEFAULT_NEWS_TEXT, actualNewsResponse.getText());
-    }
-
-    @Test
-    public void newsToNewsResponse_whenUuidIsNull_expectUuidIsGenerated() {
-        prepareNewsRequestDe();
-        when(newsRequest.getUuid()).thenReturn(null);
-
-        var result = newsMapper.newsRequestToNews(newsRequest);
-
-        assertNotNull(result.getUuid());
+        assertEquals(TestConstants.DEFAULT_NEWS_TITLE_EN, actualNewsResponse.getTitle());
+        assertEquals(TestConstants.DEFAULT_NEWS_TEXT_EN, actualNewsResponse.getText());
     }
 
     @Test
     public void newsRequestToNews_whenDeLanguage_expectNews() {
-        prepareNewsRequestDe();
+        var news = newsMapper.newsRequestToNews(newsRequestDe);
 
-        var news = newsMapper.newsRequestToNews(newsRequest);
-
-        Assert.assertEquals(TestConstants.DEFAULT_NEWS_TEXT_DE, news.getTextDe());
+        assertEquals(TestConstants.DEFAULT_NEWS_TEXT_DE, news.getTextDe());
         assertNull(news.getTextEn());
-        Assert.assertEquals(TestConstants.DEFAULT_NEWS_TITLE_DE, news.getTitleDe());
+        assertEquals(TestConstants.DEFAULT_NEWS_TITLE_DE, news.getTitleDe());
         assertNull(news.getTitleEn());
-        Assert.assertEquals(TestConstants.DEFAULT_PLATFORM, news.getPlatform());
-        Assert.assertEquals(TestConstants.DEFAULT_NEWS_UUID, news.getUuid());
-        Assert.assertEquals(TestConstants.DEFAULT_MAX_SOFTWARE_VERSION, news.getMaxSoftwareVersionCode());
-        Assert.assertEquals(TestConstants.DEFAULT_MIN_SOFTWARE_VERSION, news.getMinSoftwareVersionCode());
-        Assert.assertEquals(TestConstants.DEFAULT_FLAG_TRUE, news.isActive());
-        Assert.assertEquals(TestConstants.DEFAULT_FLAG_TRUE, news.isForce());
+        assertEquals(TestConstants.DEFAULT_PLATFORM, news.getPlatform());
+        assertNotNull(news.getUuid());
+        assertEquals(TestConstants.DEFAULT_MAX_SOFTWARE_VERSION, news.getMaxSoftwareVersionCode());
+        assertEquals(TestConstants.DEFAULT_MIN_SOFTWARE_VERSION, news.getMinSoftwareVersionCode());
+        assertTrue(news.isActive());
+        assertFalse(news.isForce());
     }
 
     @Test
     public void newsRequestToNews_whenNotDeLanguage_expectNews() {
-        prepareNewsRequestEn();
+        var news = newsMapper.newsRequestToNews(newsRequestEn);
 
-        var news = newsMapper.newsRequestToNews(newsRequest);
-
-        Assert.assertEquals(TestConstants.DEFAULT_NEWS_TITLE_EN, news.getTitleEn());
+        assertEquals(TestConstants.DEFAULT_NEWS_TITLE_EN, news.getTitleEn());
         assertNull(news.getTextDe());
-        Assert.assertEquals(TestConstants.DEFAULT_NEWS_TEXT_EN, news.getTextEn());
+        assertEquals(TestConstants.DEFAULT_NEWS_TEXT_EN, news.getTextEn());
         assertNull(news.getTextDe());
-        Assert.assertEquals(TestConstants.DEFAULT_PLATFORM, news.getPlatform());
-        Assert.assertEquals(TestConstants.DEFAULT_NEWS_UUID, news.getUuid());
-        Assert.assertEquals(TestConstants.DEFAULT_MAX_SOFTWARE_VERSION, news.getMaxSoftwareVersionCode());
-        Assert.assertEquals(TestConstants.DEFAULT_MIN_SOFTWARE_VERSION, news.getMinSoftwareVersionCode());
-        Assert.assertEquals(TestConstants.DEFAULT_FLAG_TRUE, news.isActive());
-        Assert.assertEquals(TestConstants.DEFAULT_FLAG_TRUE, news.isForce());
+        assertEquals(TestConstants.DEFAULT_PLATFORM, news.getPlatform());
+        assertNotNull(news.getUuid());
+        assertEquals(TestConstants.DEFAULT_MAX_SOFTWARE_VERSION, news.getMaxSoftwareVersionCode());
+        assertEquals(TestConstants.DEFAULT_MIN_SOFTWARE_VERSION, news.getMinSoftwareVersionCode());
+        assertTrue(news.isActive());
+        assertFalse(news.isForce());
     }
 
+    @Test
+    public void updateNewsByNewsRequest_whenAllIsOk_expectUpdatedNews() {
+        News news = newsMapper.updateNewsByNewsRequest(newsEn, newsRequestDe);
 
-    private void prepareNewsRequestDe() {
-        when(newsRequest.getTitle()).thenReturn(TestConstants.DEFAULT_NEWS_TITLE_DE);
-        when(newsRequest.getText()).thenReturn(TestConstants.DEFAULT_NEWS_TEXT_DE);
-        when(newsRequest.getLanguage()).thenReturn("de");
-        prepareNewsRequest();
+        assertEquals(news.getTextDe(), newsRequestDe.getText());
+        assertEquals(news.getTitleDe(), newsRequestDe.getTitle());
+        assertNull(news.getTextEn());
+        assertNull(news.getTitleEn());
+        assertEquals(news.getUuid(), newsEn.getUuid());
+        assertEquals(news.getId(), newsEn.getId());
+        assertEquals(news.getTime(), newsEn.getTime());
+        assertNotEquals("Must be new object", System.identityHashCode(news), System.identityHashCode(newsEn));
     }
 
-    private void prepareNewsRequestEn() {
-        when(newsRequest.getTitle()).thenReturn(TestConstants.DEFAULT_NEWS_TITLE_EN);
-        when(newsRequest.getText()).thenReturn(TestConstants.DEFAULT_NEWS_TEXT_EN);
-        when(newsRequest.getLanguage()).thenReturn("en");
-        prepareNewsRequest();
-    }
+    @Test
+    public void newsViewToNewsListItem_whenAllIsOk_expectNewsListItem() {
+        NewsListItemResponse news = newsMapper.newsViewToNewsListItem(newsViewEn);
 
-    private void prepareNewsRequest() {
-        when(newsRequest.getPlatform()).thenReturn(TestConstants.DEFAULT_PLATFORM);
-        when(newsRequest.getUuid()).thenReturn(TestConstants.DEFAULT_NEWS_UUID);
-        when(newsRequest.getMaxSoftwareVersion()).thenReturn(TestConstants.DEFAULT_MAX_SOFTWARE_VERSION);
-        when(newsRequest.getMinSoftwareVersion()).thenReturn(TestConstants.DEFAULT_MIN_SOFTWARE_VERSION);
-        when(newsRequest.isActive()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
-        when(newsRequest.isForce()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        assertEquals(newsViewEn.getTextEn(), news.getContent());
+        assertEquals(newsViewEn.getTitleEn(), news.getTitle());
+        assertTrue(news.getAndroid());
+        assertEquals(newsViewEn.getUuid(), news.getUuid());
+        assertEquals(newsViewEn.getUid(), news.getUid());
+        assertEquals(newsViewEn.getMinSoftwareVersionCode(), news.getMinSoftwareVersion());
+        assertEquals(newsViewEn.getMaxSoftwareVersionCode(), news.getMaxSoftwareVersion());
+        assertTrue(news.getActive());
+        assertEquals(newsViewEn.getStartsAt(), news.getStartDate());
+        assertEquals(newsViewEn.getEndsAt(), news.getEndDate());
+        assertEquals(newsViewEn.getStatus(), news.getStatus());
     }
 }

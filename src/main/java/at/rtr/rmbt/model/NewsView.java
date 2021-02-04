@@ -1,7 +1,8 @@
 package at.rtr.rmbt.model;
 
+import at.rtr.rmbt.enums.NewsStatus;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -9,18 +10,18 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
+@Immutable
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "news")
-public class News {
-
+@Table(name = "news_view")
+public class NewsView {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "uid")
-    private Long id;
+    private Long uid;
 
     @Column(name = "title_en")
     private String titleEn;
@@ -35,7 +36,11 @@ public class News {
     private String textDe;
 
     @Column(name = "active")
-    private boolean active = true;
+    private boolean active;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private NewsStatus status;
 
     @Column(name = "force")
     private boolean force;
@@ -49,16 +54,14 @@ public class News {
     @Column(name = "max_software_version_code")
     private Long maxSoftwareVersionCode;
 
-    @CreationTimestamp
     @Column(name = "time")
     private OffsetDateTime time;
 
     @Column(name = "uuid")
     private UUID uuid;
 
-    @Builder.Default
-    @Column(name = "start_time", nullable = false)
-    private ZonedDateTime startsAt = ZonedDateTime.now();
+    @Column(name = "start_time")
+    private ZonedDateTime startsAt;
 
     @Column(name = "end_time")
     private ZonedDateTime endsAt;

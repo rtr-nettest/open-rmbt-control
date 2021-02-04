@@ -2,7 +2,9 @@ package at.rtr.rmbt.mapper.impl;
 
 import at.rtr.rmbt.mapper.NewsMapper;
 import at.rtr.rmbt.model.News;
+import at.rtr.rmbt.model.NewsView;
 import at.rtr.rmbt.request.NewsRequest;
+import at.rtr.rmbt.response.NewsListItemResponse;
 import at.rtr.rmbt.response.NewsResponse;
 import org.springframework.stereotype.Service;
 
@@ -10,12 +12,14 @@ import java.util.UUID;
 
 @Service
 public class NewsMapperImpl implements NewsMapper {
+    private static String LANGUAGE_DE = "de";
+    private static String LANGUAGE_EN = "en";
 
     @Override
     public NewsResponse newsToNewsResponse(News news, String language) {
         var response = NewsResponse.builder()
-                .uid(news.getId());
-        if (language.equals("de")) {
+            .uid(news.getId());
+        if (LANGUAGE_DE.equals(language)) {
             response.title(news.getTitleDe());
             response.text(news.getTextDe());
         } else {
@@ -27,20 +31,57 @@ public class NewsMapperImpl implements NewsMapper {
 
     @Override
     public News newsRequestToNews(NewsRequest newsRequest) {
-        var news = News.builder()
-                .minSoftwareVersionCode(newsRequest.getMinSoftwareVersion())
-                .maxSoftwareVersionCode(newsRequest.getMaxSoftwareVersion())
-                .active(newsRequest.isActive())
-                .force(newsRequest.isForce())
-                .platform(newsRequest.getPlatform())
-                .uuid(newsRequest.getUuid() != null ? newsRequest.getUuid() : UUID.randomUUID());
-        if (newsRequest.getLanguage().equals("de")) {
-            news.titleDe(newsRequest.getTitle());
-            news.textDe(newsRequest.getText());
+        return newsRequestToNewsBuilder(newsRequest)
+            .uuid(UUID.randomUUID()).build();
+    }
+
+    @Override
+    public News updateNewsByNewsRequest(News news, NewsRequest newsRequest) {
+        return newsRequestToNewsBuilder(newsRequest)
+            .id(news.getId())
+            .time(news.getTime())
+            .uuid(news.getUuid()).build();
+    }
+
+    @Override
+    public NewsListItemResponse newsViewToNewsListItem(NewsView news) {
+        var isEn = news.getTitleEn() != null;
+        return NewsListItemResponse.builder()
+            .uid(news.getUid())
+            .uuid(news.getUuid())
+            .title(isEn ? news.getTitleEn() : news.getTitleDe())
+            .content(isEn ? news.getTextEn() : news.getTextDe())
+            .language(isEn ? LANGUAGE_EN : LANGUAGE_DE)
+            .active(news.isActive())
+            .android(true)
+            .status(news.getStatus())
+            .minSoftwareVersion(news.getMinSoftwareVersionCode())
+            .maxSoftwareVersion(news.getMaxSoftwareVersionCode())
+            .startDate(news.getStartsAt())
+            .endDate(news.getEndsAt())
+            .build();
+    }
+
+    private News.NewsBuilder newsRequestToNewsBuilder(NewsRequest newsRequest) {
+        News.NewsBuilder newsBuilder = News.builder()
+            .minSoftwareVersionCode(newsRequest.getMinSoftwareVersion())
+            .maxSoftwareVersionCode(newsRequest.getMaxSoftwareVersion())
+            .active(newsRequest.isActive())
+            .force(newsRequest.isForce())
+            .platform("Android") // only support android for now
+            .endsAt(newsRequest.getEndDate());
+
+        if (newsRequest.getStartDate() != null)
+            newsBuilder.startsAt(newsRequest.getStartDate());
+
+        if (LANGUAGE_DE.equals(newsRequest.getLanguage())) {
+            newsBuilder.titleDe(newsRequest.getTitle());
+            newsBuilder.textDe(newsRequest.getText());
         } else {
-            news.titleEn(newsRequest.getTitle());
-            news.textEn(newsRequest.getText());
+            newsBuilder.titleEn(newsRequest.getTitle());
+            newsBuilder.textEn(newsRequest.getText());
         }
-        return news.build();
+
+        return newsBuilder;
     }
 }
