@@ -6,8 +6,9 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
-import java.util.UUID;
+import java.time.ZonedDateTime;
 
 @Builder(toBuilder = true)
 @Getter
@@ -25,24 +26,36 @@ public class NewsRequest {
     private final String text;
 
     @NotNull
+    @JsonProperty("language")
     @ApiModelProperty(notes = "2 letters language code or language code with region", example = "en")
     private final String language;
 
+    @JsonProperty("active")
     @ApiModelProperty(notes = "News activity status", example = "true")
     private final boolean active;
 
+    @JsonProperty("force")
     @ApiModelProperty(notes = "News force status", example = "true")
     private final boolean force;
 
-    @ApiModelProperty(notes = "Client platform", example = "Android")
-    private final String platform;
+    @JsonProperty("android")
+    @AssertTrue
+    @ApiModelProperty(notes = "Client platform", example = "true")
+    private final Boolean android;
 
+    @JsonProperty("androidMinSoftwareVersion")
     @ApiModelProperty(notes = "Min software version", example = "1")
     private final Long minSoftwareVersion;
 
+    @JsonProperty("androidMaxSoftwareVersion")
     @ApiModelProperty(notes = "Max software version", example = "1")
     private final Long maxSoftwareVersion;
 
-    @ApiModelProperty(notes = "UUID of news", example = "68796996-5f40-11eb-ae93-0242ac130002")
-    private final UUID uuid;
+    @JsonProperty("startDate")
+    @ApiModelProperty(notes = "When to start showing news", example = "2020-01-01T13:00:00.123+02:00")
+    private final ZonedDateTime startDate;
+
+    @JsonProperty("endDate")
+    @ApiModelProperty(notes = "When to end showing news", example = "2020-01-01T13:00:00.123+02:00")
+    private final ZonedDateTime endDate;
 }
