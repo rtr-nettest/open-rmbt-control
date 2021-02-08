@@ -9,6 +9,7 @@ import at.rtr.rmbt.repository.RTRProviderRepository;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.response.SignalResponse;
 import at.rtr.rmbt.service.SignalService;
+import com.specure.core.service.impl.UUIDGenerator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

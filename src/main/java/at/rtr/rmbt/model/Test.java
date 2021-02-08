@@ -24,7 +24,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "test")
 @TypeDefs({
-    @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 })
 public class Test {
     @Id
@@ -244,6 +244,7 @@ public class Test {
     private Double geoAccuracy;
 
     @Column(name = "deleted")
+    @Builder.Default
     private Boolean deleted = false;
 
     @Column(name = "comment")
@@ -292,6 +293,7 @@ public class Test {
     private Long testulIfBytesUpload;
 
     @Column(name = "implausible")
+    @Builder.Default
     private Boolean implausible = false;
 
     @Column(name = "country_geoip")
@@ -387,6 +389,7 @@ public class Test {
     private String dualSimDetectionMethod;
 
     @Column(name = "pinned")
+    @Builder.Default
     private Boolean pinned = false;
 
     @Column(name = "similar_test_uid")

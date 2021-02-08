@@ -1,15 +1,16 @@
 package at.rtr.rmbt.service.impl;
 
+import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.model.Settings;
+import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.LongUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import at.rtr.rmbt.exception.NotSupportedClientVersionException;
-import at.rtr.rmbt.repository.SettingsRepository;
+import com.specure.core.service.impl.UUIDGenerator;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
@@ -99,7 +100,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
         List<Settings> updatedSettings = new ArrayList<>();
         settingsNew.entrySet().stream()
                 .filter(entry -> Objects.nonNull(entry.getValue()))
-                .map(l-> Pair.of(l.getKey(), String.valueOf(l.getValue())))
+                .map(l -> Pair.of(l.getKey(), String.valueOf(l.getValue())))
                 .forEach(entry -> updateOrCreateSettings(adminSettingsRequest.getLanguage(), settingsActual, updatedSettings, entry));
 
         settingsRepository.saveAll(updatedSettings);

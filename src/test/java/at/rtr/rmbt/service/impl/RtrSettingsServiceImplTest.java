@@ -12,6 +12,7 @@ import at.rtr.rmbt.request.AdminSettingsRequest;
 import at.rtr.rmbt.request.RtrSettingsRequest;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.*;
+import com.specure.core.service.impl.UUIDGenerator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -226,7 +227,8 @@ public class RtrSettingsServiceImplTest {
         List<Settings> actual = settingsArgumentCaptor.getValue();
         assertEquals(settings, actual.get(0));
         assertEquals("port_map_server", actual.get(1).getKey());
-        assertEquals("123", actual.get(1).getValue());    }
+        assertEquals("123", actual.get(1).getValue());
+    }
 
     @Test
     public void createSettings_whenSettingsLongExist_expectSettingsUpdated() {
@@ -245,7 +247,7 @@ public class RtrSettingsServiceImplTest {
         assertEquals(settings, actual.get(0));
         assertEquals("port_map_server", actual.get(1).getKey());
         assertEquals("123", actual.get(1).getValue());
-     }
+    }
 
     @Test
     public void createSettings_whenSettingsNotExist_expectSettingsCreated() {

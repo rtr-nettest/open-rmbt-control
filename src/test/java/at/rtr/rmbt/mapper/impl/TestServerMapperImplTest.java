@@ -4,7 +4,7 @@ import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.mapper.TestServerMapper;
 import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.request.TestServerRequest;
-import at.rtr.rmbt.service.impl.UUIDGenerator;
+import com.specure.core.service.impl.UUIDGenerator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
