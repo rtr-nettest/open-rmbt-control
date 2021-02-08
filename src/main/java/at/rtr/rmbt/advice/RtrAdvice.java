@@ -1,6 +1,7 @@
 package at.rtr.rmbt.advice;
 
 import at.rtr.rmbt.exception.ClientNotFoundByNameException;
+import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -35,4 +36,11 @@ public class RtrAdvice {
     public ErrorResponse handleNotSupportedClientVersionException(NotSupportedClientVersionException ex) {
         return new ErrorResponse(ERROR_CLIENT_VERSION);
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ClientNotFoundException.class)
+    public ErrorResponse handleClientNotFoundException(ClientNotFoundException ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
 }
+

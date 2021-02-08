@@ -1,16 +1,18 @@
 package at.rtr.rmbt.service.impl;
 
-import at.rtr.rmbt.model.Test;
-import at.rtr.rmbt.request.SignalRequest;
-import at.rtr.rmbt.utils.HelperFunctions;
-import com.google.common.net.InetAddresses;
 import at.rtr.rmbt.exception.ClientNotFoundException;
+import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.model.enums.TestStatus;
 import at.rtr.rmbt.repository.ClientRepository;
 import at.rtr.rmbt.repository.RTRProviderRepository;
 import at.rtr.rmbt.repository.TestRepository;
+import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.response.SignalResponse;
 import at.rtr.rmbt.service.SignalService;
+import at.rtr.rmbt.utils.HelperFunctions;
+import com.google.common.net.InetAddresses;
+import com.specure.core.constant.ErrorMessage;
+import com.specure.core.service.impl.UUIDGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +42,7 @@ public class SignalServiceImpl implements SignalService {
         var openTestUUID = uuidGenerator.generateUUID();
 
         var client = clientRepository.findByUuid(signalRequest.getUuid())
-                .orElseThrow(ClientNotFoundException::new);
+                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, signalRequest.getUuid())));
 
         var clientAddress = InetAddresses.forString(ip);
         var clientIpString = InetAddresses.toAddrString(clientAddress);
@@ -61,6 +63,7 @@ public class SignalServiceImpl implements SignalService {
                 .publicIpRdns(HelperFunctions.getReverseDNS(clientAddress))
                 .status(TestStatus.STARTED)
                 .lastSequenceNumber(-1)
+                .useSsl(false)//TODO hardcode because of database constraint. maybe should be in request param
                 .build();
 
         var savedTest = testRepository.save(test);
