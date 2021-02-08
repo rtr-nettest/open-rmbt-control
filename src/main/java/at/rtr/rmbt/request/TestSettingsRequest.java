@@ -1,11 +1,11 @@
 package at.rtr.rmbt.request;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import at.rtr.rmbt.model.enums.ClientType;
 import at.rtr.rmbt.model.enums.ServerType;
 import at.rtr.rmbt.model.enums.TestPlatform;
 import at.rtr.rmbt.model.enums.TestStatus;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -15,6 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @ApiModel(description = "Request to obtain configuration for basic test")
 public class TestSettingsRequest {
 
