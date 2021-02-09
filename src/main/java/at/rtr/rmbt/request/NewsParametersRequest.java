@@ -1,7 +1,7 @@
 package at.rtr.rmbt.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import at.rtr.rmbt.constant.Constants;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

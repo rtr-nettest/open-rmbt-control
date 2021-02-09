@@ -39,17 +39,17 @@ public class NewsRequest {
     private final boolean force;
 
     @JsonProperty("android")
-    @AssertTrue
+    @AssertTrue(message = "Android platform must be selected")
     @ApiModelProperty(notes = "Client platform", example = "true")
     private final Boolean android;
 
     @JsonProperty("androidMinSoftwareVersion")
     @ApiModelProperty(notes = "Min software version", example = "1")
-    private final Long minSoftwareVersion;
+    private final Long androidMinSoftwareVersion;
 
     @JsonProperty("androidMaxSoftwareVersion")
     @ApiModelProperty(notes = "Max software version", example = "1")
-    private final Long maxSoftwareVersion;
+    private final Long androidMaxSoftwareVersion;
 
     @JsonProperty("startDate")
     @ApiModelProperty(notes = "When to start showing news", example = "2020-01-01T13:00:00.123+02:00")

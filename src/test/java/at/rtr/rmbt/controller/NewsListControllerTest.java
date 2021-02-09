@@ -143,8 +143,8 @@ public class NewsListControllerTest {
             .language(DEFAULT_LANGUAGE)
             .active(DEFAULT_FLAG_TRUE)
             .force(DEFAULT_FLAG_TRUE)
-            .maxSoftwareVersion(DEFAULT_MAX_SOFTWARE_VERSION)
-            .minSoftwareVersion(DEFAULT_MIN_SOFTWARE_VERSION)
+            .androidMaxSoftwareVersion(DEFAULT_MAX_SOFTWARE_VERSION)
+            .androidMinSoftwareVersion(DEFAULT_MIN_SOFTWARE_VERSION)
             .android(true)
             .build();
     }

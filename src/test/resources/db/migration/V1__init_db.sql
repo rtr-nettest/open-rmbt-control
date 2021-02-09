@@ -25,10 +25,11 @@ CREATE TYPE public.qostest AS ENUM (
     'traceroute_masked'
     );
 
-CREATE TYPE public.cov_geo_location_assignment_type AS (
+CREATE TYPE public.cov_geo_location_assignment_type AS
+(
     location public.geometry,
     accuracy numeric
-    );
+);
 
 -- FUNCTIONS --
 CREATE FUNCTION public.within(public.geometry, public.geometry) RETURNS boolean
@@ -129,9 +130,7 @@ SELECT AVG(val) ::float8
 FROM (
          SELECT val
          FROM q
-         LIMIT 2 - MOD((SELECT c FROM cnt), 2)
-         OFFSET
-         GREATEST(CEIL((SELECT c FROM cnt) / 2.0) - 1, 0)
+         LIMIT 2 - MOD((SELECT c FROM cnt), 2) OFFSET GREATEST(CEIL((SELECT c FROM cnt) / 2.0) - 1, 0)
      ) q2;
 $_$;
 
@@ -944,6 +943,22 @@ CREATE TABLE public.as2provider
     CONSTRAINT as2provider_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES public.provider (uid)
 );
 
+CREATE TABLE public.news
+(
+    uid                       integer PRIMARY KEY      NOT NULL,
+    "time"                    timestamp with time zone NOT NULL,
+    title_en                  text,
+    title_de                  text,
+    text_en                   text,
+    text_de                   text,
+    active                    boolean DEFAULT false    NOT NULL,
+    force                     boolean DEFAULT false    NOT NULL,
+    plattform                 text,
+    max_software_version_code integer,
+    min_software_version_code integer,
+    uuid                      uuid
+);
+
 CREATE TABLE public.test
 (
     uid                         bigint PRIMARY KEY                        NOT NULL,
@@ -1340,6 +1355,18 @@ ALTER TABLE ONLY public.ping
 SELECT pg_catalog.setval('public.ping_uid_seq', 50, true);
 CREATE INDEX open_test_uuid_ping_idx ON public.ping USING btree (open_test_uuid);
 CREATE INDEX ping_test_id_key ON public.ping USING btree (test_id);
+
+---- NEWS ----
+CREATE SEQUENCE public.news_uid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+ALTER SEQUENCE public.news_uid_seq OWNED BY public.news.uid;
+ALTER TABLE ONLY public.news
+    ALTER COLUMN uid SET DEFAULT nextval('public.news_uid_seq'::regclass);
+CREATE INDEX news_time_idx ON public.news USING btree ("time");
 
 ---- CLIENT TYPE ----
 CREATE SEQUENCE public.client_type_uid_seq

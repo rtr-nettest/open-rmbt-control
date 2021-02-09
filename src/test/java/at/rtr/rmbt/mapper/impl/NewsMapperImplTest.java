@@ -13,7 +13,6 @@ import static at.rtr.rmbt.TestConstants.LANGUAGE_DE;
 import static at.rtr.rmbt.TestConstants.LANGUAGE_EN;
 import static at.rtr.rmbt.TestFixtures.*;
 import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RunWith(SpringRunner.class)
 public class NewsMapperImplTest {
@@ -51,7 +50,7 @@ public class NewsMapperImplTest {
         assertEquals(TestConstants.DEFAULT_NEWS_TITLE_DE, news.getTitleDe());
         assertNull(news.getTitleEn());
         assertEquals(TestConstants.DEFAULT_PLATFORM, news.getPlatform());
-        assertNotNull(news.getUuid());
+        assertNull(news.getUuid());
         assertEquals(TestConstants.DEFAULT_MAX_SOFTWARE_VERSION, news.getMaxSoftwareVersionCode());
         assertEquals(TestConstants.DEFAULT_MIN_SOFTWARE_VERSION, news.getMinSoftwareVersionCode());
         assertTrue(news.isActive());
@@ -67,7 +66,7 @@ public class NewsMapperImplTest {
         assertEquals(TestConstants.DEFAULT_NEWS_TEXT_EN, news.getTextEn());
         assertNull(news.getTextDe());
         assertEquals(TestConstants.DEFAULT_PLATFORM, news.getPlatform());
-        assertNotNull(news.getUuid());
+        assertNull(news.getUuid());
         assertEquals(TestConstants.DEFAULT_MAX_SOFTWARE_VERSION, news.getMaxSoftwareVersionCode());
         assertEquals(TestConstants.DEFAULT_MIN_SOFTWARE_VERSION, news.getMinSoftwareVersionCode());
         assertTrue(news.isActive());
