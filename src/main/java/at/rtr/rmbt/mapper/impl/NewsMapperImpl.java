@@ -8,8 +8,6 @@ import at.rtr.rmbt.response.NewsListItemResponse;
 import at.rtr.rmbt.response.NewsResponse;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 public class NewsMapperImpl implements NewsMapper {
     private static String LANGUAGE_DE = "de";
@@ -31,8 +29,7 @@ public class NewsMapperImpl implements NewsMapper {
 
     @Override
     public News newsRequestToNews(NewsRequest newsRequest) {
-        return newsRequestToNewsBuilder(newsRequest)
-            .uuid(UUID.randomUUID()).build();
+        return newsRequestToNewsBuilder(newsRequest).build();
     }
 
     @Override
@@ -64,8 +61,8 @@ public class NewsMapperImpl implements NewsMapper {
 
     private News.NewsBuilder newsRequestToNewsBuilder(NewsRequest newsRequest) {
         News.NewsBuilder newsBuilder = News.builder()
-            .minSoftwareVersionCode(newsRequest.getMinSoftwareVersion())
-            .maxSoftwareVersionCode(newsRequest.getMaxSoftwareVersion())
+            .minSoftwareVersionCode(newsRequest.getAndroidMinSoftwareVersion())
+            .maxSoftwareVersionCode(newsRequest.getAndroidMaxSoftwareVersion())
             .active(newsRequest.isActive())
             .force(newsRequest.isForce())
             .platform("Android") // only support android for now

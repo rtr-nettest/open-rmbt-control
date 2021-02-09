@@ -79,8 +79,8 @@ public interface TestFixtures {
     private static NewsRequest.NewsRequestBuilder prepareNewsRequest() {
         return NewsRequest.builder()
             .android(true)
-            .maxSoftwareVersion(DEFAULT_MAX_SOFTWARE_VERSION)
-            .minSoftwareVersion(DEFAULT_MIN_SOFTWARE_VERSION)
+            .androidMaxSoftwareVersion(DEFAULT_MAX_SOFTWARE_VERSION)
+            .androidMinSoftwareVersion(DEFAULT_MIN_SOFTWARE_VERSION)
             .active(true)
             .force(false);
     }
