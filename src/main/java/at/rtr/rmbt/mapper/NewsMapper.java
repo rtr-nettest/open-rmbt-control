@@ -8,7 +8,7 @@ import at.rtr.rmbt.response.NewsResponse;
 
 public interface NewsMapper {
 
-    NewsResponse newsToNewsResponse(News news, String language);
+    NewsResponse newsToNewsResponse(News news);
 
     News newsRequestToNews(NewsRequest newsRequest);
 

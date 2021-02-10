@@ -29,7 +29,7 @@ public class NewsListServiceImpl implements NewsListService {
     @Override
     public NewsListResponse getAllNews(NewsParametersRequest request) {
         var newsList = newsRepository.findActiveByUidAndPlatformAndSoftwareVersionCodeAndUuid(request.getLastNewsUid(), request.getPlatform(), request.getSoftwareVersionCode(), request.getUuid()).stream()
-            .map(news -> newsMapper.newsToNewsResponse(news, request.getLanguage()))
+            .map(newsMapper::newsToNewsResponse)
             .collect(Collectors.toList());
         return new NewsListResponse(newsList);
     }
