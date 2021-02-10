@@ -61,7 +61,7 @@ public class NewsListServiceImplTest {
         when(newsParametersRequest.getUuid()).thenReturn(TestConstants.DEFAULT_NEWS_UUID.toString());
         when(newsRepository.findActiveByUidAndPlatformAndSoftwareVersionCodeAndUuid(DEFAULT_UID, TestConstants.DEFAULT_PLATFORM, TestConstants.DEFAULT_SOFTWARE_VERSION_CODE, TestConstants.DEFAULT_NEWS_UUID.toString()))
                 .thenReturn(List.of(newsEn));
-        when(newsMapper.newsToNewsResponse(newsEn, TestConstants.LANGUAGE_EN)).thenReturn(newsResponse);
+        when(newsMapper.newsToNewsResponse(newsEn)).thenReturn(newsResponse);
 
         var expectedList = List.of(newsResponse);
         var actualList = newsListService.getAllNews(newsParametersRequest);

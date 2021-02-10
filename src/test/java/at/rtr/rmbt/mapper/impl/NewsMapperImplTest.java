@@ -9,8 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static at.rtr.rmbt.TestConstants.LANGUAGE_DE;
-import static at.rtr.rmbt.TestConstants.LANGUAGE_EN;
 import static at.rtr.rmbt.TestFixtures.*;
 import static org.junit.Assert.*;
 
@@ -25,7 +23,7 @@ public class NewsMapperImplTest {
 
     @Test
     public void newsToNewsResponse_whenDeLanguage_expectDeNewsResponse() {
-        var actualNewsResponse = newsMapper.newsToNewsResponse(newsDe, LANGUAGE_DE);
+        var actualNewsResponse = newsMapper.newsToNewsResponse(newsDe);
 
         assertEquals(TestConstants.DEFAULT_UID, actualNewsResponse.getUid());
         assertEquals(TestConstants.DEFAULT_NEWS_TITLE_DE, actualNewsResponse.getTitle());
@@ -34,7 +32,7 @@ public class NewsMapperImplTest {
 
     @Test
     public void newsToNewsResponse_whenNotDeLanguage_expectEnNewsResponse() {
-        var actualNewsResponse = newsMapper.newsToNewsResponse(newsEn, LANGUAGE_EN);
+        var actualNewsResponse = newsMapper.newsToNewsResponse(newsEn);
 
         assertEquals(TestConstants.DEFAULT_UID, actualNewsResponse.getUid());
         assertEquals(TestConstants.DEFAULT_NEWS_TITLE_EN, actualNewsResponse.getTitle());
@@ -46,9 +44,9 @@ public class NewsMapperImplTest {
         var news = newsMapper.newsRequestToNews(newsRequestDe);
 
         assertEquals(TestConstants.DEFAULT_NEWS_TEXT_DE, news.getTextDe());
-        assertNull(news.getTextEn());
+        assertNotNull(news.getTextEn());
         assertEquals(TestConstants.DEFAULT_NEWS_TITLE_DE, news.getTitleDe());
-        assertNull(news.getTitleEn());
+        assertNotNull(news.getTitleEn());
         assertEquals(TestConstants.DEFAULT_PLATFORM, news.getPlatform());
         assertNull(news.getUuid());
         assertEquals(TestConstants.DEFAULT_MAX_SOFTWARE_VERSION, news.getMaxSoftwareVersionCode());
@@ -62,9 +60,9 @@ public class NewsMapperImplTest {
         var news = newsMapper.newsRequestToNews(newsRequestEn);
 
         assertEquals(TestConstants.DEFAULT_NEWS_TITLE_EN, news.getTitleEn());
-        assertNull(news.getTextDe());
+        assertNotNull(news.getTextDe());
         assertEquals(TestConstants.DEFAULT_NEWS_TEXT_EN, news.getTextEn());
-        assertNull(news.getTextDe());
+        assertNotNull(news.getTextDe());
         assertEquals(TestConstants.DEFAULT_PLATFORM, news.getPlatform());
         assertNull(news.getUuid());
         assertEquals(TestConstants.DEFAULT_MAX_SOFTWARE_VERSION, news.getMaxSoftwareVersionCode());
@@ -79,8 +77,8 @@ public class NewsMapperImplTest {
 
         assertEquals(news.getTextDe(), newsRequestDe.getText());
         assertEquals(news.getTitleDe(), newsRequestDe.getTitle());
-        assertNull(news.getTextEn());
-        assertNull(news.getTitleEn());
+        assertNotNull(news.getTextEn());
+        assertNotNull(news.getTitleEn());
         assertEquals(news.getUuid(), newsEn.getUuid());
         assertEquals(news.getId(), newsEn.getId());
         assertEquals(news.getTime(), newsEn.getTime());

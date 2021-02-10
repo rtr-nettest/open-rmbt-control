@@ -14,16 +14,12 @@ public class NewsMapperImpl implements NewsMapper {
     private static String LANGUAGE_EN = "en";
 
     @Override
-    public NewsResponse newsToNewsResponse(News news, String language) {
+    public NewsResponse newsToNewsResponse(News news) {
+        var isEn = news.getTitleEn() != null;
         var response = NewsResponse.builder()
-            .uid(news.getId());
-        if (LANGUAGE_DE.equals(language)) {
-            response.title(news.getTitleDe());
-            response.text(news.getTextDe());
-        } else {
-            response.title(news.getTitleEn());
-            response.text(news.getTextEn());
-        }
+            .uid(news.getId())
+            .title(isEn ? news.getTitleEn() : news.getTitleDe())
+            .text(isEn ? news.getTextEn() : news.getTextDe());
         return response.build();
     }
 
@@ -71,13 +67,10 @@ public class NewsMapperImpl implements NewsMapper {
         if (newsRequest.getStartDate() != null)
             newsBuilder.startsAt(newsRequest.getStartDate());
 
-        if (LANGUAGE_DE.equals(newsRequest.getLanguage())) {
-            newsBuilder.titleDe(newsRequest.getTitle());
-            newsBuilder.textDe(newsRequest.getText());
-        } else {
-            newsBuilder.titleEn(newsRequest.getTitle());
-            newsBuilder.textEn(newsRequest.getText());
-        }
+        newsBuilder.titleDe(newsRequest.getTitle());
+        newsBuilder.textDe(newsRequest.getText());
+        newsBuilder.titleEn(newsRequest.getTitle());
+        newsBuilder.textEn(newsRequest.getText());
 
         return newsBuilder;
     }
