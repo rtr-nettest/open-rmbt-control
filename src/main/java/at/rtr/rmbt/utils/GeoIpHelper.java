@@ -39,19 +39,18 @@ public abstract class GeoIpHelper
     }
 
 
-    public static String lookupCountry(final InetAddress adr)
-    {
-        try
-        {
-            CountryResponse country = getLookupService().country(adr);
-            String countryCode = country.getCountry().getIsoCode();
-            return countryCode;
+    public static String lookupCountry(final InetAddress adr) {
+        try {
+            DatabaseReader lookupService = getLookupService();
+            if (lookupService != null) {
+                CountryResponse country = lookupService.country(adr);
+                String countryCode = country.getCountry().getIsoCode();
+                return countryCode;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        catch (Throwable t)
-        {
-            t.printStackTrace();
-            return null;
-        }
+        return null;
     }
 }
 
