@@ -32,7 +32,6 @@ stages:
     - apk add --no-cache zip unzip 
     - mkdir -p ${CI_PROJECT_DIR}/artifacts/ && cd ${CI_PROJECT_DIR}/artifacts
     - 'curl --location --output ${CORE_ARTIFACT_DOWNLOAD}.zip --header "JOB-TOKEN: $CI_JOB_TOKEN" "https://gitlab.martes-specure.com/api/v4/projects/${CORE_PROJECT_ID}/jobs/artifacts/${CORE_ARTIFACT_BRANCH}/download?job=${CORE_ARTIFACT_DOWNLOAD}"'
-    - cat ${CORE_ARTIFACT_DOWNLOAD}.zip
     - ls -lsa
     - unzip ${CORE_ARTIFACT_DOWNLOAD}.zip -d ${CORE_ARTIFACT_DOWNLOAD}
     - mv -f ${CI_PROJECT_DIR}/artifacts/${CORE_ARTIFACT_DOWNLOAD}/target/${CORE_ARTIFACT_NAME} ${CI_PROJECT_DIR}/
