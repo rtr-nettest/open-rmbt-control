@@ -203,7 +203,7 @@ public class TestSettingsFacadeTest {
         assertEquals(applicationProperties.getDuration(), testResult.getDuration());
         assertEquals(testSettingsRequest.getNumberOfThreads(), testResult.getNumberOfThreads());
         assertEquals(TestStatus.STARTED, testResult.getStatus());
-        assertEquals(testSettingsRequest.getNdt(), testResult.getRunNdt());
+        assertEquals(testSettingsRequest.isNdt(), testResult.getRunNdt());
         assertEquals(testSettingsRequest.getSoftwareRevision(), testResult.getSoftwareRevision());
         assertTrue(testResult.getUseSsl());
     }
@@ -238,7 +238,7 @@ public class TestSettingsFacadeTest {
         String reverseDns = HelperFunctions.reverseDNSLookup(clientAddress);
         if (StringUtils.isNotBlank(reverseDns))
             test.setPublicIpRdns(reverseDns.replaceFirst("\\.$", ""));
-        test.setRunNdt(testSettingsRequest.getNdt());
+        test.setRunNdt(testSettingsRequest.isNdt());
         return test;
     }
 }

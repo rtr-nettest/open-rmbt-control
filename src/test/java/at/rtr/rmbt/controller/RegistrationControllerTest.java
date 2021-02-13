@@ -51,7 +51,7 @@ public class RegistrationControllerTest {
         TestSettingsRequest testSettingsRequest = new TestSettingsRequest(
             TestPlatform.ANDROID,
             1,
-            null,
+            false,
             TestStatus.END,
             1,
             "fix/rtr_release_fixes_'4ce8bda9'",
