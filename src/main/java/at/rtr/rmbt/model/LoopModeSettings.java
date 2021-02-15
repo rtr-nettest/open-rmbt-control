@@ -3,6 +3,7 @@ package at.rtr.rmbt.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
@@ -12,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Table(name = "test_loopmode")
-public class LoopModeSettings {
+public class LoopModeSettings implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "test_loopmode_seq")

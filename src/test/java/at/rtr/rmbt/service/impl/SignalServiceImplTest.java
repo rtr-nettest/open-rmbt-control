@@ -1,13 +1,15 @@
 package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.TestConstants;
-import at.rtr.rmbt.model.RtrClient;
-import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.constant.HeaderConstants;
+import at.rtr.rmbt.mapper.SignalMapper;
+import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.repository.ClientRepository;
 import at.rtr.rmbt.repository.RTRProviderRepository;
 import at.rtr.rmbt.repository.TestRepository;
-import at.rtr.rmbt.response.SignalResponse;
+import at.rtr.rmbt.request.SignalRequest;
+import at.rtr.rmbt.response.SignalMeasurementResponse;
+import at.rtr.rmbt.response.SignalSettingsResponse;
 import at.rtr.rmbt.service.SignalService;
 import com.specure.core.service.impl.UUIDGenerator;
 import org.junit.Before;
@@ -15,14 +17,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
 import java.util.Optional;
 
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -37,6 +44,8 @@ public class SignalServiceImplTest {
     private UUIDGenerator uuidGenerator;
     @MockBean
     private ClientRepository clientRepository;
+    @MockBean
+    private SignalMapper signalMapper;
 
     @Mock
     private SignalRequest signalRequest;
@@ -46,10 +55,16 @@ public class SignalServiceImplTest {
     private at.rtr.rmbt.model.Test savedTest;
     @Mock
     private RtrClient rtrClient;
+    @Mock
+    private Pageable pageable;
+    @Mock
+    private Page<at.rtr.rmbt.model.Test> page;
+    @Mock
+    private SignalMeasurementResponse signalMeasurementResponse;
 
     @Before
     public void setUp() {
-        signalService = new SignalServiceImpl(testRepository, providerRepository, uuidGenerator, clientRepository);
+        signalService = new SignalServiceImpl(testRepository, providerRepository, uuidGenerator, clientRepository, signalMapper);
     }
 
     @Test
@@ -70,8 +85,18 @@ public class SignalServiceImplTest {
         assertEquals(expectedResponse, actualResponse);
     }
 
-    private SignalResponse getRegisterSignalResponse() {
-        return SignalResponse.builder()
+    @Test
+    public void getSignalsHistory_correctInvocation_expectPageWithResponse() {
+        when(testRepository.findAll(eq(pageable))).thenReturn(new PageImpl<>(Collections.singletonList(savedTest)));
+        when(page.getContent()).thenReturn(Collections.singletonList(savedTest));
+        when(signalMapper.signalToSignalMeasurementResponse(savedTest)).thenReturn(signalMeasurementResponse);
+        var actual = signalService.getSignalsHistory(pageable);
+        assertEquals(signalMeasurementResponse, actual.getContent().get(0));
+        assertEquals(1, actual.getContent().size());
+    }
+
+    private SignalSettingsResponse getRegisterSignalResponse() {
+        return SignalSettingsResponse.builder()
                 .resultUrl(String.join(TestConstants.DEFAULT_URL, SIGNAL_RESULT))
                 .clientRemoteIp(TestConstants.DEFAULT_IP)
                 .provider(TestConstants.DEFAULT_PROVIDER)

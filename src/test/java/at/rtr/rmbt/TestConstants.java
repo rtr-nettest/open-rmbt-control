@@ -6,10 +6,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.UUID;
 
 public interface TestConstants {
@@ -82,6 +79,7 @@ public interface TestConstants {
     String DEFAULT_RESULT_URL = "DEFAULT_RESULT_URL";
     String DEFAULT_URL = "DEFAULT_RESULT_URL";
     ZonedDateTime ZONED_DATE_TIME = ZonedDateTime.now();
+    ZonedDateTime DEFAULT_ZONED_DATE_TIME = ZonedDateTime.of(LocalDateTime.of(2021, 1, 20, 7, 32), ZoneId.of("UTC"));
     String DEFAULT_TEST_SERVER_WEB_ADDRESS = "DEFAULT_TEST_SERVER_WEB_ADDRESS";
     Integer DEFAULT_TEST_SERVER_PORT = 443;
     Integer DEFAULT_TEST_SERVER_PORT_SSL = 443;
@@ -89,7 +87,7 @@ public interface TestConstants {
     String DEFAULT_TEST_SERVER_COUNTRY = "DEFAULT_TEST_SERVER_COUNTRY";
     Double DEFAULT_TEST_SERVER_LATITUDE = 56.9;
     Double DEFAULT_TEST_SERVER_LONGITUDE = 87.3;
-    Point DEFAULT_TEST_SERVER_LOCATION = new GeometryFactory().createPoint(new Coordinate(DEFAULT_TEST_SERVER_LONGITUDE, DEFAULT_TEST_SERVER_LATITUDE));
+    Point DEFAULT_LOCATION = new GeometryFactory().createPoint(new Coordinate(DEFAULT_TEST_SERVER_LONGITUDE, DEFAULT_TEST_SERVER_LATITUDE));
     String DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4 = "DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4";
     String DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6 = "DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6";
     ServerType DEFAULT_TEST_SERVER_SERVER_TYPE = ServerType.RMBT;
@@ -97,6 +95,10 @@ public interface TestConstants {
     Integer DEFAULT_TEST_SERVER_WEIGHT = 3;
     String DEFAULT_TEST_SERVER_KEY = "DEFAULT_TEST_SERVER_KEY";
     String DEFAULT_TEST_SERVER_NODE = "DEFAULT_TEST_SERVER_NODE";
+    Integer DEFAULT_PAGE = 1;
+    Integer DEFAULT_SIZE = 10;
+    String DEFAULT_SORT = "uuid,desc";
+    String DEFAULT_SORT_PROPERTY = "uuid";
 
     interface Database {
         long CLIENT_TYPE_DESKTOP_UID = 1L;

@@ -54,7 +54,7 @@ public class TestServerMapperImplTest {
         when(testServer.getCountry()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_COUNTRY);
         when(testServer.getLatitude()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_LATITUDE);
         when(testServer.getLongitude()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_LONGITUDE);
-        when(testServer.getLocation()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_LOCATION);
+        when(testServer.getLocation()).thenReturn(TestConstants.DEFAULT_LOCATION);
         when(testServer.getWebAddressIpV4()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4);
         when(testServer.getWebAddressIpV6()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6);
         when(testServer.getServerType()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE);
@@ -76,7 +76,7 @@ public class TestServerMapperImplTest {
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_COUNTRY, actualResponse.getCountry());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_LATITUDE, actualResponse.getLatitude());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_LONGITUDE, actualResponse.getLongitude());
-        assertEquals(TestConstants.DEFAULT_TEST_SERVER_LOCATION, actualResponse.getLocation());
+        assertEquals(TestConstants.DEFAULT_LOCATION, actualResponse.getLocation());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4, actualResponse.getWebAddressIpV4());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6, actualResponse.getWebAddressIpV6());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE, actualResponse.getServerType());
@@ -98,7 +98,7 @@ public class TestServerMapperImplTest {
         when(testServerRequest.getCountry()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_COUNTRY);
         when(testServerRequest.getLatitude()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_LATITUDE);
         when(testServerRequest.getLongitude()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_LONGITUDE);
-        when(testServerRequest.getLocation()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_LOCATION);
+        when(testServerRequest.getLocation()).thenReturn(TestConstants.DEFAULT_LOCATION);
         when(testServerRequest.getWebAddressIpV4()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4);
         when(testServerRequest.getWebAddressIpV6()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6);
         when(testServerRequest.getServerType()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE);
@@ -119,7 +119,7 @@ public class TestServerMapperImplTest {
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_COUNTRY, actualTestServer.getCountry());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_LATITUDE, actualTestServer.getLatitude());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_LONGITUDE, actualTestServer.getLongitude());
-        assertEquals(TestConstants.DEFAULT_TEST_SERVER_LOCATION, actualTestServer.getLocation());
+        assertEquals(TestConstants.DEFAULT_LOCATION, actualTestServer.getLocation());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4, actualTestServer.getWebAddressIpV4());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6, actualTestServer.getWebAddressIpV6());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE, actualTestServer.getServerType());
