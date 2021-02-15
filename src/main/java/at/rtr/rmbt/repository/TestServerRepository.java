@@ -18,15 +18,15 @@ public interface TestServerRepository extends JpaRepository<TestServer, Long> {
         value = "SELECT * FROM test_server ts " +
             "WHERE ts.active " +
             "AND ts.server_type IN :serverTypes " +
-            "AND ( :country = ANY(ts.countries) OR 'any' = ANY(ts.countries)) " +
-            "ORDER BY 'any' != ANY (ts.countries) DESC, " +
-            "ts.priority, " +
+            "AND ( CAST(:country AS TEXT) = ANY(ts.countries) OR 'any' = ANY(ts.countries)) " + // need to cast string
+            "ORDER BY 'any' != ANY (ts.countries) DESC, " + // because null value is converted to varbinary by hibernate
+            "ts.priority, " +                               //  which causes an error
             "RANDOM() * ts.weight DESC " +
             "LIMIT 1",
         nativeQuery = true
     )
     TestServer findActiveByServerTypeInAndCountries(
-        @Param("serverTypes") List<ServerType> serverTypes,
+        @Param("serverTypes") List<String> serverTypes,
         @Param("country") String country
     );
 

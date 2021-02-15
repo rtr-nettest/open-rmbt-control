@@ -159,7 +159,7 @@ public class TestSettingsFacade {
 
                     List<ServerType> serverTypes;
 
-                    if (testSettingsRequest.getCapabilities() != null && testSettingsRequest.getCapabilities().getRmbtHttp()) {
+                    if (testSettingsRequest.getCapabilities() != null && testSettingsRequest.getCapabilities().isRmbtHttp()) {
                         serverTypes = List.of(ServerType.RMBThttp, ServerType.RMBT);
                     } else if (ServerType.RMBTws.equals(testSettingsRequest.getServerType())) {
                         serverTypes = List.of(ServerType.RMBThttp, ServerType.RMBTws);
@@ -175,7 +175,7 @@ public class TestSettingsFacade {
                     Integer numberOfThreads = getNumberOfThreadsOrDefault(testSettingsRequest.getNumberOfThreads());
                     TestServer testServer = null;
 
-                    if (testSettingsRequest.getUserServerSelection()) {
+                    if (testSettingsRequest.isUserServerSelection()) {
                         final String preferServer = testSettingsRequest.getPreferredServer();
                         if (StringUtils.isNotBlank(preferServer))
                             testServer = testServerService.findByUuidAndActive(UUID.fromString(preferServer), true)
@@ -214,8 +214,12 @@ public class TestSettingsFacade {
                         Test test = getTest(testSettingsRequest, clientIpAddress, asn, asName, asCountry, clientAddress, language, timeZoneId, client, testUuid, testOpenUuid, testServerEncryption, numberOfThreads, testServer, geoIpCountry);
 
                         test = testService.save(test);
-                        loopModeSettings.setTestUuid(testUuid);
-                        loopModeSettings = loopModeSettingsService.save(loopModeSettings);
+
+                        if (loopModeSettings != null) {
+                            loopModeSettings.setTestUuid(testUuid);
+                            loopModeSettings = loopModeSettingsService.save(loopModeSettings);
+                            builder.loopUuid(loopModeSettings.getLoopUuid().toString());
+                        }
 
                         builder.provider(testService.getRmbtSetProviderFromAs(test.getUid()));
 
@@ -240,7 +244,6 @@ public class TestSettingsFacade {
                                 .testUuid(testUuid.toString())
                                 .openTestUuid("O" + testOpenUuid)
                                 .testId(test.getUid())
-                                .loopUuid(loopModeSettings.getLoopUuid().toString())
                                 .testWait(Math.max(waitTime, 0));
                         }
 
@@ -302,7 +305,7 @@ public class TestSettingsFacade {
         String reverseDns = HelperFunctions.reverseDNSLookup(clientAddress);
         if (StringUtils.isNotBlank(reverseDns))
             test.setPublicIpRdns(reverseDns.replaceFirst("\\.$", ""));
-        test.setRunNdt(testSettingsRequest.getNdt());
+        test.setRunNdt(testSettingsRequest.isNdt());
         return test;
     }
 
