@@ -1,9 +1,9 @@
 package at.rtr.rmbt.mapper;
 
 import at.rtr.rmbt.model.Test;
-import at.rtr.rmbt.response.SignalResponse;
+import at.rtr.rmbt.response.SignalSettingsResponse;
 
 public interface TestMapper {
 
-    SignalResponse testToSignalResponse(Test test);
+    SignalSettingsResponse testToSignalResponse(Test test);
 }

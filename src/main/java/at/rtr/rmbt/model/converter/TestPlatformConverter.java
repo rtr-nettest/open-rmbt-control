@@ -17,6 +17,6 @@ public class TestPlatformConverter implements AttributeConverter<TestPlatform, S
 
     @Override
     public TestPlatform convertToEntityAttribute(String dbData) {
-        return TestPlatform.forValue(dbData);
+        return dbData == null ? TestPlatform.ANDROID : TestPlatform.forValue(dbData);
     }
 }

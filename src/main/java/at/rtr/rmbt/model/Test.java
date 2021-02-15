@@ -8,7 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
-import org.springframework.data.geo.Polygon;
+import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
@@ -36,8 +36,9 @@ public class Test {
     @Column(name = "uuid")
     private UUID uuid;
 
-    @Column(name = "client_id")
-    private Long clientId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id")
+    private RtrClient client;
 
     @Column(name = "client_version")
     private String clientVersion;
@@ -171,7 +172,7 @@ public class Test {
     private Integer networkType;
 
     @Column(name = "location")
-    private Polygon location;
+    private Geometry location;
 
     @Column(name = "signal_strength")
     private Integer signalStrength;
@@ -468,6 +469,14 @@ public class Test {
 
     @Column(name = "submission_retry_count")
     private Integer submissionRetryCount;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "uuid",
+            referencedColumnName = "test_uuid",
+            insertable = false, nullable = false, updatable = false
+    )
+    private LoopModeSettings loopModeSettings;
 
     @PrePersist
     protected void preInsert() {

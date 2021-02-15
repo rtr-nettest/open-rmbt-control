@@ -3,15 +3,16 @@ package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.request.SignalRequest;
-import at.rtr.rmbt.response.SignalResponse;
+import at.rtr.rmbt.response.SignalMeasurementResponse;
+import at.rtr.rmbt.response.SignalSettingsResponse;
 import at.rtr.rmbt.service.SignalService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,7 +25,14 @@ public class SignalController {
     @PostMapping(URIConstants.SIGNAL_REQUEST)
     @ApiOperation(value = "Register signal", notes = "Request to obtain configuration for signal monitoring")
     @ResponseStatus(HttpStatus.CREATED)
-    public SignalResponse registerSignal(HttpServletRequest httpServletRequest, @RequestBody SignalRequest signalRequest) {
+    public SignalSettingsResponse registerSignal(HttpServletRequest httpServletRequest, @RequestBody SignalRequest signalRequest) {
         return signalService.registerSignal(signalRequest, httpServletRequest);
+    }
+
+    @GetMapping(URIConstants.ADMIN_SIGNAL)
+    @ApiOperation(value = "Get list of signal measurements")
+    @ResponseStatus(HttpStatus.OK)
+    public Page<SignalMeasurementResponse> getSignalHistory(@PageableDefault Pageable pageable) {
+        return signalService.getSignalsHistory(pageable);
     }
 }

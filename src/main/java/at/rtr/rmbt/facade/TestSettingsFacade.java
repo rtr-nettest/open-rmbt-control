@@ -280,7 +280,7 @@ public class TestSettingsFacade {
 
         test.setUuid(testUuid);
         test.setOpenTestUuid(testOpenUuid);
-        test.setClientId(client.getUid());
+        test.setClient(client);
         test.setClientName(testSettingsRequest.getServerType());
         test.setClientVersion(testSettingsRequest.getTestSetVersion());
         test.setClientSoftwareVersion(testSettingsRequest.getSoftwareVersion());

@@ -193,7 +193,7 @@ public class TestSettingsFacadeTest {
     }
 
     private void assertTestResult(MockHttpServletRequest request, TestSettingsRequest testSettingsRequest, TestServer testServer, RtrClient client, at.rtr.rmbt.model.Test testResult) {
-        assertEquals(client.getUid(), testResult.getClientId());
+        assertEquals(client.getUid(), testResult.getClient().getUid());
         assertEquals(testSettingsRequest.getServerType(), testResult.getClientName());
         assertEquals(testSettingsRequest.getTestSetVersion(), testResult.getClientVersion());
         assertEquals(testSettingsRequest.getSoftwareVersion(), testResult.getClientSoftwareVersion());
@@ -213,7 +213,7 @@ public class TestSettingsFacadeTest {
 
         test.setUuid(testUuid);
         test.setOpenTestUuid(testOpenUuid);
-        test.setClientId(client.getUid());
+        test.setClient(client);
         test.setClientName(testSettingsRequest.getServerType());
         test.setClientVersion(testSettingsRequest.getTestSetVersion());
         test.setClientSoftwareVersion(testSettingsRequest.getSoftwareVersion());
