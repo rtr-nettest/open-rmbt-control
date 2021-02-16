@@ -50,7 +50,7 @@ public class TestServerServiceImplTest {
 
     @Test
     public void getServers_whenCommonData_expectTestServerList() {
-        when(testServerRepository.getByActiveTrueAndSelectableTrueAndServerTypeIn(SERVER_TEST_SERVER_TYPES)).thenReturn(List.of(testServer));
+        when(testServerRepository.findDistinctByActiveTrueAndSelectableTrueAndServerTypesIn(SERVER_TEST_SERVER_TYPES)).thenReturn(List.of(testServer));
         when(testServerMapper.testServerToTestServerResponseForSettings(testServer)).thenReturn(testServerResponseForSettings);
 
         var response = testServerService.getServers();
@@ -60,7 +60,7 @@ public class TestServerServiceImplTest {
 
     @Test
     public void getServersHttp_whenCommonData_expectTestServerList() {
-        when(testServerRepository.getByActiveTrueAndSelectableTrueAndServerTypeIn(SERVER_HTTP_TEST_SERVER_TYPES)).thenReturn(List.of(testServer));
+        when(testServerRepository.findDistinctByActiveTrueAndSelectableTrueAndServerTypesIn(SERVER_HTTP_TEST_SERVER_TYPES)).thenReturn(List.of(testServer));
         when(testServerMapper.testServerToTestServerResponseForSettings(testServer)).thenReturn(testServerResponseForSettings);
 
         var response = testServerService.getServersHttp();
@@ -70,7 +70,7 @@ public class TestServerServiceImplTest {
 
     @Test
     public void getServersWs_whenCommonData_expectTestServerList() {
-        when(testServerRepository.getByActiveTrueAndSelectableTrueAndServerTypeIn(SERVER_WS_TEST_SERVER_TYPES)).thenReturn(List.of(testServer));
+        when(testServerRepository.findDistinctByActiveTrueAndSelectableTrueAndServerTypesIn(SERVER_WS_TEST_SERVER_TYPES)).thenReturn(List.of(testServer));
         when(testServerMapper.testServerToTestServerResponseForSettings(testServer)).thenReturn(testServerResponseForSettings);
 
         var response = testServerService.getServersWs();
@@ -80,7 +80,7 @@ public class TestServerServiceImplTest {
 
     @Test
     public void getServersQos_whenCommonData_expectTestServerList() {
-        when(testServerRepository.getByActiveTrueAndSelectableTrueAndServerTypeIn(SERVER_QOS_TEST_SERVER_TYPES)).thenReturn(List.of(testServer));
+        when(testServerRepository.findDistinctByActiveTrueAndSelectableTrueAndServerTypesIn(SERVER_QOS_TEST_SERVER_TYPES)).thenReturn(List.of(testServer));
         when(testServerMapper.testServerToTestServerResponseForSettings(testServer)).thenReturn(testServerResponseForSettings);
 
         var response = testServerService.getServersQos();
@@ -128,6 +128,8 @@ public class TestServerServiceImplTest {
 
         testServerService.deleteTestServer(TestConstants.DEFAULT_UID);
 
-        verify(testServerRepository).delete(testServer);
+        verify(testServer).setArchived(true);
+        verify(testServer).setActive(false);
+        verify(testServerRepository).save(testServer);
     }
 }

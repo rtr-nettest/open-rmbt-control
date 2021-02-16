@@ -17,7 +17,7 @@ public interface TestServerRepository extends JpaRepository<TestServer, Long> {
     @Query(
         value = "SELECT * FROM test_server ts " +
             "WHERE ts.active " +
-            "AND ts.server_type IN :serverTypes " +
+            "AND ts.uid in (select tst.test_server_uid from test_server_types tst where tst.server_type in (:serverTypes)) " +
             "AND ( CAST(:country AS TEXT) = ANY(ts.countries) OR 'any' = ANY(ts.countries)) " + // need to cast string
             "ORDER BY 'any' != ANY (ts.countries) DESC, " + // because null value is converted to varbinary by hibernate
             "ts.priority, " +                               //  which causes an error
@@ -30,5 +30,5 @@ public interface TestServerRepository extends JpaRepository<TestServer, Long> {
         @Param("country") String country
     );
 
-    List<TestServer> getByActiveTrueAndSelectableTrueAndServerTypeIn(Collection<ServerType> serverTypes);
+    List<TestServer> findDistinctByActiveTrueAndSelectableTrueAndServerTypesIn(Collection<ServerType> serverTypes);
 }
