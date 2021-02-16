@@ -30,6 +30,6 @@ public class SignalMeasurementResponse {
 
     private final Integer duration;
 
-    private final ZonedDateTime startDateTime;
+    private final ZonedDateTime time;
 
 }

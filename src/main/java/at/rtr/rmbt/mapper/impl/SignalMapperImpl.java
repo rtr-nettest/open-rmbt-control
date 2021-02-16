@@ -18,7 +18,7 @@ public class SignalMapperImpl implements SignalMapper {
                 .testType(Objects.isNull(test.getLoopModeSettings()) ? "Regular" : "Loop") //TODO temp because of new dedicated mode
                 .location(test.getLocation())
                 .duration(test.getDuration())
-                .startDateTime(test.getTime())
+                .time(test.getTime())
                 .build();
     }
 }
