@@ -35,7 +35,7 @@ public class SignalMapperImplTest {
         var test = buildTest(NetworkGroupName.G2, null);
         var actual = mapper.signalToSignalMeasurementResponse(test);
         assertEquals(5, actual.getDuration());
-        assertEquals(DEFAULT_ZONED_DATE_TIME, actual.getStartDateTime());
+        assertEquals(DEFAULT_ZONED_DATE_TIME, actual.getTime());
         assertEquals(DEFAULT_LOCATION, actual.getLocation());
         assertEquals(NetworkGroupName.G2.getLabelEn(), actual.getTechnology());
         assertEquals("Regular", actual.getTestType());
@@ -48,7 +48,7 @@ public class SignalMapperImplTest {
         var test = buildTest(null, loopModeSettings);
         var actual = mapper.signalToSignalMeasurementResponse(test);
         assertEquals(5, actual.getDuration());
-        assertEquals(DEFAULT_ZONED_DATE_TIME, actual.getStartDateTime());
+        assertEquals(DEFAULT_ZONED_DATE_TIME, actual.getTime());
         assertEquals(DEFAULT_LOCATION, actual.getLocation());
         assertNull(actual.getTechnology());
         assertEquals("Loop", actual.getTestType());
