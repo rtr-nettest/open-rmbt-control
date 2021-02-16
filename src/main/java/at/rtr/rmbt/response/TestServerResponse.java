@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import org.locationtech.jts.geom.Geometry;
 
+import java.util.Set;
+
 @SuperBuilder
 @Getter
 @EqualsAndHashCode(callSuper = false)
@@ -38,7 +40,7 @@ public class TestServerResponse {
 
     private final String webAddressIpV6;
 
-    private final ServerType serverType;
+    private final Set<ServerType> serverTypes;
 
     private final Integer priority;
 
@@ -51,4 +53,6 @@ public class TestServerResponse {
     private final Boolean selectable;
 
     private final String node;
+
+    private final boolean encrypted;
 }

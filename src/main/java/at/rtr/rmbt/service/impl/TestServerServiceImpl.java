@@ -85,7 +85,9 @@ public class TestServerServiceImpl implements TestServerService {
     @Override
     public void deleteTestServer(Long id) {
         var testServer = getTestServerById(id);
-        testServerRepository.delete(testServer);
+        testServer.setArchived(true);
+        testServer.setActive(false);
+        testServerRepository.save(testServer);
     }
 
     private TestServer getTestServerById(Long id) {
@@ -94,7 +96,7 @@ public class TestServerServiceImpl implements TestServerService {
     }
 
     private List<TestServerResponseForSettings> getServers(List<ServerType> serverTypes) {
-        return testServerRepository.getByActiveTrueAndSelectableTrueAndServerTypeIn(serverTypes).stream()
+        return testServerRepository.findDistinctByActiveTrueAndSelectableTrueAndServerTypesIn(serverTypes).stream()
                 .map(testServerMapper::testServerToTestServerResponseForSettings)
                 .collect(Collectors.toList());
     }

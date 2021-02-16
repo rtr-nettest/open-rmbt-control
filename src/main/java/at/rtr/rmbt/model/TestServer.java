@@ -5,6 +5,7 @@ import lombok.*;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -57,7 +58,13 @@ public class TestServer {
 
     @Column(name = "server_type")
     @Enumerated(EnumType.STRING)
-    private ServerType serverType;
+    private ServerType serverType; //todo remove after release of new Android App
+
+    @Column(name = "server_type")
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(targetClass = ServerType.class)
+    @CollectionTable(name = "test_server_types")
+    private Set<ServerType> serverTypes;
 
     @Column(name = "priority")
     private Integer priority;
@@ -77,11 +84,12 @@ public class TestServer {
     @Column(name = "selectable")
     private Boolean selectable;
 
-//    TODO create user type that can handle this column
-//    @Column(name = "countries")
-//    @Type(type = "com.vladmihalcea.hibernate.type.array.StringArrayType")
-//    private List<String> countries;
-
     @Column(name = "node")
     private String node;
+
+    @Column(name = "archived")
+    private boolean archived;
+
+    @Column(name = "encrypted")
+    private boolean encrypted;
 }

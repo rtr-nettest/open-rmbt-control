@@ -1,5 +1,6 @@
 package at.rtr.rmbt.facade;
 
+import at.rtr.rmbt.config.RollBackService;
 import at.rtr.rmbt.exception.TestServerNotFoundException;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.model.enums.ServerType;
@@ -24,7 +25,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.Inet4Address;
@@ -61,8 +61,13 @@ public class TestSettingsFacade {
 
     private final ObjectMapper objectMapper;
 
+    private final RollBackService rollBackService;
+
     @Autowired
-    public TestSettingsFacade(LoopModeSettingsService loopModeSettingsService, ClientTypeService clientTypeService, ClientService clientService, TestServerService testServerService, TestService testService, ApplicationProperties applicationProperties, MessageSource messageSource, ObjectMapper objectMapper) {
+    public TestSettingsFacade(LoopModeSettingsService loopModeSettingsService, ClientTypeService clientTypeService,
+                              ClientService clientService, TestServerService testServerService, TestService testService,
+                              ApplicationProperties applicationProperties, MessageSource messageSource, ObjectMapper objectMapper,
+                              RollBackService rollBackService) {
         this.loopModeSettingsService = loopModeSettingsService;
         this.clientTypeService = clientTypeService;
         this.clientService = clientService;
@@ -71,6 +76,7 @@ public class TestSettingsFacade {
         this.applicationProperties = applicationProperties;
         this.messageSource = messageSource;
         this.objectMapper = objectMapper;
+        this.rollBackService = rollBackService;
     }
 
     @Transactional
@@ -154,7 +160,6 @@ public class TestSettingsFacade {
                 if (client != null) {
                     final UUID testUuid = UUID.randomUUID();
                     final UUID testOpenUuid = UUID.randomUUID();
-                    boolean testServerEncryption = true; // encryption is mandatory
                     final Boolean ipv6;
 
                     List<ServerType> serverTypes;
@@ -165,7 +170,6 @@ public class TestSettingsFacade {
                         serverTypes = List.of(ServerType.RMBThttp, ServerType.RMBTws);
                     } else if (ServerType.HW_PROBE.equals(testSettingsRequest.getServerType())) {
                         serverTypes = List.of(ServerType.RMBT);
-                        testServerEncryption = false;
                     } else {
                         serverTypes = List.of(ServerType.RMBT);
                     }
@@ -179,7 +183,7 @@ public class TestSettingsFacade {
                         final String preferServer = testSettingsRequest.getPreferredServer();
                         if (StringUtils.isNotBlank(preferServer))
                             testServer = testServerService.findByUuidAndActive(UUID.fromString(preferServer), true)
-                                .orElse(null);
+                                    .orElse(null);
                     }
 
                     String geoIpCountry = GeoIpHelper.lookupCountry(clientAddress);
@@ -190,10 +194,12 @@ public class TestSettingsFacade {
                         throw new TestServerNotFoundException();
 
                     builder.testServerAddress(getServerAddress(ipv6, testServer))
-                        .testServerPort(testServerEncryption ? testServer.getPortSsl() : testServer.getPort())
+                        .testServerPort(testServer.isEncrypted() ? testServer.getPortSsl() : testServer.getPort())
                         .testServerName(testServer.getName() + " (" + testServer.getCity() + ")")
-                        .testServerEncryption(testServerEncryption)
-                        .testServerType(testServer.getServerType())
+                        .testServerEncryption(testServer.isEncrypted())
+                        .testServerType(testServer.getServerTypes().contains(testSettingsRequest.getServerType()) ?
+                                testSettingsRequest.getServerType() :
+                                testServer.getServerTypes().stream().findFirst().orElseThrow(TestServerNotFoundException::new))
                         .testDuration(String.valueOf(applicationProperties.getDuration()))
                         .testNumberOfThreads(String.valueOf(numberOfThreads))
                         .testNumberOfPings(String.valueOf(applicationProperties.getPings()))
@@ -211,7 +217,7 @@ public class TestSettingsFacade {
 
 
                     if (errorResponse.getError().isEmpty()) {
-                        Test test = getTest(testSettingsRequest, clientIpAddress, asn, asName, asCountry, clientAddress, language, timeZoneId, client, testUuid, testOpenUuid, testServerEncryption, numberOfThreads, testServer, geoIpCountry);
+                        Test test = getTest(testSettingsRequest, clientIpAddress, asn, asName, asCountry, clientAddress, language, timeZoneId, client, testUuid, testOpenUuid, numberOfThreads, testServer, geoIpCountry);
 
                         test = testService.save(test);
 
@@ -275,7 +281,7 @@ public class TestSettingsFacade {
     }
 
 
-    private Test getTest(TestSettingsRequest testSettingsRequest, String clientIpdAddress, Long asn, String asName, String asCountry, InetAddress clientAddress, String language, String timeZoneId, RtrClient client, UUID testUuid, UUID testOpenUuid, boolean testServerEncryption, Integer numberOfThreads, TestServer testServer, String geoIpCountry) {
+    private Test getTest(TestSettingsRequest testSettingsRequest, String clientIpdAddress, Long asn, String asName, String asCountry, InetAddress clientAddress, String language, String timeZoneId, RtrClient client, UUID testUuid, UUID testOpenUuid, Integer numberOfThreads, TestServer testServer, String geoIpCountry) {
         Test test = new Test();
 
         test.setUuid(testUuid);
@@ -289,8 +295,8 @@ public class TestSettingsFacade {
         test.setClientPublicIpAnonymized(HelperFunctions.anonymizeIp(clientAddress));
         test.setCountryGeoip(geoIpCountry);
         test.setServerId(testServer.getUid());
-        test.setServerPort(testServerEncryption ? testServer.getPortSsl() : testServer.getPort());
-        test.setUseSsl(testServerEncryption);
+        test.setServerPort(testServer.isEncrypted() ? testServer.getPortSsl() : testServer.getPort());
+        test.setUseSsl(testServer.isEncrypted());
         test.setTimezone(timeZoneId);
         test.setClientTime(ZonedDateTime.ofInstant(Instant.ofEpochSecond(testSettingsRequest.getTime()), ZoneId.of(timeZoneId)));
         test.setDuration(applicationProperties.getDuration());
@@ -376,7 +382,7 @@ public class TestSettingsFacade {
     }
 
     private String getErrorMessageAndRollback(String key, Locale locale) {
-        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        rollBackService.setRollBackOnly();
         return getErrorMessage(key, locale);
     }
 
