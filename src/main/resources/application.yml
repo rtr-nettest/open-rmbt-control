@@ -25,6 +25,10 @@ spring:
   flyway:
     enabled: true
 
+auth0:
+  issuer: https://specure.eu.auth0.com/
+  apiAudience: https://nettest.org
+
 app:
   rmbt:
     duration: 7
