@@ -26,6 +26,7 @@
         <org.projectlombok.version>1.18.12</org.projectlombok.version>
         <apache.commons.version>3.8.1</apache.commons.version>
         <org.testcontainers.version>1.15.1</org.testcontainers.version>
+        <auth0-spring-security-api.version>1.4.0</auth0-spring-security-api.version>
     </properties>
 
     <dependencies>
@@ -171,6 +172,11 @@
             <groupId>com.graphhopper.external</groupId>
             <artifactId>jackson-datatype-jts</artifactId>
             <version>1.0-2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>auth0-spring-security-api</artifactId>
+            <version>${auth0-spring-security-api.version}</version>
         </dependency>
     </dependencies>
 
