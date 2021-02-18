@@ -1,5 +1,6 @@
 package at.rtr.rmbt.service.impl;
 
+import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.model.Settings;
@@ -10,7 +11,6 @@ import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.LongUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.specure.core.service.impl.UUIDGenerator;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;

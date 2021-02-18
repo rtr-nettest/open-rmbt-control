@@ -1,5 +1,7 @@
 package at.rtr.rmbt.service.impl;
 
+import at.rtr.rmbt.config.UUIDGenerator;
+import at.rtr.rmbt.constant.ErrorMessage;
 import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.model.Test;
@@ -13,8 +15,6 @@ import at.rtr.rmbt.response.SignalSettingsResponse;
 import at.rtr.rmbt.service.SignalService;
 import at.rtr.rmbt.utils.HelperFunctions;
 import com.google.common.net.InetAddresses;
-import com.specure.core.constant.ErrorMessage;
-import com.specure.core.service.impl.UUIDGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
