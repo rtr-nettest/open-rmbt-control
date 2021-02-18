@@ -1,11 +1,11 @@
 package at.rtr.rmbt.mapper.impl;
 
+import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.mapper.TestServerMapper;
 import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.request.TestServerRequest;
 import at.rtr.rmbt.response.TestServerResponse;
 import at.rtr.rmbt.response.TestServerResponseForSettings;
-import com.specure.core.service.impl.UUIDGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

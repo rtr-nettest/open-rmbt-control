@@ -1,6 +1,7 @@
 package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.TestConstants;
+import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.HeaderConstants;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.model.RtrClient;
@@ -11,7 +12,6 @@ import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.response.SignalMeasurementResponse;
 import at.rtr.rmbt.response.SignalSettingsResponse;
 import at.rtr.rmbt.service.SignalService;
-import com.specure.core.service.impl.UUIDGenerator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
