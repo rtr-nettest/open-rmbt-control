@@ -1,7 +1,5 @@
 package at.rtr.rmbt.config;
 
-import com.specure.core.config.ClientTenantConfig;
-import com.specure.core.config.DataSourceConfig;
 import lombok.AllArgsConstructor;
 import org.flywaydb.core.Flyway;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
