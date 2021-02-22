@@ -32,9 +32,9 @@ public class ClientTypeServiceImplTest {
 
     @Test
     public void getClientTypeByName_whenValidClientTypeName_expectClientType() {
-        when(clientTypeRepository.findByClientType(at.rtr.rmbt.model.enums.ClientType.DESKTOP)).thenReturn(Optional.of(clientType));
+        when(clientTypeRepository.findByClientType(at.rtr.rmbt.enums.ClientType.DESKTOP)).thenReturn(Optional.of(clientType));
 
-        var response = clientTypeService.findByClientType(at.rtr.rmbt.model.enums.ClientType.DESKTOP);
+        var response = clientTypeService.findByClientType(at.rtr.rmbt.enums.ClientType.DESKTOP);
 
         assertEquals(clientType, response.get());
     }

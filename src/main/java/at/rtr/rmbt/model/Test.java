@@ -1,7 +1,7 @@
 package at.rtr.rmbt.model;
 
 
-import at.rtr.rmbt.model.enums.*;
+import at.rtr.rmbt.enums.*;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -480,6 +480,6 @@ public class Test {
 
     @PrePersist
     protected void preInsert() {
-        this.time = ZonedDateTime.now();
+        this.timestamp = ZonedDateTime.now();
     }
 }

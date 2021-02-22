@@ -3,7 +3,7 @@ package at.rtr.rmbt.service.impl;
 import at.rtr.rmbt.exception.TestServerNotFoundException;
 import at.rtr.rmbt.mapper.TestServerMapper;
 import at.rtr.rmbt.model.TestServer;
-import at.rtr.rmbt.model.enums.ServerType;
+import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.repository.TestServerRepository;
 import at.rtr.rmbt.request.TestServerRequest;
 import at.rtr.rmbt.response.TestServerResponse;

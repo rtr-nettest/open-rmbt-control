@@ -1,6 +1,6 @@
 package at.rtr.rmbt.model;
 
-import at.rtr.rmbt.model.enums.ServerType;
+import at.rtr.rmbt.enums.ServerType;
 import lombok.*;
 import org.locationtech.jts.geom.Geometry;
 

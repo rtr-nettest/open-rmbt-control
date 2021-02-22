@@ -1,4 +1,4 @@
-package at.rtr.rmbt.model.enums;
+package at.rtr.rmbt.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;

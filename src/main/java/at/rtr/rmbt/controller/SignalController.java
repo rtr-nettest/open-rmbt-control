@@ -3,7 +3,9 @@ package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.request.SignalRequest;
+import at.rtr.rmbt.request.SignalResultRequest;
 import at.rtr.rmbt.response.SignalMeasurementResponse;
+import at.rtr.rmbt.response.SignalResultResponse;
 import at.rtr.rmbt.response.SignalSettingsResponse;
 import at.rtr.rmbt.service.SignalService;
 import io.swagger.annotations.ApiOperation;
@@ -34,5 +36,12 @@ public class SignalController {
     @ResponseStatus(HttpStatus.OK)
     public Page<SignalMeasurementResponse> getSignalHistory(@PageableDefault Pageable pageable) {
         return signalService.getSignalsHistory(pageable);
+    }
+
+    @PostMapping(URIConstants.SIGNAL_RESULT)
+    @ApiOperation(value = "Process signal result")
+    @ResponseStatus(HttpStatus.OK)
+    public SignalResultResponse processSignalResult(@RequestBody SignalResultRequest signalResultRequest) {
+        return signalService.processSignalResult(signalResultRequest);
     }
 }

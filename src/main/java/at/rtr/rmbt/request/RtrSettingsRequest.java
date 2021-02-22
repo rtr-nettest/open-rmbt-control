@@ -1,7 +1,7 @@
 package at.rtr.rmbt.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import at.rtr.rmbt.model.enums.ClientType;
+import at.rtr.rmbt.enums.ClientType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

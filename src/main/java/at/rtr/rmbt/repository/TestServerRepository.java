@@ -1,7 +1,7 @@
 package at.rtr.rmbt.repository;
 
 import at.rtr.rmbt.model.TestServer;
-import at.rtr.rmbt.model.enums.ServerType;
+import at.rtr.rmbt.enums.ServerType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

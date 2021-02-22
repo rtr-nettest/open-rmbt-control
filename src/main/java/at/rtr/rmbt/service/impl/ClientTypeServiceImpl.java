@@ -15,7 +15,7 @@ public class ClientTypeServiceImpl implements ClientTypeService {
     private final ClientTypeRepository clientTypeRepository;
 
     @Override
-    public Optional<ClientType> findByClientType(at.rtr.rmbt.model.enums.ClientType clientType) {
+    public Optional<ClientType> findByClientType(at.rtr.rmbt.enums.ClientType clientType) {
         return clientTypeRepository.findByClientType(clientType);
     }
 }

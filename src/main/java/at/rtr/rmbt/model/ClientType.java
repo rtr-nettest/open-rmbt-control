@@ -22,5 +22,5 @@ public class ClientType {
 
     @Column(name = "name")
     @Enumerated(EnumType.STRING)
-    private at.rtr.rmbt.model.enums.ClientType clientType;
+    private at.rtr.rmbt.enums.ClientType clientType;
 }

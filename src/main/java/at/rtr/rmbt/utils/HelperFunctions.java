@@ -1,25 +1,22 @@
 package at.rtr.rmbt.utils;
 
-import com.google.common.net.InetAddresses;
 import at.rtr.rmbt.dto.ASInformation;
+import com.google.common.net.InetAddresses;
 import lombok.experimental.UtilityClass;
 import org.postgresql.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.xbill.DNS.*;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.*;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.URL;
+import java.net.*;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Objects;
@@ -282,6 +279,69 @@ public class HelperFunctions {
                 .name(asName)
                 .country(asCountry)
                 .build();
+        }
+    }
+
+    public static String getNatType(final InetAddress localAdr, final InetAddress publicAdr) {
+        try {
+            final String ipVersionLocal;
+            final String ipVersionPublic;
+            if (publicAdr instanceof Inet4Address)
+                ipVersionPublic = "ipv4";
+            else if (publicAdr instanceof Inet6Address)
+                ipVersionPublic = "ipv6";
+            else
+                ipVersionPublic = "ipv?";
+
+            if (localAdr instanceof Inet4Address)
+                ipVersionLocal = "ipv4";
+            else if (localAdr instanceof Inet6Address)
+                ipVersionLocal = "ipv6";
+            else
+                ipVersionLocal = "ipv?";
+
+            if (localAdr.equals(publicAdr))
+                return "no_nat_" + ipVersionPublic;
+            else {
+                final String localType = isIPLocal(localAdr) ? "local" : "public";
+                final String publicType = isIPLocal(publicAdr) ? "local" : "public";
+                if (ipVersionLocal.equals(ipVersionPublic)) {
+                    return String.format("nat_%s_to_%s_%s", localType, publicType, ipVersionPublic);
+                } else {
+                    return String.format("nat_%s_to_%s_%s", ipVersionLocal, publicType, ipVersionPublic);
+                }
+            }
+        } catch (final IllegalArgumentException e) {
+            return "illegal_ip";
+        }
+    }
+
+    public static boolean isIPLocal(final InetAddress adr) {
+        return adr.isLinkLocalAddress() || adr.isLoopbackAddress() || adr.isSiteLocalAddress();
+    }
+
+    public static String IpType(InetAddress inetAddress) {
+        try {
+            final String ipVersion;
+            if (inetAddress instanceof Inet4Address)
+                ipVersion = "ipv4";
+            else if (inetAddress instanceof Inet6Address)
+                ipVersion = "ipv6";
+            else
+                ipVersion = "ipv?";
+
+            if (inetAddress.isAnyLocalAddress())
+                return "wildcard_" + ipVersion;
+            if (inetAddress.isSiteLocalAddress())
+                return "site_local_" + ipVersion;
+            if (inetAddress.isLinkLocalAddress())
+                return "link_local_" + ipVersion;
+            if (inetAddress.isLoopbackAddress())
+                return "loopback_" + ipVersion;
+            return "public_" + ipVersion;
+
+        } catch (final IllegalArgumentException e) {
+            return "illegal_ip";
         }
     }
 }

@@ -20,20 +20,20 @@ public class ClientTypeRepositoryTest extends AbstractRepositoryTest<ClientTypeR
 
     @Test
     public void findByClientType_whenExists_expectClientFound() {
-        Optional<ClientType> result = dao.findByClientType(at.rtr.rmbt.model.enums.ClientType.DESKTOP);
+        Optional<ClientType> result = dao.findByClientType(at.rtr.rmbt.enums.ClientType.DESKTOP);
 
         assertTrue(result.isPresent());
-        assertEquals(at.rtr.rmbt.model.enums.ClientType.DESKTOP, result.get().getClientType());
+        assertEquals(at.rtr.rmbt.enums.ClientType.DESKTOP, result.get().getClientType());
     }
 
     @Test
     public void findByClientType_whenNotExists_expectClientNotFound() {
-        Optional<ClientType> clientType = dao.findByClientType(at.rtr.rmbt.model.enums.ClientType.MOBILE);
+        Optional<ClientType> clientType = dao.findByClientType(at.rtr.rmbt.enums.ClientType.MOBILE);
         clientRepository.deleteById(TestConstants.Database.CLIENT_TYPE_MOBILE_UID);
 
         dao.delete(clientType.get());
 
-        Optional<ClientType> result = dao.findByClientType(at.rtr.rmbt.model.enums.ClientType.MOBILE);
+        Optional<ClientType> result = dao.findByClientType(at.rtr.rmbt.enums.ClientType.MOBILE);
         assertFalse(result.isPresent());
     }
 }

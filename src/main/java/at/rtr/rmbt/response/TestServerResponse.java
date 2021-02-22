@@ -1,6 +1,6 @@
 package at.rtr.rmbt.response;
 
-import at.rtr.rmbt.model.enums.ServerType;
+import at.rtr.rmbt.enums.ServerType;
 import com.bedatadriven.jackson.datatype.jts.serialization.GeometrySerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.EqualsAndHashCode;

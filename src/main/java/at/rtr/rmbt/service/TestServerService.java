@@ -1,7 +1,7 @@
 package at.rtr.rmbt.service;
 
 import at.rtr.rmbt.model.TestServer;
-import at.rtr.rmbt.model.enums.ServerType;
+import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.request.TestServerRequest;
 import at.rtr.rmbt.response.TestServerResponse;
 import at.rtr.rmbt.response.TestServerResponseForSettings;

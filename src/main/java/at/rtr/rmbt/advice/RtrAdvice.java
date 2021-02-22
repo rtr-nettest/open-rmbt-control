@@ -2,6 +2,7 @@ package at.rtr.rmbt.advice;
 
 import at.rtr.rmbt.exception.ClientNotFoundByNameException;
 import at.rtr.rmbt.exception.ClientNotFoundException;
+import at.rtr.rmbt.exception.InvalidSequenceException;
 import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,6 @@ public class RtrAdvice {
         return new ErrorResponse(ERROR_DB_GET_CLIENTTYPE);
     }
 
-
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NotSupportedClientVersionException.class)
     public ErrorResponse handleNotSupportedClientVersionException(NotSupportedClientVersionException ex) {
@@ -41,6 +41,12 @@ public class RtrAdvice {
     @ExceptionHandler(ClientNotFoundException.class)
     public ErrorResponse handleClientNotFoundException(ClientNotFoundException ex) {
         return new ErrorResponse(ex.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidSequenceException.class)
+    public ErrorResponse handleInvalidSequenceException(InvalidSequenceException ex) {
+        return new ErrorResponse(ERROR_INVALID_SEQUENCE);
     }
 }
 

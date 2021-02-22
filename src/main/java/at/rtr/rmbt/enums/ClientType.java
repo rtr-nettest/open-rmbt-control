@@ -1,4 +1,4 @@
-package at.rtr.rmbt.model.enums;
+package at.rtr.rmbt.enums;
 
 public enum ClientType {
     MOBILE, DESKTOP
