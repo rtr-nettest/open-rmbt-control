@@ -4,6 +4,7 @@ import at.rtr.rmbt.enums.NetworkGroupName;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.UUID;
 
 @Builder
@@ -13,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "radio_cell")
-public class RadioCell {
+public class RadioCell implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

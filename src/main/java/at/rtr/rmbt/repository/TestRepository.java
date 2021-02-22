@@ -41,7 +41,7 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long> {
         "ORDER BY model ASC", nativeQuery = true)
     List<String> getDistinctModelByClientId(Long clientId);
 
-    Page<Test> findAll(Pageable pageable);
+    Page<Test> findAllByStatusIn(List<TestStatus> statuses, Pageable pageable);
 
     @Query(value = "SELECT * FROM test WHERE uuid = :testUUID AND (status is null or status in (:testStatuses))", nativeQuery = true)
     Optional<Test> findByUuidAndStatusesIn(UUID testUUID, Collection<String> testStatuses);
