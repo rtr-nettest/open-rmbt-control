@@ -87,6 +87,7 @@ public class SignalServiceImpl implements SignalService {
                 .clientPublicIpAnonymized(HelperFunctions.anonymizeIp(clientAddress))
                 .timezone(signalRequest.getTimezone())
                 .clientTime(getClientTimeFromSignalRequest(signalRequest))
+                .time(getClientTimeFromSignalRequest(signalRequest))
                 .publicIpAsn(asInformation.getNumber())
                 .publicIpAsName(asInformation.getName())
                 .countryAsn(asInformation.getCountry())
