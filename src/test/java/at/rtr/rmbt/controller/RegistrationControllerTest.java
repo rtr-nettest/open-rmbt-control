@@ -60,7 +60,7 @@ public class RegistrationControllerTest {
             "1",
             3,
             TestSettingsRequest.ProtocolVersion.IPV4,
-            new TestSettingsRequest.Location(1.0, 1.0, "provider", 1f, 1.0, 1L, 1, 1f, 1f, false, 1),
+            new TestSettingsRequest.Location(1.0, 1.0, "provider", 1f, 1.0, 1L, 1L, 1f, 1f, false, 1),
             System.currentTimeMillis(),
             "Europe/Vienna",
             ServerType.RMBT,

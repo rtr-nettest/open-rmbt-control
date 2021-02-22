@@ -151,7 +151,7 @@ public class TestSettingsRequest {
         private Long time;
 
         @JsonProperty("age")
-        private Integer age;
+        private Long age;
 
         @JsonProperty("accuracy")
         private Float accuracy;
