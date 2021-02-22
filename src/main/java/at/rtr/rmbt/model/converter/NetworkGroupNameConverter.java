@@ -1,6 +1,6 @@
 package at.rtr.rmbt.model.converter;
 
-import at.rtr.rmbt.model.enums.NetworkGroupName;
+import at.rtr.rmbt.enums.NetworkGroupName;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

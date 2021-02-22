@@ -1,6 +1,6 @@
 package at.rtr.rmbt.model.converter;
 
-import at.rtr.rmbt.model.enums.ServerType;
+import at.rtr.rmbt.enums.ServerType;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

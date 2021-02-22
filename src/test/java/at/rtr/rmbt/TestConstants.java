@@ -1,7 +1,8 @@
 package at.rtr.rmbt;
 
+import at.rtr.rmbt.enums.NetworkGroupName;
 import at.rtr.rmbt.enums.TestType;
-import at.rtr.rmbt.model.enums.ServerType;
+import at.rtr.rmbt.enums.ServerType;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -18,6 +19,8 @@ public interface TestConstants {
     Long DEFAULT_SOFTWARE_VERSION_CODE = 1L;
     UUID DEFAULT_NEWS_UUID = UUID.fromString("8fa5fb1c-5bf6-11eb-ae93-0242ac130002");
     UUID DEFAULT_UUID = UUID.fromString("88ab584e-5ef2-11eb-ae93-0242ac130002");
+    UUID DEFAULT_TEST_UUID = UUID.fromString("77ab584e-6ef2-11eb-ae93-0242ac130252");
+    UUID DEFAULT_GEO_LOCATION_UUID = UUID.fromString("33ab584e-6ef2-11eb-ae93-0282ac130213");
     Long DEFAULT_UID = 2L;
     String DEFAULT_NEWS_TITLE = "DEFAULT NEWS TITLE";
     String DEFAULT_NEWS_TEXT = "DEFAULT NEWS TEXT";
@@ -85,9 +88,13 @@ public interface TestConstants {
     Integer DEFAULT_TEST_SERVER_PORT_SSL = 443;
     String DEFAULT_TEST_SERVER_CITY = "DEFAULT_TEST_SERVER_CITY";
     String DEFAULT_TEST_SERVER_COUNTRY = "DEFAULT_TEST_SERVER_COUNTRY";
-    Double DEFAULT_TEST_SERVER_LATITUDE = 56.9;
-    Double DEFAULT_TEST_SERVER_LONGITUDE = 87.3;
-    Point DEFAULT_LOCATION = new GeometryFactory().createPoint(new Coordinate(DEFAULT_TEST_SERVER_LONGITUDE, DEFAULT_TEST_SERVER_LATITUDE));
+    Double DEFAULT_LATITUDE = 56.9;
+    Double DEFAULT_LONGITUDE = 87.3;
+    Double DEFAULT_ALTITUDE = 33.3;
+    Double DEFAULT_BEARING = 17.3;
+    Double DEFAULT_LATITUDE_SECOND = 67.9;
+    Double DEFAULT_LONGITUDE_SECOND = 77.3;
+    Point DEFAULT_LOCATION = new GeometryFactory().createPoint(new Coordinate(DEFAULT_LONGITUDE, DEFAULT_LATITUDE));
     String DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4 = "DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4";
     String DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6 = "DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6";
     ServerType DEFAULT_TEST_SERVER_SERVER_TYPE = ServerType.RMBT;
@@ -99,6 +106,30 @@ public interface TestConstants {
     Integer DEFAULT_SIZE = 10;
     String DEFAULT_SORT = "uuid,desc";
     String DEFAULT_SORT_PROPERTY = "uuid";
+    Long DEFAULT_MILLIS = 1613064639000L;
+    Long DEFAULT_TIME_NS = 385093800L;
+    Long DEFAULT_TIME_NS_LAST = 415093800L;
+    Double DEFAULT_ACCURACY_FIRST = 19.0;
+    Double DEFAULT_ACCURACY_SECOND = 20.0;
+    Double DEFAULT_SPEED = 26.0;
+    Long DEFAULT_MNC = 5L;
+    Long DEFAULT_MCC = 1L;
+    Long DEFAULT_LOCATION_ID = 4L;
+    Long DEFAULT_AREA_CODE = 3L;
+    Long DEFAULT_PRIMARY_SCRAMBLING_CODE = 2147483647L;
+    NetworkGroupName DEFAULT_TECHNOLOGY = NetworkGroupName.G2;
+    Long DEFAULT_CHANNEL_NUMBER = 45L;
+    Long DEFAULT_NETWORK_TYPE_ID = 15L;
+    Long DEFAULT_BIT_ERROR_RATE = 222L;
+    Long DEFAULT_WIFI_LINK_SPEED = 100L;
+    Long DEFAULT_LTE_SQI = 2L;
+    Long DEFAULT_LTE_RSSNR = 5L;
+    Long DEFAULT_LTE_RSRP = 4L;
+    Long DEFAULT_LTE_RSRQ = 11L;
+    Long DEFAULT_SIGNAL_STRENGTH = 111L;
+    Long DEFAULT_SIGNAL_ADVANCE = 20L;
+    Long DEFAULT_TIMING_ADVANCE = 32L;
+
 
     interface Database {
         long CLIENT_TYPE_DESKTOP_UID = 1L;

@@ -4,7 +4,9 @@ import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.advice.RtrAdvice;
 import at.rtr.rmbt.request.SignalRequest;
+import at.rtr.rmbt.request.SignalResultRequest;
 import at.rtr.rmbt.response.SignalMeasurementResponse;
+import at.rtr.rmbt.response.SignalResultResponse;
 import at.rtr.rmbt.response.SignalSettingsResponse;
 import at.rtr.rmbt.service.SignalService;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -28,9 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
 
-import static at.rtr.rmbt.TestConstants.*;
-import static at.rtr.rmbt.constant.URIConstants.ADMIN_SIGNAL;
-import static at.rtr.rmbt.constant.URIConstants.SIGNAL_REQUEST;
+import static at.rtr.rmbt.constant.URIConstants.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -53,10 +53,10 @@ public class SignalControllerTest {
         mapperBuilder.propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         SignalController signalController = new SignalController(signalService);
         mockMvc = MockMvcBuilders.standaloneSetup(signalController)
-                .setControllerAdvice(new RtrAdvice())
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .setMessageConverters(new MappingJackson2HttpMessageConverter(mapperBuilder.build()))
-                .build();
+            .setControllerAdvice(new RtrAdvice())
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setMessageConverters(new MappingJackson2HttpMessageConverter(mapperBuilder.build()))
+            .build();
     }
 
 
@@ -67,13 +67,13 @@ public class SignalControllerTest {
         when(signalService.registerSignal(any(), any())).thenReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.post(SIGNAL_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(TestUtils.asJsonString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.result_url").value(DEFAULT_RESULT_URL))
-                .andExpect(jsonPath("$.client_remote_ip").value(DEFAULT_IP))
-                .andExpect(jsonPath("$.provider").value(DEFAULT_PROVIDER))
-                .andExpect(jsonPath("$.test_uuid").value(DEFAULT_UUID.toString()));
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtils.asJsonString(request)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.result_url").value(TestConstants.DEFAULT_RESULT_URL))
+            .andExpect(jsonPath("$.client_remote_ip").value(TestConstants.DEFAULT_IP))
+            .andExpect(jsonPath("$.provider").value(TestConstants.DEFAULT_PROVIDER))
+            .andExpect(jsonPath("$.test_uuid").value(TestConstants.DEFAULT_UUID.toString()));
 
         verify(signalService).registerSignal(signalRequestArgumentCaptor.capture(), any());
 
@@ -83,35 +83,62 @@ public class SignalControllerTest {
     @Test
     public void getSignalHistory_withPageable_expectList() throws Exception {
         final var response = new PageImpl<>(Collections.singletonList(SignalMeasurementResponse.builder()
-                .testUuid(DEFAULT_UUID)
-                .build()));
+            .testUuid(TestConstants.DEFAULT_UUID)
+            .build()));
         final PageRequest pageRequest = PageRequest.of(TestConstants.DEFAULT_PAGE, TestConstants.DEFAULT_SIZE,
-                Sort.Direction.DESC, TestConstants.DEFAULT_SORT_PROPERTY);
+            Sort.Direction.DESC, TestConstants.DEFAULT_SORT_PROPERTY);
         when(signalService.getSignalsHistory(pageRequest)).thenReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.get(ADMIN_SIGNAL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("page", String.valueOf(TestConstants.DEFAULT_PAGE))
-                .param("size", String.valueOf(TestConstants.DEFAULT_SIZE))
-                .param("sort", TestConstants.DEFAULT_SORT))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].test_uuid").value(TestConstants.DEFAULT_UUID.toString()));
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("page", String.valueOf(TestConstants.DEFAULT_PAGE))
+            .param("size", String.valueOf(TestConstants.DEFAULT_SIZE))
+            .param("sort", TestConstants.DEFAULT_SORT))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content[0].test_uuid").value(TestConstants.DEFAULT_UUID.toString()));
+    }
+
+    @Test
+    public void processSignalResult_whenCommonData_expectProcessSignalResultCalled() throws Exception {
+        var request = getSignalResultRequest();
+        var response = getSignalResultResponse();
+        when(signalService.processSignalResult(any())).thenReturn(response);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(SIGNAL_RESULT)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtils.asJsonString(request)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.test_uuid").value(TestConstants.DEFAULT_UUID.toString()));
+
+        verify(signalService).processSignalResult(request);
+    }
+
+    private SignalResultResponse getSignalResultResponse() {
+        return SignalResultResponse.builder()
+            .testUUID(TestConstants.DEFAULT_UUID)
+            .build();
+    }
+
+    private SignalResultRequest getSignalResultRequest() {
+        return SignalResultRequest.builder()
+            .testUUID(TestConstants.DEFAULT_UUID)
+            .build();
     }
 
     private SignalSettingsResponse getRegisterSignalResponse() {
         return SignalSettingsResponse.builder()
-                .resultUrl(DEFAULT_RESULT_URL)
-                .clientRemoteIp(DEFAULT_IP)
-                .provider(DEFAULT_PROVIDER)
-                .testUUID(DEFAULT_UUID)
-                .build();
+            .resultUrl(TestConstants.DEFAULT_RESULT_URL)
+            .clientRemoteIp(TestConstants.DEFAULT_IP)
+            .provider(TestConstants.DEFAULT_PROVIDER)
+            .testUUID(TestConstants.DEFAULT_UUID)
+            .build();
     }
 
     private SignalRequest getRegisterSignalRequest() {
         return SignalRequest.builder()
-                .time(DEFAULT_TIME)
-                .timezone(DEFAULT_TIMEZONE)
-                .uuid(DEFAULT_CLIENT_UUID)
-                .build();
+            .time(TestConstants.DEFAULT_TIME)
+            .timezone(TestConstants.DEFAULT_TIMEZONE)
+            .uuid(TestConstants.DEFAULT_CLIENT_UUID)
+            .build();
     }
 }

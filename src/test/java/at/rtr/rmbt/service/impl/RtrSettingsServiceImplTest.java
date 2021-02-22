@@ -6,7 +6,7 @@ import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.model.Settings;
-import at.rtr.rmbt.model.enums.ClientType;
+import at.rtr.rmbt.enums.ClientType;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.AdminSettingsBodyRequest;
 import at.rtr.rmbt.request.AdminSettingsRequest;

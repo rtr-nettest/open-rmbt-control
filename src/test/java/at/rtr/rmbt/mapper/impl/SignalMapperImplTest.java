@@ -3,7 +3,7 @@ package at.rtr.rmbt.mapper.impl;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.model.LoopModeSettings;
 import at.rtr.rmbt.model.RtrClient;
-import at.rtr.rmbt.model.enums.NetworkGroupName;
+import at.rtr.rmbt.enums.NetworkGroupName;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

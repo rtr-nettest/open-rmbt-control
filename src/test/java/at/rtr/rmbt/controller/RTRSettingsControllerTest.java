@@ -2,7 +2,7 @@ package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.advice.RtrAdvice;
-import at.rtr.rmbt.model.enums.ClientType;
+import at.rtr.rmbt.enums.ClientType;
 import at.rtr.rmbt.request.AdminSettingsBodyRequest;
 import at.rtr.rmbt.request.AdminSettingsRequest;
 import at.rtr.rmbt.request.RtrSettingsRequest;
