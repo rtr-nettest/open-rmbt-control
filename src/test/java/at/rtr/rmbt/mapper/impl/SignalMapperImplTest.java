@@ -1,14 +1,17 @@
 package at.rtr.rmbt.mapper.impl;
 
+import at.rtr.rmbt.enums.NetworkGroupName;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.model.LoopModeSettings;
+import at.rtr.rmbt.model.RadioCell;
 import at.rtr.rmbt.model.RtrClient;
-import at.rtr.rmbt.enums.NetworkGroupName;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Collections;
 
 import static at.rtr.rmbt.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,6 +25,8 @@ public class SignalMapperImplTest {
     private RtrClient client;
     @Mock
     private LoopModeSettings loopModeSettings;
+    @Mock
+    private RadioCell radioCell;
 
     private SignalMapper mapper;
 
@@ -46,6 +51,23 @@ public class SignalMapperImplTest {
     @Test
     public void signalToSignalMeasurementResponse_correctParametersWithNull_expectResponse() {
         var test = buildTest(null, loopModeSettings);
+        test.setRadioCell(Collections.singletonList(radioCell));
+        when(radioCell.getTechnology()).thenReturn(NetworkGroupName.G2);
+        var actual = mapper.signalToSignalMeasurementResponse(test);
+        assertEquals(5, actual.getDuration());
+        assertEquals(DEFAULT_ZONED_DATE_TIME, actual.getTime());
+        assertEquals(DEFAULT_LOCATION, actual.getLocation());
+        assertEquals(NetworkGroupName.G2.getLabelEn(), actual.getTechnology());
+        assertEquals("Loop", actual.getTestType());
+        assertEquals(DEFAULT_CLIENT_UUID, actual.getUserUuid());
+        assertEquals(DEFAULT_UUID, actual.getTestUuid());
+    }
+
+    @Test
+    public void signalToSignalMeasurementResponse_correctParametersWithNullInRadioCell_expectResponse() {
+        var test = buildTest(null, loopModeSettings);
+        test.setRadioCell(Collections.singletonList(radioCell));
+        when(radioCell.getTechnology()).thenReturn(null);
         var actual = mapper.signalToSignalMeasurementResponse(test);
         assertEquals(5, actual.getDuration());
         assertEquals(DEFAULT_ZONED_DATE_TIME, actual.getTime());

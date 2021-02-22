@@ -4,6 +4,7 @@ import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.constant.HeaderConstants;
+import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.mapper.GeoLocationMapper;
 import at.rtr.rmbt.mapper.RadioCellMapper;
 import at.rtr.rmbt.mapper.RadioSignalMapper;
@@ -109,8 +110,8 @@ public class SignalServiceImplTest {
     @Before
     public void setUp() {
         signalService = new SignalServiceImpl(testRepository, providerRepository,
-            uuidGenerator, clientRepository, signalMapper, radioCellRepository,
-            radioSignalRepository, geoLocationRepository, geoLocationMapper, radioCellMapper, radioSignalMapper);
+                uuidGenerator, clientRepository, signalMapper, radioCellRepository,
+                radioSignalRepository, geoLocationRepository, geoLocationMapper, radioCellMapper, radioSignalMapper);
     }
 
     @Test
@@ -133,7 +134,8 @@ public class SignalServiceImplTest {
 
     @Test
     public void getSignalsHistory_correctInvocation_expectPageWithResponse() {
-        when(testRepository.findAll(eq(pageable))).thenReturn(new PageImpl<>(Collections.singletonList(savedTest)));
+        when(testRepository.findAllByStatusIn(eq(Collections.singletonList(TestStatus.SIGNAL_STARTED)), eq(pageable)))
+                .thenReturn(new PageImpl<>(Collections.singletonList(savedTest)));
         when(page.getContent()).thenReturn(Collections.singletonList(savedTest));
         when(signalMapper.signalToSignalMeasurementResponse(savedTest)).thenReturn(signalMeasurementResponse);
         var actual = signalService.getSignalsHistory(pageable);
@@ -148,7 +150,7 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getSequenceNumber()).thenReturn(2L);
         when(signalResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
-            .thenReturn(Optional.of(test));
+                .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
 
@@ -184,7 +186,7 @@ public class SignalServiceImplTest {
         when(radioCellMapper.radioCellRequestToRadioCell(radioCellRequest)).thenReturn(radioCell);
         when(radioSignalMapper.radioSignalRequestToRadioSignal(radioSignalRequest)).thenReturn(radioSignal);
         when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
-            .thenReturn(Optional.of(test));
+                .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_UUID);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
@@ -208,7 +210,7 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(signalResultRequest.getGeoLocations()).thenReturn(List.of(geoLocationRequestFirst, geoLocationRequestSecond));
         when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
-            .thenReturn(Optional.of(test));
+                .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_UUID);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
@@ -254,7 +256,7 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(signalResultRequest.getTestIpLocal()).thenReturn(TestConstants.DEFAULT_IP);
         when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
-            .thenReturn(Optional.of(test));
+                .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(test.getClientPublicIp()).thenReturn(TestConstants.DEFAULT_IP);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));

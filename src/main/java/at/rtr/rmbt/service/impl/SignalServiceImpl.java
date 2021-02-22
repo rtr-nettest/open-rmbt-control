@@ -60,7 +60,7 @@ public class SignalServiceImpl implements SignalService {
 
     @Override
     public Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable) {
-        return testRepository.findAll(pageable)
+        return testRepository.findAllByStatusIn(Collections.singletonList(TestStatus.SIGNAL_STARTED), pageable)
                 .map(signalMapper::signalToSignalMeasurementResponse);
     }
 
