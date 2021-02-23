@@ -2,6 +2,7 @@ package at.rtr.rmbt.facade;
 
 import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.config.RollBackService;
+import at.rtr.rmbt.constant.HeaderConstants;
 import at.rtr.rmbt.model.LoopModeSettings;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.model.TestServer;
@@ -73,18 +74,6 @@ public class TestSettingsFacadeTest {
             .androidPermissionStatus(null)
             .build();
 
-    private static final TestServer testServer = TestServer.builder()
-            .uid(11L)
-            .uuid(DEFAULT_UUID)
-            .serverTypes(Set.of(ServerType.RMBT))
-            .active(true)
-            .country("Ukraine")
-            .key("test_server_key")
-            .portSsl(23)
-            .port(22)
-            .encrypted(true)
-            .build();
-
     private static final at.rtr.rmbt.model.ClientType clientType = new at.rtr.rmbt.model.ClientType(10L, ClientType.DESKTOP);
 
     private static final RtrClient client = new RtrClient(
@@ -101,6 +90,12 @@ public class TestSettingsFacadeTest {
             ZONED_DATE_TIME,
             ZONED_DATE_TIME
     );
+
+    @Mock
+    private at.rtr.rmbt.model.Test test;
+    @Mock
+    private LoopModeSettings loopModeSettings;
+    private TestServer testServer;
 
     private final LoopModeSettingsService loopModeSettingsService = mock(LoopModeSettingsService.class);
     private final ClientTypeService clientTypeService = mock(ClientTypeService.class);
@@ -136,102 +131,60 @@ public class TestSettingsFacadeTest {
     public void setUp() {
         request = new MockHttpServletRequest();
         request.setRemoteAddr("185.38.216.246");
+        testServer = TestServer.builder()
+            .uid(11L)
+            .uuid(DEFAULT_UUID)
+            .serverTypes(Set.of(ServerType.RMBT))
+            .active(true)
+            .country("Ukraine")
+            .key("test_server_key")
+            .portSsl(23)
+            .port(22)
+            .encrypted(true)
+            .build();
 
     }
 
     @Test
     public void updateTestSettings() {
         ArgumentCaptor<at.rtr.rmbt.model.Test> testArgumentCaptor = ArgumentCaptor.forClass(at.rtr.rmbt.model.Test.class);
-
-        when(loopModeSettingsService.save(any())).then(new Answer<>() {
-            private int counter = 0;
-
-            @Override
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                counter++;
-                LoopModeSettings argument = invocationOnMock.getArgument(0);
-
-                assertNotNull(argument.getLoopUuid());
-                assertEquals(loopModeInfo.getTestCounter(), argument.getTestCounter());
-                assertEquals(loopModeInfo.getMaxDelay(), argument.getMaxDelay());
-                assertEquals(loopModeInfo.getMaxTests(), argument.getMaxTests());
-                assertEquals(loopModeInfo.getMaxMovement(), argument.getMaxMovement());
-
-                if (counter <= 1) {
-                    assertEquals(loopModeInfo.getTestUuid(), argument.getTestUuid().toString());
-                    client.setUuid(argument.getClientUuid());
-                    when(clientService.getClientByUUID(argument.getClientUuid())).thenReturn(client);
-                } else {
-                    assertNotEquals(loopModeInfo.getTestUuid(), argument.getTestUuid().toString());
-                }
-
-                return argument;
-            }
-        });
-        when(clientTypeService.findByClientType(ClientType.DESKTOP)).thenReturn(Optional.of(clientType));
-        when(testServerService.findActiveByServerTypeInAndCountry(any(), eq(testServer.getCountry()))).thenReturn(testServer);
-        when(testServerService.findByUuidAndActive(DEFAULT_UUID, true)).thenReturn(Optional.of(testServer));
-        when(testService.save(any())).thenAnswer(a -> {
-            at.rtr.rmbt.model.Test argument = a.getArgument(0);
-
-            return argument.toBuilder().uid(23L).build();
-        });
-
+        mockUpdateTestSettings();
         TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
-
-        verify(loopModeSettingsService, times(2)).save(any());
-        verify(testService, times(2)).save(testArgumentCaptor.capture());
-
-        at.rtr.rmbt.model.Test firstTestResult = testArgumentCaptor.getAllValues().get(0);
-        at.rtr.rmbt.model.Test secondTestResult = testArgumentCaptor.getAllValues().get(1);
-
-        assertTestResult(request, testSettingsRequest, testServer, client, firstTestResult);
-        assertTestResult(request, testSettingsRequest, testServer, client, secondTestResult);
-        assertNull(firstTestResult.getUid());
-        assertEquals(23L, secondTestResult.getUid());
-
-        assertEquals(result.getTestToken(), secondTestResult.getToken());
-        assertEquals(result.getOpenTestUuid().substring(1), secondTestResult.getOpenTestUuid().toString());
-        assertEquals(result.getTestUuid(), secondTestResult.getUuid().toString());
-        assertEquals(result.getTestId(), secondTestResult.getUid());
-        assertEquals(result.getTestServerPort(), testServer.getPortSsl());
-        assertEquals(result.getTestDuration(), applicationProperties.getDuration().toString());
-        assertEquals(result.getTestNumberOfThreads(), secondTestResult.getNumberOfThreads().toString());
-        assertEquals(result.getTestNumberOfPings(), applicationProperties.getPings().toString());
-        assertEquals(result.getClientRemoteIp(), request.getRemoteAddr());
+        verifyUpdateTestSettings(testArgumentCaptor, result);
     }
 
-    @Mock
-    private at.rtr.rmbt.model.Test test;
-    @Mock
-    private LoopModeSettings loopModeSettings;
+    @Test
+    public void updateTestSettings_whenRealUrlHeaderExists_shouldApplyRealUrl() {
+        ArgumentCaptor<at.rtr.rmbt.model.Test> testArgumentCaptor = ArgumentCaptor.forClass(at.rtr.rmbt.model.Test.class);
+        String realUrl = "http://custom-url.org/";
+        request.addHeader(HeaderConstants.URL, realUrl);
+        mockUpdateTestSettings();
+        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
+        verifyUpdateTestSettings(testArgumentCaptor, result);
+        assertTrue(result.getResultUrl().startsWith(realUrl));
+        assertTrue(result.getResultQosUrl().startsWith(realUrl));
+    }
 
     @Test
     public void updateTestSettings_encryptedFalse_usedPortField() {
         mockStubToTestEncryption();
         testServer.setEncrypted(false);
-        testServer.setPortSsl(123);
-        testServer.setPort(321);
         TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
-        assertEquals(321, result.getTestServerPort());
+        assertEquals(testServer.getPort(), result.getTestServerPort());
         assertFalse(result.getTestServerEncryption());
     }
 
     @Test
     public void updateTestSettings_encryptedTrue_usedSSLPortField() {
         mockStubToTestEncryption();
-        testServer.setEncrypted(true);
-        testServer.setPortSsl(123);
-        testServer.setPort(321);
         TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
-        assertEquals(123, result.getTestServerPort());
+        assertEquals(testServer.getPortSsl(), result.getTestServerPort());
         assertTrue(result.getTestServerEncryption());
     }
 
     @Test
     public void updateTestSettings_existInServerTypes_expectFromResponse() {
         mockStubToTestEncryption();
-        testServer.setServerTypes(Set.of(ServerType.RMBT));
         TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
         assertEquals(ServerType.RMBT, result.getTestServerType());
     }
@@ -277,6 +230,65 @@ public class TestSettingsFacadeTest {
         assertEquals(testSettingsRequest.isNdt(), testResult.getRunNdt());
         assertEquals(testSettingsRequest.getSoftwareRevision(), testResult.getSoftwareRevision());
         assertTrue(testResult.getUseSsl());
+    }
+
+    private void mockUpdateTestSettings() {
+        when(loopModeSettingsService.save(any())).then(new Answer<>() {
+            private int counter = 0;
+
+            @Override
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                counter++;
+                LoopModeSettings argument = invocationOnMock.getArgument(0);
+
+                assertNotNull(argument.getLoopUuid());
+                assertEquals(loopModeInfo.getTestCounter(), argument.getTestCounter());
+                assertEquals(loopModeInfo.getMaxDelay(), argument.getMaxDelay());
+                assertEquals(loopModeInfo.getMaxTests(), argument.getMaxTests());
+                assertEquals(loopModeInfo.getMaxMovement(), argument.getMaxMovement());
+
+                if (counter <= 1) {
+                    assertEquals(loopModeInfo.getTestUuid(), argument.getTestUuid().toString());
+                    client.setUuid(argument.getClientUuid());
+                    when(clientService.getClientByUUID(argument.getClientUuid())).thenReturn(client);
+                } else {
+                    assertNotEquals(loopModeInfo.getTestUuid(), argument.getTestUuid().toString());
+                }
+
+                return argument;
+            }
+        });
+        when(clientTypeService.findByClientType(ClientType.DESKTOP)).thenReturn(Optional.of(clientType));
+        when(testServerService.findActiveByServerTypeInAndCountry(any(), eq(testServer.getCountry()))).thenReturn(testServer);
+        when(testServerService.findByUuidAndActive(DEFAULT_UUID, true)).thenReturn(Optional.of(testServer));
+        when(testService.save(any())).thenAnswer(a -> {
+            at.rtr.rmbt.model.Test argument = a.getArgument(0);
+
+            return argument.toBuilder().uid(23L).build();
+        });
+    }
+
+    private void verifyUpdateTestSettings(ArgumentCaptor<at.rtr.rmbt.model.Test> testArgumentCaptor, TestSettingsResponse result) {
+        verify(loopModeSettingsService, times(2)).save(any());
+        verify(testService, times(2)).save(testArgumentCaptor.capture());
+
+        at.rtr.rmbt.model.Test firstTestResult = testArgumentCaptor.getAllValues().get(0);
+        at.rtr.rmbt.model.Test secondTestResult = testArgumentCaptor.getAllValues().get(1);
+
+        assertTestResult(request, testSettingsRequest, testServer, client, firstTestResult);
+        assertTestResult(request, testSettingsRequest, testServer, client, secondTestResult);
+        assertNull(firstTestResult.getUid());
+        assertEquals(23L, secondTestResult.getUid());
+
+        assertEquals(result.getTestToken(), secondTestResult.getToken());
+        assertEquals(result.getOpenTestUuid().substring(1), secondTestResult.getOpenTestUuid().toString());
+        assertEquals(result.getTestUuid(), secondTestResult.getUuid().toString());
+        assertEquals(result.getTestId(), secondTestResult.getUid());
+        assertEquals(result.getTestServerPort(), testServer.getPortSsl());
+        assertEquals(result.getTestDuration(), applicationProperties.getDuration().toString());
+        assertEquals(result.getTestNumberOfThreads(), secondTestResult.getNumberOfThreads().toString());
+        assertEquals(result.getTestNumberOfPings(), applicationProperties.getPings().toString());
+        assertEquals(result.getClientRemoteIp(), request.getRemoteAddr());
     }
 
 }
