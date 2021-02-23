@@ -24,8 +24,13 @@ public class RadioCell implements Serializable {
     @Column(name = "uuid")
     private UUID uuid;
 
-    @Column(name = "open_test_uuid")
-    private UUID openTestUUID;
+    @JoinColumn(
+        name = "open_test_uuid",
+        referencedColumnName = "open_test_uuid",
+        insertable = false, nullable = false, updatable = false
+    )
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Test test;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "technology")

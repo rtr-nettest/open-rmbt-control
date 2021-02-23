@@ -145,7 +145,7 @@ public class SignalServiceImpl implements SignalService {
             List<RadioCell> radioCells = signalResultRequest.getRadioInfo().getCells().stream()
                     .map(rcq -> {
                         RadioCell radioCell = radioCellMapper.radioCellRequestToRadioCell(rcq);
-                        radioCell.setOpenTestUUID(updatedTest.getOpenTestUuid());
+                        radioCell.setTest(updatedTest);
                         return radioCell;
                     })
                     .collect(Collectors.toList());
