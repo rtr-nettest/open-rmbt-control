@@ -2,10 +2,10 @@ package at.rtr.rmbt.facade;
 
 import at.rtr.rmbt.config.RollBackService;
 import at.rtr.rmbt.constant.HeaderConstants;
-import at.rtr.rmbt.exception.TestServerNotFoundException;
-import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestStatus;
+import at.rtr.rmbt.exception.TestServerNotFoundException;
+import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.ErrorResponse;
@@ -26,6 +26,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.Inet4Address;
@@ -210,7 +211,10 @@ public class TestSettingsFacade {
                     if (request.getHeader(HeaderConstants.URL) != null) {
                         resultUrl = request.getHeader(HeaderConstants.URL);
                     } else {
-                        resultUrl = request.getRequestURI();
+                        resultUrl = ServletUriComponentsBuilder.fromRequestUri(request)
+                            .replacePath(null)
+                            .build()
+                            .toUriString();
                     }
 
                     builder.resultUrl(resultUrl + RESULT_URL);
