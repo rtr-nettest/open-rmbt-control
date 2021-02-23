@@ -194,7 +194,7 @@ public class SignalServiceImplTest {
         var response = signalService.processSignalResult(signalResultRequest);
 
         verify(test).setLastSequenceNumber(2);
-        verify(radioCell).setOpenTestUUID(TestConstants.DEFAULT_UUID);
+        verify(radioCell).setTest(test);
         verify(radioSignal).setOpenTestUUID(TestConstants.DEFAULT_UUID);
         verify(testRepository).save(test);
         verify(radioCellRepository).saveAll(List.of(radioCell));

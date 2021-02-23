@@ -479,12 +479,7 @@ public class Test implements Serializable {
     )
     private LoopModeSettings loopModeSettings;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "open_test_uuid",
-            referencedColumnName = "open_test_uuid",
-            insertable = false, nullable = false, updatable = false
-    )
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "test")
     private List<RadioCell> radioCell;
 
     @PrePersist
