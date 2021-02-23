@@ -110,8 +110,8 @@ public class SignalServiceImplTest {
     @Before
     public void setUp() {
         signalService = new SignalServiceImpl(testRepository, providerRepository,
-                uuidGenerator, clientRepository, signalMapper, radioCellRepository,
-                radioSignalRepository, geoLocationRepository, geoLocationMapper, radioCellMapper, radioSignalMapper);
+            uuidGenerator, clientRepository, signalMapper, radioCellRepository,
+            radioSignalRepository, geoLocationRepository, geoLocationMapper, radioCellMapper, radioSignalMapper);
     }
 
     @Test
@@ -134,8 +134,8 @@ public class SignalServiceImplTest {
 
     @Test
     public void getSignalsHistory_correctInvocation_expectPageWithResponse() {
-        when(testRepository.findAllByStatusIn(eq(Collections.singletonList(TestStatus.SIGNAL_STARTED)), eq(pageable)))
-                .thenReturn(new PageImpl<>(Collections.singletonList(savedTest)));
+        when(testRepository.findAllByStatusIn(eq(List.of(TestStatus.SIGNAL_STARTED, TestStatus.SIGNAL)), eq(pageable)))
+            .thenReturn(new PageImpl<>(Collections.singletonList(savedTest)));
         when(page.getContent()).thenReturn(Collections.singletonList(savedTest));
         when(signalMapper.signalToSignalMeasurementResponse(savedTest)).thenReturn(signalMeasurementResponse);
         var actual = signalService.getSignalsHistory(pageable);
@@ -150,8 +150,9 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getSequenceNumber()).thenReturn(2L);
         when(signalResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
-                .thenReturn(Optional.of(test));
+            .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
+        when(test.getUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
 
         var response = signalService.processSignalResult(signalResultRequest);
@@ -186,9 +187,10 @@ public class SignalServiceImplTest {
         when(radioCellMapper.radioCellRequestToRadioCell(radioCellRequest)).thenReturn(radioCell);
         when(radioSignalMapper.radioSignalRequestToRadioSignal(radioSignalRequest)).thenReturn(radioSignal);
         when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
-                .thenReturn(Optional.of(test));
+            .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_UUID);
+        when(test.getUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
 
         var response = signalService.processSignalResult(signalResultRequest);
@@ -210,10 +212,11 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(signalResultRequest.getGeoLocations()).thenReturn(List.of(geoLocationRequestFirst, geoLocationRequestSecond));
         when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
-                .thenReturn(Optional.of(test));
+            .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_UUID);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
+        when(test.getUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
         when(geoLocationRequestFirst.getTstamp()).thenReturn(TestConstants.DEFAULT_MILLIS);
         when(geoLocationRequestFirst.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE);
@@ -256,9 +259,10 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(signalResultRequest.getTestIpLocal()).thenReturn(TestConstants.DEFAULT_IP);
         when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
-                .thenReturn(Optional.of(test));
+            .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(test.getClientPublicIp()).thenReturn(TestConstants.DEFAULT_IP);
+        when(test.getUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
         InetAddress defaultIpLocalAddress = InetAddresses.forString(TestConstants.DEFAULT_IP);
         InetAddress defaultIpPublicAddress = InetAddresses.forString(TestConstants.DEFAULT_IP);
@@ -276,10 +280,10 @@ public class SignalServiceImplTest {
 
     private SignalSettingsResponse getRegisterSignalResponse() {
         return SignalSettingsResponse.builder()
-                .resultUrl(String.join(TestConstants.DEFAULT_URL, SIGNAL_RESULT))
-                .clientRemoteIp(TestConstants.DEFAULT_IP)
-                .provider(TestConstants.DEFAULT_PROVIDER)
-                .testUUID(TestConstants.DEFAULT_UUID)
-                .build();
+            .resultUrl(String.join(TestConstants.DEFAULT_URL, SIGNAL_RESULT))
+            .clientRemoteIp(TestConstants.DEFAULT_IP)
+            .provider(TestConstants.DEFAULT_PROVIDER)
+            .testUUID(TestConstants.DEFAULT_UUID)
+            .build();
     }
 }
