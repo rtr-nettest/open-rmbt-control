@@ -211,10 +211,9 @@ public class TestSettingsFacade {
                     if (request.getHeader(HeaderConstants.URL) != null) {
                         resultUrl = request.getHeader(HeaderConstants.URL);
                     } else {
-                        resultUrl = ServletUriComponentsBuilder.fromRequestUri(request)
-                            .replacePath(null)
+                        resultUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                             .build()
-                            .toUriString();
+                            .toString();
                     }
 
                     builder.resultUrl(resultUrl + RESULT_URL);
