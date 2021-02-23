@@ -11,7 +11,9 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Table(name = "settings")
-public class Settings {
+@EqualsAndHashCode
+public class
+Settings {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

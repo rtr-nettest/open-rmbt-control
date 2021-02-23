@@ -3,13 +3,13 @@ package at.rtr.rmbt.controller;
 import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.request.AdminSettingsRequest;
 import at.rtr.rmbt.request.RtrSettingsRequest;
-import at.rtr.rmbt.service.RtrSettingsService;
+import at.rtr.rmbt.request.settings.admin.update.AdminUpdateSettingsRequest;
 import at.rtr.rmbt.response.SettingsResponse;
+import at.rtr.rmbt.response.settings.admin.update.AdminSettingsResponse;
+import at.rtr.rmbt.service.RtrSettingsService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,5 +27,17 @@ public class RTRSettingsController {
     @ApiOperation(value = "Set settings of control server")
     public void createSettings(@RequestBody AdminSettingsRequest adminSettingsRequest) {
         rtrSettingsService.createSettings(adminSettingsRequest);
+    }
+
+    @GetMapping(URIConstants.ADMIN_SETTING)
+    @ApiOperation(value = "Get settings of control server")
+    public AdminSettingsResponse getSettings() {
+        return rtrSettingsService.getAllSettings();
+    }
+
+    @PutMapping(URIConstants.ADMIN_SETTING)
+    @ApiOperation(value = "Update settings of control server")
+    public void adminUpdateSettings(@RequestBody AdminUpdateSettingsRequest adminUpdateSettingsRequest) {
+        rtrSettingsService.updateSettings(adminUpdateSettingsRequest);
     }
 }

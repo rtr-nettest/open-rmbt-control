@@ -3,15 +3,17 @@ package at.rtr.rmbt.service.impl;
 import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
+import at.rtr.rmbt.enums.ClientType;
 import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.model.Settings;
-import at.rtr.rmbt.enums.ClientType;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.AdminSettingsBodyRequest;
 import at.rtr.rmbt.request.AdminSettingsRequest;
 import at.rtr.rmbt.request.RtrSettingsRequest;
+import at.rtr.rmbt.request.settings.admin.update.*;
 import at.rtr.rmbt.response.*;
+import at.rtr.rmbt.response.settings.admin.update.*;
 import at.rtr.rmbt.service.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,13 +24,16 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static at.rtr.rmbt.TestConstants.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -36,6 +41,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class RtrSettingsServiceImplTest {
+
     private RtrSettingsService rtrSettingsService;
 
     @MockBean
@@ -71,6 +77,18 @@ public class RtrSettingsServiceImplTest {
     private Settings settings;
     @Captor
     private ArgumentCaptor<List<Settings>> settingsArgumentCaptor;
+    @Mock
+    private AdminUpdateSettingsRequest adminUpdateSettingsRequest;
+    @Mock
+    private AdminUpdateSettingsTermsAndConditionsRequest adminUpdateSettingsTermsAndConditionsRequest;
+    @Mock
+    private AdminUpdateSettingsUrlsRequest adminUpdateSettingsUrlsRequest;
+    @Mock
+    private AdminUpdateSettingsTestRequest adminUpdateSettingsTestRequest;
+    @Mock
+    private AdminUpdateSettingsSignalTestRequest adminUpdateSettingsSignalTestRequest;
+    @Mock
+    private AdminUpdateSettingsMapServerRequest adminUpdateSettingsMapServerRequest;
 
     @Before
     public void setUp() {
@@ -83,6 +101,8 @@ public class RtrSettingsServiceImplTest {
                 testServerService,
                 uuidGenerator,
                 clock);
+        ReflectionTestUtils.setField(rtrSettingsService, "branch", TestConstants.DEFAULT_GIT_BRANCH);
+        ReflectionTestUtils.setField(rtrSettingsService, "describe", TestConstants.DEFAULT_GIT_COMMIT_ID_DESCRIBE);
     }
 
     @Test(expected = NotSupportedClientVersionException.class)
@@ -268,6 +288,136 @@ public class RtrSettingsServiceImplTest {
         Assert.assertEquals(TestConstants.DEFAULT_LANGUAGE, settingsArgumentCaptor.getValue().get(0).getLang());
     }
 
+    @Test
+    public void updateSettings_whenSettingsNotExist_expectUpdated() {
+        when(adminUpdateSettingsRequest.getAdminUpdateSettingsTermsAndConditionsRequest()).thenReturn(adminUpdateSettingsTermsAndConditionsRequest);
+        when(adminUpdateSettingsRequest.getAdminUpdateSettingsUrlsRequest()).thenReturn(adminUpdateSettingsUrlsRequest);
+        when(adminUpdateSettingsRequest.getAdminUpdateSettingsTestRequest()).thenReturn(adminUpdateSettingsTestRequest);
+        when(adminUpdateSettingsRequest.getAdminUpdateSettingsSignalTestRequest()).thenReturn(adminUpdateSettingsSignalTestRequest);
+        when(adminUpdateSettingsRequest.getAdminUpdateSettingsMapServerRequest()).thenReturn(adminUpdateSettingsMapServerRequest);
+
+        when(adminUpdateSettingsTermsAndConditionsRequest.getUrl()).thenReturn(TestConstants.DEFAULT_TERM_AND_CONDITION_URL);
+        when(adminUpdateSettingsTermsAndConditionsRequest.getNdtUrl()).thenReturn(TestConstants.DEFAULT_TERM_AND_CONDITION_NDT_URL);
+        when(adminUpdateSettingsTermsAndConditionsRequest.getVersion()).thenReturn(String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION));
+
+        when(adminUpdateSettingsUrlsRequest.getControlIpV4Only()).thenReturn(TestConstants.DEFAULT_URLS_CONTROL_IPV4_ONLY);
+        when(adminUpdateSettingsUrlsRequest.getControlIpV6Only()).thenReturn(TestConstants.DEFAULT_URLS_CONTROL_IPV6_ONLY);
+        when(adminUpdateSettingsUrlsRequest.getUrlShare()).thenReturn(TestConstants.DEFAULT_URLS_URL_SHARE);
+        when(adminUpdateSettingsUrlsRequest.getUrlMapServer()).thenReturn(TestConstants.DEFAULT_URLS_URL_MAP_SERVER);
+        when(adminUpdateSettingsUrlsRequest.getStatistics()).thenReturn(TestConstants.DEFAULT_URLS_STATISTICS);
+        when(adminUpdateSettingsUrlsRequest.getOpenDataPrefix()).thenReturn(TestConstants.DEFAULT_URLS_OPEN_DATA_PREFIX);
+        when(adminUpdateSettingsUrlsRequest.getUrlIpV4Check()).thenReturn(TestConstants.DEFAULT_URLS_URL_IPV4_CHECK);
+        when(adminUpdateSettingsUrlsRequest.getUrlIpV6Check()).thenReturn(TestConstants.DEFAULT_URLS_URL_IPV6_CHECK);
+
+        when(adminUpdateSettingsTestRequest.getResultQosUrl()).thenReturn(TestConstants.DEFAULT_TEST_REQUEST_RESULT_QOS_URL);
+        when(adminUpdateSettingsTestRequest.getResultUrl()).thenReturn(TestConstants.DEFAULT_TEST_REQUEST_RESULT_URL);
+        when(adminUpdateSettingsTestRequest.getTestDuration()).thenReturn(TestConstants.DEFAULT_TEST_REQUEST_TEST_DURATION);
+        when(adminUpdateSettingsTestRequest.getTestNumThreads()).thenReturn(TestConstants.DEFAULT_TEST_REQUEST_TEST_NUM_THREADS);
+        when(adminUpdateSettingsTestRequest.getTestNumPings()).thenReturn(TestConstants.DEFAULT_TEST_REQUEST_TEST_NUM_PINGS);
+
+        when(adminUpdateSettingsSignalTestRequest.getResultUrl()).thenReturn(TestConstants.DEFAULT_SIGNAL_TEST_REQUEST_RESULT_URL);
+
+        when(adminUpdateSettingsMapServerRequest.getHost()).thenReturn(TestConstants.DEFAULT_MAP_SERVER_HOST);
+        when(adminUpdateSettingsMapServerRequest.getPort()).thenReturn(String.valueOf(TestConstants.DEFAULT_MAP_SERVER_PORT));
+        when(adminUpdateSettingsMapServerRequest.getSsl()).thenReturn(String.valueOf(TestConstants.DEFAULT_FLAG_TRUE));
+
+        rtrSettingsService.updateSettings(adminUpdateSettingsRequest);
+
+        verify(settingsRepository).saveAll(settingsArgumentCaptor.capture());
+        assertEquals(getAdminSettingsList(), settingsArgumentCaptor.getValue());
+    }
+
+    @Test
+    public void getAllSettings_whenCommonRequest_expectAdminSettingsResponse() {
+        var expectedResponse = getAdminSettingsResponse();
+
+        when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn("en", Config.ADMIN_SETTINGS_KEYS)).thenReturn(getAdminSettingsList());
+
+        var actualResponse = rtrSettingsService.getAllSettings();
+
+        assertEquals(expectedResponse, actualResponse);
+    }
+
+    private AdminSettingsResponse getAdminSettingsResponse() {
+        var adminSettingsTermAndConditionsResponse = AdminSettingsTermAndConditionsResponse.builder()
+            .url(DEFAULT_TERM_AND_CONDITION_URL)
+            .ndtUrl(DEFAULT_TERM_AND_CONDITION_NDT_URL)
+            .version(DEFAULT_TERM_AND_CONDITION_VERSION.toString())
+            .build();
+        var urls = AdminSettingsUrlsResponse.builder()
+            .urlShare(DEFAULT_URLS_URL_SHARE)
+            .controlIpV4Only(DEFAULT_URLS_CONTROL_IPV4_ONLY)
+            .controlIpV6Only(DEFAULT_URLS_CONTROL_IPV6_ONLY)
+            .openDataPrefix(DEFAULT_URLS_OPEN_DATA_PREFIX)
+            .statistics(DEFAULT_URLS_STATISTICS)
+            .urlIpV4Check(DEFAULT_URLS_URL_IPV4_CHECK)
+            .urlIpV6Check(DEFAULT_URLS_URL_IPV6_CHECK)
+            .urlMapServer(DEFAULT_URLS_URL_MAP_SERVER)
+            .build();
+        var adminTestResponse = AdminSettingsTestResponse.builder()
+            .resultQosUrl(DEFAULT_TEST_REQUEST_RESULT_QOS_URL)
+            .resultUrl(DEFAULT_TEST_REQUEST_RESULT_URL)
+            .testDuration(DEFAULT_TEST_REQUEST_TEST_DURATION)
+            .testNumPings(DEFAULT_TEST_REQUEST_TEST_NUM_PINGS)
+            .testNumThreads(DEFAULT_TEST_REQUEST_TEST_NUM_THREADS)
+            .build();
+        var adminSettingsSignalTestResponse = AdminSettingsSignalTestResponse.builder()
+            .resultUrl(DEFAULT_SIGNAL_TEST_REQUEST_RESULT_URL)
+            .build();
+        var mapServerResponse = AdminSettingsMapServerResponse.builder()
+            .host(DEFAULT_MAP_SERVER_HOST)
+            .ssl(String.valueOf(DEFAULT_FLAG_TRUE))
+            .port(String.valueOf(DEFAULT_MAP_SERVER_PORT))
+            .build();
+        var versions = AdminSettingsVersionResponse.builder()
+            .controlServerVersion(DEFAULT_CONTROL_SERVER_VERSION)
+            .build();
+
+        return AdminSettingsResponse.builder()
+            .termAndConditionsResponse(adminSettingsTermAndConditionsResponse)
+            .urls(urls)
+            .adminTestResponse(adminTestResponse)
+            .adminSettingsSignalTestResponse(adminSettingsSignalTestResponse)
+            .mapServerResponse(mapServerResponse)
+            .versions(versions)
+            .build();
+    }
+
+    private List<Settings> getAdminSettingsList() {
+        List<Settings> settings = new ArrayList<>();
+        addSettingToList(Config.TERM_AND_CONDITION_URL_KEY, TestConstants.DEFAULT_TERM_AND_CONDITION_URL, settings);
+        addSettingToList(Config.TERM_AND_CONDITION_VERSION_KEY, String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION), settings);
+        addSettingToList(Config.TERM_AND_CONDITION_NDT_URL_KEY, TestConstants.DEFAULT_TERM_AND_CONDITION_NDT_URL, settings);
+        addSettingToList(Config.URL_OPEN_DATA_PREFIX_KEY, TestConstants.DEFAULT_URLS_OPEN_DATA_PREFIX, settings);
+        addSettingToList(Config.URL_SHARE_KEY, TestConstants.DEFAULT_URLS_URL_SHARE, settings);
+        addSettingToList(Config.URL_STATISTIC_KEY, TestConstants.DEFAULT_URLS_STATISTICS, settings);
+        addSettingToList(Config.URL_CONTROL_IPV4_ONLY_KEY, TestConstants.DEFAULT_URLS_CONTROL_IPV4_ONLY, settings);
+        addSettingToList(Config.URL_CONTROL_IPV6_ONLY_KEY, TestConstants.DEFAULT_URLS_CONTROL_IPV6_ONLY, settings);
+        addSettingToList(Config.URL_IPV4_CHECK_KEY, TestConstants.DEFAULT_URLS_URL_IPV4_CHECK, settings);
+        addSettingToList(Config.URL_IPV6_CHECK_KEY, TestConstants.DEFAULT_URLS_URL_IPV6_CHECK, settings);
+        addSettingToList(Config.URL_MAP_SERVER_KEY, TestConstants.DEFAULT_URLS_URL_MAP_SERVER, settings);
+        addSettingToList(Config.MAP_SERVER_HOST_KEY, TestConstants.DEFAULT_MAP_SERVER_HOST, settings);
+        addSettingToList(Config.MAP_SERVER_SSL_KEY, String.valueOf(TestConstants.DEFAULT_FLAG_TRUE), settings);
+        addSettingToList(Config.MAP_SERVER_PORT_KEY, String.valueOf(TestConstants.DEFAULT_MAP_SERVER_PORT), settings);
+        addSettingToList(Config.TEST_RESULT_URL_KEY, TestConstants.DEFAULT_TEST_REQUEST_RESULT_URL, settings);
+        addSettingToList(Config.TEST_RESULT_QOS_URL_KEY, TestConstants.DEFAULT_TEST_REQUEST_RESULT_QOS_URL, settings);
+        addSettingToList(Config.TEST_DURATION_KEY, TestConstants.DEFAULT_TEST_REQUEST_TEST_DURATION, settings);
+        addSettingToList(Config.TEST_NUM_THREADS_KEY, TestConstants.DEFAULT_TEST_REQUEST_TEST_NUM_THREADS, settings);
+        addSettingToList(Config.TEST_NUM_PINGS_KEY, TestConstants.DEFAULT_TEST_REQUEST_TEST_NUM_PINGS, settings);
+        addSettingToList(Config.SIGNAL_RESULT_URL_KEY, TestConstants.DEFAULT_SIGNAL_TEST_REQUEST_RESULT_URL, settings);
+
+        return settings;
+    }
+
+    private void addSettingToList(String key, String value, List<Settings> settings) {
+        var setting = Settings.builder()
+            .key(key)
+            .value(value)
+            .lang("en")
+            .build();
+        settings.add(setting);
+    }
+
     private AdminSettingsBodyRequest getAdminSettingsBodyRequest() {
         return AdminSettingsBodyRequest.builder()
                 .tcUrl(TestConstants.DEFAULT_TC_URL_VALUE)
@@ -292,7 +442,7 @@ public class RtrSettingsServiceImplTest {
     private UrlsResponse getUrlsResponse() {
         return UrlsResponse.builder()
                 .urlShare(TestConstants.DEFAULT_URLS_URL_SHARE)
-                .urlIPV6Check(TestConstants.DEFAULT_URLS_IPV6_CHECK)
+                .urlIPV6Check(TestConstants.DEFAULT_URLS_URL_IPV6_CHECK)
                 .controlIPV4Only(TestConstants.DEFAULT_URLS_CONTROL_IPV4_ONLY)
                 .openDataPrefix(TestConstants.DEFAULT_URLS_OPEN_DATA_PREFIX)
                 .urlMapServer(TestConstants.DEFAULT_URLS_URL_MAP_SERVER)
@@ -369,7 +519,7 @@ public class RtrSettingsServiceImplTest {
         var controlIpv4Only = new Settings(null, "control_ipv4_only", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_URLS_CONTROL_IPV4_ONLY);
         var controlIpv6Only = new Settings(null, "control_ipv6_only", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_URLS_CONTROL_IPV6_ONLY);
         var urlIpv4Check = new Settings(null, "url_ipv4_check", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_URLS_URL_IPV4_CHECK);
-        var urlIpv6Check = new Settings(null, "url_ipv6_check", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_URLS_IPV6_CHECK);
+        var urlIpv6Check = new Settings(null, "url_ipv6_check", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_URLS_URL_IPV6_CHECK);
         var urlMapServer = new Settings(null, "url_map_server", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_URLS_URL_MAP_SERVER);
         return List.of(tcUrlAndroid, tcNdtUrlAndroid, tcVersionAndroid,
                 tcUrlAndroidV4, tcUrlIOS, tcVersionIOS,

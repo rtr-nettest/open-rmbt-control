@@ -6,6 +6,49 @@ import at.rtr.rmbt.enums.TestStatus;
 import java.util.List;
 
 public interface Config {
+    String SIGNAL_RESULT_URL_KEY = "signal_result_url";
+    String TEST_RESULT_QOS_URL_KEY = "test_result_qos_url";
+    String TEST_RESULT_URL_KEY = "test_result_url";
+    String TEST_DURATION_KEY = "rmbt_duration";
+    String TEST_NUM_PINGS_KEY = "rmbt_num_pings";
+    String TEST_NUM_THREADS_KEY = "rmbt_num_threads";
+    String MAP_SERVER_HOST_KEY = "host_map_server";
+    String MAP_SERVER_SSL_KEY = "ssl_map_server";
+    String MAP_SERVER_PORT_KEY = "port_map_server";
+    String TERM_AND_CONDITION_VERSION_KEY = "tc_version";
+    String TERM_AND_CONDITION_URL_KEY = "tc_url";
+    String TERM_AND_CONDITION_NDT_URL_KEY = "tc_ndt_url_android";
+    String URL_OPEN_DATA_PREFIX_KEY = "url_open_data_prefix";
+    String URL_SHARE_KEY = "url_share";
+    String URL_STATISTIC_KEY = "url_statistics";
+    String URL_CONTROL_IPV4_ONLY_KEY = "control_ipv4_only";
+    String URL_CONTROL_IPV6_ONLY_KEY = "control_ipv6_only";
+    String URL_IPV4_CHECK_KEY = "url_ipv4_check";
+    String URL_IPV6_CHECK_KEY = "url_ipv6_check";
+    String URL_MAP_SERVER_KEY = "url_map_server";
+
+
+    List<String> ADMIN_SETTINGS_KEYS = List.of(SIGNAL_RESULT_URL_KEY,
+        TEST_RESULT_QOS_URL_KEY,
+        TEST_RESULT_URL_KEY,
+        TEST_DURATION_KEY,
+        TEST_NUM_PINGS_KEY,
+        TEST_NUM_THREADS_KEY,
+        MAP_SERVER_HOST_KEY,
+        MAP_SERVER_SSL_KEY,
+        MAP_SERVER_PORT_KEY,
+        TERM_AND_CONDITION_VERSION_KEY,
+        TERM_AND_CONDITION_URL_KEY,
+        TERM_AND_CONDITION_NDT_URL_KEY,
+        URL_OPEN_DATA_PREFIX_KEY,
+        URL_SHARE_KEY,
+        URL_STATISTIC_KEY,
+        URL_CONTROL_IPV4_ONLY_KEY,
+        URL_CONTROL_IPV6_ONLY_KEY,
+        URL_IPV4_CHECK_KEY,
+        URL_IPV6_CHECK_KEY,
+        URL_MAP_SERVER_KEY
+    );
     List<String> SETTINGS_KEYS = List.of("tc_url_android",
         "tc_ndt_url_android",
         "tc_version_android",
