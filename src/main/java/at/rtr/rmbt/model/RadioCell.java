@@ -27,12 +27,12 @@ public class RadioCell implements Serializable {
     @JoinColumn(
         name = "open_test_uuid",
         referencedColumnName = "open_test_uuid",
-        insertable = false, nullable = false, updatable = false
+        nullable = false,
+        updatable = false
     )
     @ManyToOne(fetch = FetchType.LAZY)
     private Test test;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "technology")
     private NetworkGroupName technology;
 

@@ -60,8 +60,8 @@ public class SignalServiceImpl implements SignalService {
 
     @Override
     public Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable) {
-        return testRepository.findAllByStatusIn(Collections.singletonList(TestStatus.SIGNAL_STARTED), pageable)
-                .map(signalMapper::signalToSignalMeasurementResponse);
+        return testRepository.findAllByStatusIn(List.of(TestStatus.SIGNAL_STARTED, TestStatus.SIGNAL), pageable)
+            .map(signalMapper::signalToSignalMeasurementResponse);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class SignalServiceImpl implements SignalService {
         var openTestUUID = uuidGenerator.generateUUID();
 
         var client = clientRepository.findByUuid(signalRequest.getUuid())
-                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, signalRequest.getUuid())));
+            .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, signalRequest.getUuid())));
 
         var clientAddress = InetAddresses.forString(ip);
         var clientIpString = InetAddresses.toAddrString(clientAddress);
@@ -119,6 +119,7 @@ public class SignalServiceImpl implements SignalService {
 
         Test updatedTest = testRepository.findByUuidAndStatusesIn(testUuid, Config.SIGNAL_RESULT_STATUSES)
                 .orElseGet(() -> getEmptyGeneratedTest(signalResultRequest, client));
+        updatedTest.setStatus(TestStatus.SIGNAL);
 
         if (sequenceNumber <= updatedTest.getLastSequenceNumber()) {
             throw new InvalidSequenceException();
@@ -136,7 +137,7 @@ public class SignalServiceImpl implements SignalService {
         processRadioInfo(signalResultRequest, updatedTest);
 
         return SignalResultResponse.builder()
-                .testUUID(testUuid)
+                .testUUID(updatedTest.getUuid())
                 .build();
     }
 
@@ -230,7 +231,6 @@ public class SignalServiceImpl implements SignalService {
         return Test.builder()
                 .uuid(uuidGenerator.generateUUID())
                 .openTestUuid(uuidGenerator.generateUUID())
-                .status(TestStatus.SIGNAL)
                 .time(getClientTimeFromSignalResultRequest(signalResultRequest))
                 .timezone(signalResultRequest.getTimezone())
                 .client(client)
