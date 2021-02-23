@@ -3,13 +3,13 @@ package at.rtr.rmbt.facade;
 import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.config.RollBackService;
 import at.rtr.rmbt.constant.HeaderConstants;
-import at.rtr.rmbt.model.LoopModeSettings;
-import at.rtr.rmbt.model.RtrClient;
-import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.enums.ClientType;
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestPlatform;
 import at.rtr.rmbt.enums.TestStatus;
+import at.rtr.rmbt.model.LoopModeSettings;
+import at.rtr.rmbt.model.RtrClient;
+import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.TestSettingsResponse;
@@ -24,6 +24,8 @@ import org.mockito.stubbing.Answer;
 import org.springframework.context.MessageSource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.*;
 
@@ -131,6 +133,7 @@ public class TestSettingsFacadeTest {
     public void setUp() {
         request = new MockHttpServletRequest();
         request.setRemoteAddr("185.38.216.246");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         testServer = TestServer.builder()
             .uid(11L)
             .uuid(DEFAULT_UUID)
