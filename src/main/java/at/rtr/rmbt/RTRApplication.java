@@ -11,9 +11,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages = {"com.specure.core", "at.rtr.rmbt"})
-@EnableJpaRepositories(basePackages = {"com.specure.core.repository", "at.rtr.rmbt.repository"})
-@EntityScan(basePackages = {"com.specure.core.model", "at.rtr.rmbt.model"})
+@SpringBootApplication(scanBasePackages = {"at.rtr.rmbt"})
+@EnableJpaRepositories(basePackages = {"at.rtr.rmbt.repository"})
+@EntityScan(basePackages = {"at.rtr.rmbt.model"})
 @PropertySource({"classpath:git.properties"})
 @EnableConfigurationProperties(ApplicationProperties.class)
 public class RTRApplication {

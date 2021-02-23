@@ -6,7 +6,10 @@ import at.rtr.rmbt.enums.ClientType;
 import at.rtr.rmbt.request.AdminSettingsBodyRequest;
 import at.rtr.rmbt.request.AdminSettingsRequest;
 import at.rtr.rmbt.request.RtrSettingsRequest;
+import at.rtr.rmbt.request.settings.admin.update.AdminUpdateSettingsMapServerRequest;
+import at.rtr.rmbt.request.settings.admin.update.AdminUpdateSettingsRequest;
 import at.rtr.rmbt.response.*;
+import at.rtr.rmbt.response.settings.admin.update.*;
 import at.rtr.rmbt.service.RtrSettingsService;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,37 +60,6 @@ public class RTRSettingsControllerTest {
         verify(rtrSettingsService).createSettings(request);
     }
 
-    private AdminSettingsRequest getCreateSettingsRequest() {
-
-        return AdminSettingsRequest.builder()
-                .settings(getAdminSettingsBodyRequest())
-                .language(DEFAULT_LANGUAGE)
-                .build();
-    }
-
-    private AdminSettingsBodyRequest getAdminSettingsBodyRequest() {
-        return AdminSettingsBodyRequest.builder()
-                .tcUrl(DEFAULT_TC_URL_ANDROID_VALUE)
-                .tcVersion(DEFAULT_TC_VERSION_VALUE)
-                .tcUrlAndroid(DEFAULT_TC_URL_ANDROID_VALUE)
-                .tcNdtUrlAndroid(DEFAULT_TC_NDT_URL_ANDROID_VALUE)
-                .tcVersionAndroid(DEFAULT_TC_VERSION_ANDROID_VALUE)
-                .tcUrlIOS(DEFAULT_TC_URL_IOS_VALUE)
-                .tcVersionIOS(DEFAULT_TC_VERSION_IOS_VALUE)
-                .urlMapServer(DEFAULT_URLS_URL_MAP_SERVER)
-                .urlShare(DEFAULT_URLS_URL_SHARE)
-                .urlIPV6Check(DEFAULT_URLS_IPV6_CHECK)
-                .urlIPV4Check(DEFAULT_URLS_URL_IPV4_CHECK)
-                .controlIPV4Only(DEFAULT_URLS_CONTROL_IPV4_ONLY)
-                .statistics(DEFAULT_URLS_STATISTICS)
-                .controlIPV6Only(DEFAULT_URLS_CONTROL_IPV6_ONLY)
-                .openDataPrefix(DEFAULT_URLS_OPEN_DATA_PREFIX)
-                .port(DEFAULT_MAP_SERVER_PORT)
-                .ssl(DEFAULT_FLAG_TRUE)
-                .host(DEFAULT_MAP_SERVER_HOST)
-                .build();
-    }
-
     @Test
     public void showNewsList_whenCommonRequest_expectGetSettingsCalled() throws Exception {
         var request = getSettingsRequest();
@@ -102,7 +74,7 @@ public class RTRSettingsControllerTest {
                 .andExpect(jsonPath("$.settings[0].terms_and_conditions.url").value(DEFAULT_TERM_AND_CONDITION_URL))
                 .andExpect(jsonPath("$.settings[0].terms_and_conditions.ndt_url").value(DEFAULT_TERM_AND_CONDITION_NDT_URL))
                 .andExpect(jsonPath("$.settings[0].urls.url_share").value(DEFAULT_URLS_URL_SHARE))
-                .andExpect(jsonPath("$.settings[0].urls.url_ipv6_check").value(DEFAULT_URLS_IPV6_CHECK))
+                .andExpect(jsonPath("$.settings[0].urls.url_ipv6_check").value(DEFAULT_URLS_URL_IPV6_CHECK))
                 .andExpect(jsonPath("$.settings[0].urls.control_ipv4_only").value(DEFAULT_URLS_CONTROL_IPV4_ONLY))
                 .andExpect(jsonPath("$.settings[0].urls.open_data_prefix").value(DEFAULT_URLS_OPEN_DATA_PREFIX))
                 .andExpect(jsonPath("$.settings[0].urls.url_map_server").value(DEFAULT_URLS_URL_MAP_SERVER))
@@ -124,6 +96,139 @@ public class RTRSettingsControllerTest {
                 .andExpect(jsonPath("$.settings[0].map_server.port").value(DEFAULT_MAP_SERVER_PORT))
                 .andExpect(jsonPath("$.settings[0].map_server.host").value(DEFAULT_MAP_SERVER_HOST))
                 .andExpect(jsonPath("$.settings[0].map_server.ssl").value(DEFAULT_FLAG_TRUE));
+    }
+
+    @Test
+    public void getSettings_whenCommonData_expectAdminSettingResponse() throws Exception {
+        var response = getAllSettings();
+        when(rtrSettingsService.getAllSettings()).thenReturn(response);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(ADMIN_SETTING))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andExpect(jsonPath("$.termsAndConditions.version").value(DEFAULT_TERM_AND_CONDITION_VERSION))
+            .andExpect(jsonPath("$.termsAndConditions.url").value(DEFAULT_TERM_AND_CONDITION_URL))
+            .andExpect(jsonPath("$.termsAndConditions.ndtUrl").value(DEFAULT_TERM_AND_CONDITION_NDT_URL))
+            .andExpect(jsonPath("$.urls.urlShare").value(DEFAULT_URLS_URL_SHARE))
+            .andExpect(jsonPath("$.urls.urlIpV4Check").value(DEFAULT_URLS_URL_IPV4_CHECK))
+            .andExpect(jsonPath("$.urls.urlIpV6Check").value(DEFAULT_URLS_URL_IPV6_CHECK))
+            .andExpect(jsonPath("$.urls.controlIpV4Only").value(DEFAULT_URLS_CONTROL_IPV4_ONLY))
+            .andExpect(jsonPath("$.urls.controlIpV6Only").value(DEFAULT_URLS_CONTROL_IPV6_ONLY))
+            .andExpect(jsonPath("$.urls.openDataPrefix").value(DEFAULT_URLS_OPEN_DATA_PREFIX))
+            .andExpect(jsonPath("$.urls.urlMapServer").value(DEFAULT_URLS_URL_MAP_SERVER))
+            .andExpect(jsonPath("$.urls.statistics").value(DEFAULT_URLS_STATISTICS))
+            .andExpect(jsonPath("$.testRequest.resultUrl").value(DEFAULT_TEST_REQUEST_RESULT_URL))
+            .andExpect(jsonPath("$.testRequest.resultQosUrl").value(DEFAULT_TEST_REQUEST_RESULT_QOS_URL))
+            .andExpect(jsonPath("$.testRequest.testDuration").value(DEFAULT_TEST_REQUEST_TEST_DURATION))
+            .andExpect(jsonPath("$.testRequest.testNumThreads").value(DEFAULT_TEST_REQUEST_TEST_NUM_THREADS))
+            .andExpect(jsonPath("$.testRequest.testNumPings").value(DEFAULT_TEST_REQUEST_TEST_NUM_PINGS))
+            .andExpect(jsonPath("$.signalTestRequest.resultUrl").value(DEFAULT_SIGNAL_TEST_REQUEST_RESULT_URL))
+            .andExpect(jsonPath("$.mapServer.port").value(DEFAULT_MAP_SERVER_PORT))
+            .andExpect(jsonPath("$.mapServer.host").value(DEFAULT_MAP_SERVER_HOST))
+            .andExpect(jsonPath("$.mapServer.ssl").value(String.valueOf(DEFAULT_FLAG_TRUE)))
+            .andExpect(jsonPath("$.versions.controlServerVersion").value(DEFAULT_CONTROL_SERVER_VERSION));
+
+        verify(rtrSettingsService).getAllSettings();
+    }
+
+    @Test
+    public void updateSettings_whenCommonRequest_expectUpdateSettingsCalled() throws Exception {
+        var request = getAdminUpdateSettingsRequest();
+
+        mockMvc.perform(MockMvcRequestBuilders.put(ADMIN_SETTING)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtils.asJsonString(request)))
+            .andExpect(status().isOk());
+
+        verify(rtrSettingsService).updateSettings(request);
+    }
+
+    private AdminUpdateSettingsRequest getAdminUpdateSettingsRequest() {
+        var adminUpdateSettingsMapServerRequest = AdminUpdateSettingsMapServerRequest.builder()
+            .host(DEFAULT_MAP_SERVER_HOST)
+            .port(String.valueOf(DEFAULT_MAP_SERVER_PORT))
+            .ssl(String.valueOf(DEFAULT_FLAG_TRUE))
+            .build();
+
+        return AdminUpdateSettingsRequest.builder()
+            .adminUpdateSettingsMapServerRequest(adminUpdateSettingsMapServerRequest)
+            .build();
+    }
+
+    private AdminSettingsResponse getAllSettings() {
+        var adminSettingsTermAndConditionsResponse = AdminSettingsTermAndConditionsResponse.builder()
+            .url(DEFAULT_TERM_AND_CONDITION_URL)
+            .ndtUrl(DEFAULT_TERM_AND_CONDITION_NDT_URL)
+            .version(DEFAULT_TERM_AND_CONDITION_VERSION.toString())
+            .build();
+        var urls = AdminSettingsUrlsResponse.builder()
+            .urlShare(DEFAULT_URLS_URL_SHARE)
+            .controlIpV4Only(DEFAULT_URLS_CONTROL_IPV4_ONLY)
+            .controlIpV6Only(DEFAULT_URLS_CONTROL_IPV6_ONLY)
+            .openDataPrefix(DEFAULT_URLS_OPEN_DATA_PREFIX)
+            .statistics(DEFAULT_URLS_STATISTICS)
+            .urlIpV4Check(DEFAULT_URLS_URL_IPV4_CHECK)
+            .urlIpV6Check(DEFAULT_URLS_URL_IPV6_CHECK)
+            .urlMapServer(DEFAULT_URLS_URL_MAP_SERVER)
+            .build();
+        var adminTestResponse = AdminSettingsTestResponse.builder()
+            .resultQosUrl(DEFAULT_TEST_REQUEST_RESULT_QOS_URL)
+            .resultUrl(DEFAULT_TEST_REQUEST_RESULT_URL)
+            .testDuration(DEFAULT_TEST_REQUEST_TEST_DURATION)
+            .testNumPings(DEFAULT_TEST_REQUEST_TEST_NUM_PINGS)
+            .testNumThreads(DEFAULT_TEST_REQUEST_TEST_NUM_THREADS)
+            .build();
+        var adminSettingsSignalTestResponse = AdminSettingsSignalTestResponse.builder()
+            .resultUrl(DEFAULT_SIGNAL_TEST_REQUEST_RESULT_URL)
+            .build();
+        var mapServerResponse = AdminSettingsMapServerResponse.builder()
+            .host(DEFAULT_MAP_SERVER_HOST)
+            .ssl(String.valueOf(DEFAULT_FLAG_TRUE))
+            .port(String.valueOf(DEFAULT_MAP_SERVER_PORT))
+            .build();
+        var versions = AdminSettingsVersionResponse.builder()
+            .controlServerVersion(DEFAULT_CONTROL_SERVER_VERSION)
+            .build();
+
+        return AdminSettingsResponse.builder()
+            .termAndConditionsResponse(adminSettingsTermAndConditionsResponse)
+            .urls(urls)
+            .adminTestResponse(adminTestResponse)
+            .adminSettingsSignalTestResponse(adminSettingsSignalTestResponse)
+            .mapServerResponse(mapServerResponse)
+            .versions(versions)
+            .build();
+    }
+
+    private AdminSettingsRequest getCreateSettingsRequest() {
+
+        return AdminSettingsRequest.builder()
+            .settings(getAdminSettingsBodyRequest())
+            .language(DEFAULT_LANGUAGE)
+            .build();
+    }
+
+    private AdminSettingsBodyRequest getAdminSettingsBodyRequest() {
+        return AdminSettingsBodyRequest.builder()
+            .tcUrl(DEFAULT_TC_URL_ANDROID_VALUE)
+            .tcVersion(DEFAULT_TC_VERSION_VALUE)
+            .tcUrlAndroid(DEFAULT_TC_URL_ANDROID_VALUE)
+            .tcNdtUrlAndroid(DEFAULT_TC_NDT_URL_ANDROID_VALUE)
+            .tcVersionAndroid(DEFAULT_TC_VERSION_ANDROID_VALUE)
+            .tcUrlIOS(DEFAULT_TC_URL_IOS_VALUE)
+            .tcVersionIOS(DEFAULT_TC_VERSION_IOS_VALUE)
+            .urlMapServer(DEFAULT_URLS_URL_MAP_SERVER)
+            .urlShare(DEFAULT_URLS_URL_SHARE)
+            .urlIPV6Check(DEFAULT_URLS_URL_IPV6_CHECK)
+            .urlIPV4Check(DEFAULT_URLS_URL_IPV4_CHECK)
+            .controlIPV4Only(DEFAULT_URLS_CONTROL_IPV4_ONLY)
+            .statistics(DEFAULT_URLS_STATISTICS)
+            .controlIPV6Only(DEFAULT_URLS_CONTROL_IPV6_ONLY)
+            .openDataPrefix(DEFAULT_URLS_OPEN_DATA_PREFIX)
+            .port(DEFAULT_MAP_SERVER_PORT)
+            .ssl(DEFAULT_FLAG_TRUE)
+            .host(DEFAULT_MAP_SERVER_HOST)
+            .build();
     }
 
     private SettingsResponse getSettingsResponse() {
@@ -171,7 +276,7 @@ public class RTRSettingsControllerTest {
         var urls = UrlsResponse.builder()
                 .urlMapServer(DEFAULT_URLS_URL_MAP_SERVER)
                 .urlShare(DEFAULT_URLS_URL_SHARE)
-                .urlIPV6Check(DEFAULT_URLS_IPV6_CHECK)
+                .urlIPV6Check(DEFAULT_URLS_URL_IPV6_CHECK)
                 .urlIPV4Check(DEFAULT_URLS_URL_IPV4_CHECK)
                 .controlIPV4Only(DEFAULT_URLS_CONTROL_IPV4_ONLY)
                 .statistics(DEFAULT_URLS_STATISTICS)
