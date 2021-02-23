@@ -1,6 +1,7 @@
 package at.rtr.rmbt.facade;
 
 import at.rtr.rmbt.config.RollBackService;
+import at.rtr.rmbt.constant.HeaderConstants;
 import at.rtr.rmbt.exception.TestServerNotFoundException;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.enums.ServerType;
@@ -206,8 +207,8 @@ public class TestSettingsFacade {
                         .clientRemoteIp(clientIpAddress);
 
                     String resultUrl;
-                    if (request.getHeader("X-Real-URL") == null) {
-                        resultUrl = request.getHeader("X-Real-URL");
+                    if (request.getHeader(HeaderConstants.URL) != null) {
+                        resultUrl = request.getHeader(HeaderConstants.URL);
                     } else {
                         resultUrl = request.getRequestURI();
                     }
