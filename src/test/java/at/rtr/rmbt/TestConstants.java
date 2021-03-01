@@ -7,6 +7,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
+import java.sql.Timestamp;
 import java.time.*;
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ public interface TestConstants {
     Long DEFAULT_UID = 2L;
     String DEFAULT_NEWS_TITLE = "DEFAULT NEWS TITLE";
     String DEFAULT_NEWS_TEXT = "DEFAULT NEWS TEXT";
+    Long DEFAULT_TEST_SERVER_UID = 5L;
     UUID DEFAULT_TEST_SERVER_UUID = UUID.fromString("f79b66b5-6420-4336-ab6d-69ad4158fa1b");
     String DEFAULT_TEST_SERVER_NAME = "DEFAULT TEST SERVER NAME";
     String DEFAULT_TEST_SERVER_WS_NAME = "DEFAULT TEST SERVER WS NAME";
@@ -141,6 +143,10 @@ public interface TestConstants {
     String DEFAULT_GIT_BRANCH = "DEFAULT_GIT_BRANCH";
     String DEFAULT_GIT_COMMIT_ID_DESCRIBE = "DEFAULT_GIT_COMMIT_ID_DESCRIBE";
     String DEFAULT_CONTROL_SERVER_VERSION = String.format("%s_%s", DEFAULT_GIT_BRANCH, DEFAULT_GIT_COMMIT_ID_DESCRIBE);
+    ZonedDateTime DEFAULT_LAST_TEST_ZONED_DATE_TIME = ZonedDateTime.ofInstant(Instant.ofEpochMilli(20000000), ZoneId.of(DEFAULT_TIMEZONE));
+    ZonedDateTime DEFAULT_LAST_SUCCESSFUL_TEST_ZONED_DATE_TIME = ZonedDateTime.ofInstant(Instant.ofEpochMilli(19000000), ZoneId.of(DEFAULT_TIMEZONE));
+    Timestamp DEFAULT_LAST_TEST_TIMESTAMP = Timestamp.valueOf(DEFAULT_LAST_TEST_ZONED_DATE_TIME.toLocalDateTime());
+    Timestamp DEFAULT_LAST_SUCCESSFUL_TEST_TIMESTAMP = Timestamp.valueOf(DEFAULT_LAST_SUCCESSFUL_TEST_ZONED_DATE_TIME.toLocalDateTime());
 
 
     interface Database {

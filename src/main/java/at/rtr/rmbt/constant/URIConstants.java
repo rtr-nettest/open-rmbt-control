@@ -12,6 +12,7 @@ public interface URIConstants {
     String SIGNAL_REQUEST = "/signalRequest";
     String SIGNAL_RESULT = "/signalResult";
     String ADMIN_SIGNAL = "/reports/signal";
-    String TEST_SERVER = "/testServer";
+    String TEST_SERVER = "/measurementServer";
     String BY_ID = "/{id}";
+    String PROVIDERS = "/providers";
 }

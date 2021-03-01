@@ -2,9 +2,13 @@ package at.rtr.rmbt.mapper.impl;
 
 import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.config.UUIDGenerator;
+import at.rtr.rmbt.mapper.ServerTypeDetailsMapper;
 import at.rtr.rmbt.mapper.TestServerMapper;
+import at.rtr.rmbt.model.ServerTypeDetails;
 import at.rtr.rmbt.model.TestServer;
+import at.rtr.rmbt.request.ServerTypeDetailsRequest;
 import at.rtr.rmbt.request.TestServerRequest;
+import at.rtr.rmbt.response.ServerTypeDetailsResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,15 +27,23 @@ public class TestServerMapperImplTest {
 
     @MockBean
     private UUIDGenerator uuidGenerator;
+    @MockBean
+    private ServerTypeDetailsMapper serverTypeDetailsMapper;
 
     @Mock
     private TestServer testServer;
     @Mock
     private TestServerRequest testServerRequest;
+    @Mock
+    private ServerTypeDetails serverTypeDetails;
+    @Mock
+    private ServerTypeDetailsRequest serverTypeDetailsRequest;
+    @Mock
+    private ServerTypeDetailsResponse serverTypeDetailsResponse;
 
     @Before
     public void setUp() {
-        testServerMapper = new TestServerMapperImpl(uuidGenerator);
+        testServerMapper = new TestServerMapperImpl(uuidGenerator, serverTypeDetailsMapper);
     }
 
     @Test
@@ -59,18 +71,19 @@ public class TestServerMapperImplTest {
         when(testServer.getLocation()).thenReturn(TestConstants.DEFAULT_LOCATION);
         when(testServer.getWebAddressIpV4()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4);
         when(testServer.getWebAddressIpV6()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6);
-        when(testServer.getServerTypes()).thenReturn(Set.of(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE));
+        when(testServer.getServerTypeDetails()).thenReturn(Set.of(serverTypeDetails));
         when(testServer.getPriority()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_PRIORITY);
         when(testServer.getWeight()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_WEIGHT);
         when(testServer.getActive()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
         when(testServer.getKey()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_KEY);
         when(testServer.getSelectable()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
         when(testServer.getNode()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_NODE);
-        when(testServer.isEncrypted()).thenReturn(false);
+        when(serverTypeDetailsMapper.serverTypeDetailsToServerTypeDetailsResponse(serverTypeDetails)).thenReturn(serverTypeDetailsResponse);
 
-        var actualResponse = testServerMapper.testServerToTestServerResponse(testServer);
+        var actualResponse = testServerMapper.testServerToTestServerResponse(testServer, TestConstants.DEFAULT_LAST_TEST_TIMESTAMP,
+                TestConstants.DEFAULT_LAST_SUCCESSFUL_TEST_TIMESTAMP, TestConstants.DEFAULT_FLAG_TRUE);
 
-        assertEquals(TestConstants.DEFAULT_UID, actualResponse.getUid());
+        assertEquals(TestConstants.DEFAULT_UID, actualResponse.getId());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_NAME, actualResponse.getName());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS, actualResponse.getWebAddress());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_PORT, actualResponse.getPort());
@@ -82,13 +95,16 @@ public class TestServerMapperImplTest {
         assertEquals(TestConstants.DEFAULT_LOCATION, actualResponse.getLocation());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4, actualResponse.getWebAddressIpV4());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6, actualResponse.getWebAddressIpV6());
-        assertEquals(Set.of(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE), actualResponse.getServerTypes());
+        assertEquals(Set.of(serverTypeDetailsResponse), actualResponse.getServerTypeDetails());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_PRIORITY, actualResponse.getPriority());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEIGHT, actualResponse.getWeight());
         assertEquals(TestConstants.DEFAULT_FLAG_TRUE, actualResponse.getActive());
-        assertEquals(TestConstants.DEFAULT_TEST_SERVER_KEY, actualResponse.getKey());
+        assertEquals(TestConstants.DEFAULT_TEST_SERVER_KEY, actualResponse.getSecretKey());
         assertEquals(TestConstants.DEFAULT_FLAG_TRUE, actualResponse.getSelectable());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_NODE, actualResponse.getNode());
+        assertEquals(TestConstants.DEFAULT_LAST_TEST_TIMESTAMP, actualResponse.getTimeOfLastMeasurement());
+        assertEquals(TestConstants.DEFAULT_LAST_SUCCESSFUL_TEST_TIMESTAMP, actualResponse.getLastSuccessfulMeasurement());
+        assertEquals(TestConstants.DEFAULT_FLAG_TRUE, actualResponse.isLastMeasurementSuccess());
         assertFalse(actualResponse.isEncrypted());
     }
 
@@ -105,14 +121,15 @@ public class TestServerMapperImplTest {
         when(testServerRequest.getLocation()).thenReturn(TestConstants.DEFAULT_LOCATION);
         when(testServerRequest.getWebAddressIpV4()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4);
         when(testServerRequest.getWebAddressIpV6()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6);
-        when(testServerRequest.getServerTypes()).thenReturn(Set.of(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE));
+        when(testServerRequest.getServerTypeDetails()).thenReturn(Set.of(serverTypeDetailsRequest));
         when(testServerRequest.getPriority()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_PRIORITY);
         when(testServerRequest.getWeight()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_WEIGHT);
-        when(testServerRequest.getActive()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
-        when(testServerRequest.getKey()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_KEY);
-        when(testServerRequest.getSelectable()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        when(testServerRequest.isActive()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        when(testServerRequest.getSecretKey()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_KEY);
+        when(testServerRequest.isSelectable()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
         when(testServerRequest.getNode()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_NODE);
         when(testServerRequest.isEncrypted()).thenReturn(true);
+        when(serverTypeDetailsMapper.serverTypeDetailRequestToServerTypeDetails(serverTypeDetailsRequest)).thenReturn(serverTypeDetails);
 
         var actualTestServer = testServerMapper.testServerRequestToTestServer(testServerRequest);
 
@@ -127,13 +144,12 @@ public class TestServerMapperImplTest {
         assertEquals(TestConstants.DEFAULT_LOCATION, actualTestServer.getLocation());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4, actualTestServer.getWebAddressIpV4());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6, actualTestServer.getWebAddressIpV6());
-        assertEquals(Set.of(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE), actualTestServer.getServerTypes());
+        assertEquals(Set.of(serverTypeDetails), actualTestServer.getServerTypeDetails());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_PRIORITY, actualTestServer.getPriority());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEIGHT, actualTestServer.getWeight());
         assertEquals(TestConstants.DEFAULT_FLAG_TRUE, actualTestServer.getActive());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_KEY, actualTestServer.getKey());
         assertEquals(TestConstants.DEFAULT_FLAG_TRUE, actualTestServer.getSelectable());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_NODE, actualTestServer.getNode());
-        assertTrue(actualTestServer.isEncrypted());
     }
 }

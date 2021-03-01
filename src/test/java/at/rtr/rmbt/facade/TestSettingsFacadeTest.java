@@ -9,11 +9,13 @@ import at.rtr.rmbt.enums.TestPlatform;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.model.LoopModeSettings;
 import at.rtr.rmbt.model.RtrClient;
+import at.rtr.rmbt.model.ServerTypeDetails;
 import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.TestSettingsResponse;
 import at.rtr.rmbt.service.*;
+import org.assertj.core.util.Sets;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -134,16 +136,21 @@ public class TestSettingsFacadeTest {
         request = new MockHttpServletRequest();
         request.setRemoteAddr("185.38.216.246");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        var serverTypeDetails = ServerTypeDetails.builder()
+            .serverType(ServerType.RMBT)
+            .portSsl(23)
+            .port(22)
+            .encrypted(true)
+            .build();
         testServer = TestServer.builder()
             .uid(11L)
             .uuid(DEFAULT_UUID)
-            .serverTypes(Set.of(ServerType.RMBT))
+            .serverTypeDetails(Sets.newHashSet(Set.of(serverTypeDetails)))
             .active(true)
             .country("Ukraine")
             .key("test_server_key")
             .portSsl(23)
             .port(22)
-            .encrypted(true)
             .build();
 
     }
@@ -171,7 +178,7 @@ public class TestSettingsFacadeTest {
     @Test
     public void updateTestSettings_encryptedFalse_usedPortField() {
         mockStubToTestEncryption();
-        testServer.setEncrypted(false);
+        testServer.getServerTypeDetails().iterator().next().setEncrypted(false);
         TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
         assertEquals(testServer.getPort(), result.getTestServerPort());
         assertFalse(result.getTestServerEncryption());
@@ -195,7 +202,10 @@ public class TestSettingsFacadeTest {
     @Test
     public void updateTestSettings_notExistInServerTypes_expectFromTypesSet() {
         mockStubToTestEncryption();
-        testServer.setServerTypes(Set.of(ServerType.HW_PROBE));
+        var serverTypeDetails = ServerTypeDetails.builder()
+                .serverType(ServerType.HW_PROBE)
+                .build();
+        testServer.setServerTypeDetails(Set.of(serverTypeDetails));
         TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
         assertEquals(ServerType.HW_PROBE, result.getTestServerType());
     }
@@ -203,7 +213,7 @@ public class TestSettingsFacadeTest {
     @Test
     public void updateTestSettings_emptyServerTypeListNotPossibleCase_expectNull() {
         mockStubToTestEncryption();
-        testServer.setServerTypes(Collections.emptySet());
+        testServer.setServerTypeDetails(Collections.emptySet());
         when(messageSource.getMessage(eq("ERROR_TEST_SERVER"), eq(null), eq(Locale.ENGLISH))).thenReturn(DEFAULT_TEXT);
         TestSettingsResponse response = facade.updateTestSettings(testSettingsRequest, request);
         assertEquals(DEFAULT_TEXT, response.getErrorList().get(0));

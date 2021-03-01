@@ -4,6 +4,7 @@ import at.rtr.rmbt.request.TestServerRequest;
 import at.rtr.rmbt.response.TestServerResponse;
 import at.rtr.rmbt.service.TestServerService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -22,20 +23,22 @@ public class TestServerController {
     private final TestServerService testServerService;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation("Create new test server.")
+    @ApiOperation("Create new measurement server.")
     @PostMapping
     public void createTestServer(@Validated @RequestBody TestServerRequest testServerRequest) {
         testServerService.createTestServer(testServerRequest);
     }
 
-    @ApiOperation("Get all test server.")
+    @ApiOperation("Get all measurement server.")
     @GetMapping
-    public List<TestServerResponse> getAllTestServers() {
+    public List<TestServerResponse> getAllTestServers(
+            @ApiParam(value = "providerId") Long providerId
+    ) {
         return testServerService.getAllTestServer();
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation("Update existing test server")
+    @ApiOperation("Update existing measurement server")
     @PutMapping(BY_ID)
     public void updateTestServer(@PathVariable Long id, @Validated @RequestBody TestServerRequest testServerRequest) {
         testServerService.updateTestServer(id, testServerRequest);
@@ -43,7 +46,7 @@ public class TestServerController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = BY_ID)
-    @ApiOperation("Delete existing test server by id")
+    @ApiOperation("Delete existing measurement server by id")
     public void deleteTestServerById(@PathVariable Long id) {
         testServerService.deleteTestServer(id);
     }

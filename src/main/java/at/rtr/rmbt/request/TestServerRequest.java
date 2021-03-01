@@ -1,18 +1,18 @@
 package at.rtr.rmbt.request;
 
-import at.rtr.rmbt.enums.ServerType;
+import at.rtr.rmbt.constant.Constants;
 import com.bedatadriven.jackson.datatype.jts.serialization.GeometryDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.*;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.locationtech.jts.geom.Geometry;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Getter
-@Builder
 @EqualsAndHashCode
-@AllArgsConstructor
-@NoArgsConstructor
 public class TestServerRequest {
 
     private String name;
@@ -38,19 +38,42 @@ public class TestServerRequest {
 
     private String webAddressIpV6;
 
-    private Set<ServerType> serverTypes;
+    private Set<ServerTypeDetailsRequest> serverTypeDetails;
 
     private Integer priority;
 
     private Integer weight;
 
-    private Boolean active;
+    private boolean active;
 
-    private String key;
+    private String secretKey;
 
-    private Boolean selectable;
+    private boolean selectable;
 
     private String node;
 
     private boolean encrypted;
+
+    @Builder
+    public TestServerRequest(String name, String webAddress, Integer port, Integer portSsl, String city, String country, Double latitude, Double longitude, Geometry location, String webAddressIpV4, String webAddressIpV6, Set<ServerTypeDetailsRequest> serverTypeDetails, Integer priority, Integer weight, boolean active, String secretKey, boolean selectable, String node, boolean encrypted) {
+        this.name = name;
+        this.webAddress = webAddress;
+        this.port = port;
+        this.portSsl = portSsl;
+        this.city = city;
+        this.country = country;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.location = location;
+        this.webAddressIpV4 = webAddressIpV4;
+        this.webAddressIpV6 = webAddressIpV6;
+        this.serverTypeDetails = serverTypeDetails;
+        this.priority = Optional.ofNullable(priority).orElse(Constants.PRIORITY);
+        this.weight = Optional.ofNullable(weight).orElse(Constants.WEIGHT);
+        this.active = active;
+        this.secretKey = secretKey;
+        this.selectable = selectable;
+        this.node = node;
+        this.encrypted = encrypted;
+    }
 }

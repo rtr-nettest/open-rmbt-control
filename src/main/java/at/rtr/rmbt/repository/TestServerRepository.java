@@ -1,7 +1,7 @@
 package at.rtr.rmbt.repository;
 
-import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.enums.ServerType;
+import at.rtr.rmbt.model.TestServer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,5 +30,11 @@ public interface TestServerRepository extends JpaRepository<TestServer, Long> {
         @Param("country") String country
     );
 
+    @Query("select distinct t from TestServer t " +
+            "inner join ServerTypeDetails std " +
+            "where t.uid = std.testServer.uid "
+            + "and t.active = true "
+            + "and t.selectable = true "
+            + "and std.serverType in (:serverTypes)")
     List<TestServer> findDistinctByActiveTrueAndSelectableTrueAndServerTypesIn(Collection<ServerType> serverTypes);
 }

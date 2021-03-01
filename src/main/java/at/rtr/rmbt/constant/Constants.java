@@ -6,4 +6,6 @@ public interface Constants {
     String UNKNOWN_DEVICE = "Unknown Device";
     String STATUS_SIGNAL_STARTED = "SIGNAL_STARTED";
     int SRID = 900913;
+    Integer WEIGHT = 1;
+    Integer PRIORITY = 1;
 }
