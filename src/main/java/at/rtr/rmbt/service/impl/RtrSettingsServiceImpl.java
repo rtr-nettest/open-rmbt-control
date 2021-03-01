@@ -130,9 +130,13 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
 
         Optional.ofNullable(adminUpdateSettingsRequest.getAdminUpdateSettingsTermsAndConditionsRequest())
             .ifPresent(tcRequest -> {
-                updateSettings(settingsActual, Config.TERM_AND_CONDITION_URL_KEY, tcRequest.getUrl(), updateSettings);
-                updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_KEY, tcRequest.getVersion(), updateSettings);
-                updateSettings(settingsActual, Config.TERM_AND_CONDITION_NDT_URL_KEY, tcRequest.getNdtUrl(), updateSettings);
+                updateSettings(settingsActual, Config.TERM_AND_CONDITION_URL_KEY, tcRequest.getTcUrl(), updateSettings);
+                updateSettings(settingsActual, Config.TERM_AND_CONDITION_URL_IOS_KEY, tcRequest.getTcUrlIOS(), updateSettings);
+                updateSettings(settingsActual, Config.TERM_AND_CONDITION_URL_ANDROID_KEY, tcRequest.getTcUrlAndroid(), updateSettings);
+                updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_KEY, tcRequest.getTcVersion(), updateSettings);
+                updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_IOS_KEY, tcRequest.getTcVersionIOS(), updateSettings);
+                updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_ANDROID_KEY, tcRequest.getTcVersionAndroid(), updateSettings);
+                updateSettings(settingsActual, Config.TERM_AND_CONDITION_NDT_URL_KEY, tcRequest.getTcNdtUrlAndroid(), updateSettings);
             });
 
         Optional.ofNullable(adminUpdateSettingsRequest.getAdminUpdateSettingsUrlsRequest())
@@ -196,9 +200,13 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
 
     private AdminSettingsTermAndConditionsResponse getAdminTermAndConditionResponse(Map<String, String> actualSettings) {
         return AdminSettingsTermAndConditionsResponse.builder()
-            .version(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_KEY))
-            .url(actualSettings.get(Config.TERM_AND_CONDITION_URL_KEY))
-            .ndtUrl(actualSettings.get(Config.TERM_AND_CONDITION_NDT_URL_KEY))
+            .tcUrl(actualSettings.get(Config.TERM_AND_CONDITION_URL_KEY))
+            .tcUrlIOS(actualSettings.get(Config.TERM_AND_CONDITION_URL_IOS_KEY))
+            .tcUrlAndroid(actualSettings.get(Config.TERM_AND_CONDITION_URL_ANDROID_KEY))
+            .tcVersion(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_KEY))
+            .tcVersionIOS(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_IOS_KEY))
+            .tcVersionAndroid(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_ANDROID_KEY))
+            .tcNdtUrlAndroid(actualSettings.get(Config.TERM_AND_CONDITION_NDT_URL_KEY))
             .build();
     }
 

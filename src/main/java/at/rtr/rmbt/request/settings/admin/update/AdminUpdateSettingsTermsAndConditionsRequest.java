@@ -11,12 +11,23 @@ import lombok.Getter;
 public class AdminUpdateSettingsTermsAndConditionsRequest {
 
     @ApiModelProperty(value = "Default URL of terms and conditions for app", example = "https://www.netztest.at/en/tc.html")
-    private final String url;
+    private final String tcUrl;
 
-    @ApiModelProperty(value = "Terms and conditions version number", example = "6")
-    private final String version;
+    @ApiModelProperty(value = "Terms and conditions version number" , example = "6")
+    private final String tcVersion;
 
-    @ApiModelProperty(value = "URL of terms and conditions for the usage of NDT tests for Android", example = "https://www.netztest.at/en/tc_android.html")
-    private final String ndtUrl;
+    @ApiModelProperty(value = "URL of terms and conditions for Android" , example = "https://www.netztest.at/en/tc_android.html")
+    private final String tcUrlAndroid;
 
+    @ApiModelProperty(value = "URL of terms and conditions for the usage of NDT tests for Android" , example = "https://www.netztest.at/en/tc_android.html")
+    private final String tcNdtUrlAndroid;
+
+    @ApiModelProperty(value = "Terms and conditions version number for Android" , example = "6")
+    private final String tcVersionAndroid;
+
+    @ApiModelProperty(value = "URL of terms and conditions for IOS" , example = "https://www.netztest.at/en/tc_ios.html")
+    private final String tcUrlIOS;
+
+    @ApiModelProperty(value = "Terms and conditions version number for IOS" , example = "6")
+    private final String tcVersionIOS;
 }
