@@ -296,9 +296,14 @@ public class RtrSettingsServiceImplTest {
         when(adminUpdateSettingsRequest.getAdminUpdateSettingsSignalTestRequest()).thenReturn(adminUpdateSettingsSignalTestRequest);
         when(adminUpdateSettingsRequest.getAdminUpdateSettingsMapServerRequest()).thenReturn(adminUpdateSettingsMapServerRequest);
 
-        when(adminUpdateSettingsTermsAndConditionsRequest.getUrl()).thenReturn(TestConstants.DEFAULT_TERM_AND_CONDITION_URL);
-        when(adminUpdateSettingsTermsAndConditionsRequest.getNdtUrl()).thenReturn(TestConstants.DEFAULT_TERM_AND_CONDITION_NDT_URL);
-        when(adminUpdateSettingsTermsAndConditionsRequest.getVersion()).thenReturn(String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION));
+        when(adminUpdateSettingsTermsAndConditionsRequest.getTcUrl()).thenReturn(TestConstants.DEFAULT_TERM_AND_CONDITION_URL);
+        when(adminUpdateSettingsTermsAndConditionsRequest.getTcUrlIOS()).thenReturn(DEFAULT_TERM_AND_CONDITION_URL_IOS);
+        when(adminUpdateSettingsTermsAndConditionsRequest.getTcUrlAndroid()).thenReturn(DEFAULT_TERM_AND_CONDITION_URL_ANDROID);
+        when(adminUpdateSettingsTermsAndConditionsRequest.getTcVersion()).thenReturn(String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION));
+        when(adminUpdateSettingsTermsAndConditionsRequest.getTcVersionIOS()).thenReturn(String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION_IOS));
+        when(adminUpdateSettingsTermsAndConditionsRequest.getTcVersionAndroid()).thenReturn(String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION_ANDROID));
+        when(adminUpdateSettingsTermsAndConditionsRequest.getTcNdtUrlAndroid()).thenReturn(TestConstants.DEFAULT_TERM_AND_CONDITION_NDT_URL);
+
 
         when(adminUpdateSettingsUrlsRequest.getControlIpV4Only()).thenReturn(TestConstants.DEFAULT_URLS_CONTROL_IPV4_ONLY);
         when(adminUpdateSettingsUrlsRequest.getControlIpV6Only()).thenReturn(TestConstants.DEFAULT_URLS_CONTROL_IPV6_ONLY);
@@ -340,9 +345,13 @@ public class RtrSettingsServiceImplTest {
 
     private AdminSettingsResponse getAdminSettingsResponse() {
         var adminSettingsTermAndConditionsResponse = AdminSettingsTermAndConditionsResponse.builder()
-            .url(DEFAULT_TERM_AND_CONDITION_URL)
-            .ndtUrl(DEFAULT_TERM_AND_CONDITION_NDT_URL)
-            .version(DEFAULT_TERM_AND_CONDITION_VERSION.toString())
+            .tcUrl(DEFAULT_TERM_AND_CONDITION_URL)
+            .tcUrlIOS(DEFAULT_TERM_AND_CONDITION_URL_IOS)
+            .tcUrlAndroid(DEFAULT_TERM_AND_CONDITION_URL_ANDROID)
+            .tcVersion(DEFAULT_TERM_AND_CONDITION_VERSION.toString())
+            .tcVersionIOS(DEFAULT_TERM_AND_CONDITION_VERSION_IOS.toString())
+            .tcVersionAndroid(DEFAULT_TERM_AND_CONDITION_VERSION_ANDROID.toString())
+            .tcNdtUrlAndroid(DEFAULT_TERM_AND_CONDITION_NDT_URL)
             .build();
         var urls = AdminSettingsUrlsResponse.builder()
             .urlShare(DEFAULT_URLS_URL_SHARE)
@@ -386,7 +395,11 @@ public class RtrSettingsServiceImplTest {
     private List<Settings> getAdminSettingsList() {
         List<Settings> settings = new ArrayList<>();
         addSettingToList(Config.TERM_AND_CONDITION_URL_KEY, TestConstants.DEFAULT_TERM_AND_CONDITION_URL, settings);
+        addSettingToList(Config.TERM_AND_CONDITION_URL_IOS_KEY, TestConstants.DEFAULT_TERM_AND_CONDITION_URL_IOS, settings);
+        addSettingToList(Config.TERM_AND_CONDITION_URL_ANDROID_KEY, TestConstants.DEFAULT_TERM_AND_CONDITION_URL_ANDROID, settings);
         addSettingToList(Config.TERM_AND_CONDITION_VERSION_KEY, String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION), settings);
+        addSettingToList(Config.TERM_AND_CONDITION_VERSION_IOS_KEY, String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION_IOS), settings);
+        addSettingToList(Config.TERM_AND_CONDITION_VERSION_ANDROID_KEY, String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION_ANDROID), settings);
         addSettingToList(Config.TERM_AND_CONDITION_NDT_URL_KEY, TestConstants.DEFAULT_TERM_AND_CONDITION_NDT_URL, settings);
         addSettingToList(Config.URL_OPEN_DATA_PREFIX_KEY, TestConstants.DEFAULT_URLS_OPEN_DATA_PREFIX, settings);
         addSettingToList(Config.URL_SHARE_KEY, TestConstants.DEFAULT_URLS_URL_SHARE, settings);

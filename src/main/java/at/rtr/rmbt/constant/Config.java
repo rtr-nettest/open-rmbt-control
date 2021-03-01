@@ -16,7 +16,11 @@ public interface Config {
     String MAP_SERVER_SSL_KEY = "ssl_map_server";
     String MAP_SERVER_PORT_KEY = "port_map_server";
     String TERM_AND_CONDITION_VERSION_KEY = "tc_version";
+    String TERM_AND_CONDITION_VERSION_ANDROID_KEY = "tc_version_android";
+    String TERM_AND_CONDITION_VERSION_IOS_KEY = "tc_version_ios";
     String TERM_AND_CONDITION_URL_KEY = "tc_url";
+    String TERM_AND_CONDITION_URL_IOS_KEY = "tc_url_ios";
+    String TERM_AND_CONDITION_URL_ANDROID_KEY = "tc_url_android";
     String TERM_AND_CONDITION_NDT_URL_KEY = "tc_ndt_url_android";
     String URL_OPEN_DATA_PREFIX_KEY = "url_open_data_prefix";
     String URL_SHARE_KEY = "url_share";
@@ -38,7 +42,11 @@ public interface Config {
         MAP_SERVER_SSL_KEY,
         MAP_SERVER_PORT_KEY,
         TERM_AND_CONDITION_VERSION_KEY,
+        TERM_AND_CONDITION_VERSION_IOS_KEY,
+        TERM_AND_CONDITION_URL_ANDROID_KEY,
         TERM_AND_CONDITION_URL_KEY,
+        TERM_AND_CONDITION_URL_IOS_KEY,
+        TERM_AND_CONDITION_URL_ANDROID_KEY,
         TERM_AND_CONDITION_NDT_URL_KEY,
         URL_OPEN_DATA_PREFIX_KEY,
         URL_SHARE_KEY,
