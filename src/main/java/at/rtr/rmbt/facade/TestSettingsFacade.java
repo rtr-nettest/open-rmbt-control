@@ -37,6 +37,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static at.rtr.rmbt.constant.URIConstants.RESULT_QOS_URL;
 import static at.rtr.rmbt.constant.URIConstants.RESULT_URL;
@@ -194,26 +195,24 @@ public class TestSettingsFacade {
 
                     if (testServer == null)
                         throw new TestServerNotFoundException();
-
+                    ServerTypeDetails serverTypeDetails = getServerTypeDetails(testSettingsRequest, testServer);
                     builder.testServerAddress(getServerAddress(ipv6, testServer))
-                        .testServerPort(testServer.isEncrypted() ? testServer.getPortSsl() : testServer.getPort())
-                        .testServerName(testServer.getName() + " (" + testServer.getCity() + ")")
-                        .testServerEncryption(testServer.isEncrypted())
-                        .testServerType(testServer.getServerTypes().contains(testSettingsRequest.getServerType()) ?
-                                testSettingsRequest.getServerType() :
-                                testServer.getServerTypes().stream().findFirst().orElseThrow(TestServerNotFoundException::new))
-                        .testDuration(String.valueOf(applicationProperties.getDuration()))
-                        .testNumberOfThreads(String.valueOf(numberOfThreads))
-                        .testNumberOfPings(String.valueOf(applicationProperties.getPings()))
-                        .clientRemoteIp(clientIpAddress);
+                            .testServerPort(serverTypeDetails.isEncrypted() ? testServer.getPortSsl() : testServer.getPort())
+                            .testServerName(testServer.getName() + " (" + testServer.getCity() + ")")
+                            .testServerEncryption(serverTypeDetails.isEncrypted())
+                            .testServerType(serverTypeDetails.getServerType())
+                            .testDuration(String.valueOf(applicationProperties.getDuration()))
+                            .testNumberOfThreads(String.valueOf(numberOfThreads))
+                            .testNumberOfPings(String.valueOf(applicationProperties.getPings()))
+                            .clientRemoteIp(clientIpAddress);
 
                     String resultUrl;
                     if (request.getHeader(HeaderConstants.URL) != null) {
                         resultUrl = request.getHeader(HeaderConstants.URL);
                     } else {
                         resultUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                            .build()
-                            .toString();
+                                .build()
+                                .toString();
                     }
 
                     builder.resultUrl(resultUrl + RESULT_URL);
@@ -251,10 +250,10 @@ public class TestSettingsFacade {
 
                             int waitTime = testSlot - (int) (System.currentTimeMillis() / 1000);
                             builder.testToken(token)
-                                .testUuid(testUuid.toString())
-                                .openTestUuid("O" + testOpenUuid)
-                                .testId(test.getUid())
-                                .testWait(Math.max(waitTime, 0));
+                                    .testUuid(testUuid.toString())
+                                    .openTestUuid("O" + testOpenUuid)
+                                    .testId(test.getUid())
+                                    .testWait(Math.max(waitTime, 0));
                         }
 
                     }
@@ -284,8 +283,15 @@ public class TestSettingsFacade {
         return response;
     }
 
+    private ServerTypeDetails getServerTypeDetails(TestSettingsRequest testSettingsRequest, TestServer testServer) {
+        return testServer.getServerTypeDetails().stream().anyMatch(x -> x.getServerType().equals(testSettingsRequest.getServerType())) ?
+                testServer.getServerTypeDetails().stream().filter(x -> x.getServerType().equals(testSettingsRequest.getServerType())).findFirst().orElseThrow(TestServerNotFoundException::new) :
+                testServer.getServerTypeDetails().stream().findFirst().orElseThrow(TestServerNotFoundException::new);
+    }
 
     private Test getTest(TestSettingsRequest testSettingsRequest, String clientIpdAddress, Long asn, String asName, String asCountry, InetAddress clientAddress, String language, String timeZoneId, RtrClient client, UUID testUuid, UUID testOpenUuid, Integer numberOfThreads, TestServer testServer, String geoIpCountry) {
+        ServerTypeDetails serverTypeDetails = getServerTypeDetails(testSettingsRequest, testServer);
+
         Test test = new Test();
 
         test.setUuid(testUuid);
@@ -299,8 +305,8 @@ public class TestSettingsFacade {
         test.setClientPublicIpAnonymized(HelperFunctions.anonymizeIp(clientAddress));
         test.setCountryGeoip(geoIpCountry);
         test.setServerId(testServer.getUid());
-        test.setServerPort(testServer.isEncrypted() ? testServer.getPortSsl() : testServer.getPort());
-        test.setUseSsl(testServer.isEncrypted());
+        test.setServerPort(serverTypeDetails.isEncrypted() ? testServer.getPortSsl() : testServer.getPort());
+        test.setUseSsl(serverTypeDetails.isEncrypted());
         test.setTimezone(timeZoneId);
         test.setClientTime(ZonedDateTime.ofInstant(Instant.ofEpochSecond(testSettingsRequest.getTime()), ZoneId.of(timeZoneId)));
         test.setDuration(applicationProperties.getDuration());

@@ -47,7 +47,7 @@ import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
 public class SignalServiceImpl implements SignalService {
 
     private final TestRepository testRepository;
-    private final RTRProviderRepository providerRepository;
+    private final ProviderRepository providerRepository;
     private final UUIDGenerator uuidGenerator;
     private final ClientRepository clientRepository;
     private final SignalMapper signalMapper;

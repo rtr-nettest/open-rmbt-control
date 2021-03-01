@@ -1,9 +1,12 @@
 package at.rtr.rmbt.service.impl;
 
+import at.rtr.rmbt.enums.ServerType;
+import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.TestServerNotFoundException;
 import at.rtr.rmbt.mapper.TestServerMapper;
+import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.model.TestServer;
-import at.rtr.rmbt.enums.ServerType;
+import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.repository.TestServerRepository;
 import at.rtr.rmbt.request.TestServerRequest;
 import at.rtr.rmbt.response.TestServerResponse;
@@ -12,9 +15,8 @@ import at.rtr.rmbt.service.TestServerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static at.rtr.rmbt.constant.Config.*;
@@ -25,6 +27,7 @@ public class TestServerServiceImpl implements TestServerService {
 
     private final TestServerRepository testServerRepository;
     private final TestServerMapper testServerMapper;
+    private final TestRepository testRepository;
 
     @Override
     public Optional<TestServer> findByUuidAndActive(UUID preferServer, boolean active) {
@@ -68,8 +71,24 @@ public class TestServerServiceImpl implements TestServerService {
 
     @Override
     public List<TestServerResponse> getAllTestServer() {
-        return testServerRepository.findAll().stream()
-                .map(testServerMapper::testServerToTestServerResponse)
+        List<TestServer> testServers = testServerRepository.findAll();
+        Set<Long> testServersId = testServers.stream()
+                .map(TestServer::getUid)
+                .collect(Collectors.toSet());
+
+        Map<Long, Timestamp> lastTest = testRepository.findLastTestByServerIdIn(testServersId).stream()
+                .collect(Collectors.toMap(Test::getServerId, test -> Timestamp.valueOf(test.getTime().toLocalDateTime())));
+
+        Map<Long, Timestamp> lastSuccessfulTest = testRepository.findLastSuccessTestByServerIdInAndStatusIn(testServersId, List.of(TestStatus.FINISHED.toString())).stream()
+                .collect(Collectors.toMap(Test::getServerId, test -> Timestamp.valueOf(test.getTime().toLocalDateTime())));
+
+        return testServers.stream()
+                .map(x -> {
+                    var lastTestTimestamp = lastTest.get(x.getUid());
+                    var lastSuccessfulTestTimestamp = lastSuccessfulTest.get(x.getUid());
+                    var lastMeasurementSuccess = Objects.nonNull(lastSuccessfulTestTimestamp);
+                    return testServerMapper.testServerToTestServerResponse(x, lastTestTimestamp, lastSuccessfulTestTimestamp, lastMeasurementSuccess);
+                })
                 .collect(Collectors.toList());
     }
 

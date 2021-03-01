@@ -50,7 +50,7 @@ public class SignalServiceImplTest {
     @MockBean
     private TestRepository testRepository;
     @MockBean
-    private RTRProviderRepository providerRepository;
+    private ProviderRepository providerRepository;
     @MockBean
     private UUIDGenerator uuidGenerator;
     @MockBean

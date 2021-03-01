@@ -5,6 +5,8 @@ import lombok.*;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -60,11 +62,19 @@ public class TestServer {
     @Enumerated(EnumType.STRING)
     private ServerType serverType; //todo remove after release of new Android App
 
-    @Column(name = "server_type")
-    @Enumerated(EnumType.STRING)
-    @ElementCollection(targetClass = ServerType.class)
-    @CollectionTable(name = "test_server_types")
-    private Set<ServerType> serverTypes;
+    @OneToMany(mappedBy = "testServer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<ServerTypeDetails> serverTypeDetails = new HashSet<>();
+
+    public void setServerTypeDetails(Set<ServerTypeDetails> serverTypeDetails) {
+        if (Objects.nonNull(serverTypeDetails)) {
+            serverTypeDetails.forEach(std -> std.setTestServer(this));
+            this.serverTypeDetails.clear();
+            this.serverTypeDetails.addAll(serverTypeDetails);
+        } else {
+            this.serverTypeDetails = new HashSet<>();
+        }
+    }
 
     @Column(name = "priority")
     private Integer priority;
@@ -89,7 +99,4 @@ public class TestServer {
 
     @Column(name = "archived")
     private boolean archived;
-
-    @Column(name = "encrypted")
-    private boolean encrypted;
 }

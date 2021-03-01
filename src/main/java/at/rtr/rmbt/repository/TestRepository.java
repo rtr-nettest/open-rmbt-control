@@ -1,7 +1,7 @@
 package at.rtr.rmbt.repository;
 
-import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.enums.TestStatus;
+import at.rtr.rmbt.model.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -45,4 +45,32 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long> {
 
     @Query(value = "SELECT * FROM test WHERE uuid = :testUUID AND (status is null or status in (:testStatuses))", nativeQuery = true)
     Optional<Test> findByUuidAndStatusesIn(UUID testUUID, Collection<String> testStatuses);
+
+    @Query(
+            value="SELECT * " +
+                    "FROM test t " +
+                    "INNER JOIN (SELECT server_id, MAX(time) AS MaxDateTime\n" +
+                    "    FROM test " +
+                    "    WHERE server_id in (:serverIds) " +
+                    "    GROUP BY server_id " +
+                    "    ) groupedTest " +
+                    "ON t.server_id = groupedTest.server_id " +
+                    "AND t.time = groupedTest.MaxDateTime",
+            nativeQuery = true
+    )
+    List<Test> findLastTestByServerIdIn(Collection<Long> serverIds);
+
+    @Query(
+            value="SELECT * " +
+                    "FROM test t " +
+                    "INNER JOIN (SELECT server_id, MAX(time) AS MaxDateTime\n" +
+                    "    FROM test " +
+                    "    WHERE server_id in (:serverIds) and status in (:testStatuses)" +
+                    "    GROUP BY server_id " +
+                    "    ) groupedTest " +
+                    "ON t.server_id = groupedTest.server_id " +
+                    "AND t.time = groupedTest.MaxDateTime",
+            nativeQuery = true
+    )
+    List<Test> findLastSuccessTestByServerIdInAndStatusIn(Collection<Long> serverIds, Collection<String> testStatuses);
 }
