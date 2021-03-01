@@ -30,11 +30,10 @@ public interface TestServerRepository extends JpaRepository<TestServer, Long> {
         @Param("country") String country
     );
 
-    @Query("select distinct t from TestServer t " +
-            "inner join ServerTypeDetails std " +
-            "where t.uid = std.testServer.uid "
-            + "and t.active = true "
-            + "and t.selectable = true "
-            + "and std.serverType in (:serverTypes)")
+    @Query("select distinct t from TestServer t, ServerTypeDetails std " +
+            "where t.uid = std.testServer.uid " +
+            "and t.active = true " +
+            "and t.selectable = true " +
+            "and std.serverType in (:serverTypes)")
     List<TestServer> findDistinctByActiveTrueAndSelectableTrueAndServerTypesIn(Collection<ServerType> serverTypes);
 }
