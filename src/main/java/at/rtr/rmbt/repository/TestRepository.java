@@ -73,4 +73,6 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long> {
             nativeQuery = true
     )
     List<Test> findLastSuccessTestByServerIdInAndStatusIn(Collection<Long> serverIds, Collection<String> testStatuses);
+
+    Optional<Test> findByUuid(UUID testUUID);
 }
