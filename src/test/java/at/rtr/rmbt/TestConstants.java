@@ -1,8 +1,12 @@
 package at.rtr.rmbt;
 
+import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.enums.NetworkGroupName;
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestType;
+import at.rtr.rmbt.utils.BandCalculationUtil;
+import at.rtr.rmbt.utils.FormatUtils;
+import at.rtr.rmbt.utils.TimeUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -19,6 +23,7 @@ public interface TestConstants {
     String DEFAULT_PLATFORM = "Android";
     Long DEFAULT_SOFTWARE_VERSION_CODE = 1L;
     UUID DEFAULT_NEWS_UUID = UUID.fromString("8fa5fb1c-5bf6-11eb-ae93-0242ac130002");
+    UUID DEFAULT_RADIO_CELL_UUID = UUID.fromString("6fa5fb1c-5bf6-11eb-ae93-0242ac131232");
     UUID DEFAULT_UUID = UUID.fromString("88ab584e-5ef2-11eb-ae93-0242ac130002");
     UUID DEFAULT_TEST_UUID = UUID.fromString("77ab584e-6ef2-11eb-ae93-0242ac130252");
     UUID DEFAULT_GEO_LOCATION_UUID = UUID.fromString("33ab584e-6ef2-11eb-ae93-0282ac130213");
@@ -88,6 +93,8 @@ public interface TestConstants {
     String DEFAULT_URL = "DEFAULT_RESULT_URL";
     ZonedDateTime ZONED_DATE_TIME = ZonedDateTime.now();
     ZonedDateTime DEFAULT_ZONED_DATE_TIME = ZonedDateTime.of(LocalDateTime.of(2021, 1, 20, 7, 32), ZoneId.of("UTC"));
+    ZonedDateTime DEFAULT_TEST_TIME = ZonedDateTime.of(LocalDateTime.of(2021, 1, 20, 7, 32), ZoneId.of("UTC"));
+    ZonedDateTime DEFAULT_SIGNAL_TIME = ZonedDateTime.of(LocalDateTime.of(2021, 1, 20, 7, 32), ZoneId.of("UTC"));
     String DEFAULT_TEST_SERVER_WEB_ADDRESS = "DEFAULT_TEST_SERVER_WEB_ADDRESS";
     Integer DEFAULT_TEST_SERVER_PORT = 443;
     Integer DEFAULT_TEST_SERVER_PORT_SSL = 443;
@@ -124,6 +131,9 @@ public interface TestConstants {
     Long DEFAULT_PRIMARY_SCRAMBLING_CODE = 2147483647L;
     NetworkGroupName DEFAULT_TECHNOLOGY = NetworkGroupName.G2;
     Long DEFAULT_CHANNEL_NUMBER = 45L;
+    Double DEFAULT_FREQUENCY = BandCalculationUtil.getBandFromArfcn(DEFAULT_CHANNEL_NUMBER.intValue()).getFrequencyDL();
+    Integer DEFAULT_BAND = BandCalculationUtil.getBandFromArfcn(DEFAULT_CHANNEL_NUMBER.intValue()).getBand();
+    Double DEFAULT_SIGNAL_STRENGTH_TIME = TimeUtils.getDiffInSecondsFromTwoZonedDateTime(DEFAULT_TEST_TIME, DEFAULT_SIGNAL_TIME);
     Long DEFAULT_NETWORK_TYPE_ID = 15L;
     Long DEFAULT_BIT_ERROR_RATE = 222L;
     Long DEFAULT_WIFI_LINK_SPEED = 100L;
@@ -134,6 +144,10 @@ public interface TestConstants {
     Long DEFAULT_SIGNAL_STRENGTH = 111L;
     Long DEFAULT_SIGNAL_ADVANCE = 20L;
     Long DEFAULT_TIMING_ADVANCE = 32L;
+    String DEFAULT_SIGNAL_STRENGTH_RESPONSE = String.join(Constants.SIGNAL_STRENGTH_DELIMITER,
+            FormatUtils.format(Constants.SIGNAL_STRENGTH_DBM_TEMPLATE, DEFAULT_SIGNAL_STRENGTH),
+            FormatUtils.format(Constants.SIGNAL_STRENGTH_TIMING_ADVANCE_TEMPLATE, DEFAULT_TIMING_ADVANCE),
+            FormatUtils.format(Constants.SIGNAL_STRENGTH_RSQR_TEMPLATE, DEFAULT_LTE_RSRQ));
     String DEFAULT_SIGNAL_TEST_REQUEST_RESULT_URL = "DEFAULT_SIGNAL_TEST_REQUEST_URL";
     String DEFAULT_TEST_REQUEST_RESULT_URL = "DEFAULT_TEST_REQUEST_RESULT_URL";
     String DEFAULT_TEST_REQUEST_RESULT_QOS_URL = "DEFAULT_TEST_REQUEST_RESULT_QOS_URL";

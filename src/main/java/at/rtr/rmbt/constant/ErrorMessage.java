@@ -6,4 +6,5 @@ public interface ErrorMessage {
     String ERROR_DB_GET_CLIENTTYPE = "Could not find client type in database";
     String CLIENT_NOT_FOUND = "No client found by id %s.";
     String ERROR_INVALID_SEQUENCE = "ERROR_INVALID_SEQUENCE";
+    String TEST_NOT_FOUND = "No test found by id %s.";
 }

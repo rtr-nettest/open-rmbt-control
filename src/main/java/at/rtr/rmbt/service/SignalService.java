@@ -2,6 +2,7 @@ package at.rtr.rmbt.service;
 
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
+import at.rtr.rmbt.response.SignalDetailsResponse;
 import at.rtr.rmbt.response.SignalMeasurementResponse;
 import at.rtr.rmbt.response.SignalResultResponse;
 import at.rtr.rmbt.response.SignalSettingsResponse;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 public interface SignalService {
 
@@ -17,4 +19,6 @@ public interface SignalService {
     SignalSettingsResponse registerSignal(SignalRequest signalRequest, HttpServletRequest httpServletRequest);
 
     SignalResultResponse processSignalResult(SignalResultRequest signalResultRequest);
+
+    SignalDetailsResponse getSignalStrength(UUID testUUID);
 }

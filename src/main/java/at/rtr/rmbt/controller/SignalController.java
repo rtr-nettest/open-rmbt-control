@@ -4,9 +4,11 @@ package at.rtr.rmbt.controller;
 import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
+import at.rtr.rmbt.response.SignalDetailsResponse;
 import at.rtr.rmbt.response.SignalMeasurementResponse;
 import at.rtr.rmbt.response.SignalResultResponse;
 import at.rtr.rmbt.response.SignalSettingsResponse;
+import at.rtr.rmbt.response.SignalStrengthResponse;
 import at.rtr.rmbt.service.SignalService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,5 +47,12 @@ public class SignalController {
     @ResponseStatus(HttpStatus.OK)
     public SignalResultResponse processSignalResult(@RequestBody SignalResultRequest signalResultRequest) {
         return signalService.processSignalResult(signalResultRequest);
+    }
+
+    @GetMapping(URIConstants.SIGNAL_STRENGTH_BY_UUID)
+    @ApiOperation(value = "Get signal details")
+    @ResponseStatus(HttpStatus.OK)
+    public SignalDetailsResponse getSignalStrength(@PathVariable UUID testUUID) {
+        return signalService.getSignalStrength(testUUID);
     }
 }

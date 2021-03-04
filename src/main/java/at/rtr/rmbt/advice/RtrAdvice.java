@@ -1,9 +1,6 @@
 package at.rtr.rmbt.advice;
 
-import at.rtr.rmbt.exception.ClientNotFoundByNameException;
-import at.rtr.rmbt.exception.ClientNotFoundException;
-import at.rtr.rmbt.exception.InvalidSequenceException;
-import at.rtr.rmbt.exception.NotSupportedClientVersionException;
+import at.rtr.rmbt.exception.*;
 import at.rtr.rmbt.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -47,6 +44,12 @@ public class RtrAdvice {
     @ExceptionHandler(InvalidSequenceException.class)
     public ErrorResponse handleInvalidSequenceException(InvalidSequenceException ex) {
         return new ErrorResponse(ERROR_INVALID_SEQUENCE);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(TestNotFoundException.class)
+    public ErrorResponse handleTestNotFoundException(TestNotFoundException ex) {
+        return new ErrorResponse(ex.getMessage());
     }
 }
 

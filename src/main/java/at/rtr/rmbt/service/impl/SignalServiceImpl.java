@@ -11,19 +11,37 @@ import at.rtr.rmbt.mapper.GeoLocationMapper;
 import at.rtr.rmbt.mapper.RadioCellMapper;
 import at.rtr.rmbt.mapper.RadioSignalMapper;
 import at.rtr.rmbt.mapper.SignalMapper;
-import at.rtr.rmbt.model.*;
-import at.rtr.rmbt.repository.*;
+import at.rtr.rmbt.mapper.TestMapper;
+import at.rtr.rmbt.model.GeoLocation;
+import at.rtr.rmbt.model.RadioCell;
+import at.rtr.rmbt.model.RadioSignal;
+import at.rtr.rmbt.model.RtrClient;
+import at.rtr.rmbt.model.Test;
+import at.rtr.rmbt.repository.ClientRepository;
+import at.rtr.rmbt.repository.GeoLocationRepository;
+import at.rtr.rmbt.repository.ProviderRepository;
+import at.rtr.rmbt.repository.RTRProviderRepository;
+import at.rtr.rmbt.repository.RadioCellRepository;
+import at.rtr.rmbt.repository.RadioSignalRepository;
+import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.GeoLocationRequest;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
+import at.rtr.rmbt.response.SignalDetailsResponse;
 import at.rtr.rmbt.response.SignalMeasurementResponse;
 import at.rtr.rmbt.response.SignalResultResponse;
 import at.rtr.rmbt.response.SignalSettingsResponse;
+import at.rtr.rmbt.response.SignalStrengthResponse;
 import at.rtr.rmbt.service.SignalService;
+import at.rtr.rmbt.utils.BandCalculationUtil;
+import at.rtr.rmbt.utils.FormatUtils;
 import at.rtr.rmbt.utils.HelperFunctions;
+import at.rtr.rmbt.utils.TimeUtils;
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.data.domain.Page;
@@ -36,8 +54,16 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static at.rtr.rmbt.constant.HeaderConstants.URL;
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
@@ -57,11 +83,12 @@ public class SignalServiceImpl implements SignalService {
     private final GeoLocationMapper geoLocationMapper;
     private final RadioCellMapper radioCellMapper;
     private final RadioSignalMapper radioSignalMapper;
+    private final TestMapper testMapper;
 
     @Override
     public Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable) {
         return testRepository.findAllByStatusIn(List.of(TestStatus.SIGNAL_STARTED, TestStatus.SIGNAL), pageable)
-            .map(signalMapper::signalToSignalMeasurementResponse);
+                .map(signalMapper::signalToSignalMeasurementResponse);
     }
 
     @Override
@@ -72,7 +99,7 @@ public class SignalServiceImpl implements SignalService {
         var openTestUUID = uuidGenerator.generateUUID();
 
         var client = clientRepository.findByUuid(signalRequest.getUuid())
-            .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, signalRequest.getUuid())));
+                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, signalRequest.getUuid())));
 
         var clientAddress = InetAddresses.forString(ip);
         var clientIpString = InetAddresses.toAddrString(clientAddress);
@@ -94,7 +121,7 @@ public class SignalServiceImpl implements SignalService {
                 .publicIpRdns(HelperFunctions.getReverseDNS(clientAddress))
                 .status(TestStatus.SIGNAL_STARTED)
                 .lastSequenceNumber(-1)
-                .useSsl(false)//TODO hardcode because of database constraint. maybe should be in request param
+                .useSsl(false)//TODO hardcode because of database constraint
                 .build();
 
         var savedTest = testRepository.save(test);
@@ -139,6 +166,68 @@ public class SignalServiceImpl implements SignalService {
         return SignalResultResponse.builder()
                 .testUUID(updatedTest.getUuid())
                 .build();
+    }
+
+    @Override
+    public SignalDetailsResponse getSignalStrength(UUID testUUID) {
+        Test test = testRepository.findByUuidAndStatusesIn(testUUID, Config.SIGNAL_RESULT_STATUSES)
+                .orElseThrow();
+        Map<UUID, RadioCell> radioCellUUIDs = test.getRadioCell().stream()
+                .collect(Collectors.toMap(RadioCell::getUuid, Function.identity()));
+        Set<Long> locationsIds = radioCellUUIDs.values().stream()
+                .map(RadioCell::getLocationId)
+                .collect(Collectors.toSet());
+
+        Map<Long, GeoLocation> geoLocationIdsMap = geoLocationRepository.findAllById(locationsIds).stream()
+                .collect(Collectors.toMap(GeoLocation::getId, Function.identity()));
+
+        return SignalDetailsResponse.builder()
+                .signalStrength(radioSignalRepository.findAllByCellUUIDIn(radioCellUUIDs.keySet()).stream()
+                        .map(signal -> SignalStrengthResponse.builder()
+                                .time(TimeUtils.getDiffInSecondsFromTwoZonedDateTime(test.getTime(), signal.getTime()))
+                                .technology(radioCellUUIDs.get(signal.getCellUUID()).getTechnology())
+                                .signalStrength(getSignalStrength(signal))
+                                .location(getLocation(radioCellUUIDs, geoLocationIdsMap, signal))
+                                .ci(radioCellUUIDs.get(signal.getCellUUID()).getAreaCode())
+                                .tac(radioCellUUIDs.get(signal.getCellUUID()).getLocationId())
+                                .pci(radioCellUUIDs.get(signal.getCellUUID()).getPrimaryScramblingCode())
+                                .earfcn(radioCellUUIDs.get(signal.getCellUUID()).getChannelNumber())
+                                .band(getFiBand(radioCellUUIDs.get(signal.getCellUUID())))
+                                .frequency(getFiFrequency(radioCellUUIDs.get(signal.getCellUUID())))
+                                .build())
+                        .collect(Collectors.toList()))
+                .testResponse(testMapper.testToTestResponse(test))
+                .build();
+
+    }
+
+    private String getSignalStrength(RadioSignal signal) {
+        return Stream.of(FormatUtils.format(Constants.SIGNAL_STRENGTH_DBM_TEMPLATE, signal.getSignalStrength()),
+                FormatUtils.format(Constants.SIGNAL_STRENGTH_TIMING_ADVANCE_TEMPLATE, signal.getTimingAdvance()),
+                FormatUtils.format(Constants.SIGNAL_STRENGTH_RSQR_TEMPLATE, signal.getLteRSRQ()))
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.joining(Constants.SIGNAL_STRENGTH_DELIMITER));
+
+    }
+
+    private Integer getFiBand(RadioCell radioCell) {
+        return Optional.ofNullable(BandCalculationUtil.getFrequencyInformationFromRadioCell(radioCell))
+                .map(BandCalculationUtil.FrequencyInformation::getBand)
+                .orElse(null);
+    }
+
+    private Double getFiFrequency(RadioCell radioCell) {
+        return Optional.ofNullable(BandCalculationUtil.getFrequencyInformationFromRadioCell(radioCell))
+                .map(BandCalculationUtil.FrequencyInformation::getFrequencyDL)
+                .orElse(null);
+    }
+
+    private Geometry getLocation(Map<UUID, RadioCell> radioCellUUIDs, Map<Long, GeoLocation> geoLocationIdsMap, RadioSignal signal) {
+        return Optional.ofNullable(radioCellUUIDs.get(signal.getCellUUID()))
+                .map(RadioCell::getLocationId)
+                .map(geoLocationIdsMap::get)
+                .map(GeoLocation::getLocation)
+                .orElse(null);
     }
 
     private void processRadioInfo(SignalResultRequest signalResultRequest, Test updatedTest) {

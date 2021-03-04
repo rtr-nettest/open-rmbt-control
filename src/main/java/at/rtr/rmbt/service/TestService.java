@@ -1,8 +1,10 @@
 package at.rtr.rmbt.service;
 
 import at.rtr.rmbt.model.Test;
+import at.rtr.rmbt.response.TestResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface TestService {
     Test save(Test test);
@@ -15,4 +17,5 @@ public interface TestService {
 
     List<String> getGroupNameByClientId(Long clientId);
 
+    TestResponse getTestByUUID(UUID testUUID);
 }
