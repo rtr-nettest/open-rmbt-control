@@ -36,5 +36,11 @@ public class SignalStrengthResponse {
 
     private final Integer band;
 
-    private final TestResponse testResponse;
+    private final String accuracy;
+
+    private final String speed;
+
+    private final String bearing;
+
+    private final String altitude;
 }
