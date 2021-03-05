@@ -15,7 +15,9 @@ public enum NetworkGroupName {
     WLAN("WLAN", "WLAN"),
     G2_G3_G4("2G/3G/4G", "GPRS (2G) + UMTS (3G) + LTE (4G)"),
     G3("3G", "UMTS (3G)"),
-    G5("5G", "NRNSA (5G)");
+    G5("5G", "NRNSA (5G)"),
+    G3_G4("3G/4G", "UMTS (3G) + LTE (4G)"),
+    UNKNOWN("", "Unknown Network");
 
     private String label;
     private String labelEn;
@@ -34,6 +36,6 @@ public enum NetworkGroupName {
             if (networkGroupName.label.equals(value))
                 return networkGroupName;
         }
-        throw new IllegalArgumentException();
+        return UNKNOWN;
     }
 }
