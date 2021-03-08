@@ -8,7 +8,6 @@ import at.rtr.rmbt.response.SignalDetailsResponse;
 import at.rtr.rmbt.response.SignalMeasurementResponse;
 import at.rtr.rmbt.response.SignalResultResponse;
 import at.rtr.rmbt.response.SignalSettingsResponse;
-import at.rtr.rmbt.response.SignalStrengthResponse;
 import at.rtr.rmbt.service.SignalService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
