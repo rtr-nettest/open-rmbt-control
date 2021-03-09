@@ -16,7 +16,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
@@ -46,7 +51,28 @@ public class SignalController {
     @ApiOperation(value = "Process signal result")
     @ResponseStatus(HttpStatus.OK)
     public SignalResultResponse processSignalResult(@RequestBody SignalResultRequest signalResultRequest) {
-        log.info(signalResultRequest.toString());
+        log.info("--------------- UUID -------------");
+
+        log.info(signalResultRequest.getClientUUID().toString());
+        log.info("--------------- RadioInfo  Cells  -------------");
+
+        signalResultRequest.getRadioInfo().getCells()
+                .forEach(l -> {
+                    log.info("UUID " + (l.getUuid() == null ? "null" : l.getUuid().toString()));
+                    log.info("Technology " + (l.getTechnology() == null ? "null" : l.getTechnology().toString()));
+                });
+
+        log.info("--------------- RadioInfo  Signals -------------");
+        signalResultRequest.getRadioInfo().getSignals()
+                .forEach(l -> {
+                    log.info("CellUUID " + (l.getCellUUID() == null ? "null" : l.getCellUUID().toString()));
+                    log.info("NetworkTypeId " + (l.getNetworkTypeId() == null ? "null" : l.getNetworkTypeId().toString()));
+                    log.info("LteRSRP " + (l.getLteRSRP() == null ? "null" : l.getLteRSRP().toString()));
+                    log.info("Signal " + (l.getSignal() == null ? "null" : l.getSignal().toString()));
+                    log.info("TimeNS " + (l.getTimeNs() == null ? "null" : l.getTimeNs().toString()));
+                });
+        log.info("--------------- End -------------");
+
         return signalService.processSignalResult(signalResultRequest);
     }
 
