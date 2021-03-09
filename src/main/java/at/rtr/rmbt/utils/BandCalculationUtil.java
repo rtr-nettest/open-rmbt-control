@@ -26,6 +26,8 @@ import java.util.List;
 public class BandCalculationUtil {
 
     public static FrequencyInformation getFrequencyInformationFromRadioCell(RadioCell radioCell) {
+        if (radioCell.getChannelNumber() == null)
+            return null;
         FrequencyInformation fi = null;
         switch (radioCell.getTechnology()) {
             case G2:
