@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -56,14 +58,18 @@ public class SignalController {
         log.info(signalResultRequest.getClientUUID() == null ? "null" : signalResultRequest.getClientUUID().toString());
         log.info("--------------- RadioInfo  Cells  -------------");
 
-        signalResultRequest.getRadioInfo().getCells()
+        Optional.ofNullable(signalResultRequest.getRadioInfo())
+                .map(l->l.getCells())
+                .orElse(Collections.emptyList())
                 .forEach(l -> {
                     log.info("UUID " + (l.getUuid() == null ? "null" : l.getUuid().toString()));
                     log.info("Technology " + (l.getTechnology() == null ? "null" : l.getTechnology().toString()));
                 });
 
         log.info("--------------- RadioInfo  Signals -------------");
-        signalResultRequest.getRadioInfo().getSignals()
+        Optional.ofNullable( signalResultRequest.getRadioInfo())
+                .map(l->l.getSignals())
+                .orElse(Collections.emptyList())
                 .forEach(l -> {
                     log.info("CellUUID " + (l.getCellUUID() == null ? "null" : l.getCellUUID().toString()));
                     log.info("NetworkTypeId " + (l.getNetworkTypeId() == null ? "null" : l.getNetworkTypeId().toString()));
