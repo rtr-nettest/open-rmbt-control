@@ -53,7 +53,7 @@ public class SignalController {
     public SignalResultResponse processSignalResult(@RequestBody SignalResultRequest signalResultRequest) {
         log.info("--------------- UUID -------------");
 
-        log.info(signalResultRequest.getClientUUID().toString());
+        log.info(signalResultRequest.getClientUUID() == null ? "null" : signalResultRequest.getClientUUID().toString());
         log.info("--------------- RadioInfo  Cells  -------------");
 
         signalResultRequest.getRadioInfo().getCells()
