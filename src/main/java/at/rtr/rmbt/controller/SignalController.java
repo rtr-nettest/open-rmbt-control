@@ -11,6 +11,7 @@ import at.rtr.rmbt.response.SignalSettingsResponse;
 import at.rtr.rmbt.service.SignalService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class SignalController {
@@ -44,6 +46,7 @@ public class SignalController {
     @ApiOperation(value = "Process signal result")
     @ResponseStatus(HttpStatus.OK)
     public SignalResultResponse processSignalResult(@RequestBody SignalResultRequest signalResultRequest) {
+        log.info(signalResultRequest.toString());
         return signalService.processSignalResult(signalResultRequest);
     }
 
