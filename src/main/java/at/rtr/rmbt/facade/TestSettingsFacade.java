@@ -13,10 +13,9 @@ import at.rtr.rmbt.response.TestSettingsResponse;
 import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.GeoIpHelper;
 import at.rtr.rmbt.utils.HelperFunctions;
+import at.rtr.rmbt.utils.ValidateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vdurmont.semver4j.Requirement;
-import com.vdurmont.semver4j.Semver;
 import com.vdurmont.semver4j.SemverException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,7 +36,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static at.rtr.rmbt.constant.URIConstants.RESULT_QOS_URL;
 import static at.rtr.rmbt.constant.URIConstants.RESULT_URL;
@@ -143,12 +141,7 @@ public class TestSettingsFacade {
                     errorResponse.getError().add(getErrorMessageAndRollback("ERROR_DB_GET_CLIENTTYPE", locale));
             }
 
-            Semver version = new Semver(adjustOldVersion(testSettingsRequest.getTestSetVersion()), Semver.SemverType.NPM);
-            Requirement requirement = Requirement.buildNPM(applicationProperties.getVersion());
-
-            if (!version.satisfies(requirement)) {
-                throw new SemverException("requirement not satisfied");
-            }
+            ValidateUtils.validateClientVersion(applicationProperties.getVersion(), testSettingsRequest.getTestSetVersion());
 
             if (applicationProperties.getClientNames().contains(testSettingsRequest.getServerType().getLabel()) && clientType != null) {
                 if (!TIMEZONES.contains(testSettingsRequest.getTimezone()))
@@ -365,10 +358,6 @@ public class TestSettingsFacade {
                 errorResponse.getError().add(getErrorMessageAndRollback("ERROR_DB_GET_CLIENT", locale));
         }
         return client;
-    }
-
-    private String adjustOldVersion(String version) {
-        return version.length() == 3 ? version + ".0" : version; //adjust old versions
     }
 
     private LoopModeSettings toLoopModeSettings(TestSettingsRequest.LoopModeInfo loopModeInfo) {

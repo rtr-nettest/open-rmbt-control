@@ -14,7 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "qos_test_type_desc")
-public class QoSTestTypeDesc {
+public class QosTestTypeDesc {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +29,5 @@ public class QoSTestTypeDesc {
 
     @Column(name = "test")
     @Enumerated(EnumType.STRING)
-//    @Formula("UPPER(test::text)")
     private TestType test;
 }

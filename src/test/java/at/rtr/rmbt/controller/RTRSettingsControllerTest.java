@@ -251,7 +251,7 @@ public class RTRSettingsControllerTest {
                 .devices(List.of(DEFAULT_HISTORY_DEVICE))
                 .build();
 
-        var qosTestTypeDescResponse = QoSTestTypeDescResponse.builder()
+        var qosTestTypeDescResponse = QosTestTypeDescResponse.builder()
                 .testType(DEFAULT_TEST_TYPE.toString())
                 .name(DEFAULT_QOS_TEST_TYPE_DESC_NAME)
                 .build();
@@ -266,7 +266,7 @@ public class RTRSettingsControllerTest {
                 .uuid(DEFAULT_SERVER_WS_UUID)
                 .build();
 
-        var serverQoSResponseList = TestServerResponseForSettings.builder()
+        var serverQosResponseList = TestServerResponseForSettings.builder()
                 .name(DEFAULT_TEST_SERVER_QOS_NAME)
                 .uuid(DEFAULT_SERVER_QOS_UUID)
                 .build();
@@ -299,7 +299,7 @@ public class RTRSettingsControllerTest {
                 .qosTestTypeDescResponse(List.of(qosTestTypeDescResponse))
                 .servers(List.of(server))
                 .serverWSResponseList(List.of(serverWSResponseList))
-                .serverQoSResponseList(List.of(serverQoSResponseList))
+                .serverQosResponseList(List.of(serverQosResponseList))
                 .versions(version)
                 .termAndConditionsResponse(termAndConditionsResponse)
                 .urls(urls)

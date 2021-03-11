@@ -17,12 +17,15 @@ import java.util.UUID;
 public class RtrSettingsRequest {
 
     @ApiModelProperty(notes = "Client type name", example = "MOBILE")
+    @JsonProperty(value = "type")
     private final ClientType type;
 
     @ApiModelProperty(notes = "RMBT client name", example = "RMBT")
+    @JsonProperty(value = "name")
     private final String name;
 
     @ApiModelProperty(notes = "2 letters language code or language code with region", example = "en")
+    @JsonProperty(value = "language")
     private final String language;
 
     @ApiModelProperty(notes = "Platform of device", example = "Android")
@@ -38,24 +41,31 @@ public class RtrSettingsRequest {
     private final Long apiLevel;
 
     @ApiModelProperty(notes = "Obtained by android.os.Build.DEVICE", example = "dreamlte")
+    @JsonProperty(value = "device")
     private final String device;
 
     @ApiModelProperty(notes = "Obtained by android.os.Build.MODEL", example = "SM-G950F")
+    @JsonProperty(value = "model")
     private final String model;
 
     @ApiModelProperty(notes = "Obtained by android.os.Build.PRODUCT", example = "dreamltexxx")
+    @JsonProperty(value = "product")
     private final String product;
 
     @ApiModelProperty(notes = "Human readable timezone", example = "Europe/Bratislava")
+    @JsonProperty(value = "timezone")
     private final String timezone;
 
     @ApiModelProperty(notes = "Revision code of source code", example = "master_64bc39c-dirty")
+    @JsonProperty(value = "softwareRevision")
     private final String softwareRevision;
 
     @ApiModelProperty(notes = "Version code from build gradle for Android devices", example = "33201")
+    @JsonProperty(value = "softwareRevisionCode")
     private final Long softwareRevisionCode;
 
     @ApiModelProperty(notes = "Version of the app", example = "3.2.1")
+    @JsonProperty(value = "softwareVersionName")
     private final String softwareVersionName;
 
     @ApiModelProperty(notes = "Same as softwareVersionCode", example = "30605")
@@ -67,6 +77,7 @@ public class RtrSettingsRequest {
     private final String versionName;
 
     @ApiModelProperty(notes = "UUID of the client if client is already registered, to register client leave this as empty string or do not send at all", example = "68796996-5f40-11eb-ae93-0242ac130002")
+    @JsonProperty(value = "uuid")
     private final UUID uuid;
 
     @ApiModelProperty(notes = "If true - list of the measurement servers will be sent, hidden settings", example = "true")
@@ -81,6 +92,7 @@ public class RtrSettingsRequest {
     @JsonProperty(value = "terms_and_conditions_accepted")
     private final boolean isTermsAndConditionsAccepted;
 
+    @JsonProperty(value = "capabilities")
     private final CapabilitiesRequest capabilities;
 
     @Builder

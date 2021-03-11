@@ -3,7 +3,7 @@ package at.rtr.rmbt.controller;
 import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.advice.RtrAdvice;
-import at.rtr.rmbt.request.SignalRequest;
+import at.rtr.rmbt.request.SignalRegisterRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.SignalService;
@@ -45,7 +45,7 @@ public class SignalControllerTest {
     @MockBean
     private SignalService signalService;
     @Captor
-    private ArgumentCaptor<SignalRequest> signalRequestArgumentCaptor;
+    private ArgumentCaptor<SignalRegisterRequest> signalRequestArgumentCaptor;
 
     @Before
     public void setUp() {
@@ -95,7 +95,7 @@ public class SignalControllerTest {
                 .param("size", String.valueOf(TestConstants.DEFAULT_SIZE))
                 .param("sort", TestConstants.DEFAULT_SORT))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].test_uuid").value(TestConstants.DEFAULT_UUID.toString()));
+                .andExpect(jsonPath("$.content[0].testUuid").value(TestConstants.DEFAULT_UUID.toString()));
     }
 
     @Test
@@ -121,22 +121,22 @@ public class SignalControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get(SIGNAL_STRENGTH_BY_UUID, TestConstants.DEFAULT_UUID))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("signal_strength", hasSize(1)))
-                .andExpect(jsonPath("signal_strength.[0].time").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_TIME))
-                .andExpect(jsonPath("signal_strength.[0].technology").value(TestConstants.DEFAULT_TECHNOLOGY.getLabelEn()))
-                .andExpect(jsonPath("signal_strength.[0].signal_strength").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_RESPONSE))
-                .andExpect(jsonPath("signal_strength.[0].ci").value(TestConstants.DEFAULT_AREA_CODE))
-                .andExpect(jsonPath("signal_strength.[0].tac").value(TestConstants.DEFAULT_LOCATION_ID))
-                .andExpect(jsonPath("signal_strength.[0].pci").value(TestConstants.DEFAULT_PRIMARY_SCRAMBLING_CODE))
-                .andExpect(jsonPath("signal_strength.[0].earfcn").value(TestConstants.DEFAULT_CHANNEL_NUMBER))
-                .andExpect(jsonPath("signal_strength.[0].frequency").value(TestConstants.DEFAULT_FREQUENCY))
-                .andExpect(jsonPath("signal_strength.[0].band").value(TestConstants.DEFAULT_BAND))
-                .andExpect(jsonPath("signal_strength.[0].speed").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_SPEED_RESPONSE))
-                .andExpect(jsonPath("signal_strength.[0].accuracy").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_ACCURACY_RESPONSE))
-                .andExpect(jsonPath("signal_strength.[0].altitude").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_ALTITUDE_RESPONSE))
-                .andExpect(jsonPath("signal_strength.[0].bearing").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_BEARING_RESPONSE))
-                .andExpect(jsonPath("test_response.test_uuid").value(TestConstants.DEFAULT_TEST_UUID.toString()))
-                .andExpect(jsonPath("test_response.time").value(TestConstants.DEFAULT_ZONED_DATE_TIME.toInstant().getEpochSecond()));
+                .andExpect(jsonPath("signalStrength", hasSize(1)))
+                .andExpect(jsonPath("signalStrength.[0].time").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_TIME))
+                .andExpect(jsonPath("signalStrength.[0].technology").value(TestConstants.DEFAULT_TECHNOLOGY_FIRST.getLabelEn()))
+                .andExpect(jsonPath("signalStrength.[0].signalStrength").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_RESPONSE))
+                .andExpect(jsonPath("signalStrength.[0].ci").value(TestConstants.DEFAULT_AREA_CODE_FIRST))
+                .andExpect(jsonPath("signalStrength.[0].tac").value(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST))
+                .andExpect(jsonPath("signalStrength.[0].pci").value(TestConstants.DEFAULT_PRIMARY_SCRAMBLING_CODE))
+                .andExpect(jsonPath("signalStrength.[0].earfcn").value(TestConstants.DEFAULT_CHANNEL_NUMBER_FIRST))
+                .andExpect(jsonPath("signalStrength.[0].frequency").value(TestConstants.DEFAULT_FREQUENCY))
+                .andExpect(jsonPath("signalStrength.[0].band").value(TestConstants.DEFAULT_BAND))
+                .andExpect(jsonPath("signalStrength.[0].speed").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_SPEED_RESPONSE))
+                .andExpect(jsonPath("signalStrength.[0].accuracy").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_ACCURACY_RESPONSE))
+                .andExpect(jsonPath("signalStrength.[0].altitude").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_ALTITUDE_RESPONSE))
+                .andExpect(jsonPath("signalStrength.[0].bearing").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_BEARING_RESPONSE))
+                .andExpect(jsonPath("testResponse.testUUID").value(TestConstants.DEFAULT_TEST_UUID.toString()))
+                .andExpect(jsonPath("testResponse.time").value(TestConstants.DEFAULT_ZONED_DATE_TIME.toInstant().getEpochSecond()));
 
         verify(signalService).getSignalStrength(TestConstants.DEFAULT_UUID);
     }
@@ -149,14 +149,14 @@ public class SignalControllerTest {
 
         return SignalDetailsResponse.builder()
                 .signalStrength(Collections.singletonList(SignalStrengthResponse.builder()
-                        .technology(TestConstants.DEFAULT_TECHNOLOGY.getLabelEn())
+                        .technology(TestConstants.DEFAULT_TECHNOLOGY_FIRST.getLabelEn())
                         .band(TestConstants.DEFAULT_BAND)
-                        .ci(TestConstants.DEFAULT_AREA_CODE)
-                        .earfcn(TestConstants.DEFAULT_CHANNEL_NUMBER)
+                        .ci(TestConstants.DEFAULT_AREA_CODE_FIRST)
+                        .earfcn(TestConstants.DEFAULT_CHANNEL_NUMBER_FIRST)
                         .frequency(TestConstants.DEFAULT_FREQUENCY)
                         .pci(TestConstants.DEFAULT_PRIMARY_SCRAMBLING_CODE)
                         .signalStrength(TestConstants.DEFAULT_SIGNAL_STRENGTH_RESPONSE)
-                        .tac(TestConstants.DEFAULT_LOCATION_ID)
+                        .tac(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST)
                         .time(TestConstants.DEFAULT_SIGNAL_STRENGTH_TIME)
                         .speed(TestConstants.DEFAULT_SIGNAL_STRENGTH_SPEED_RESPONSE)
                         .altitude(TestConstants.DEFAULT_SIGNAL_STRENGTH_ALTITUDE_RESPONSE)
@@ -188,8 +188,8 @@ public class SignalControllerTest {
                 .build();
     }
 
-    private SignalRequest getRegisterSignalRequest() {
-        return SignalRequest.builder()
+    private SignalRegisterRequest getRegisterSignalRequest() {
+        return SignalRegisterRequest.builder()
                 .time(TestConstants.DEFAULT_TIME)
                 .timezone(TestConstants.DEFAULT_TIMEZONE)
                 .uuid(TestConstants.DEFAULT_CLIENT_UUID)

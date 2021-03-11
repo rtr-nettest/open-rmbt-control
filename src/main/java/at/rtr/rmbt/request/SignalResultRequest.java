@@ -33,6 +33,7 @@ public class SignalResultRequest {
     private final UUID clientUUID;
 
     @ApiModelProperty(notes = "Time zone of client", example = "Europe/Prague")
+    @JsonProperty(value = "timezone")
     private final String timezone;
 
     @JsonProperty(value = "platform")
@@ -113,6 +114,7 @@ public class SignalResultRequest {
     @JsonProperty(value = "test_error_cause")
     private final String testErrorCause;
 
+    @JsonProperty(value = "capabilitiesRequest")
     private final CapabilitiesRequest capabilitiesRequest;
 
     @JsonProperty(value = "radioInfo")

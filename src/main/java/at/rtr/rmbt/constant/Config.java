@@ -77,14 +77,6 @@ public interface Config {
         "ssl_map_server",
         "port_map_server"
     );
-    List<String> SUPPORTED_CLIENT_NAMES = List.of("RMBT",
-        "RMBTjs",
-        "Open-RMBT",
-        "Open-RMBT",
-        "Open-RMBT",
-        "RMBTws",
-        "HW-PROBE");
-
     List<ServerType> SERVER_TEST_SERVER_TYPES = List.of(ServerType.RMBT);
     List<ServerType> SERVER_HTTP_TEST_SERVER_TYPES = List.of(ServerType.RMBT, ServerType.RMBThttp);
     List<ServerType> SERVER_WS_TEST_SERVER_TYPES = List.of(ServerType.RMBTws, ServerType.RMBThttp);

@@ -10,8 +10,10 @@ import lombok.Getter;
 @EqualsAndHashCode
 public class TermAndConditionsResponse {
 
+    @JsonProperty(value = "version")
     private final Long version;
 
+    @JsonProperty(value = "url")
     private final String url;
 
     @JsonProperty(value = "ndt_url")

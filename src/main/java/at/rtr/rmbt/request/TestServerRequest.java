@@ -2,6 +2,7 @@ package at.rtr.rmbt.request;
 
 import at.rtr.rmbt.constant.Constants;
 import com.bedatadriven.jackson.datatype.jts.serialization.GeometryDeserializer;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -15,43 +16,62 @@ import java.util.Set;
 @EqualsAndHashCode
 public class TestServerRequest {
 
+    @JsonProperty(value = "name")
     private String name;
 
+    @JsonProperty(value = "webAddress")
     private String webAddress;
 
+    @JsonProperty(value = "port")
     private Integer port;
 
+    @JsonProperty(value = "portSsl")
     private Integer portSsl;
 
+    @JsonProperty(value = "city")
     private String city;
 
+    @JsonProperty(value = "country")
     private String country;
 
+    @JsonProperty(value = "latitude")
     private Double latitude;
 
+    @JsonProperty(value = "longitude")
     private Double longitude;
 
     @JsonDeserialize(using = GeometryDeserializer.class)
+    @JsonProperty(value = "location")
     private Geometry location;
 
+    @JsonProperty(value = "webAddressIpV4")
     private String webAddressIpV4;
 
+    @JsonProperty(value = "webAddressIpV6")
     private String webAddressIpV6;
 
+    @JsonProperty(value = "serverTypeDetails")
     private Set<ServerTypeDetailsRequest> serverTypeDetails;
 
+    @JsonProperty(value = "priority")
     private Integer priority;
 
+    @JsonProperty(value = "weight")
     private Integer weight;
 
+    @JsonProperty(value = "active")
     private boolean active;
 
+    @JsonProperty(value = "secretKey")
     private String secretKey;
 
+    @JsonProperty(value = "selectable")
     private boolean selectable;
 
+    @JsonProperty(value = "node")
     private String node;
 
+    @JsonProperty(value = "encrypted")
     private boolean encrypted;
 
     @Builder

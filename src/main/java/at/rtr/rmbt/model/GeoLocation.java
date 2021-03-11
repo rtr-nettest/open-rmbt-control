@@ -28,8 +28,9 @@ public class GeoLocation {
     @Column(name = "open_test_uuid")
     private UUID openTestUUID;
 
-    @Column(name = "test_id")
-    private Long testId;
+    @ManyToOne
+    @JoinColumn(name = "test_id")
+    private Test test;
 
     @Column(name = "time_ns")
     private Long timeNs;

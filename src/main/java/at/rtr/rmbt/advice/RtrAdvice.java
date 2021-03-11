@@ -51,5 +51,11 @@ public class RtrAdvice {
     public ErrorResponse handleTestNotFoundException(TestNotFoundException ex) {
         return new ErrorResponse(ex.getMessage());
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
 }
 

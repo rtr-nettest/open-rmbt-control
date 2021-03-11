@@ -1,5 +1,6 @@
 package at.rtr.rmbt.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,9 +8,12 @@ import lombok.Getter;
 @Getter
 public class NewsResponse {
 
+    @JsonProperty(value = "uid")
     private final Long uid;
 
+    @JsonProperty(value = "title")
     private final String title;
 
+    @JsonProperty(value = "text")
     private final String text;
 }

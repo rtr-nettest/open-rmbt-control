@@ -1,8 +1,8 @@
 package at.rtr.rmbt.mapper.impl;
 
 import at.rtr.rmbt.TestConstants;
-import at.rtr.rmbt.mapper.QoSTestTypeDescMapper;
-import at.rtr.rmbt.model.QoSTestTypeDesc;
+import at.rtr.rmbt.mapper.QosTestTypeDescMapper;
+import at.rtr.rmbt.model.QosTestTypeDesc;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,23 +13,23 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-public class QoSTestTypeDescMapperImplTest {
-    private QoSTestTypeDescMapper qosTestTypeDescMapper;
+public class QosTestTypeDescMapperImplTest {
+    private QosTestTypeDescMapper qosTestTypeDescMapper;
 
     @Mock
-    private QoSTestTypeDesc qosTestTypeDesc;
+    private QosTestTypeDesc qosTestTypeDesc;
 
     @Before
     public void setUp() {
-        qosTestTypeDescMapper = new QoSTestTypeDescMapperImpl();
+        qosTestTypeDescMapper = new QosTestTypeDescMapperImpl();
     }
 
     @Test
-    public void qosTestTypeDescToQoSTestTypeDescResponse_whenCommonData_expectQoSTestTypeDescResponse() {
+    public void qosTestTypeDescToQosTestTypeDescResponse_whenCommonData_expectQoSTestTypeDescResponse() {
         when(qosTestTypeDesc.getName()).thenReturn(TestConstants.DEFAULT_QOS_TEST_TYPE_DESC_NAME);
         when(qosTestTypeDesc.getTest()).thenReturn(TestConstants.DEFAULT_TEST_TYPE);
 
-        var actualResponse = qosTestTypeDescMapper.qosTestTypeDescToQoSTestTypeDescResponse(qosTestTypeDesc);
+        var actualResponse = qosTestTypeDescMapper.qosTestTypeDescToQosTestTypeDescResponse(qosTestTypeDesc);
 
         assertEquals(TestConstants.DEFAULT_QOS_TEST_TYPE_DESC_NAME, actualResponse.getName());
         assertEquals(TestConstants.DEFAULT_TEST_TYPE.toString(), actualResponse.getTestType());

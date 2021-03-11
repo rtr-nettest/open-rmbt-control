@@ -5,6 +5,7 @@ import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.model.Settings;
+import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.AdminSettingsBodyRequest;
 import at.rtr.rmbt.request.AdminSettingsRequest;
@@ -41,16 +42,17 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
     private final ClientTypeService clientTypeService;
     private final ClientService clientService;
     private final SettingsRepository settingsRepository;
-    private final QoSTestTypeDescService qosTestTypeDescService;
+    private final QosTestTypeDescService qosTestTypeDescService;
     private final TestService testService;
     private final TestServerService testServerService;
     private final UUIDGenerator uuidGenerator;
     private final Clock clock;
+    private final ApplicationProperties applicationProperties;
 
     @Override
     public SettingsResponse getSettings(RtrSettingsRequest request) {
         var lang = request.getLanguage();
-        if (!Config.SUPPORTED_CLIENT_NAMES.contains(request.getName())) {
+        if (!applicationProperties.getClientNames().contains(request.getName())) {
             throw new NotSupportedClientVersionException();
         }
         var now = ZonedDateTime.now(clock);
@@ -86,7 +88,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .history(getHistoryResponse(savedClient.getUid()))
                 .servers(getServers(request.getCapabilities()))
                 .serverWSResponseList(testServerService.getServersWs())
-                .serverQoSResponseList(testServerService.getServersQos())
+                .serverQosResponseList(testServerService.getServersQos())
                 .mapServerResponse(getMapServerResponse(settings))
                 .versions(getVersionResponse())
                 .build();
@@ -114,13 +116,13 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
         Map<String, String> actualSettings = getAdminSettingsMap();
 
         return AdminSettingsResponse.builder()
-            .adminSettingsSignalTestResponse(getAdminSettingSignalTestResponse(actualSettings))
-            .adminTestResponse(getAdminTestResponse(actualSettings))
-            .mapServerResponse(getAdminSettingsMapServerResponse(actualSettings))
-            .termAndConditionsResponse(getAdminTermAndConditionResponse(actualSettings))
-            .urls(getAdminSettingsUrlsResponse(actualSettings))
-            .versions(getAdminSettingsVersionResponse())
-            .build();
+                .adminSettingsSignalTestResponse(getAdminSettingSignalTestResponse(actualSettings))
+                .adminTestResponse(getAdminTestResponse(actualSettings))
+                .mapServerResponse(getAdminSettingsMapServerResponse(actualSettings))
+                .termAndConditionsResponse(getAdminTermAndConditionResponse(actualSettings))
+                .urls(getAdminSettingsUrlsResponse(actualSettings))
+                .versions(getAdminSettingsVersionResponse())
+                .build();
     }
 
     @Override
@@ -129,101 +131,101 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
         List<Settings> updateSettings = new ArrayList<>();
 
         Optional.ofNullable(adminUpdateSettingsRequest.getAdminUpdateSettingsTermsAndConditionsRequest())
-            .ifPresent(tcRequest -> {
-                updateSettings(settingsActual, Config.TERM_AND_CONDITION_URL_KEY, tcRequest.getTcUrl(), updateSettings);
-                updateSettings(settingsActual, Config.TERM_AND_CONDITION_URL_IOS_KEY, tcRequest.getTcUrlIOS(), updateSettings);
-                updateSettings(settingsActual, Config.TERM_AND_CONDITION_URL_ANDROID_KEY, tcRequest.getTcUrlAndroid(), updateSettings);
-                updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_KEY, tcRequest.getTcVersion(), updateSettings);
-                updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_IOS_KEY, tcRequest.getTcVersionIOS(), updateSettings);
-                updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_ANDROID_KEY, tcRequest.getTcVersionAndroid(), updateSettings);
-                updateSettings(settingsActual, Config.TERM_AND_CONDITION_NDT_URL_KEY, tcRequest.getTcNdtUrlAndroid(), updateSettings);
-            });
+                .ifPresent(tcRequest -> {
+                    updateSettings(settingsActual, Config.TERM_AND_CONDITION_URL_KEY, tcRequest.getTcUrl(), updateSettings);
+                    updateSettings(settingsActual, Config.TERM_AND_CONDITION_URL_IOS_KEY, tcRequest.getTcUrlIOS(), updateSettings);
+                    updateSettings(settingsActual, Config.TERM_AND_CONDITION_URL_ANDROID_KEY, tcRequest.getTcUrlAndroid(), updateSettings);
+                    updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_KEY, tcRequest.getTcVersion(), updateSettings);
+                    updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_IOS_KEY, tcRequest.getTcVersionIOS(), updateSettings);
+                    updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_ANDROID_KEY, tcRequest.getTcVersionAndroid(), updateSettings);
+                    updateSettings(settingsActual, Config.TERM_AND_CONDITION_NDT_URL_KEY, tcRequest.getTcNdtUrlAndroid(), updateSettings);
+                });
 
         Optional.ofNullable(adminUpdateSettingsRequest.getAdminUpdateSettingsUrlsRequest())
-            .ifPresent(urlsRequest -> {
-                updateSettings(settingsActual, Config.URL_OPEN_DATA_PREFIX_KEY, urlsRequest.getOpenDataPrefix(), updateSettings);
-                updateSettings(settingsActual, Config.URL_SHARE_KEY, urlsRequest.getUrlShare(), updateSettings);
-                updateSettings(settingsActual, Config.URL_STATISTIC_KEY, urlsRequest.getStatistics(), updateSettings);
-                updateSettings(settingsActual, Config.URL_CONTROL_IPV4_ONLY_KEY, urlsRequest.getControlIpV4Only(), updateSettings);
-                updateSettings(settingsActual, Config.URL_CONTROL_IPV6_ONLY_KEY, urlsRequest.getControlIpV6Only(), updateSettings);
-                updateSettings(settingsActual, Config.URL_IPV4_CHECK_KEY, urlsRequest.getUrlIpV4Check(), updateSettings);
-                updateSettings(settingsActual, Config.URL_IPV6_CHECK_KEY, urlsRequest.getUrlIpV6Check(), updateSettings);
-                updateSettings(settingsActual, Config.URL_MAP_SERVER_KEY, urlsRequest.getUrlMapServer(), updateSettings);
+                .ifPresent(urlsRequest -> {
+                    updateSettings(settingsActual, Config.URL_OPEN_DATA_PREFIX_KEY, urlsRequest.getOpenDataPrefix(), updateSettings);
+                    updateSettings(settingsActual, Config.URL_SHARE_KEY, urlsRequest.getUrlShare(), updateSettings);
+                    updateSettings(settingsActual, Config.URL_STATISTIC_KEY, urlsRequest.getStatistics(), updateSettings);
+                    updateSettings(settingsActual, Config.URL_CONTROL_IPV4_ONLY_KEY, urlsRequest.getControlIpV4Only(), updateSettings);
+                    updateSettings(settingsActual, Config.URL_CONTROL_IPV6_ONLY_KEY, urlsRequest.getControlIpV6Only(), updateSettings);
+                    updateSettings(settingsActual, Config.URL_IPV4_CHECK_KEY, urlsRequest.getUrlIpV4Check(), updateSettings);
+                    updateSettings(settingsActual, Config.URL_IPV6_CHECK_KEY, urlsRequest.getUrlIpV6Check(), updateSettings);
+                    updateSettings(settingsActual, Config.URL_MAP_SERVER_KEY, urlsRequest.getUrlMapServer(), updateSettings);
 
-            });
+                });
 
         Optional.ofNullable(adminUpdateSettingsRequest.getAdminUpdateSettingsMapServerRequest())
-            .ifPresent(mapServerRequest -> {
-                updateSettings(settingsActual, Config.MAP_SERVER_HOST_KEY, mapServerRequest.getHost(), updateSettings);
-                updateSettings(settingsActual, Config.MAP_SERVER_SSL_KEY, mapServerRequest.getSsl(), updateSettings);
-                updateSettings(settingsActual, Config.MAP_SERVER_PORT_KEY, mapServerRequest.getPort(), updateSettings);
-            });
+                .ifPresent(mapServerRequest -> {
+                    updateSettings(settingsActual, Config.MAP_SERVER_HOST_KEY, mapServerRequest.getHost(), updateSettings);
+                    updateSettings(settingsActual, Config.MAP_SERVER_SSL_KEY, mapServerRequest.getSsl(), updateSettings);
+                    updateSettings(settingsActual, Config.MAP_SERVER_PORT_KEY, mapServerRequest.getPort(), updateSettings);
+                });
 
         Optional.ofNullable(adminUpdateSettingsRequest.getAdminUpdateSettingsTestRequest())
-            .ifPresent(testRequest -> {
-                updateSettings(settingsActual, Config.TEST_RESULT_URL_KEY, testRequest.getResultUrl(), updateSettings);
-                updateSettings(settingsActual, Config.TEST_RESULT_QOS_URL_KEY, testRequest.getResultQosUrl(), updateSettings);
-                updateSettings(settingsActual, Config.TEST_DURATION_KEY, testRequest.getTestDuration(), updateSettings);
-                updateSettings(settingsActual, Config.TEST_NUM_THREADS_KEY, testRequest.getTestNumThreads(), updateSettings);
-                updateSettings(settingsActual, Config.TEST_NUM_PINGS_KEY, testRequest.getTestNumPings(), updateSettings);
-            });
+                .ifPresent(testRequest -> {
+                    updateSettings(settingsActual, Config.TEST_RESULT_URL_KEY, testRequest.getResultUrl(), updateSettings);
+                    updateSettings(settingsActual, Config.TEST_RESULT_QOS_URL_KEY, testRequest.getResultQosUrl(), updateSettings);
+                    updateSettings(settingsActual, Config.TEST_DURATION_KEY, testRequest.getTestDuration(), updateSettings);
+                    updateSettings(settingsActual, Config.TEST_NUM_THREADS_KEY, testRequest.getTestNumThreads(), updateSettings);
+                    updateSettings(settingsActual, Config.TEST_NUM_PINGS_KEY, testRequest.getTestNumPings(), updateSettings);
+                });
 
         Optional.ofNullable(adminUpdateSettingsRequest.getAdminUpdateSettingsSignalTestRequest())
-            .ifPresent(signalTestRequest -> {
-                updateSettings(settingsActual, Config.SIGNAL_RESULT_URL_KEY, signalTestRequest.getResultUrl(), updateSettings);
-            });
+                .ifPresent(signalTestRequest -> {
+                    updateSettings(settingsActual, Config.SIGNAL_RESULT_URL_KEY, signalTestRequest.getResultUrl(), updateSettings);
+                });
 
         settingsRepository.saveAll(updateSettings);
     }
 
     private void updateSettings(Map<String, Settings> settingsActual, String key, String value, List<Settings> updatedSettings) {
         Optional.ofNullable(settingsActual.get(key))
-            .ifPresentOrElse(x -> {
-                    x.setValue(value);
-                    updatedSettings.add(x);
-                },
-                () -> {
-                    var newSetting = new Settings();
-                    newSetting.setKey(key);
-                    newSetting.setValue(value);
-                    newSetting.setLang("en");
-                    updatedSettings.add(newSetting);
-                });
+                .ifPresentOrElse(x -> {
+                            x.setValue(value);
+                            updatedSettings.add(x);
+                        },
+                        () -> {
+                            var newSetting = new Settings();
+                            newSetting.setKey(key);
+                            newSetting.setValue(value);
+                            newSetting.setLang("en");
+                            updatedSettings.add(newSetting);
+                        });
     }
 
     private Map<String, String> getAdminSettingsMap() {
         return settingsRepository.findAllByLangOrLangIsNullAndKeyIn("en", Config.ADMIN_SETTINGS_KEYS).stream()
-            .collect(Collectors.toMap(Settings::getKey,
-                Settings::getValue,
-                (x1, x2) -> x1));
+                .collect(Collectors.toMap(Settings::getKey,
+                        Settings::getValue,
+                        (x1, x2) -> x1));
     }
 
     private AdminSettingsTermAndConditionsResponse getAdminTermAndConditionResponse(Map<String, String> actualSettings) {
         return AdminSettingsTermAndConditionsResponse.builder()
-            .tcUrl(actualSettings.get(Config.TERM_AND_CONDITION_URL_KEY))
-            .tcUrlIOS(actualSettings.get(Config.TERM_AND_CONDITION_URL_IOS_KEY))
-            .tcUrlAndroid(actualSettings.get(Config.TERM_AND_CONDITION_URL_ANDROID_KEY))
-            .tcVersion(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_KEY))
-            .tcVersionIOS(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_IOS_KEY))
-            .tcVersionAndroid(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_ANDROID_KEY))
-            .tcNdtUrlAndroid(actualSettings.get(Config.TERM_AND_CONDITION_NDT_URL_KEY))
-            .build();
+                .tcUrl(actualSettings.get(Config.TERM_AND_CONDITION_URL_KEY))
+                .tcUrlIOS(actualSettings.get(Config.TERM_AND_CONDITION_URL_IOS_KEY))
+                .tcUrlAndroid(actualSettings.get(Config.TERM_AND_CONDITION_URL_ANDROID_KEY))
+                .tcVersion(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_KEY))
+                .tcVersionIOS(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_IOS_KEY))
+                .tcVersionAndroid(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_ANDROID_KEY))
+                .tcNdtUrlAndroid(actualSettings.get(Config.TERM_AND_CONDITION_NDT_URL_KEY))
+                .build();
     }
 
     private AdminSettingsTestResponse getAdminTestResponse(Map<String, String> actualSettings) {
         return AdminSettingsTestResponse.builder()
-            .resultQosUrl(actualSettings.get(Config.TEST_RESULT_QOS_URL_KEY))
-            .resultUrl(actualSettings.get(Config.TEST_RESULT_URL_KEY))
-            .testDuration(actualSettings.get(Config.TEST_DURATION_KEY))
-            .testNumPings(actualSettings.get(Config.TEST_NUM_PINGS_KEY))
-            .testNumThreads(actualSettings.get(Config.TEST_NUM_THREADS_KEY))
-            .build();
+                .resultQosUrl(actualSettings.get(Config.TEST_RESULT_QOS_URL_KEY))
+                .resultUrl(actualSettings.get(Config.TEST_RESULT_URL_KEY))
+                .testDuration(actualSettings.get(Config.TEST_DURATION_KEY))
+                .testNumPings(actualSettings.get(Config.TEST_NUM_PINGS_KEY))
+                .testNumThreads(actualSettings.get(Config.TEST_NUM_THREADS_KEY))
+                .build();
     }
 
     private AdminSettingsSignalTestResponse getAdminSettingSignalTestResponse(Map<String, String> actualSettings) {
         return AdminSettingsSignalTestResponse.builder()
-            .resultUrl(actualSettings.get(Config.SIGNAL_RESULT_URL_KEY))
-            .build();
+                .resultUrl(actualSettings.get(Config.SIGNAL_RESULT_URL_KEY))
+                .build();
     }
 
     private void updateOrCreateSettings(String language, Map<String, Settings> settingsActual, List<Settings> updatedSettings, Map.Entry<String, String> entry) {
@@ -255,8 +257,8 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
 
     private AdminSettingsVersionResponse getAdminSettingsVersionResponse() {
         return AdminSettingsVersionResponse.builder()
-            .controlServerVersion(String.format("%s_%s", branch, describe))
-            .build();
+                .controlServerVersion(String.format("%s_%s", branch, describe))
+                .build();
     }
 
     private TermAndConditionsResponse getTermAndConditionResponse(String platform, String softwareVersionName, Map<String, String> settings) {
@@ -294,18 +296,18 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
 
     private MapServerResponse getMapServerResponse(Map<String, String> settings) {
         return MapServerResponse.builder()
-            .host(settings.get(Config.MAP_SERVER_HOST_KEY))
-            .ssl(Boolean.parseBoolean(settings.get(Config.MAP_SERVER_SSL_KEY)))
-            .port(LongUtils.parseLong(settings.get(Config.MAP_SERVER_PORT_KEY)))
-            .build();
+                .host(settings.get(Config.MAP_SERVER_HOST_KEY))
+                .ssl(Boolean.parseBoolean(settings.get(Config.MAP_SERVER_SSL_KEY)))
+                .port(LongUtils.parseLong(settings.get(Config.MAP_SERVER_PORT_KEY)))
+                .build();
     }
 
     private AdminSettingsMapServerResponse getAdminSettingsMapServerResponse(Map<String, String> settings) {
         return AdminSettingsMapServerResponse.builder()
-            .host(settings.get(Config.MAP_SERVER_HOST_KEY))
-            .ssl(settings.get(Config.MAP_SERVER_SSL_KEY))
-            .port(settings.get(Config.MAP_SERVER_PORT_KEY))
-            .build();
+                .host(settings.get(Config.MAP_SERVER_HOST_KEY))
+                .ssl(settings.get(Config.MAP_SERVER_SSL_KEY))
+                .port(settings.get(Config.MAP_SERVER_PORT_KEY))
+                .build();
     }
 
     private List<TestServerResponseForSettings> getServers(CapabilitiesRequest capabilitiesRequest) {
@@ -321,28 +323,28 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
 
     private UrlsResponse getUrlsResponse(Map<String, String> settings) {
         return UrlsResponse.builder()
-            .openDataPrefix(settings.get(Config.URL_OPEN_DATA_PREFIX_KEY))
-            .urlShare(settings.get(Config.URL_SHARE_KEY))
-            .statistics(settings.get(Config.URL_STATISTIC_KEY))
-            .controlIPV4Only(settings.get(Config.URL_CONTROL_IPV4_ONLY_KEY))
-            .controlIPV6Only(settings.get(Config.URL_CONTROL_IPV6_ONLY_KEY))
-            .urlIPV4Check(settings.get(Config.URL_IPV4_CHECK_KEY))
-            .urlIPV6Check(settings.get(Config.URL_IPV6_CHECK_KEY))
-            .urlMapServer(settings.get(Config.URL_MAP_SERVER_KEY))
-            .build();
+                .openDataPrefix(settings.get(Config.URL_OPEN_DATA_PREFIX_KEY))
+                .urlShare(settings.get(Config.URL_SHARE_KEY))
+                .statistics(settings.get(Config.URL_STATISTIC_KEY))
+                .controlIPV4Only(settings.get(Config.URL_CONTROL_IPV4_ONLY_KEY))
+                .controlIPV6Only(settings.get(Config.URL_CONTROL_IPV6_ONLY_KEY))
+                .urlIPV4Check(settings.get(Config.URL_IPV4_CHECK_KEY))
+                .urlIPV6Check(settings.get(Config.URL_IPV6_CHECK_KEY))
+                .urlMapServer(settings.get(Config.URL_MAP_SERVER_KEY))
+                .build();
     }
 
     private AdminSettingsUrlsResponse getAdminSettingsUrlsResponse(Map<String, String> settings) {
         return AdminSettingsUrlsResponse.builder()
-            .openDataPrefix(settings.get(Config.URL_OPEN_DATA_PREFIX_KEY))
-            .urlShare(settings.get(Config.URL_SHARE_KEY))
-            .statistics(settings.get(Config.URL_STATISTIC_KEY))
-            .controlIpV4Only(settings.get(Config.URL_CONTROL_IPV4_ONLY_KEY))
-            .controlIpV6Only(settings.get(Config.URL_CONTROL_IPV6_ONLY_KEY))
-            .urlIpV4Check(settings.get(Config.URL_IPV4_CHECK_KEY))
-            .urlIpV6Check(settings.get(Config.URL_IPV6_CHECK_KEY))
-            .urlMapServer(settings.get(Config.URL_MAP_SERVER_KEY))
-            .build();
+                .openDataPrefix(settings.get(Config.URL_OPEN_DATA_PREFIX_KEY))
+                .urlShare(settings.get(Config.URL_SHARE_KEY))
+                .statistics(settings.get(Config.URL_STATISTIC_KEY))
+                .controlIpV4Only(settings.get(Config.URL_CONTROL_IPV4_ONLY_KEY))
+                .controlIpV6Only(settings.get(Config.URL_CONTROL_IPV6_ONLY_KEY))
+                .urlIpV4Check(settings.get(Config.URL_IPV4_CHECK_KEY))
+                .urlIpV6Check(settings.get(Config.URL_IPV6_CHECK_KEY))
+                .urlMapServer(settings.get(Config.URL_MAP_SERVER_KEY))
+                .build();
     }
 
     private HistoryResponse getHistoryResponse(Long clientId) {

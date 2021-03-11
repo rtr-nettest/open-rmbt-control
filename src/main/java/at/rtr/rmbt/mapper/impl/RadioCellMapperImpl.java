@@ -2,6 +2,7 @@ package at.rtr.rmbt.mapper.impl;
 
 import at.rtr.rmbt.mapper.RadioCellMapper;
 import at.rtr.rmbt.model.RadioCell;
+import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.request.RadioCellRequest;
 import org.springframework.stereotype.Service;
 
@@ -9,8 +10,9 @@ import org.springframework.stereotype.Service;
 public class RadioCellMapperImpl implements RadioCellMapper {
 
     @Override
-    public RadioCell radioCellRequestToRadioCell(RadioCellRequest rcq) {
+    public RadioCell radioCellRequestToRadioCell(RadioCellRequest rcq, Test test) {
         return RadioCell.builder()
+            .test(test)
             .uuid(rcq.getUuid())
             .mnc(rcq.getMnc())
             .mcc(rcq.getMcc())

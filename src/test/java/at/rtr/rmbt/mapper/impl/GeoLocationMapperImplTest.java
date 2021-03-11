@@ -23,6 +23,8 @@ public class GeoLocationMapperImplTest {
 
     @Mock
     private GeoLocationRequest geoLocationRequest;
+    @Mock
+    private at.rtr.rmbt.model.Test test;
 
     @Before
     public void setUp() {
@@ -31,6 +33,8 @@ public class GeoLocationMapperImplTest {
 
     @Test
     public void geoLocationRequestAndTestToGeoLocation_whenCommonData_expectGeoLocation() {
+        when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
+        when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(geoLocationRequest.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_FIRST);
         when(geoLocationRequest.getGeoLong()).thenReturn(TestConstants.DEFAULT_LONGITUDE);
         when(geoLocationRequest.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE);
@@ -40,9 +44,10 @@ public class GeoLocationMapperImplTest {
         when(geoLocationRequest.getProvider()).thenReturn(TestConstants.DEFAULT_PROVIDER);
         when(geoLocationRequest.getSpeed()).thenReturn(TestConstants.DEFAULT_SPEED);
         when(geoLocationRequest.getTimeNs()).thenReturn(TestConstants.DEFAULT_TIME);
+        when(geoLocationRequest.getTstamp()).thenReturn(TestConstants.DEFAULT_TIME_INSTANT);
         when(uuidGenerator.generateUUID()).thenReturn(TestConstants.DEFAULT_GEO_LOCATION_UUID);
 
-        var response = geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequest);
+        var response = geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequest, test);
 
         assertEquals(TestConstants.DEFAULT_ACCURACY_FIRST, response.getAccuracy());
         assertEquals(TestConstants.DEFAULT_LATITUDE, response.getGeoLat());
@@ -53,6 +58,10 @@ public class GeoLocationMapperImplTest {
         assertEquals(TestConstants.DEFAULT_PROVIDER, response.getProvider());
         assertEquals(TestConstants.DEFAULT_SPEED, response.getSpeed());
         assertEquals(TestConstants.DEFAULT_TIME, response.getTimeNs());
+        assertEquals(TestConstants.DEFAULT_ZONED_DATE_TIME, response.getTime());
+        assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getOpenTestUUID());
         assertEquals(TestConstants.DEFAULT_GEO_LOCATION_UUID, response.getGeoLocationUUID());
+        assertEquals(TestConstants.DEFAULT_LOCATION, response.getLocation());
+        assertEquals(test, response.getTest());
     }
 }
