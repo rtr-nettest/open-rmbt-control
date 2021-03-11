@@ -123,7 +123,7 @@ public class SignalControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("signal_strength", hasSize(1)))
                 .andExpect(jsonPath("signal_strength.[0].time").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_TIME))
-                .andExpect(jsonPath("signal_strength.[0].technology").value(TestConstants.DEFAULT_TECHNOLOGY.toString()))
+                .andExpect(jsonPath("signal_strength.[0].technology").value(TestConstants.DEFAULT_TECHNOLOGY.getLabelEn()))
                 .andExpect(jsonPath("signal_strength.[0].signal_strength").value(TestConstants.DEFAULT_SIGNAL_STRENGTH_RESPONSE))
                 .andExpect(jsonPath("signal_strength.[0].ci").value(TestConstants.DEFAULT_AREA_CODE))
                 .andExpect(jsonPath("signal_strength.[0].tac").value(TestConstants.DEFAULT_LOCATION_ID))
@@ -149,7 +149,7 @@ public class SignalControllerTest {
 
         return SignalDetailsResponse.builder()
                 .signalStrength(Collections.singletonList(SignalStrengthResponse.builder()
-                        .technology(TestConstants.DEFAULT_TECHNOLOGY)
+                        .technology(TestConstants.DEFAULT_TECHNOLOGY.getLabelEn())
                         .band(TestConstants.DEFAULT_BAND)
                         .ci(TestConstants.DEFAULT_AREA_CODE)
                         .earfcn(TestConstants.DEFAULT_CHANNEL_NUMBER)

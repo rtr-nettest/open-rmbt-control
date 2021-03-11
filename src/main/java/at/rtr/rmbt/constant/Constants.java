@@ -8,7 +8,7 @@ public interface Constants {
     Integer WEIGHT = 1;
     Integer PRIORITY = 1;
     String SIGNAL_STRENGTH_DBM_TEMPLATE = "%s dBm";
-    String SIGNAL_STRENGTH_RSQR_TEMPLATE = "RSQR: %s dB";
+    String SIGNAL_STRENGTH_RSRQ_TEMPLATE = "RSRQ: %s dB";
     String SIGNAL_STRENGTH_TIMING_ADVANCE_TEMPLATE = "TA: %s";
     String SIGNAL_STRENGTH_ACCURACY_TEMPLATE = "+/-%sm";
     String SIGNAL_STRENGTH_ALTITUDE_TEMPLATE = "%s m";
