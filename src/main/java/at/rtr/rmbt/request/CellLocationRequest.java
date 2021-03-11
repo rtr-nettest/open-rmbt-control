@@ -9,11 +9,17 @@ import lombok.Getter;
 public class CellLocationRequest {
 
     @JsonProperty(value = "primary_scrambling_code")
-    private final Long primaryScramblingCode;
+    private final Integer primaryScramblingCode;
 
     @JsonProperty(value = "time")
     private final Long time;
 
     @JsonProperty(value = "time_ns")
     private final Long timeNs;
+
+    @JsonProperty(value = "area_code")
+    private final Integer areaCode;
+
+    @JsonProperty(value = "location_id")
+    private final Integer locationId;
 }

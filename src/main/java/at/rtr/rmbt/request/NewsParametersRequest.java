@@ -15,19 +15,23 @@ import java.util.Optional;
 public class NewsParametersRequest {
 
     @ApiModelProperty(notes = "Last Uid of the news displayed to the user (Long)", example = "15")
+    @JsonProperty(value = "lastNewsUid")
     private final Long lastNewsUid;
 
-    @JsonProperty(value = "plattform")
     @ApiModelProperty(notes = "Platform of device", example = "Android")
+    @JsonProperty(value = "plattform")
     private final String platform;
 
     @ApiModelProperty(notes = "Version code from build gradle for Android devices", example = "33201")
+    @JsonProperty(value = "softwareVersionCode")
     private final Long softwareVersionCode;
 
     @ApiModelProperty(notes = "Client uuid of the device", example = "68796996-5f40-11eb-ae93-0242ac130002")
+    @JsonProperty(value = "uuid")
     private final String uuid;
 
     @ApiModelProperty(notes = "2 letters language code or language code with region", example = "en")
+    @JsonProperty(value = "language")
     private final String language;
 
     @Builder

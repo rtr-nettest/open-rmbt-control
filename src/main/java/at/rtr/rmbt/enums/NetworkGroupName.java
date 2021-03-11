@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.Objects;
 
 @Getter
-public enum NetworkGroupName {
+public enum NetworkGroupName { //todo update to not fail on input
     G2("2G", "GPRS (2G)"),
     G4("4G", "LTE (4G)"),
     G2_G4("2G/4G", "GPRS (2G) + LTE (4G)"),

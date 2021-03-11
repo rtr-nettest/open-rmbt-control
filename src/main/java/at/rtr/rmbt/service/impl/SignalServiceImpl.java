@@ -7,23 +7,21 @@ import at.rtr.rmbt.constant.ErrorMessage;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.InvalidSequenceException;
-import at.rtr.rmbt.mapper.GeoLocationMapper;
-import at.rtr.rmbt.mapper.RadioCellMapper;
-import at.rtr.rmbt.mapper.RadioSignalMapper;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.GeoLocation;
 import at.rtr.rmbt.model.RadioCell;
 import at.rtr.rmbt.model.RadioSignal;
 import at.rtr.rmbt.model.RtrClient;
+import at.rtr.rmbt.model.Signal;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.repository.ClientRepository;
 import at.rtr.rmbt.repository.GeoLocationRepository;
 import at.rtr.rmbt.repository.ProviderRepository;
-import at.rtr.rmbt.repository.RadioCellRepository;
 import at.rtr.rmbt.repository.RadioSignalRepository;
+import at.rtr.rmbt.repository.SignalRepository;
 import at.rtr.rmbt.repository.TestRepository;
-import at.rtr.rmbt.request.GeoLocationRequest;
+import at.rtr.rmbt.request.SignalRegisterRequest;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
 import at.rtr.rmbt.response.SignalDetailsResponse;
@@ -31,6 +29,9 @@ import at.rtr.rmbt.response.SignalMeasurementResponse;
 import at.rtr.rmbt.response.SignalResultResponse;
 import at.rtr.rmbt.response.SignalSettingsResponse;
 import at.rtr.rmbt.response.SignalStrengthResponse;
+import at.rtr.rmbt.service.GeoLocationService;
+import at.rtr.rmbt.service.RadioCellService;
+import at.rtr.rmbt.service.RadioSignalService;
 import at.rtr.rmbt.service.SignalService;
 import at.rtr.rmbt.utils.BandCalculationUtil;
 import at.rtr.rmbt.utils.FormatUtils;
@@ -39,9 +40,6 @@ import at.rtr.rmbt.utils.TimeUtils;
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,16 +47,8 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.net.InetAddress;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -75,13 +65,13 @@ public class SignalServiceImpl implements SignalService {
     private final UUIDGenerator uuidGenerator;
     private final ClientRepository clientRepository;
     private final SignalMapper signalMapper;
-    private final RadioCellRepository radioCellRepository;
     private final RadioSignalRepository radioSignalRepository;
     private final GeoLocationRepository geoLocationRepository;
-    private final GeoLocationMapper geoLocationMapper;
-    private final RadioCellMapper radioCellMapper;
-    private final RadioSignalMapper radioSignalMapper;
     private final TestMapper testMapper;
+    private final GeoLocationService geoLocationService;
+    private final RadioCellService radioCellService;
+    private final RadioSignalService radioSignalService;
+    private final SignalRepository signalRepository;
 
     @Override
     public Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable) {
@@ -90,14 +80,14 @@ public class SignalServiceImpl implements SignalService {
     }
 
     @Override
-    public SignalSettingsResponse registerSignal(SignalRequest signalRequest, HttpServletRequest httpServletRequest) {
+    public SignalSettingsResponse registerSignal(SignalRegisterRequest signalRegisterRequest, HttpServletRequest httpServletRequest) {
         var ip = httpServletRequest.getRemoteAddr();
 
         var uuid = uuidGenerator.generateUUID();
         var openTestUUID = uuidGenerator.generateUUID();
 
-        var client = clientRepository.findByUuid(signalRequest.getUuid())
-                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, signalRequest.getUuid())));
+        var client = clientRepository.findByUuid(signalRegisterRequest.getUuid())
+                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, signalRegisterRequest.getUuid())));
 
         var clientAddress = InetAddresses.forString(ip);
         var clientIpString = InetAddresses.toAddrString(clientAddress);
@@ -110,9 +100,9 @@ public class SignalServiceImpl implements SignalService {
                 .client(client)
                 .clientPublicIp(clientIpString)
                 .clientPublicIpAnonymized(HelperFunctions.anonymizeIp(clientAddress))
-                .timezone(signalRequest.getTimezone())
-                .clientTime(getClientTimeFromSignalRequest(signalRequest))
-                .time(getClientTimeFromSignalRequest(signalRequest))
+                .timezone(signalRegisterRequest.getTimezone())
+                .clientTime(getClientTimeFromSignalRequest(signalRegisterRequest))
+                .time(getClientTimeFromSignalRequest(signalRegisterRequest))
                 .publicIpAsn(asInformation.getNumber())
                 .publicIpAsName(asInformation.getName())
                 .countryAsn(asInformation.getCountry())
@@ -153,13 +143,11 @@ public class SignalServiceImpl implements SignalService {
 
         updateIpAddress(signalResultRequest, updatedTest);
 
-        List<GeoLocation> newGeoLocation = updateGeoLocation(signalResultRequest, updatedTest);
-
-        testRepository.save(updatedTest);
-
-        geoLocationRepository.saveAll(newGeoLocation);
+        processGeoLocation(signalResultRequest, updatedTest);
 
         processRadioInfo(signalResultRequest, updatedTest);
+
+        testRepository.save(updatedTest);
 
         return SignalResultResponse.builder()
                 .testUUID(updatedTest.getUuid())
@@ -221,6 +209,64 @@ public class SignalServiceImpl implements SignalService {
                 );
     }
 
+    @Override
+    public void processSignalRequests(Collection<SignalRequest> signalRequests, Test test) {
+        int minSignalStrength = Integer.MAX_VALUE; //measured as RSSI (GSM,UMTS,Wifi)
+        int minLteRsrp = Integer.MAX_VALUE; //signal strength measured as RSRP
+        int minLteRsrq = Integer.MAX_VALUE; //signal quality of LTE measured as RSRQ
+        int minLinkSpeed = Integer.MAX_VALUE;
+        List<Signal> newSignals = new ArrayList<>();
+
+        for (SignalRequest signalDataItem : signalRequests) {
+            Signal newSignal = signalMapper.signalRequestToSignal(signalDataItem, test);
+            newSignals.add(newSignal);
+            if (test.getNetworkType() == 99) // wlan
+            {
+                if (newSignal.getWifiRSSI() < minSignalStrength) {
+                    minSignalStrength = newSignal.getWifiRSSI();
+                }
+            } else if (newSignal.getSignalStrength() < minSignalStrength) {
+                minSignalStrength = newSignal.getSignalStrength();
+            }
+
+            if (newSignal.getLteRSRP() < minLteRsrp) {
+                minLteRsrp = newSignal.getLteRSRP();
+            }
+
+            if (newSignal.getLteRSRQ() < minLteRsrq && !(Math.abs(newSignal.getLteRSRQ()) > 19.5 || Math.abs(newSignal.getLteRSRQ()) < 3.0)) {
+                minLteRsrq = newSignal.getLteRSRQ();
+            }
+
+            if (newSignal.getWifiLinkSpeed() < minLinkSpeed) {
+                minLinkSpeed = newSignal.getWifiLinkSpeed();
+            }
+        }
+
+        // set rssi value (typically GSM,UMTS, but also old LTE-phones)
+        if (minSignalStrength < 0) { // 0 dBm is out of range
+            test.setSignalStrength(minSignalStrength);
+        }
+        // set rsrp value (typically LTE)
+        if (minLteRsrp < 0) { // 0 dBm is out of range
+            test.setLteRsrp(minLteRsrp);
+        }
+        // set rsrq value (LTE)
+        if (minLteRsrp < 0) {
+            test.setLteRsrq(minLteRsrq);
+        }
+
+        if (minLinkSpeed != Integer.MAX_VALUE) {
+            test.setWifiLinkSpeed(minLinkSpeed);
+        }
+        signalRepository.saveAll(newSignals);
+    }
+
+    private void processGeoLocation(SignalResultRequest signalResultRequest, Test updatedTest) {
+        if (Objects.nonNull(signalResultRequest.getGeoLocations())) {
+            geoLocationService.processGeoLocationRequests(signalResultRequest.getGeoLocations(), updatedTest);
+        }
+    }
+
     private String getSignalStrength(RadioSignal signal) {
         return Stream.of(FormatUtils.format(Constants.SIGNAL_STRENGTH_DBM_TEMPLATE, signal.getSignalStrength() != null
                         ? signal.getSignalStrength() : signal.getLteRSRP()),
@@ -245,56 +291,9 @@ public class SignalServiceImpl implements SignalService {
 
     private void processRadioInfo(SignalResultRequest signalResultRequest, Test updatedTest) {
         if (Objects.nonNull(signalResultRequest.getRadioInfo())) {
-            List<RadioCell> radioCells = signalResultRequest.getRadioInfo().getCells().stream()
-                    .map(rcq -> {
-                        RadioCell radioCell = radioCellMapper.radioCellRequestToRadioCell(rcq);
-                        radioCell.setTest(updatedTest);
-                        return radioCell;
-                    })
-                    .collect(Collectors.toList());
-            radioCellRepository.saveAll(radioCells);
-
-            List<RadioSignal> radioSignals = signalResultRequest.getRadioInfo().getSignals().stream()
-                    .map(rsr -> {
-                        RadioSignal radioSignal = radioSignalMapper.radioSignalRequestToRadioSignal(rsr);
-                        radioSignal.setOpenTestUUID(updatedTest.getOpenTestUuid());
-                        return radioSignal;
-                    })
-                    .collect(Collectors.toList());
-            radioSignalRepository.saveAll(radioSignals);
+            radioCellService.processRadioCellRequests(signalResultRequest.getRadioInfo().getCells(), updatedTest);
+            radioSignalService.saveRadioSignalRequests(signalResultRequest.getRadioInfo().getSignals(), updatedTest);
         }
-    }
-
-    private List<GeoLocation> updateGeoLocation(SignalResultRequest signalResultRequest, Test updatedTest) {
-        List<GeoLocation> actualGeoLocation = new ArrayList<>();
-        if (Objects.nonNull(signalResultRequest.getGeoLocations())) {
-            Double minAccuracy = Double.MAX_VALUE;
-            GeoLocation firstAccuratePosition = null;
-
-            for (GeoLocationRequest geoDataItem : signalResultRequest.getGeoLocations()) {
-                if (Objects.nonNull(geoDataItem.getTstamp()) && Objects.nonNull(geoDataItem.getGeoLat()) && Objects.nonNull(geoDataItem.getGeoLong())) {
-                    GeoLocation geoLoc = geoLocationMapper.geoLocationRequestToGeoLocation(geoDataItem);
-                    geoLoc.setOpenTestUUID(updatedTest.getOpenTestUuid());
-                    geoLoc.setTime(getClientTimeFromMillisAndTimezone(geoDataItem.getTstamp(), updatedTest.getTimezone()));
-                    geoLoc.setLocation(new GeometryFactory(new PrecisionModel(), Constants.SRID)
-                            .createPoint(new Coordinate(geoLoc.getGeoLong(), geoLoc.getGeoLat())));
-                    geoLoc.setTestId(updatedTest.getUid());
-                    // ignore all timestamps older than 20s
-                    if (geoDataItem.getTimeNs() > -20000000000L) {
-                        if (geoDataItem.getAccuracy() < minAccuracy) {
-                            minAccuracy = geoDataItem.getAccuracy();
-                            firstAccuratePosition = geoLoc;
-                        }
-                        actualGeoLocation.add(geoLoc);
-                    }
-                }
-            }
-
-            if (Objects.nonNull(firstAccuratePosition)) {
-                updateTestGeo(updatedTest, firstAccuratePosition);
-            }
-        }
-        return actualGeoLocation;
     }
 
     private void updateIpAddress(SignalResultRequest signalResultRequest, Test updatedTest) {
@@ -320,16 +319,8 @@ public class SignalServiceImpl implements SignalService {
         }
     }
 
-    private void updateTestGeo(Test updatedTest, GeoLocation firstAccuratePosition) {
-        updatedTest.setGeoLocationUuid(firstAccuratePosition.getGeoLocationUUID());
-        updatedTest.setGeoAccuracy(firstAccuratePosition.getAccuracy());
-        updatedTest.setLongitude(firstAccuratePosition.getGeoLong());
-        updatedTest.setLatitude(firstAccuratePosition.getGeoLat());
-        updatedTest.setGeoProvider(firstAccuratePosition.getProvider());
-    }
-
     private Test getEmptyGeneratedTest(SignalResultRequest signalResultRequest, RtrClient client) {
-        return Test.builder()
+        Test newTest = Test.builder()
                 .uuid(uuidGenerator.generateUUID())
                 .openTestUuid(uuidGenerator.generateUUID())
                 .time(getClientTimeFromSignalResultRequest(signalResultRequest))
@@ -338,18 +329,16 @@ public class SignalServiceImpl implements SignalService {
                 .useSsl(false)
                 .lastSequenceNumber(-1)
                 .build();
+
+        return testRepository.save(newTest);
     }
 
     private ZonedDateTime getClientTimeFromSignalResultRequest(SignalResultRequest signalResultRequest) {
-        return getClientTimeFromMillisAndTimezone(Math.round(signalResultRequest.getTimeNanos() / 1e6), signalResultRequest.getTimezone());
+        return TimeUtils.getZonedDateTimeFromMillisAndTimezone(Math.round(signalResultRequest.getTimeNanos() / 1e6), signalResultRequest.getTimezone());
     }
 
-    private ZonedDateTime getClientTimeFromSignalRequest(SignalRequest signalRequest) {
-        return getClientTimeFromMillisAndTimezone(signalRequest.getTime(), signalRequest.getTimezone());
-    }
-
-    private ZonedDateTime getClientTimeFromMillisAndTimezone(Long millies, String timezone) {
-        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(millies), ZoneId.of(timezone));
+    private ZonedDateTime getClientTimeFromSignalRequest(SignalRegisterRequest signalRegisterRequest) {
+        return TimeUtils.getZonedDateTimeFromMillisAndTimezone(signalRegisterRequest.getTime(), signalRegisterRequest.getTimezone());
     }
 
     private String getResultUrl(HttpServletRequest req) {

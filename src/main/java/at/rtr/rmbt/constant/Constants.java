@@ -15,4 +15,8 @@ public interface Constants {
     String SIGNAL_STRENGTH_BEARING_TEMPLATE = "%s\u00B0";
     String SIGNAL_STRENGTH_SPEED_TEMPLATE = "%s km/h";
     String SIGNAL_STRENGTH_DELIMITER = ", ";
+    Integer MIN_SPEED = 0;
+    Integer MAX_SPEED = 10000000;
+    Long MIN_PING = 0L;
+    Long MAX_PING = 60000000000L;
 }

@@ -13,6 +13,7 @@ public class AdminSettingsResponse {
     @JsonProperty(value = "termsAndConditions")
     private final AdminSettingsTermAndConditionsResponse termAndConditionsResponse;
 
+    @JsonProperty(value = "urls")
     private final AdminSettingsUrlsResponse urls;
 
     @JsonProperty(value = "testRequest")
@@ -24,6 +25,7 @@ public class AdminSettingsResponse {
     @JsonProperty(value = "mapServer")
     private final AdminSettingsMapServerResponse mapServerResponse;
 
+    @JsonProperty(value = "versions")
     private final AdminSettingsVersionResponse versions;
 
 }

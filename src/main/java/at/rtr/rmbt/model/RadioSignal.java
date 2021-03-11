@@ -41,29 +41,29 @@ public class RadioSignal {
     private ZonedDateTime time;
 
     @Column(name = "signal_strength")
-    private Long signalStrength;
+    private Integer signalStrength;
 
     @Column(name = "lte_rsrp")
-    private Long lteRSRP;
+    private Integer lteRSRP;
 
     @Column(name = "lte_rsrq")
-    private Long lteRSRQ;
+    private Integer lteRSRQ;
 
     @Column(name = "lte_rssnr")
-    private Long lteRSSNR;
+    private Integer lteRSSNR;
 
     @Column(name = "lte_cqi")
-    private Long lteCQI;
+    private Integer lteCQI;
 
     @Column(name = "bit_error_rate")
-    private Long bitErrorRate;
+    private Integer bitErrorRate;
 
     @Column(name = "timing_advance")
-    private Long timingAdvance;
+    private Integer timingAdvance;
 
     @Column(name = "wifi_link_speed")
-    private Long wifiLinkSpeed;
+    private Integer wifiLinkSpeed;
 
     @Column(name = "network_type_id")
-    private Long networkTypeId;
+    private Integer networkTypeId;
 }

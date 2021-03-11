@@ -1,12 +1,12 @@
 package at.rtr.rmbt.repository;
 
-import at.rtr.rmbt.model.QoSTestTypeDesc;
+import at.rtr.rmbt.model.QosTestTypeDesc;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface QoSTestTypeDescRepository extends JpaRepository<QoSTestTypeDesc, Long> {
+public interface QosTestTypeDescRepository extends JpaRepository<QosTestTypeDesc, Long> {
 
     @Query(value = "SELECT nnttd.uid AS uid, " +
             "UPPER(cast(test as text)) as test, nntd.\"value\", " +
@@ -20,5 +20,5 @@ public interface QoSTestTypeDescRepository extends JpaRepository<QoSTestTypeDesc
             + "     THEN :language ELSE 'en' END) AND nntd2.lang = ("
             + " CASE WHEN EXISTS(SELECT 1 FROM qos_test_desc WHERE desc_key = nntd2.desc_key AND lang = :language) "
             + "     THEN :language ELSE 'en' END)", nativeQuery = true)
-    List<QoSTestTypeDesc> getAllByLang(String language);
+    List<QosTestTypeDesc> getAllByLang(String language);
 }

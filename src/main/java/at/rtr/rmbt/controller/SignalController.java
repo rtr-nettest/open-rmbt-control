@@ -2,7 +2,7 @@ package at.rtr.rmbt.controller;
 
 
 import at.rtr.rmbt.constant.URIConstants;
-import at.rtr.rmbt.request.SignalRequest;
+import at.rtr.rmbt.request.SignalRegisterRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
 import at.rtr.rmbt.response.SignalDetailsResponse;
 import at.rtr.rmbt.response.SignalMeasurementResponse;
@@ -38,8 +38,8 @@ public class SignalController {
     @PostMapping(URIConstants.SIGNAL_REQUEST)
     @ApiOperation(value = "Register signal", notes = "Request to obtain configuration for signal monitoring")
     @ResponseStatus(HttpStatus.CREATED)
-    public SignalSettingsResponse registerSignal(HttpServletRequest httpServletRequest, @RequestBody SignalRequest signalRequest) {
-        return signalService.registerSignal(signalRequest, httpServletRequest);
+    public SignalSettingsResponse registerSignal(HttpServletRequest httpServletRequest, @RequestBody SignalRegisterRequest signalRegisterRequest) {
+        return signalService.registerSignal(signalRegisterRequest, httpServletRequest);
     }
 
     @GetMapping(URIConstants.ADMIN_SIGNAL)

@@ -11,16 +11,16 @@ import java.util.UUID;
 public class RadioSignalRequest {
 
     @JsonProperty(value = "bit_error_rate")
-    private final Long bitErrorRate;
+    private final Integer bitErrorRate;
 
     @JsonProperty(value = "cell_uuid")
     private final UUID cellUUID;
 
     @JsonProperty(value = "network_type_id")
-    private final Long networkTypeId;
+    private final Integer networkTypeId;
 
     @JsonProperty(value = "signal")
-    private final Long signal;
+    private final Integer signal;
 
     @JsonProperty(value = "time_ns_last")
     private final Long timeNsLast;
@@ -29,20 +29,20 @@ public class RadioSignalRequest {
     private final Long timeNs;
 
     @JsonProperty(value = "wifi_link_speed")
-    private final Long wifiLinkSpeed;
+    private final Integer wifiLinkSpeed;
 
     @JsonProperty(value = "lte_rsrp")
-    private final Long lteRSRP;
+    private final Integer lteRSRP;
 
     @JsonProperty(value = "lte_rsrq")
-    private final Long lteRSRQ;
+    private final Integer lteRSRQ;
 
     @JsonProperty(value = "lte_rssnr")
-    private final Long lteRSSNR;
+    private final Integer lteRSSNR;
 
     @JsonProperty(value = "lte_cqi")
-    private final Long lteCQI;
+    private final Integer lteCQI;
 
     @JsonProperty(value = "timing_advance")
-    private final Long timingAdvance;
+    private final Integer timingAdvance;
 }

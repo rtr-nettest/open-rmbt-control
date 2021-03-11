@@ -7,6 +7,7 @@ import at.rtr.rmbt.enums.ClientType;
 import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.model.Settings;
+import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.AdminSettingsBodyRequest;
 import at.rtr.rmbt.request.AdminSettingsRequest;
@@ -32,6 +33,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static at.rtr.rmbt.TestConstants.*;
 import static org.junit.Assert.assertEquals;
@@ -51,7 +53,7 @@ public class RtrSettingsServiceImplTest {
     @MockBean
     private SettingsRepository settingsRepository;
     @MockBean
-    private QoSTestTypeDescService qosTestTypeDescService;
+    private QosTestTypeDescService qosTestTypeDescService;
     @MockBean
     private TestService testService;
     @MockBean
@@ -90,6 +92,15 @@ public class RtrSettingsServiceImplTest {
     @Mock
     private AdminUpdateSettingsMapServerRequest adminUpdateSettingsMapServerRequest;
 
+    private final ApplicationProperties applicationProperties = new ApplicationProperties(
+            new ApplicationProperties.LanguageProperties(Set.of("en", "de"), "en"),
+            Set.of("RMBT", "RMBTjs", "Open-RMBT", "RMBTws", "HW-PROBE"),
+            "0.1.0 || 0.3.0 || ^1.0.0",
+            1,
+            2,
+            3
+    );
+
     @Before
     public void setUp() {
         clock = Clock.fixed(Instant.parse(TestConstants.DEFAULT_INSTANT_EXPECTED), ZoneId.of("UTC"));
@@ -100,7 +111,8 @@ public class RtrSettingsServiceImplTest {
                 testService,
                 testServerService,
                 uuidGenerator,
-                clock);
+                clock,
+                applicationProperties);
         ReflectionTestUtils.setField(rtrSettingsService, "branch", TestConstants.DEFAULT_GIT_BRANCH);
         ReflectionTestUtils.setField(rtrSettingsService, "describe", TestConstants.DEFAULT_GIT_COMMIT_ID_DESCRIBE);
     }
@@ -127,24 +139,24 @@ public class RtrSettingsServiceImplTest {
         when(savedRtrClient.getUid()).thenReturn(TestConstants.DEFAULT_UID);
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
-        when(qosTestTypeDescService.getAll(TestConstants.DEFAULT_LANGUAGE)).thenReturn(getQoSTestTypeDescResponses());
+        when(qosTestTypeDescService.getAll(TestConstants.DEFAULT_LANGUAGE)).thenReturn(getQosTestTypeDescResponses());
         when(testService.getDeviceHistory(TestConstants.DEFAULT_UID)).thenReturn(historyDevices);
         when(testService.getGroupNameByClientId(TestConstants.DEFAULT_UID)).thenReturn(historyNetworks);
         when(testServerService.getServers()).thenReturn(getServerResponseList());
         when(testServerService.getServersWs()).thenReturn(getServerWsResponseList());
-        when(testServerService.getServersQos()).thenReturn(getServerQoSResponseList());
+        when(testServerService.getServersQos()).thenReturn(getServerQosResponseList());
 
         var response = rtrSettingsService.getSettings(rtrSettingsRequest);
 
         assertEquals(TestConstants.DEFAULT_CLIENT_UUID, response.getSettings().get(0).getUuid());
         assertEquals(getAndroidTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());
-        assertEquals(getQoSTestTypeDescResponses(), response.getSettings().get(0).getQosTestTypeDescResponse());
+        assertEquals(getQosTestTypeDescResponses(), response.getSettings().get(0).getQosTestTypeDescResponse());
         assertEquals(historyDevices, response.getSettings().get(0).getHistory().getDevices());
         assertEquals(historyNetworks, response.getSettings().get(0).getHistory().getNetworks());
         assertEquals(getMapServerResponse(), response.getSettings().get(0).getMapServerResponse());
         assertEquals(getServerResponseList(), response.getSettings().get(0).getServers());
         assertEquals(getServerWsResponseList(), response.getSettings().get(0).getServerWSResponseList());
-        assertEquals(getServerQoSResponseList(), response.getSettings().get(0).getServerQoSResponseList());
+        assertEquals(getServerQosResponseList(), response.getSettings().get(0).getServerQosResponseList());
         assertEquals(getUrlsResponse(), response.getSettings().get(0).getUrls());
     }
 
@@ -165,12 +177,12 @@ public class RtrSettingsServiceImplTest {
         when(savedRtrClient.getUid()).thenReturn(TestConstants.DEFAULT_UID);
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
-        when(qosTestTypeDescService.getAll(TestConstants.DEFAULT_LANGUAGE)).thenReturn(getQoSTestTypeDescResponses());
+        when(qosTestTypeDescService.getAll(TestConstants.DEFAULT_LANGUAGE)).thenReturn(getQosTestTypeDescResponses());
         when(testService.getDeviceHistory(TestConstants.DEFAULT_UID)).thenReturn(historyDevices);
         when(testService.getGroupNameByClientId(TestConstants.DEFAULT_UID)).thenReturn(historyNetworks);
         when(testServerService.getServers()).thenReturn(getServerResponseList());
         when(testServerService.getServersWs()).thenReturn(getServerWsResponseList());
-        when(testServerService.getServersQos()).thenReturn(getServerQoSResponseList());
+        when(testServerService.getServersQos()).thenReturn(getServerQosResponseList());
         when(clientTypeService.findByClientType(ClientType.DESKTOP)).thenReturn(Optional.empty());
 
         var response = rtrSettingsService.getSettings(rtrSettingsRequest);
@@ -179,13 +191,13 @@ public class RtrSettingsServiceImplTest {
         Assert.assertEquals(TestConstants.DEFAULT_CLIENT_UUID_GENERATED, clientArgumentCaptor.getValue().getUuid());
         assertEquals(TestConstants.DEFAULT_CLIENT_UUID_GENERATED, response.getSettings().get(0).getUuid());
         assertEquals(getAndroidTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());
-        assertEquals(getQoSTestTypeDescResponses(), response.getSettings().get(0).getQosTestTypeDescResponse());
+        assertEquals(getQosTestTypeDescResponses(), response.getSettings().get(0).getQosTestTypeDescResponse());
         assertEquals(historyDevices, response.getSettings().get(0).getHistory().getDevices());
         assertEquals(historyNetworks, response.getSettings().get(0).getHistory().getNetworks());
         assertEquals(getMapServerResponse(), response.getSettings().get(0).getMapServerResponse());
         assertEquals(getServerResponseList(), response.getSettings().get(0).getServers());
         assertEquals(getServerWsResponseList(), response.getSettings().get(0).getServerWSResponseList());
-        assertEquals(getServerQoSResponseList(), response.getSettings().get(0).getServerQoSResponseList());
+        assertEquals(getServerQosResponseList(), response.getSettings().get(0).getServerQosResponseList());
         assertEquals(getUrlsResponse(), response.getSettings().get(0).getUrls());
     }
 
@@ -345,51 +357,51 @@ public class RtrSettingsServiceImplTest {
 
     private AdminSettingsResponse getAdminSettingsResponse() {
         var adminSettingsTermAndConditionsResponse = AdminSettingsTermAndConditionsResponse.builder()
-            .tcUrl(DEFAULT_TERM_AND_CONDITION_URL)
-            .tcUrlIOS(DEFAULT_TERM_AND_CONDITION_URL_IOS)
-            .tcUrlAndroid(DEFAULT_TERM_AND_CONDITION_URL_ANDROID)
-            .tcVersion(DEFAULT_TERM_AND_CONDITION_VERSION.toString())
-            .tcVersionIOS(DEFAULT_TERM_AND_CONDITION_VERSION_IOS.toString())
-            .tcVersionAndroid(DEFAULT_TERM_AND_CONDITION_VERSION_ANDROID.toString())
-            .tcNdtUrlAndroid(DEFAULT_TERM_AND_CONDITION_NDT_URL)
-            .build();
+                .tcUrl(DEFAULT_TERM_AND_CONDITION_URL)
+                .tcUrlIOS(DEFAULT_TERM_AND_CONDITION_URL_IOS)
+                .tcUrlAndroid(DEFAULT_TERM_AND_CONDITION_URL_ANDROID)
+                .tcVersion(DEFAULT_TERM_AND_CONDITION_VERSION.toString())
+                .tcVersionIOS(DEFAULT_TERM_AND_CONDITION_VERSION_IOS.toString())
+                .tcVersionAndroid(DEFAULT_TERM_AND_CONDITION_VERSION_ANDROID.toString())
+                .tcNdtUrlAndroid(DEFAULT_TERM_AND_CONDITION_NDT_URL)
+                .build();
         var urls = AdminSettingsUrlsResponse.builder()
-            .urlShare(DEFAULT_URLS_URL_SHARE)
-            .controlIpV4Only(DEFAULT_URLS_CONTROL_IPV4_ONLY)
-            .controlIpV6Only(DEFAULT_URLS_CONTROL_IPV6_ONLY)
-            .openDataPrefix(DEFAULT_URLS_OPEN_DATA_PREFIX)
-            .statistics(DEFAULT_URLS_STATISTICS)
-            .urlIpV4Check(DEFAULT_URLS_URL_IPV4_CHECK)
-            .urlIpV6Check(DEFAULT_URLS_URL_IPV6_CHECK)
-            .urlMapServer(DEFAULT_URLS_URL_MAP_SERVER)
-            .build();
+                .urlShare(DEFAULT_URLS_URL_SHARE)
+                .controlIpV4Only(DEFAULT_URLS_CONTROL_IPV4_ONLY)
+                .controlIpV6Only(DEFAULT_URLS_CONTROL_IPV6_ONLY)
+                .openDataPrefix(DEFAULT_URLS_OPEN_DATA_PREFIX)
+                .statistics(DEFAULT_URLS_STATISTICS)
+                .urlIpV4Check(DEFAULT_URLS_URL_IPV4_CHECK)
+                .urlIpV6Check(DEFAULT_URLS_URL_IPV6_CHECK)
+                .urlMapServer(DEFAULT_URLS_URL_MAP_SERVER)
+                .build();
         var adminTestResponse = AdminSettingsTestResponse.builder()
-            .resultQosUrl(DEFAULT_TEST_REQUEST_RESULT_QOS_URL)
-            .resultUrl(DEFAULT_TEST_REQUEST_RESULT_URL)
-            .testDuration(DEFAULT_TEST_REQUEST_TEST_DURATION)
-            .testNumPings(DEFAULT_TEST_REQUEST_TEST_NUM_PINGS)
-            .testNumThreads(DEFAULT_TEST_REQUEST_TEST_NUM_THREADS)
-            .build();
+                .resultQosUrl(DEFAULT_TEST_REQUEST_RESULT_QOS_URL)
+                .resultUrl(DEFAULT_TEST_REQUEST_RESULT_URL)
+                .testDuration(DEFAULT_TEST_REQUEST_TEST_DURATION)
+                .testNumPings(DEFAULT_TEST_REQUEST_TEST_NUM_PINGS)
+                .testNumThreads(DEFAULT_TEST_REQUEST_TEST_NUM_THREADS)
+                .build();
         var adminSettingsSignalTestResponse = AdminSettingsSignalTestResponse.builder()
-            .resultUrl(DEFAULT_SIGNAL_TEST_REQUEST_RESULT_URL)
-            .build();
+                .resultUrl(DEFAULT_SIGNAL_TEST_REQUEST_RESULT_URL)
+                .build();
         var mapServerResponse = AdminSettingsMapServerResponse.builder()
-            .host(DEFAULT_MAP_SERVER_HOST)
-            .ssl(String.valueOf(DEFAULT_FLAG_TRUE))
-            .port(String.valueOf(DEFAULT_MAP_SERVER_PORT))
-            .build();
+                .host(DEFAULT_MAP_SERVER_HOST)
+                .ssl(String.valueOf(DEFAULT_FLAG_TRUE))
+                .port(String.valueOf(DEFAULT_MAP_SERVER_PORT))
+                .build();
         var versions = AdminSettingsVersionResponse.builder()
-            .controlServerVersion(DEFAULT_CONTROL_SERVER_VERSION)
-            .build();
+                .controlServerVersion(DEFAULT_CONTROL_SERVER_VERSION)
+                .build();
 
         return AdminSettingsResponse.builder()
-            .termAndConditionsResponse(adminSettingsTermAndConditionsResponse)
-            .urls(urls)
-            .adminTestResponse(adminTestResponse)
-            .adminSettingsSignalTestResponse(adminSettingsSignalTestResponse)
-            .mapServerResponse(mapServerResponse)
-            .versions(versions)
-            .build();
+                .termAndConditionsResponse(adminSettingsTermAndConditionsResponse)
+                .urls(urls)
+                .adminTestResponse(adminTestResponse)
+                .adminSettingsSignalTestResponse(adminSettingsSignalTestResponse)
+                .mapServerResponse(mapServerResponse)
+                .versions(versions)
+                .build();
     }
 
     private List<Settings> getAdminSettingsList() {
@@ -424,10 +436,10 @@ public class RtrSettingsServiceImplTest {
 
     private void addSettingToList(String key, String value, List<Settings> settings) {
         var setting = Settings.builder()
-            .key(key)
-            .value(value)
-            .lang("en")
-            .build();
+                .key(key)
+                .value(value)
+                .lang("en")
+                .build();
         settings.add(setting);
     }
 
@@ -497,7 +509,7 @@ public class RtrSettingsServiceImplTest {
         return List.of(testServerResponse);
     }
 
-    private List<TestServerResponseForSettings> getServerQoSResponseList() {
+    private List<TestServerResponseForSettings> getServerQosResponseList() {
         var testServerResponse = TestServerResponseForSettings.builder()
                 .name(TestConstants.DEFAULT_TEST_SERVER_WS_NAME)
                 .uuid(TestConstants.DEFAULT_SERVER_WS_UUID)
@@ -506,8 +518,8 @@ public class RtrSettingsServiceImplTest {
     }
 
 
-    private List<QoSTestTypeDescResponse> getQoSTestTypeDescResponses() {
-        var qosTestTypeDescResponse = QoSTestTypeDescResponse.builder()
+    private List<QosTestTypeDescResponse> getQosTestTypeDescResponses() {
+        var qosTestTypeDescResponse = QosTestTypeDescResponse.builder()
                 .name(TestConstants.DEFAULT_QOS_TEST_TYPE_DESC_NAME)
                 .testType(TestConstants.DEFAULT_TEST_TYPE.toString())
                 .build();

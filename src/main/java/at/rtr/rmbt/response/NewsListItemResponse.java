@@ -16,50 +16,50 @@ public class NewsListItemResponse {
 
     @ApiModelProperty(notes = "Id of the news", example = "1")
     @JsonProperty("id")
-    private Long uid;
+    private final Long uid;
 
     @ApiModelProperty(notes = "Uuid of the news", example = "8fa5fb1c-5bf6-11eb-ae93-0242ac130002")
     @JsonProperty("uuid")
-    private UUID uuid;
+    private final UUID uuid;
 
     @ApiModelProperty(notes = "News title", example = "New version available")
     @JsonProperty("title")
-    private String title;
+    private final String title;
 
     @ApiModelProperty(notes = "News text", example = "New version features")
     @JsonProperty("content")
-    private String content;
+    private final String content;
 
     @ApiModelProperty(notes = "News language", example = "en")
     @JsonProperty("language")
-    private String language;
+    private final String language;
 
     @ApiModelProperty(notes = "Send `true` to show news or `false` keep as draft.", example = "true")
     @JsonProperty("active")
-    private Boolean active;
+    private final Boolean active;
 
     @ApiModelProperty(notes = "Status of the news", example = "DRAFT")
     @JsonProperty("status")
-    private NewsStatus status;
+    private final NewsStatus status;
 
     @AssertTrue
     @ApiModelProperty(notes = "Whether news will be shown on Android devices", example = "true")
     @JsonProperty("android")
-    private Boolean android;
+    private final Boolean android;
 
     @JsonProperty("startDate")
     @ApiModelProperty(notes = "When to start showing news", example = "2020-01-01T13:00:00.123+02:00")
-    private ZonedDateTime startDate;
+    private final ZonedDateTime startDate;
 
     @JsonProperty("endDate")
     @ApiModelProperty(notes = "When to end showing news", example = "2020-01-01T13:00:00.123+02:00")
-    private ZonedDateTime endDate;
+    private final ZonedDateTime endDate;
 
     @JsonProperty("androidMinSoftwareVersion")
     @ApiModelProperty(notes = "Min software version that is eligible to see news", example = "1")
-    private Long minSoftwareVersion;
+    private final Long minSoftwareVersion;
 
     @JsonProperty("androidMaxSoftwareVersion")
     @ApiModelProperty(notes = "Max software version that is eligible to see news", example = "1")
-    private Long maxSoftwareVersion;
+    private final Long maxSoftwareVersion;
 }

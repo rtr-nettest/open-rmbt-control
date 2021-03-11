@@ -7,4 +7,8 @@ public interface ErrorMessage {
     String CLIENT_NOT_FOUND = "No client found by id %s.";
     String ERROR_INVALID_SEQUENCE = "ERROR_INVALID_SEQUENCE";
     String TEST_NOT_FOUND = "No test found by id %s.";
+    String ERROR_NETWORK_TYPE = "Illegal network_type";
+    String ERROR_DOWNLOAD_INSANE = "Download invalid";
+    String ERROR_UPLOAD_INSANE = "Upload invalid";
+    String ERROR_PING_INSANE = "Ping invalid";
 }

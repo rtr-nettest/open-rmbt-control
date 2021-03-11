@@ -8,8 +8,9 @@ import lombok.Getter;
 @Builder
 @Getter
 @EqualsAndHashCode
-public class QoSTestTypeDescResponse {
+public class QosTestTypeDescResponse {
 
+    @JsonProperty(value = "name")
     private final String name;
 
     @JsonProperty(value = "test_type")

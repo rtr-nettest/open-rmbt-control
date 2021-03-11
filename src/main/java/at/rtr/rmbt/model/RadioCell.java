@@ -25,10 +25,10 @@ public class RadioCell implements Serializable {
     private UUID uuid;
 
     @JoinColumn(
-        name = "open_test_uuid",
-        referencedColumnName = "open_test_uuid",
-        nullable = false,
-        updatable = false
+            name = "open_test_uuid",
+            referencedColumnName = "open_test_uuid",
+            nullable = false,
+            updatable = false
     )
     @ManyToOne(fetch = FetchType.LAZY)
     private Test test;
@@ -46,16 +46,16 @@ public class RadioCell implements Serializable {
     private Long locationId;
 
     @Column(name = "area_code")
-    private Long areaCode;
+    private Integer areaCode;
 
     @Column(name = "primary_scrambling_code")
-    private Long primaryScramblingCode;
+    private Integer primaryScramblingCode;
 
     @Column(name = "registered")
     private boolean registered;
 
     @Column(name = "channel_number")
-    private Long channelNumber;
+    private Integer channelNumber;
 
     @Column(name = "active")
     private boolean active;

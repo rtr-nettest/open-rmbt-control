@@ -11,10 +11,11 @@ import java.util.UUID;
 @Builder
 public class RadioCellRequest {
 
+    @JsonProperty(value = "active")
     private final boolean active;
 
     @JsonProperty(value = "area_code")
-    private final Long areaCode;
+    private final Integer areaCode;
 
     @JsonProperty(value = "location_id")
     private final Long locationId;
@@ -26,14 +27,17 @@ public class RadioCellRequest {
     private final Long mnc;
 
     @JsonProperty(value = "primary_scrambling_code")
-    private final Long primaryScramblingCode;
+    private final Integer primaryScramblingCode;
 
+    @JsonProperty(value = "registered")
     private final boolean registered;
 
+    @JsonProperty(value = "technology")
     private final NetworkGroupName technology;
 
+    @JsonProperty(value = "uuid")
     private final UUID uuid;
 
     @JsonProperty(value = "channel_number")
-    private final Long channelNumber;
+    private final Integer channelNumber;
 }

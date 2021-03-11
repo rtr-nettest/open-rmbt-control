@@ -21,24 +21,24 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long> {
     Integer getRmbtNextTestSlot(Long testUid);
 
     @Query(value = "SELECT DISTINCT group_name" +
-        " FROM test t" +
-        " JOIN network_type nt ON t.network_type=nt.uid " +
-        "WHERE t.deleted = false" +
-        " AND t.status = 'FINISHED' " +
-        " AND t.client_id = :clientId" +
-        " AND group_name IS NOT NULL " +
-        "ORDER BY group_name;", nativeQuery = true)
+            " FROM test t" +
+            " JOIN network_type nt ON t.network_type=nt.uid " +
+            "WHERE t.deleted = false" +
+            " AND t.status = 'FINISHED' " +
+            " AND t.client_id = :clientId" +
+            " AND group_name IS NOT NULL " +
+            "ORDER BY group_name;", nativeQuery = true)
     List<String> getDistinctGroupNameByClientId(Long clientId);
 
 
     @Query(value = "SELECT DISTINCT COALESCE(adm.fullname, t.model) model"
-        + " FROM test t"
-        + " LEFT JOIN device_map adm ON adm.codename=t.model " +
-        "WHERE t.client_id = :clientId" +
-        " AND t.deleted = false" +
-        " AND t.implausible = false" +
-        " AND t.status = 'FINISHED' " +
-        "ORDER BY model ASC", nativeQuery = true)
+            + " FROM test t"
+            + " LEFT JOIN device_map adm ON adm.codename=t.model " +
+            "WHERE t.client_id = :clientId" +
+            " AND t.deleted = false" +
+            " AND t.implausible = false" +
+            " AND t.status = 'FINISHED' " +
+            "ORDER BY model ASC", nativeQuery = true)
     List<String> getDistinctModelByClientId(Long clientId);
 
     Page<Test> findAllByStatusIn(List<TestStatus> statuses, Pageable pageable);
@@ -47,7 +47,7 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long> {
     Optional<Test> findByUuidAndStatusesIn(UUID testUUID, Collection<String> testStatuses);
 
     @Query(
-            value="SELECT * " +
+            value = "SELECT * " +
                     "FROM test t " +
                     "INNER JOIN (SELECT server_id, MAX(time) AS MaxDateTime\n" +
                     "    FROM test " +
@@ -61,7 +61,7 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long> {
     List<Test> findLastTestByServerIdIn(Collection<Long> serverIds);
 
     @Query(
-            value="SELECT * " +
+            value = "SELECT * " +
                     "FROM test t " +
                     "INNER JOIN (SELECT server_id, MAX(time) AS MaxDateTime\n" +
                     "    FROM test " +
@@ -75,4 +75,7 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long> {
     List<Test> findLastSuccessTestByServerIdInAndStatusIn(Collection<Long> serverIds, Collection<String> testStatuses);
 
     Optional<Test> findByUuid(UUID testUUID);
+
+    @Query("select t from Test t where t.uuid = :uuid or t.openTestUuid = :uuid")
+    Optional<Test> findByUuidOrOpenTestUuid(UUID uuid);
 }

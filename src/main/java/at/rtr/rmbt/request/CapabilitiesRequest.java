@@ -9,8 +9,10 @@ import lombok.Getter;
 @Builder
 public class CapabilitiesRequest {
 
+    @JsonProperty(value = "classification")
     private final ClassificationRequest classification;
 
+    @JsonProperty(value = "qos")
     private final QosRequest qos;
 
     @JsonProperty(value = "RMBThttp")

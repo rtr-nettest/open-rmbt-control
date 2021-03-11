@@ -5,32 +5,18 @@ import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.constant.HeaderConstants;
 import at.rtr.rmbt.enums.TestStatus;
-import at.rtr.rmbt.mapper.GeoLocationMapper;
-import at.rtr.rmbt.mapper.RadioCellMapper;
-import at.rtr.rmbt.mapper.RadioSignalMapper;
-import at.rtr.rmbt.mapper.SignalMapper;
-import at.rtr.rmbt.mapper.TestMapper;
+import at.rtr.rmbt.mapper.*;
 import at.rtr.rmbt.model.GeoLocation;
 import at.rtr.rmbt.model.RadioCell;
 import at.rtr.rmbt.model.RadioSignal;
 import at.rtr.rmbt.model.RtrClient;
-import at.rtr.rmbt.repository.ClientRepository;
-import at.rtr.rmbt.repository.GeoLocationRepository;
-import at.rtr.rmbt.repository.ProviderRepository;
-import at.rtr.rmbt.repository.RadioCellRepository;
-import at.rtr.rmbt.repository.RadioSignalRepository;
-import at.rtr.rmbt.repository.TestRepository;
-import at.rtr.rmbt.request.GeoLocationRequest;
-import at.rtr.rmbt.request.RadioCellRequest;
-import at.rtr.rmbt.request.RadioInfoRequest;
-import at.rtr.rmbt.request.RadioSignalRequest;
-import at.rtr.rmbt.request.SignalRequest;
-import at.rtr.rmbt.request.SignalResultRequest;
-import at.rtr.rmbt.response.SignalDetailsResponse;
-import at.rtr.rmbt.response.SignalMeasurementResponse;
-import at.rtr.rmbt.response.SignalSettingsResponse;
-import at.rtr.rmbt.response.SignalStrengthResponse;
-import at.rtr.rmbt.response.TestResponse;
+import at.rtr.rmbt.repository.*;
+import at.rtr.rmbt.request.*;
+import at.rtr.rmbt.response.*;
+import at.rtr.rmbt.model.*;
+import at.rtr.rmbt.service.GeoLocationService;
+import at.rtr.rmbt.service.RadioCellService;
+import at.rtr.rmbt.service.RadioSignalService;
 import at.rtr.rmbt.service.SignalService;
 import at.rtr.rmbt.utils.HelperFunctions;
 import com.google.common.net.InetAddresses;
@@ -38,6 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.locationtech.jts.geom.Geometry;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -56,8 +44,7 @@ import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 public class SignalServiceImplTest {
@@ -74,7 +61,9 @@ public class SignalServiceImplTest {
     @MockBean
     private SignalMapper signalMapper;
     @MockBean
-    private RadioCellRepository radioCellRepository;
+    private RadioCellService radioCellService;
+    @MockBean
+    private GeoLocationService geoLocationService;
     @MockBean
     private RadioSignalRepository radioSignalRepository;
     @MockBean
@@ -86,10 +75,14 @@ public class SignalServiceImplTest {
     @MockBean
     private RadioSignalMapper radioSignalMapper;
     @MockBean
+    private RadioSignalService radioSignalService;
+    @MockBean
     private TestMapper testMapper;
+    @MockBean
+    private SignalRepository signalRepository;
 
     @Mock
-    private SignalRequest signalRequest;
+    private SignalRegisterRequest signalRegisterRequest;
     @Mock
     private HttpServletRequest httpServletRequest;
     @Mock
@@ -128,13 +121,22 @@ public class SignalServiceImplTest {
     private TestResponse testResponse;
     @Mock
     private Geometry geometryLocation;
+    @Mock
+    private SignalRequest signalRequestFirst;
+    @Mock
+    private SignalRequest signalRequestSecond;
+    @Mock
+    private Signal signalFirst;
+    @Mock
+    private Signal signalSecond;
+    @Captor
+    private ArgumentCaptor<at.rtr.rmbt.model.Test> testArgumentCaptor;
 
     @Before
     public void setUp() {
         signalService = new SignalServiceImpl(testRepository, providerRepository,
-                uuidGenerator, clientRepository, signalMapper, radioCellRepository,
-                radioSignalRepository, geoLocationRepository, geoLocationMapper, radioCellMapper,
-                radioSignalMapper, testMapper);
+                uuidGenerator, clientRepository, signalMapper, radioSignalRepository, geoLocationRepository, testMapper, geoLocationService,
+                radioCellService, radioSignalService, signalRepository);
     }
 
     @Test
@@ -142,15 +144,15 @@ public class SignalServiceImplTest {
         var expectedResponse = getRegisterSignalResponse();
         when(httpServletRequest.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP);
         when(httpServletRequest.getHeader(HeaderConstants.URL)).thenReturn(TestConstants.DEFAULT_URL);
-        when(signalRequest.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
-        when(signalRequest.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
+        when(signalRegisterRequest.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(signalRegisterRequest.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
         when(providerRepository.getProviderNameByTestId(TestConstants.DEFAULT_UID)).thenReturn(TestConstants.DEFAULT_PROVIDER);
         when(testRepository.save(any())).thenReturn(savedTest);
         when(savedTest.getUid()).thenReturn(TestConstants.DEFAULT_UID);
         when(savedTest.getUuid()).thenReturn(TestConstants.DEFAULT_UUID);
 
-        var actualResponse = signalService.registerSignal(signalRequest, httpServletRequest);
+        var actualResponse = signalService.registerSignal(signalRegisterRequest, httpServletRequest);
 
         assertEquals(expectedResponse, actualResponse);
     }
@@ -192,10 +194,16 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getSequenceNumber()).thenReturn(0L);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
         when(uuidGenerator.generateUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(testRepository.save(any())).thenReturn(test);
+        when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(test.getUuid()).thenReturn(TestConstants.DEFAULT_UUID);
+        when(test.getLastSequenceNumber()).thenReturn(-1);
 
         var response = signalService.processSignalResult(signalResultRequest);
 
-        assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
+        assertEquals(TestConstants.DEFAULT_UUID, response.getTestUUID());
+        verify(testRepository, times(2)).save(testArgumentCaptor.capture());
+        assertEquals(TestConstants.DEFAULT_TEST_UUID, testArgumentCaptor.getAllValues().get(0).getOpenTestUuid());
     }
 
     @Test
@@ -207,8 +215,6 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getRadioInfo()).thenReturn(radioInfoRequest);
         when(radioInfoRequest.getCells()).thenReturn(List.of(radioCellRequest));
         when(radioInfoRequest.getSignals()).thenReturn(List.of(radioSignalRequest));
-        when(radioCellMapper.radioCellRequestToRadioCell(radioCellRequest)).thenReturn(radioCell);
-        when(radioSignalMapper.radioSignalRequestToRadioSignal(radioSignalRequest)).thenReturn(radioSignal);
         when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
@@ -219,11 +225,8 @@ public class SignalServiceImplTest {
         var response = signalService.processSignalResult(signalResultRequest);
 
         verify(test).setLastSequenceNumber(2);
-        verify(radioCell).setTest(test);
-        verify(radioSignal).setOpenTestUUID(TestConstants.DEFAULT_UUID);
         verify(testRepository).save(test);
-        verify(radioCellRepository).saveAll(List.of(radioCell));
-        verify(radioSignalRepository).saveAll(List.of(radioSignal));
+        verify(radioSignalService).saveRadioSignalRequests(List.of(radioSignalRequest), test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
 
@@ -256,21 +259,14 @@ public class SignalServiceImplTest {
         when(geoLocationRequestSecond.getGeoLong()).thenReturn(TestConstants.DEFAULT_LONGITUDE_SECOND);
         when(geoLocationRequestSecond.getTimeNs()).thenReturn(TestConstants.DEFAULT_TIME_NS);
         when(geoLocationRequestSecond.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_SECOND);
-        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestFirst)).thenReturn(geoLocationFirst);
-        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestSecond)).thenReturn(geoLocationSecond);
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestFirst, test)).thenReturn(geoLocationFirst);
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestSecond, test)).thenReturn(geoLocationSecond);
 
         var response = signalService.processSignalResult(signalResultRequest);
 
-        verify(geoLocationFirst).setOpenTestUUID(TestConstants.DEFAULT_UUID);
-        verify(geoLocationSecond).setOpenTestUUID(TestConstants.DEFAULT_UUID);
         verify(test).setLastSequenceNumber(2);
-        verify(test).setGeoLocationUuid(TestConstants.DEFAULT_GEO_LOCATION_UUID);
-        verify(test).setGeoProvider(TestConstants.DEFAULT_PROVIDER);
-        verify(test).setGeoAccuracy(TestConstants.DEFAULT_ACCURACY_FIRST);
-        verify(test).setLongitude(TestConstants.DEFAULT_LONGITUDE);
-        verify(test).setLatitude(TestConstants.DEFAULT_LATITUDE);
         verify(testRepository).save(test);
-        verify(geoLocationRepository).saveAll(List.of(geoLocationFirst, geoLocationSecond));
+        verify(geoLocationService).processGeoLocationRequests(List.of(geoLocationRequestFirst, geoLocationRequestSecond), test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
 
@@ -310,13 +306,13 @@ public class SignalServiceImplTest {
         when(test.getRadioCell()).thenReturn(List.of(radioCell));
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_TEST_TIME);
         when(radioCell.getUuid()).thenReturn(TestConstants.DEFAULT_RADIO_CELL_UUID);
-        when(radioCell.getLocationId()).thenReturn(TestConstants.DEFAULT_LOCATION_ID);
-        when(radioCell.getAreaCode()).thenReturn(TestConstants.DEFAULT_AREA_CODE);
+        when(radioCell.getLocationId()).thenReturn(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST);
+        when(radioCell.getAreaCode()).thenReturn(TestConstants.DEFAULT_AREA_CODE_FIRST);
         when(radioCell.getPrimaryScramblingCode()).thenReturn(TestConstants.DEFAULT_PRIMARY_SCRAMBLING_CODE);
-        when(radioCell.getChannelNumber()).thenReturn(TestConstants.DEFAULT_CHANNEL_NUMBER);
-        when(radioCell.getTechnology()).thenReturn(TestConstants.DEFAULT_TECHNOLOGY);
-        when(geoLocationRepository.findAllById(Set.of(TestConstants.DEFAULT_LOCATION_ID))).thenReturn(List.of(geoLocationFirst));
-        when(geoLocationFirst.getId()).thenReturn(TestConstants.DEFAULT_LOCATION_ID);
+        when(radioCell.getChannelNumber()).thenReturn(TestConstants.DEFAULT_CHANNEL_NUMBER_FIRST);
+        when(radioCell.getTechnology()).thenReturn(TestConstants.DEFAULT_TECHNOLOGY_FIRST);
+        when(geoLocationRepository.findAllById(Set.of(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST))).thenReturn(List.of(geoLocationFirst));
+        when(geoLocationFirst.getId()).thenReturn(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST);
         when(geoLocationFirst.getSpeed()).thenReturn(TestConstants.DEFAULT_SPEED);
         when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_FIRST);
         when(geoLocationFirst.getAltitude()).thenReturn(TestConstants.DEFAULT_ALTITUDE);
@@ -325,14 +321,59 @@ public class SignalServiceImplTest {
         when(radioSignalRepository.findAllByCellUUIDIn(Set.of(TestConstants.DEFAULT_RADIO_CELL_UUID))).thenReturn(List.of(radioSignal));
         when(radioSignal.getTime()).thenReturn(TestConstants.DEFAULT_SIGNAL_TIME);
         when(radioSignal.getCellUUID()).thenReturn(TestConstants.DEFAULT_RADIO_CELL_UUID);
-        when(radioSignal.getSignalStrength()).thenReturn(TestConstants.DEFAULT_SIGNAL_STRENGTH);
+        when(radioSignal.getSignalStrength()).thenReturn(TestConstants.DEFAULT_SIGNAL_STRENGTH_FIRST);
         when(radioSignal.getTimingAdvance()).thenReturn(TestConstants.DEFAULT_TIMING_ADVANCE);
-        when(radioSignal.getLteRSRQ()).thenReturn(TestConstants.DEFAULT_LTE_RSRQ);
+        when(radioSignal.getLteRSRQ()).thenReturn(TestConstants.DEFAULT_LTE_RSRQ_FIRST);
         when(testMapper.testToTestResponse(test)).thenReturn(getTestResponse());
 
         var expectedResponse = signalService.getSignalStrength(TestConstants.DEFAULT_UUID);
 
         assertEquals(response, expectedResponse);
+    }
+
+    @Test
+    public void processSignalRequests_whenCommonDataAndNetworkTypeIsNotWLAN_expectNewSignalSaved() {
+        var requests = List.of(signalRequestFirst, signalRequestSecond);
+        when(signalMapper.signalRequestToSignal(signalRequestFirst, test)).thenReturn(signalFirst);
+        when(signalMapper.signalRequestToSignal(signalRequestSecond, test)).thenReturn(signalSecond);
+        when(signalFirst.getSignalStrength()).thenReturn(TestConstants.DEFAULT_SIGNAL_STRENGTH_FIRST);
+        when(signalFirst.getLteRSRP()).thenReturn(TestConstants.DEFAULT_LTE_RSRP_FIRST);
+        when(signalFirst.getLteRSRQ()).thenReturn(TestConstants.DEFAULT_LTE_RSRQ_FIRST);
+        when(signalFirst.getWifiLinkSpeed()).thenReturn(TestConstants.DEFAULT_WIFI_LINK_SPEED_FIRST);
+        when(signalSecond.getSignalStrength()).thenReturn(TestConstants.DEFAULT_SIGNAL_STRENGTH_SECOND);
+        when(signalSecond.getLteRSRP()).thenReturn(TestConstants.DEFAULT_LTE_RSRP_SECOND);
+        when(signalSecond.getLteRSRQ()).thenReturn(TestConstants.DEFAULT_LTE_RSRQ_SECOND);
+        when(signalSecond.getWifiLinkSpeed()).thenReturn(TestConstants.DEFAULT_WIFI_LINK_SPEED_SECOND);
+        signalService.processSignalRequests(requests, test);
+
+        verify(signalRepository).saveAll(List.of(signalFirst, signalSecond));
+        verify(test).setSignalStrength(TestConstants.DEFAULT_SIGNAL_STRENGTH_FIRST);
+        verify(test).setLteRsrp(TestConstants.DEFAULT_LTE_RSRP_FIRST);
+        verify(test).setLteRsrq(TestConstants.DEFAULT_LTE_RSRQ_SECOND);
+        verify(test).setWifiLinkSpeed(TestConstants.DEFAULT_WIFI_LINK_SPEED_FIRST);
+    }
+
+    @Test
+    public void processSignalRequests_whenCommonDataAndNetworkTypeIsWLAN_expectNewSignalSaved() {
+        var requests = List.of(signalRequestFirst, signalRequestSecond);
+        when(test.getNetworkType()).thenReturn(99);
+        when(signalMapper.signalRequestToSignal(signalRequestFirst, test)).thenReturn(signalFirst);
+        when(signalMapper.signalRequestToSignal(signalRequestSecond, test)).thenReturn(signalSecond);
+        when(signalFirst.getWifiRSSI()).thenReturn(TestConstants.DEFAULT_WIFI_RSSI_FIRST);
+        when(signalFirst.getLteRSRP()).thenReturn(TestConstants.DEFAULT_LTE_RSRP_FIRST);
+        when(signalFirst.getLteRSRQ()).thenReturn(TestConstants.DEFAULT_LTE_RSRQ_FIRST);
+        when(signalFirst.getWifiLinkSpeed()).thenReturn(TestConstants.DEFAULT_WIFI_LINK_SPEED_FIRST);
+        when(signalSecond.getWifiRSSI()).thenReturn(TestConstants.DEFAULT_WIFI_RSSI_SECOND);
+        when(signalSecond.getLteRSRP()).thenReturn(TestConstants.DEFAULT_LTE_RSRP_SECOND);
+        when(signalSecond.getLteRSRQ()).thenReturn(TestConstants.DEFAULT_LTE_RSRQ_SECOND);
+        when(signalSecond.getWifiLinkSpeed()).thenReturn(TestConstants.DEFAULT_WIFI_LINK_SPEED_SECOND);
+        signalService.processSignalRequests(requests, test);
+
+        verify(signalRepository).saveAll(List.of(signalFirst, signalSecond));
+        verify(test).setSignalStrength(TestConstants.DEFAULT_WIFI_RSSI_FIRST);
+        verify(test).setLteRsrp(TestConstants.DEFAULT_LTE_RSRP_FIRST);
+        verify(test).setLteRsrq(TestConstants.DEFAULT_LTE_RSRQ_SECOND);
+        verify(test).setWifiLinkSpeed(TestConstants.DEFAULT_WIFI_LINK_SPEED_FIRST);
     }
 
     @Test
@@ -342,13 +383,13 @@ public class SignalServiceImplTest {
         when(test.getRadioCell()).thenReturn(List.of(radioCell));
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_TEST_TIME);
         when(radioCell.getUuid()).thenReturn(TestConstants.DEFAULT_RADIO_CELL_UUID);
-        when(radioCell.getLocationId()).thenReturn(TestConstants.DEFAULT_LOCATION_ID);
-        when(radioCell.getAreaCode()).thenReturn(TestConstants.DEFAULT_AREA_CODE);
+        when(radioCell.getLocationId()).thenReturn(TestConstants.DEFAULT_LOCATION_ID_LONG);
+        when(radioCell.getAreaCode()).thenReturn(TestConstants.DEFAULT_AREA_CODE_FIRST);
         when(radioCell.getPrimaryScramblingCode()).thenReturn(TestConstants.DEFAULT_PRIMARY_SCRAMBLING_CODE);
-        when(radioCell.getChannelNumber()).thenReturn(TestConstants.DEFAULT_CHANNEL_NUMBER);
-        when(radioCell.getTechnology()).thenReturn(TestConstants.DEFAULT_TECHNOLOGY);
-        when(geoLocationRepository.findAllById(Set.of(TestConstants.DEFAULT_LOCATION_ID))).thenReturn(List.of(geoLocationFirst));
-        when(geoLocationFirst.getId()).thenReturn(TestConstants.DEFAULT_LOCATION_ID);
+        when(radioCell.getChannelNumber()).thenReturn(TestConstants.DEFAULT_CHANNEL_NUMBER_FIRST);
+        when(radioCell.getTechnology()).thenReturn(TestConstants.DEFAULT_TECHNOLOGY_FIRST);
+        when(geoLocationRepository.findAllById(Set.of(TestConstants.DEFAULT_LOCATION_ID_LONG))).thenReturn(List.of(geoLocationFirst));
+        when(geoLocationFirst.getId()).thenReturn(TestConstants.DEFAULT_LOCATION_ID_LONG);
         when(geoLocationFirst.getSpeed()).thenReturn(TestConstants.DEFAULT_SPEED);
         when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_FIRST);
         when(geoLocationFirst.getAltitude()).thenReturn(TestConstants.DEFAULT_ALTITUDE);
@@ -357,29 +398,29 @@ public class SignalServiceImplTest {
         when(radioSignalRepository.findAllByCellUUIDIn(Set.of(TestConstants.DEFAULT_RADIO_CELL_UUID))).thenReturn(List.of(radioSignal));
         when(radioSignal.getTime()).thenReturn(TestConstants.DEFAULT_SIGNAL_TIME);
         when(radioSignal.getCellUUID()).thenReturn(TestConstants.DEFAULT_RADIO_CELL_UUID);
-        when(radioSignal.getLteRSRP()).thenReturn(TestConstants.DEFAULT_SIGNAL_RSRP);
+        when(radioSignal.getLteRSRP()).thenReturn(TestConstants.DEFAULT_LTE_RSRP_FIRST);
         when(radioSignal.getSignalStrength()).thenReturn(null);
         when(radioSignal.getTimingAdvance()).thenReturn(TestConstants.DEFAULT_TIMING_ADVANCE);
-        when(radioSignal.getLteRSRQ()).thenReturn(TestConstants.DEFAULT_LTE_RSRQ);
+        when(radioSignal.getLteRSRQ()).thenReturn(TestConstants.DEFAULT_LTE_RSRQ_FIRST);
         when(testMapper.testToTestResponse(test)).thenReturn(getTestResponse());
 
         var expectedResponse = signalService.getSignalStrength(TestConstants.DEFAULT_UUID);
 
-        assertEquals("112 dBm, TA: 32, RSRQ: 11 dB", expectedResponse.getSignalStrength().get(0).getSignalStrength());
+        assertEquals("-5 dBm, TA: 32, RSRQ: -11 dB", expectedResponse.getSignalStrength().get(0).getSignalStrength());
     }
 
     private SignalDetailsResponse getSignalStrengthResponse() {
         return SignalDetailsResponse.builder()
                 .signalStrength(Collections.singletonList(
                         SignalStrengthResponse.builder()
-                                .technology(TestConstants.DEFAULT_TECHNOLOGY.getLabelEn())
+                                .technology(TestConstants.DEFAULT_TECHNOLOGY_FIRST.getLabelEn())
                                 .band(TestConstants.DEFAULT_BAND)
-                                .ci(TestConstants.DEFAULT_AREA_CODE)
-                                .earfcn(TestConstants.DEFAULT_CHANNEL_NUMBER)
+                                .ci(TestConstants.DEFAULT_AREA_CODE_FIRST)
+                                .earfcn(TestConstants.DEFAULT_CHANNEL_NUMBER_FIRST)
                                 .frequency(TestConstants.DEFAULT_FREQUENCY)
                                 .pci(TestConstants.DEFAULT_PRIMARY_SCRAMBLING_CODE)
                                 .signalStrength(TestConstants.DEFAULT_SIGNAL_STRENGTH_RESPONSE)
-                                .tac(TestConstants.DEFAULT_LOCATION_ID)
+                                .tac(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST)
                                 .time(TestConstants.DEFAULT_SIGNAL_STRENGTH_TIME)
                                 .bearing(TestConstants.DEFAULT_SIGNAL_STRENGTH_BEARING_RESPONSE)
                                 .altitude(TestConstants.DEFAULT_SIGNAL_STRENGTH_ALTITUDE_RESPONSE)

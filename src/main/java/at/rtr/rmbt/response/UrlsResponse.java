@@ -31,5 +31,6 @@ public class UrlsResponse {
     @JsonProperty(value = "control_ipv6_only")
     private final String controlIPV6Only;
 
+    @JsonProperty(value = "statistics")
     private final String statistics;
 }

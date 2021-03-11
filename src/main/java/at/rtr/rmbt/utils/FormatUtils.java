@@ -11,7 +11,7 @@ import java.util.Optional;
 public class FormatUtils {
     public static NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
 
-    public static String format(String template, Long value) {
+    public static String format(String template, Integer value) {
         return Optional.ofNullable(value)
                 .map(x -> String.format(template, x))
                 .orElse(StringUtils.EMPTY);
