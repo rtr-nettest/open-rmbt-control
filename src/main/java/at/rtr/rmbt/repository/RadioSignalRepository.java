@@ -9,5 +9,5 @@ import java.util.UUID;
 
 public interface RadioSignalRepository extends JpaRepository<RadioSignal, Long> {
 
-    List<RadioSignal> findAllByCellUUIDIn(Collection<UUID> cellUUIDs);
+    List<RadioSignal> findAllByCellUUIDInOrderByTimeAsc(Collection<UUID> cellUUIDs);
 }

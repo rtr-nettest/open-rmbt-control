@@ -168,7 +168,7 @@ public class SignalServiceImpl implements SignalService {
                 .collect(Collectors.toMap(GeoLocation::getId, Function.identity()));
 
         return SignalDetailsResponse.builder()
-                .signalStrength(radioSignalRepository.findAllByCellUUIDIn(radioCellUUIDs.keySet()).stream()
+                .signalStrength(radioSignalRepository.findAllByCellUUIDInOrderByTimeAsc(radioCellUUIDs.keySet()).stream()
                         .map(signal -> {
                             var signalStrengthResponseBuilder = SignalStrengthResponse.builder()
                                     .time(TimeUtils.getDiffInSecondsFromTwoZonedDateTime(test.getTime(), signal.getTime()))

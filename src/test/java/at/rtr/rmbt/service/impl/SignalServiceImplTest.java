@@ -318,7 +318,7 @@ public class SignalServiceImplTest {
         when(geoLocationFirst.getAltitude()).thenReturn(TestConstants.DEFAULT_ALTITUDE);
         when(geoLocationFirst.getBearing()).thenReturn(TestConstants.DEFAULT_BEARING);
         when(geoLocationFirst.getLocation()).thenReturn(geometryLocation);
-        when(radioSignalRepository.findAllByCellUUIDIn(Set.of(TestConstants.DEFAULT_RADIO_CELL_UUID))).thenReturn(List.of(radioSignal));
+        when(radioSignalRepository.findAllByCellUUIDInOrderByTimeAsc(Set.of(TestConstants.DEFAULT_RADIO_CELL_UUID))).thenReturn(List.of(radioSignal));
         when(radioSignal.getTime()).thenReturn(TestConstants.DEFAULT_SIGNAL_TIME);
         when(radioSignal.getCellUUID()).thenReturn(TestConstants.DEFAULT_RADIO_CELL_UUID);
         when(radioSignal.getSignalStrength()).thenReturn(TestConstants.DEFAULT_SIGNAL_STRENGTH_FIRST);
