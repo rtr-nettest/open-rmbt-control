@@ -17,7 +17,7 @@ public class SignalStrengthResponse {
 
     private final Double time;
 
-    private final NetworkGroupName technology;
+    private final String technology;
 
     private final String signalStrength;
 

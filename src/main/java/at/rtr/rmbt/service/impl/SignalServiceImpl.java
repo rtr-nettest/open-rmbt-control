@@ -7,13 +7,30 @@ import at.rtr.rmbt.constant.ErrorMessage;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.InvalidSequenceException;
-import at.rtr.rmbt.mapper.*;
-import at.rtr.rmbt.model.*;
-import at.rtr.rmbt.repository.*;
+import at.rtr.rmbt.mapper.GeoLocationMapper;
+import at.rtr.rmbt.mapper.RadioCellMapper;
+import at.rtr.rmbt.mapper.RadioSignalMapper;
+import at.rtr.rmbt.mapper.SignalMapper;
+import at.rtr.rmbt.mapper.TestMapper;
+import at.rtr.rmbt.model.GeoLocation;
+import at.rtr.rmbt.model.RadioCell;
+import at.rtr.rmbt.model.RadioSignal;
+import at.rtr.rmbt.model.RtrClient;
+import at.rtr.rmbt.model.Test;
+import at.rtr.rmbt.repository.ClientRepository;
+import at.rtr.rmbt.repository.GeoLocationRepository;
+import at.rtr.rmbt.repository.ProviderRepository;
+import at.rtr.rmbt.repository.RadioCellRepository;
+import at.rtr.rmbt.repository.RadioSignalRepository;
+import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.GeoLocationRequest;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
-import at.rtr.rmbt.response.*;
+import at.rtr.rmbt.response.SignalDetailsResponse;
+import at.rtr.rmbt.response.SignalMeasurementResponse;
+import at.rtr.rmbt.response.SignalResultResponse;
+import at.rtr.rmbt.response.SignalSettingsResponse;
+import at.rtr.rmbt.response.SignalStrengthResponse;
 import at.rtr.rmbt.service.SignalService;
 import at.rtr.rmbt.utils.BandCalculationUtil;
 import at.rtr.rmbt.utils.FormatUtils;
@@ -35,7 +52,13 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -175,7 +198,7 @@ public class SignalServiceImpl implements SignalService {
     private void setRadioCellInfo(Map<UUID, RadioCell> radioCellUUIDs, RadioSignal signal, SignalStrengthResponse.SignalStrengthResponseBuilder builder) {
         Optional.ofNullable(radioCellUUIDs.get(signal.getCellUUID()))
                 .ifPresent(radioCell -> builder
-                        .technology(radioCell.getTechnology())
+                        .technology(radioCell.getTechnology().getLabelEn())
                         .ci(radioCell.getAreaCode())
                         .tac(radioCell.getLocationId())
                         .pci(radioCell.getPrimaryScramblingCode())
@@ -199,9 +222,10 @@ public class SignalServiceImpl implements SignalService {
     }
 
     private String getSignalStrength(RadioSignal signal) {
-        return Stream.of(FormatUtils.format(Constants.SIGNAL_STRENGTH_DBM_TEMPLATE, signal.getSignalStrength()),
+        return Stream.of(FormatUtils.format(Constants.SIGNAL_STRENGTH_DBM_TEMPLATE, signal.getSignalStrength() != null
+                        ? signal.getSignalStrength() : signal.getLteRSRP()),
                 FormatUtils.format(Constants.SIGNAL_STRENGTH_TIMING_ADVANCE_TEMPLATE, signal.getTimingAdvance()),
-                FormatUtils.format(Constants.SIGNAL_STRENGTH_RSQR_TEMPLATE, signal.getLteRSRQ()))
+                FormatUtils.format(Constants.SIGNAL_STRENGTH_RSRQ_TEMPLATE, signal.getLteRSRQ()))
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.joining(Constants.SIGNAL_STRENGTH_DELIMITER));
 
@@ -254,8 +278,7 @@ public class SignalServiceImpl implements SignalService {
                     geoLoc.setTime(getClientTimeFromMillisAndTimezone(geoDataItem.getTstamp(), updatedTest.getTimezone()));
                     geoLoc.setLocation(new GeometryFactory(new PrecisionModel(), Constants.SRID)
                             .createPoint(new Coordinate(geoLoc.getGeoLong(), geoLoc.getGeoLat())));
-//                    geoloc.testId(test.getUid()); there are foreign  two key in table geo_location test_id and open_test_uuid
-
+                    geoLoc.setTestId(updatedTest.getUid());
                     // ignore all timestamps older than 20s
                     if (geoDataItem.getTimeNs() > -20000000000L) {
                         if (geoDataItem.getAccuracy() < minAccuracy) {

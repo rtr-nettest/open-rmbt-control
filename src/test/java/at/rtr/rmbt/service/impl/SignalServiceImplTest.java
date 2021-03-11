@@ -5,14 +5,32 @@ import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.constant.HeaderConstants;
 import at.rtr.rmbt.enums.TestStatus;
-import at.rtr.rmbt.mapper.*;
+import at.rtr.rmbt.mapper.GeoLocationMapper;
+import at.rtr.rmbt.mapper.RadioCellMapper;
+import at.rtr.rmbt.mapper.RadioSignalMapper;
+import at.rtr.rmbt.mapper.SignalMapper;
+import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.GeoLocation;
 import at.rtr.rmbt.model.RadioCell;
 import at.rtr.rmbt.model.RadioSignal;
 import at.rtr.rmbt.model.RtrClient;
-import at.rtr.rmbt.repository.*;
-import at.rtr.rmbt.request.*;
-import at.rtr.rmbt.response.*;
+import at.rtr.rmbt.repository.ClientRepository;
+import at.rtr.rmbt.repository.GeoLocationRepository;
+import at.rtr.rmbt.repository.ProviderRepository;
+import at.rtr.rmbt.repository.RadioCellRepository;
+import at.rtr.rmbt.repository.RadioSignalRepository;
+import at.rtr.rmbt.repository.TestRepository;
+import at.rtr.rmbt.request.GeoLocationRequest;
+import at.rtr.rmbt.request.RadioCellRequest;
+import at.rtr.rmbt.request.RadioInfoRequest;
+import at.rtr.rmbt.request.RadioSignalRequest;
+import at.rtr.rmbt.request.SignalRequest;
+import at.rtr.rmbt.request.SignalResultRequest;
+import at.rtr.rmbt.response.SignalDetailsResponse;
+import at.rtr.rmbt.response.SignalMeasurementResponse;
+import at.rtr.rmbt.response.SignalSettingsResponse;
+import at.rtr.rmbt.response.SignalStrengthResponse;
+import at.rtr.rmbt.response.TestResponse;
 import at.rtr.rmbt.service.SignalService;
 import at.rtr.rmbt.utils.HelperFunctions;
 import com.google.common.net.InetAddresses;
@@ -317,11 +335,44 @@ public class SignalServiceImplTest {
         assertEquals(response, expectedResponse);
     }
 
+    @Test
+    public void getSignalStrength_whenCommonDataStrengthNull_expectListSignalStrengthResponse() {
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_UUID, Config.SIGNAL_RESULT_STATUSES))
+                .thenReturn(Optional.of(test));
+        when(test.getRadioCell()).thenReturn(List.of(radioCell));
+        when(test.getTime()).thenReturn(TestConstants.DEFAULT_TEST_TIME);
+        when(radioCell.getUuid()).thenReturn(TestConstants.DEFAULT_RADIO_CELL_UUID);
+        when(radioCell.getLocationId()).thenReturn(TestConstants.DEFAULT_LOCATION_ID);
+        when(radioCell.getAreaCode()).thenReturn(TestConstants.DEFAULT_AREA_CODE);
+        when(radioCell.getPrimaryScramblingCode()).thenReturn(TestConstants.DEFAULT_PRIMARY_SCRAMBLING_CODE);
+        when(radioCell.getChannelNumber()).thenReturn(TestConstants.DEFAULT_CHANNEL_NUMBER);
+        when(radioCell.getTechnology()).thenReturn(TestConstants.DEFAULT_TECHNOLOGY);
+        when(geoLocationRepository.findAllById(Set.of(TestConstants.DEFAULT_LOCATION_ID))).thenReturn(List.of(geoLocationFirst));
+        when(geoLocationFirst.getId()).thenReturn(TestConstants.DEFAULT_LOCATION_ID);
+        when(geoLocationFirst.getSpeed()).thenReturn(TestConstants.DEFAULT_SPEED);
+        when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_FIRST);
+        when(geoLocationFirst.getAltitude()).thenReturn(TestConstants.DEFAULT_ALTITUDE);
+        when(geoLocationFirst.getBearing()).thenReturn(TestConstants.DEFAULT_BEARING);
+        when(geoLocationFirst.getLocation()).thenReturn(geometryLocation);
+        when(radioSignalRepository.findAllByCellUUIDIn(Set.of(TestConstants.DEFAULT_RADIO_CELL_UUID))).thenReturn(List.of(radioSignal));
+        when(radioSignal.getTime()).thenReturn(TestConstants.DEFAULT_SIGNAL_TIME);
+        when(radioSignal.getCellUUID()).thenReturn(TestConstants.DEFAULT_RADIO_CELL_UUID);
+        when(radioSignal.getLteRSRP()).thenReturn(TestConstants.DEFAULT_SIGNAL_RSRP);
+        when(radioSignal.getSignalStrength()).thenReturn(null);
+        when(radioSignal.getTimingAdvance()).thenReturn(TestConstants.DEFAULT_TIMING_ADVANCE);
+        when(radioSignal.getLteRSRQ()).thenReturn(TestConstants.DEFAULT_LTE_RSRQ);
+        when(testMapper.testToTestResponse(test)).thenReturn(getTestResponse());
+
+        var expectedResponse = signalService.getSignalStrength(TestConstants.DEFAULT_UUID);
+
+        assertEquals("112 dBm, TA: 32, RSRQ: 11 dB", expectedResponse.getSignalStrength().get(0).getSignalStrength());
+    }
+
     private SignalDetailsResponse getSignalStrengthResponse() {
         return SignalDetailsResponse.builder()
                 .signalStrength(Collections.singletonList(
                         SignalStrengthResponse.builder()
-                                .technology(TestConstants.DEFAULT_TECHNOLOGY)
+                                .technology(TestConstants.DEFAULT_TECHNOLOGY.getLabelEn())
                                 .band(TestConstants.DEFAULT_BAND)
                                 .ci(TestConstants.DEFAULT_AREA_CODE)
                                 .earfcn(TestConstants.DEFAULT_CHANNEL_NUMBER)
