@@ -17,6 +17,9 @@ public class SignalDetailsResponse {
     @JsonProperty(value = "signalStrength")
     private final List<SignalStrengthResponse> signalStrength;
 
+    @JsonProperty(value = "signalLocation")
+    private final List<SignalLocationResponse> signalLocation;
+
     @JsonProperty(value = "testResponse")
     private final TestResponse testResponse;
 }

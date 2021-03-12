@@ -25,6 +25,7 @@ import at.rtr.rmbt.request.SignalRegisterRequest;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
 import at.rtr.rmbt.response.SignalDetailsResponse;
+import at.rtr.rmbt.response.SignalLocationResponse;
 import at.rtr.rmbt.response.SignalMeasurementResponse;
 import at.rtr.rmbt.response.SignalResultResponse;
 import at.rtr.rmbt.response.SignalSettingsResponse;
@@ -48,7 +49,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -160,12 +167,8 @@ public class SignalServiceImpl implements SignalService {
                 .orElseThrow();
         Map<UUID, RadioCell> radioCellUUIDs = test.getRadioCell().stream()
                 .collect(Collectors.toMap(RadioCell::getUuid, Function.identity()));
-        Set<Long> locationsIds = radioCellUUIDs.values().stream()
-                .map(RadioCell::getLocationId)
-                .collect(Collectors.toSet());
 
-        Map<Long, GeoLocation> geoLocationIdsMap = geoLocationRepository.findAllById(locationsIds).stream()
-                .collect(Collectors.toMap(GeoLocation::getId, Function.identity()));
+        List<GeoLocation> geoLocations = geoLocationRepository.findAllByTestOrderByTimeAsc(test);
 
         return SignalDetailsResponse.builder()
                 .signalStrength(radioSignalRepository.findAllByCellUUIDInOrderByTimeAsc(radioCellUUIDs.keySet()).stream()
@@ -174,11 +177,12 @@ public class SignalServiceImpl implements SignalService {
                                     .time(TimeUtils.getDiffInSecondsFromTwoZonedDateTime(test.getTime(), signal.getTime()))
                                     .signalStrength(getSignalStrength(signal));
                             setRadioCellInfo(radioCellUUIDs, signal, signalStrengthResponseBuilder);
-                            setGeoLocationInformation(radioCellUUIDs, geoLocationIdsMap, signal, signalStrengthResponseBuilder);
+
                             return signalStrengthResponseBuilder.build();
                         })
                         .collect(Collectors.toList()))
                 .testResponse(testMapper.testToTestResponse(test))
+                .signalLocation(toLocationResponse(geoLocations, test))
                 .build();
 
     }
@@ -196,17 +200,17 @@ public class SignalServiceImpl implements SignalService {
                 );
     }
 
-    private void setGeoLocationInformation(Map<UUID, RadioCell> radioCellUUIDs, Map<Long, GeoLocation> geoLocationIdsMap, RadioSignal signal, SignalStrengthResponse.SignalStrengthResponseBuilder builder) {
-        Optional.ofNullable(radioCellUUIDs.get(signal.getCellUUID()))
-                .map(RadioCell::getLocationId)
-                .map(geoLocationIdsMap::get)
-                .ifPresent(geoLocation -> builder
+    private List<SignalLocationResponse> toLocationResponse(List<GeoLocation> geoLocations, Test test) {
+        return geoLocations.stream()
+                .map(geoLocation -> SignalLocationResponse.builder()
                         .accuracy(FormatUtils.format(Constants.SIGNAL_STRENGTH_ACCURACY_TEMPLATE, geoLocation.getAccuracy()))
                         .speed(FormatUtils.format(Constants.SIGNAL_STRENGTH_SPEED_TEMPLATE, geoLocation.getSpeed()))
                         .altitude(FormatUtils.format(Constants.SIGNAL_STRENGTH_ALTITUDE_TEMPLATE, geoLocation.getAltitude()))
                         .bearing(FormatUtils.format(Constants.SIGNAL_STRENGTH_BEARING_TEMPLATE, geoLocation.getBearing()))
                         .location(geoLocation.getLocation())
-                );
+                        .time(TimeUtils.getDiffInSecondsFromTwoZonedDateTime(test.getTime(), geoLocation.getTime()))
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override

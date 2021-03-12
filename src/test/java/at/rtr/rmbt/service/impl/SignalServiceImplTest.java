@@ -5,15 +5,35 @@ import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.constant.HeaderConstants;
 import at.rtr.rmbt.enums.TestStatus;
-import at.rtr.rmbt.mapper.*;
+import at.rtr.rmbt.mapper.GeoLocationMapper;
+import at.rtr.rmbt.mapper.RadioCellMapper;
+import at.rtr.rmbt.mapper.RadioSignalMapper;
+import at.rtr.rmbt.mapper.SignalMapper;
+import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.GeoLocation;
 import at.rtr.rmbt.model.RadioCell;
 import at.rtr.rmbt.model.RadioSignal;
 import at.rtr.rmbt.model.RtrClient;
-import at.rtr.rmbt.repository.*;
-import at.rtr.rmbt.request.*;
-import at.rtr.rmbt.response.*;
-import at.rtr.rmbt.model.*;
+import at.rtr.rmbt.model.Signal;
+import at.rtr.rmbt.repository.ClientRepository;
+import at.rtr.rmbt.repository.GeoLocationRepository;
+import at.rtr.rmbt.repository.ProviderRepository;
+import at.rtr.rmbt.repository.RadioSignalRepository;
+import at.rtr.rmbt.repository.SignalRepository;
+import at.rtr.rmbt.repository.TestRepository;
+import at.rtr.rmbt.request.GeoLocationRequest;
+import at.rtr.rmbt.request.RadioCellRequest;
+import at.rtr.rmbt.request.RadioInfoRequest;
+import at.rtr.rmbt.request.RadioSignalRequest;
+import at.rtr.rmbt.request.SignalRegisterRequest;
+import at.rtr.rmbt.request.SignalRequest;
+import at.rtr.rmbt.request.SignalResultRequest;
+import at.rtr.rmbt.response.SignalDetailsResponse;
+import at.rtr.rmbt.response.SignalLocationResponse;
+import at.rtr.rmbt.response.SignalMeasurementResponse;
+import at.rtr.rmbt.response.SignalSettingsResponse;
+import at.rtr.rmbt.response.SignalStrengthResponse;
+import at.rtr.rmbt.response.TestResponse;
 import at.rtr.rmbt.service.GeoLocationService;
 import at.rtr.rmbt.service.RadioCellService;
 import at.rtr.rmbt.service.RadioSignalService;
@@ -40,11 +60,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static at.rtr.rmbt.TestConstants.DEFAULT_SIGNAL_TIME;
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class SignalServiceImplTest {
@@ -311,15 +334,16 @@ public class SignalServiceImplTest {
         when(radioCell.getPrimaryScramblingCode()).thenReturn(TestConstants.DEFAULT_PRIMARY_SCRAMBLING_CODE);
         when(radioCell.getChannelNumber()).thenReturn(TestConstants.DEFAULT_CHANNEL_NUMBER_FIRST);
         when(radioCell.getTechnology()).thenReturn(TestConstants.DEFAULT_TECHNOLOGY_FIRST);
-        when(geoLocationRepository.findAllById(Set.of(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST))).thenReturn(List.of(geoLocationFirst));
+        when(geoLocationRepository.findAllByTestOrderByTimeAsc(test)).thenReturn(List.of(geoLocationFirst));
         when(geoLocationFirst.getId()).thenReturn(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST);
         when(geoLocationFirst.getSpeed()).thenReturn(TestConstants.DEFAULT_SPEED);
         when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_FIRST);
         when(geoLocationFirst.getAltitude()).thenReturn(TestConstants.DEFAULT_ALTITUDE);
         when(geoLocationFirst.getBearing()).thenReturn(TestConstants.DEFAULT_BEARING);
         when(geoLocationFirst.getLocation()).thenReturn(geometryLocation);
+        when(geoLocationFirst.getTime()).thenReturn(DEFAULT_SIGNAL_TIME);
         when(radioSignalRepository.findAllByCellUUIDInOrderByTimeAsc(Set.of(TestConstants.DEFAULT_RADIO_CELL_UUID))).thenReturn(List.of(radioSignal));
-        when(radioSignal.getTime()).thenReturn(TestConstants.DEFAULT_SIGNAL_TIME);
+        when(radioSignal.getTime()).thenReturn(DEFAULT_SIGNAL_TIME);
         when(radioSignal.getCellUUID()).thenReturn(TestConstants.DEFAULT_RADIO_CELL_UUID);
         when(radioSignal.getSignalStrength()).thenReturn(TestConstants.DEFAULT_SIGNAL_STRENGTH_FIRST);
         when(radioSignal.getTimingAdvance()).thenReturn(TestConstants.DEFAULT_TIMING_ADVANCE);
@@ -395,8 +419,8 @@ public class SignalServiceImplTest {
         when(geoLocationFirst.getAltitude()).thenReturn(TestConstants.DEFAULT_ALTITUDE);
         when(geoLocationFirst.getBearing()).thenReturn(TestConstants.DEFAULT_BEARING);
         when(geoLocationFirst.getLocation()).thenReturn(geometryLocation);
-        when(radioSignalRepository.findAllByCellUUIDIn(Set.of(TestConstants.DEFAULT_RADIO_CELL_UUID))).thenReturn(List.of(radioSignal));
-        when(radioSignal.getTime()).thenReturn(TestConstants.DEFAULT_SIGNAL_TIME);
+        when(radioSignalRepository.findAllByCellUUIDInOrderByTimeAsc(Set.of(TestConstants.DEFAULT_RADIO_CELL_UUID))).thenReturn(List.of(radioSignal));
+        when(radioSignal.getTime()).thenReturn(DEFAULT_SIGNAL_TIME);
         when(radioSignal.getCellUUID()).thenReturn(TestConstants.DEFAULT_RADIO_CELL_UUID);
         when(radioSignal.getLteRSRP()).thenReturn(TestConstants.DEFAULT_LTE_RSRP_FIRST);
         when(radioSignal.getSignalStrength()).thenReturn(null);
@@ -422,11 +446,15 @@ public class SignalServiceImplTest {
                                 .signalStrength(TestConstants.DEFAULT_SIGNAL_STRENGTH_RESPONSE)
                                 .tac(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST)
                                 .time(TestConstants.DEFAULT_SIGNAL_STRENGTH_TIME)
+                                .build()))
+                .signalLocation(Collections.singletonList(
+                        SignalLocationResponse.builder()
                                 .bearing(TestConstants.DEFAULT_SIGNAL_STRENGTH_BEARING_RESPONSE)
                                 .altitude(TestConstants.DEFAULT_SIGNAL_STRENGTH_ALTITUDE_RESPONSE)
                                 .accuracy(TestConstants.DEFAULT_SIGNAL_STRENGTH_ACCURACY_RESPONSE)
                                 .speed(TestConstants.DEFAULT_SIGNAL_STRENGTH_SPEED_RESPONSE)
                                 .location(geometryLocation)
+                                .time(TestConstants.DEFAULT_SIGNAL_STRENGTH_TIME)
                                 .build()))
                 .testResponse(getTestResponse())
                 .build();
