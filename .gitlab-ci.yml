@@ -29,7 +29,7 @@ stages:
     key: "${CI_COMMIT_REF_SLUG}"
     untracked: true
   script:
-    - apk add --no-cache zip unzip 
+    - apk add --no-cache zip unzip
     - mkdir -p ${CI_PROJECT_DIR}/artifacts/ && cd ${CI_PROJECT_DIR}/artifacts
     - 'curl --location --output ${CORE_ARTIFACT_DOWNLOAD}.zip --header "JOB-TOKEN: $CI_JOB_TOKEN" "https://gitlab.martes-specure.com/api/v4/projects/${CORE_PROJECT_ID}/jobs/artifacts/${CORE_ARTIFACT_BRANCH}/download?job=${CORE_ARTIFACT_DOWNLOAD}"'
     - ls -lsa
@@ -38,19 +38,85 @@ stages:
     - rm -f ${CORE_ARTIFACT_DOWNLOAD}.zip
 
     - cd ${CI_PROJECT_DIR} && rm -rvf "${CI_PROJECT_DIR}/artifacts/"
-    - >- 
-        mvn clean install:install-file
-        -Dfile=$CORE_ARTIFACT_NAME
-        -DgroupId=com.specure
-        -DartifactId=core
-        -Dversion=0.0.1-SNAPSHOT
-        -Dpackaging=jar
-        -DgeneratePom=true
     - >-
-        mvn
-        org.jacoco:jacoco-maven-plugin:0.8.5:prepare-agent
-        test -B
-        org.jacoco:jacoco-maven-plugin:0.8.5:report
+      mvn clean install:install-file
+      -Dfile=$CORE_ARTIFACT_NAME
+      -DgroupId=com.specure
+      -DartifactId=core
+      -Dversion=0.0.1-SNAPSHOT
+      -Dpackaging=jar
+      -DgeneratePom=true
+    - >-
+      mvn
+      org.jacoco:jacoco-maven-plugin:0.8.5:prepare-agent
+      test -B
+      org.jacoco:jacoco-maven-plugin:0.8.5:report
+
+.sonar_clean:
+  image: maven:3.6.3-jdk-11-slim
+  cache:
+    key: "${CI_COMMIT_REF_SLUG}"
+    untracked: true
+    policy: pull
+  script:
+    - |
+      apt-get update && apt-get -y upgrade && apt-get install -y apt-utils jq curl unzip zip
+      apt-get clean
+      rm -rf                        \
+        /var/lib/apt/lists/*          \
+        /var/log/alternatives.log     \
+        /var/log/apt/history.log      \
+        /var/log/apt/term.log         \
+        /var/log/dpkg.log
+
+    - 'curl -k -u "${SONAR_KEY}":"" -XPOST "${SONAR_URL}/api/projects/delete?project=${SONAR_PROJECT}"'
+    - 'curl -k -u "${SONAR_KEY}":"" -XPOST "${SONAR_URL}/api/projects/create?project=${SONAR_PROJECT}&name=${SONAR_PROJECT}&visibility=private"'
+
+    - >-
+      mvn sonar:sonar
+      -Dsonar.gitlab.project_id="${CI_PROJECT_PATH}"
+      -Dsonar.gitlab.commit_sha="${CI_COMMIT_SHA}"
+      -Dsonar.gitlab.ref_name="${CI_COMMIT_REF_NAME}"
+      -Dsonar.projectKey="${SONAR_PROJECT}"
+      -Dsonar.projectName="${SONAR_PROJECT}"
+      -Dsonar.host.url="${SONAR_URL}"
+      -Dsonar.login="${SONAR_KEY}"
+      -Dsonar.coverage.exclusions="src/main/java/at/rtr/rmbt/**/annotation/**,
+        src/main/java/at/rtr/rmbt/**/config/**,
+        src/main/java/at/rtr/rmbt/**/constant/**,
+        src/main/java/at/rtr/rmbt/**/enums/**,
+        src/main/java/at/rtr/rmbt/**/mapper/**,
+        src/main/java/at/rtr/rmbt/**/model/**,
+        src/main/java/at/rtr/rmbt/**/repository/**,
+        src/main/java/at/rtr/rmbt/**/request/**,
+        src/main/java/at/rtr/rmbt/**/response/**,
+        srс/main/resources/**,
+        **/*Application.java"
+    - |
+      URL="$(cat ./target/sonar/report-task.txt | grep ceTaskUrl | cut -c11-)"
+      sleep ${SONAR_WAIT}s
+      curl -# -k -u "${SONAR_KEY}":"" "${URL}" -o sonar_analysis.txt
+      export SONAR_STATUS=$(cat sonar_analysis.txt | jq -r '.task.status')
+      export SONAR_ANLYSIS_ID=$(cat sonar_analysis.txt | jq -r '.task.analysisId')
+      if [ "${SONAR_STATUS}" == "SUCCESS" ];then
+        echo -e "\e[93mSONAR ANALYSIS SUCCESSFULL...\e[0m   ANALYSING RESULTS";
+        curl -# -k -u "${SONAR_KEY}":"" "${SONAR_URL}/api/qualitygates/project_status?analysisId=${SONAR_ANLYSIS_ID}" -o sonar_result.txt
+        export SONAR_RESULT=$(cat sonar_result.txt | jq -r '.projectStatus.status');
+
+        if [ "${SONAR_RESULT}" == "ERROR" ];then
+          echo -e "\e[91mSONAR RESULTS FAILED\e[0m";
+          echo "$(cat sonar_result.txt | jq -r '.projectStatus.conditions')"
+          exit 1
+        else
+          echo -e "\e[92mSONAR RESULTS SUCCESSFULL\e[0m";
+          echo "$(cat sonar_result.txt | jq -r '.projectStatus.conditions')"
+          exit 0
+        fi
+      else
+          echo -e "\e[91mSONAR ANALYSIS FAILED\e[0m"
+          exit 1
+      fi
+
 
 .sonar:
   image: maven:3.6.3-jdk-11-slim
@@ -60,58 +126,58 @@ stages:
     policy: pull
   script:
     - |
-        apt-get update && apt-get -y upgrade && apt-get install -y apt-utils jq curl unzip zip
-        apt-get clean
-        rm -rf                        \
-          /var/lib/apt/lists/*          \
-          /var/log/alternatives.log     \
-          /var/log/apt/history.log      \
-          /var/log/apt/term.log         \
-          /var/log/dpkg.log
+      apt-get update && apt-get -y upgrade && apt-get install -y apt-utils jq curl unzip zip
+      apt-get clean
+      rm -rf                        \
+        /var/lib/apt/lists/*          \
+        /var/log/alternatives.log     \
+        /var/log/apt/history.log      \
+        /var/log/apt/term.log         \
+        /var/log/dpkg.log
     - >-
-        mvn sonar:sonar
-        -Dsonar.gitlab.project_id="${CI_PROJECT_PATH}"
-        -Dsonar.gitlab.commit_sha="${CI_COMMIT_SHA}"
-        -Dsonar.gitlab.ref_name="${CI_COMMIT_REF_NAME}"
-        -Dsonar.projectKey="${SONAR_PROJECT}"
-        -Dsonar.projectName="${SONAR_PROJECT}"
-        -Dsonar.host.url="${SONAR_URL}"
-        -Dsonar.login="${SONAR_KEY}"
-        -Dsonar.coverage.exclusions="src/main/java/at/rtr/rmbt/**/annotation/**,
-          src/main/java/at/rtr/rmbt/**/config/**,
-          src/main/java/at/rtr/rmbt/**/constant/**,
-          src/main/java/at/rtr/rmbt/**/enums/**,
-          src/main/java/at/rtr/rmbt/**/mapper/**,
-          src/main/java/at/rtr/rmbt/**/model/**,
-          src/main/java/at/rtr/rmbt/**/repository/**,
-          src/main/java/at/rtr/rmbt/**/request/**,
-          src/main/java/at/rtr/rmbt/**/response/**,
-          srс/main/resources/**,
-          **/*Application.java"
+      mvn sonar:sonar
+      -Dsonar.gitlab.project_id="${CI_PROJECT_PATH}"
+      -Dsonar.gitlab.commit_sha="${CI_COMMIT_SHA}"
+      -Dsonar.gitlab.ref_name="${CI_COMMIT_REF_NAME}"
+      -Dsonar.projectKey="${SONAR_PROJECT}"
+      -Dsonar.projectName="${SONAR_PROJECT}"
+      -Dsonar.host.url="${SONAR_URL}"
+      -Dsonar.login="${SONAR_KEY}"
+      -Dsonar.coverage.exclusions="src/main/java/at/rtr/rmbt/**/annotation/**,
+        src/main/java/at/rtr/rmbt/**/config/**,
+        src/main/java/at/rtr/rmbt/**/constant/**,
+        src/main/java/at/rtr/rmbt/**/enums/**,
+        src/main/java/at/rtr/rmbt/**/mapper/**,
+        src/main/java/at/rtr/rmbt/**/model/**,
+        src/main/java/at/rtr/rmbt/**/repository/**,
+        src/main/java/at/rtr/rmbt/**/request/**,
+        src/main/java/at/rtr/rmbt/**/response/**,
+        srс/main/resources/**,
+        **/*Application.java"
     - |
-        URL="$(cat ./target/sonar/report-task.txt | grep ceTaskUrl | cut -c11-)"
-        sleep ${SONAR_WAIT}s
-        curl -# -k -u "${SONAR_KEY}":"" "${URL}" -o sonar_analysis.txt
-        export SONAR_STATUS=$(cat sonar_analysis.txt | jq -r '.task.status')
-        export SONAR_ANLYSIS_ID=$(cat sonar_analysis.txt | jq -r '.task.analysisId')
-        if [ "${SONAR_STATUS}" == "SUCCESS" ];then
-          echo -e "\e[93mSONAR ANALYSIS SUCCESSFULL...\e[0m   ANALYSING RESULTS";
-          curl -# -k -u "${SONAR_KEY}":"" "${SONAR_URL}/api/qualitygates/project_status?analysisId=${SONAR_ANLYSIS_ID}" -o sonar_result.txt
-          export SONAR_RESULT=$(cat sonar_result.txt | jq -r '.projectStatus.status');
+      URL="$(cat ./target/sonar/report-task.txt | grep ceTaskUrl | cut -c11-)"
+      sleep ${SONAR_WAIT}s
+      curl -# -k -u "${SONAR_KEY}":"" "${URL}" -o sonar_analysis.txt
+      export SONAR_STATUS=$(cat sonar_analysis.txt | jq -r '.task.status')
+      export SONAR_ANLYSIS_ID=$(cat sonar_analysis.txt | jq -r '.task.analysisId')
+      if [ "${SONAR_STATUS}" == "SUCCESS" ];then
+        echo -e "\e[93mSONAR ANALYSIS SUCCESSFULL...\e[0m   ANALYSING RESULTS";
+        curl -# -k -u "${SONAR_KEY}":"" "${SONAR_URL}/api/qualitygates/project_status?analysisId=${SONAR_ANLYSIS_ID}" -o sonar_result.txt
+        export SONAR_RESULT=$(cat sonar_result.txt | jq -r '.projectStatus.status');
 
-          if [ "${SONAR_RESULT}" == "ERROR" ];then
-            echo -e "\e[91mSONAR RESULTS FAILED\e[0m";
-            echo "$(cat sonar_result.txt | jq -r '.projectStatus.conditions')"
-            exit 1
-          else
-            echo -e "\e[92mSONAR RESULTS SUCCESSFULL\e[0m";
-            echo "$(cat sonar_result.txt | jq -r '.projectStatus.conditions')"
-            exit 0
-          fi
-        else 
-            echo -e "\e[91mSONAR ANALYSIS FAILED\e[0m"
-            exit 1
+        if [ "${SONAR_RESULT}" == "ERROR" ];then
+          echo -e "\e[91mSONAR RESULTS FAILED\e[0m";
+          echo "$(cat sonar_result.txt | jq -r '.projectStatus.conditions')"
+          exit 1
+        else
+          echo -e "\e[92mSONAR RESULTS SUCCESSFULL\e[0m";
+          echo "$(cat sonar_result.txt | jq -r '.projectStatus.conditions')"
+          exit 0
         fi
+      else
+          echo -e "\e[91mSONAR ANALYSIS FAILED\e[0m"
+          exit 1
+      fi
 
 .build:
   image: maven:3.6-jdk-13-alpine
@@ -120,7 +186,7 @@ stages:
     paths:
       - target/*.jar
   script:
-    - apk add --no-cache zip unzip 
+    - apk add --no-cache zip unzip
     - mkdir -p ${CI_PROJECT_DIR}/artifacts/ && cd ${CI_PROJECT_DIR}/artifacts
 
     - 'curl --location --output ${CORE_ARTIFACT_DOWNLOAD}.zip --header "JOB-TOKEN: $CI_JOB_TOKEN" "https://gitlab.martes-specure.com/api/v4/projects/${CORE_PROJECT_ID}/jobs/artifacts/${CORE_ARTIFACT_BRANCH}/download?job=${CORE_ARTIFACT_DOWNLOAD}"'
@@ -130,14 +196,14 @@ stages:
     - rm -f ${CORE_ARTIFACT_DOWNLOAD}.zip
 
     - cd ${CI_PROJECT_DIR} && rm -rvf "${CI_PROJECT_DIR}/artifacts/"
-    - >- 
-        mvn clean install:install-file
-        -Dfile=$CORE_ARTIFACT_NAME
-        -DgroupId=com.specure
-        -DartifactId=core
-        -Dversion=0.0.1-SNAPSHOT
-        -Dpackaging=jar
-        -DgeneratePom=true
+    - >-
+      mvn clean install:install-file
+      -Dfile=$CORE_ARTIFACT_NAME
+      -DgroupId=com.specure
+      -DartifactId=core
+      -Dversion=0.0.1-SNAPSHOT
+      -Dpackaging=jar
+      -DgeneratePom=true
     - mvn -D'maven.test.skip=true' clean install -B
 
 .deploy:
@@ -199,18 +265,18 @@ sonar:
     - dev
   stage: sonar
 
-#sonar:merge:
-#  extends:
-#    - .environment_merge
-#    - .sonar
-#  stage: sonar
-#
-#sonar:other:
-#  extends:
-#    - .sonar
-#  except:
-#    - dev
-#  stage: sonar
+sonar:merge:
+  extends:
+    - .environment_merge
+    - .sonar_clean
+  stage: sonar
+
+sonar:other:
+  extends:
+    - .sonar_clean
+  except:
+    - dev
+  stage: sonar
 
 build:dev:
   extends:
