@@ -35,6 +35,7 @@ import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -155,7 +156,7 @@ public class SignalServiceImpl implements SignalService {
                 .signalStrength(radioSignalRepository.findAllByCellUUIDInOrderByTimeAsc(radioCellUUIDs.keySet()).stream()
                         .map(signal -> {
                             var signalStrengthResponseBuilder = SignalStrengthResponse.builder()
-                                    .time(TimeUtils.getDiffInSecondsFromTwoZonedDateTime(test.getTime(), signal.getTime()))
+                                    .time(signal.getTimeNs() != null && signal.getTimeNs() > 0 ? TimeUnit.SECONDS.toNanos(signal.getTimeNs()) : 0.0)
                                     .signalStrength(getSignalStrength(signal));
                             setRadioCellInfo(radioCellUUIDs, signal, signalStrengthResponseBuilder);
 
@@ -165,7 +166,6 @@ public class SignalServiceImpl implements SignalService {
                 .testResponse(testMapper.testToTestResponse(test))
                 .signalLocation(toLocationResponse(geoLocations, test))
                 .build();
-
     }
 
     private void setRadioCellInfo(Map<UUID, RadioCell> radioCellUUIDs, RadioSignal signal, SignalStrengthResponse.SignalStrengthResponseBuilder builder) {
@@ -189,7 +189,7 @@ public class SignalServiceImpl implements SignalService {
                         .altitude(FormatUtils.format(Constants.SIGNAL_STRENGTH_ALTITUDE_TEMPLATE, geoLocation.getAltitude()))
                         .bearing(FormatUtils.format(Constants.SIGNAL_STRENGTH_BEARING_TEMPLATE, geoLocation.getBearing()))
                         .location(geoLocation.getLocation())
-                        .time(TimeUtils.getDiffInSecondsFromTwoZonedDateTime(test.getTime(), geoLocation.getTime()))
+                        .time(geoLocation.getTimeNs() != null && geoLocation.getTimeNs() > 0 ? TimeUnit.SECONDS.toNanos(geoLocation.getTimeNs()) : 0.0)
                         .build())
                 .collect(Collectors.toList());
     }
