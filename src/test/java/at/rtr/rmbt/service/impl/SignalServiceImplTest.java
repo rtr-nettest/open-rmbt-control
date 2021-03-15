@@ -451,7 +451,7 @@ public class SignalServiceImplTest {
                                 .pci(TestConstants.DEFAULT_PRIMARY_SCRAMBLING_CODE)
                                 .signalStrength(TestConstants.DEFAULT_SIGNAL_STRENGTH_RESPONSE)
                                 .tac(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST)
-                                .time((double) TimeUnit.SECONDS.toNanos(DEFAULT_TIME_NS))
+                                .time((double) TimeUnit.NANOSECONDS.toSeconds(DEFAULT_TIME_NS))
                                 .build()))
                 .signalLocation(Collections.singletonList(
                         SignalLocationResponse.builder()

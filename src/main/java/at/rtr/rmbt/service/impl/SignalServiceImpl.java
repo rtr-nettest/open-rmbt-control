@@ -9,12 +9,27 @@ import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.InvalidSequenceException;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.mapper.TestMapper;
-import at.rtr.rmbt.model.*;
-import at.rtr.rmbt.repository.*;
+import at.rtr.rmbt.model.GeoLocation;
+import at.rtr.rmbt.model.RadioCell;
+import at.rtr.rmbt.model.RadioSignal;
+import at.rtr.rmbt.model.RtrClient;
+import at.rtr.rmbt.model.Signal;
+import at.rtr.rmbt.model.Test;
+import at.rtr.rmbt.repository.ClientRepository;
+import at.rtr.rmbt.repository.GeoLocationRepository;
+import at.rtr.rmbt.repository.ProviderRepository;
+import at.rtr.rmbt.repository.RadioSignalRepository;
+import at.rtr.rmbt.repository.SignalRepository;
+import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.SignalRegisterRequest;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
-import at.rtr.rmbt.response.*;
+import at.rtr.rmbt.response.SignalDetailsResponse;
+import at.rtr.rmbt.response.SignalLocationResponse;
+import at.rtr.rmbt.response.SignalMeasurementResponse;
+import at.rtr.rmbt.response.SignalResultResponse;
+import at.rtr.rmbt.response.SignalSettingsResponse;
+import at.rtr.rmbt.response.SignalStrengthResponse;
 import at.rtr.rmbt.service.GeoLocationService;
 import at.rtr.rmbt.service.RadioCellService;
 import at.rtr.rmbt.service.RadioSignalService;
@@ -34,7 +49,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -156,7 +177,7 @@ public class SignalServiceImpl implements SignalService {
                 .signalStrength(radioSignalRepository.findAllByCellUUIDInOrderByTimeAsc(radioCellUUIDs.keySet()).stream()
                         .map(signal -> {
                             var signalStrengthResponseBuilder = SignalStrengthResponse.builder()
-                                    .time(signal.getTimeNs() != null && signal.getTimeNs() > 0 ? TimeUnit.SECONDS.toNanos(signal.getTimeNs()) : 0.0)
+                                    .time(signal.getTimeNs() != null && signal.getTimeNs() > 0 ? TimeUnit.NANOSECONDS.toSeconds(signal.getTimeNs()) : 0.0)
                                     .signalStrength(getSignalStrength(signal));
                             setRadioCellInfo(radioCellUUIDs, signal, signalStrengthResponseBuilder);
 
@@ -189,7 +210,7 @@ public class SignalServiceImpl implements SignalService {
                         .altitude(FormatUtils.format(Constants.SIGNAL_STRENGTH_ALTITUDE_TEMPLATE, geoLocation.getAltitude()))
                         .bearing(FormatUtils.format(Constants.SIGNAL_STRENGTH_BEARING_TEMPLATE, geoLocation.getBearing()))
                         .location(geoLocation.getLocation())
-                        .time(geoLocation.getTimeNs() != null && geoLocation.getTimeNs() > 0 ? TimeUnit.SECONDS.toNanos(geoLocation.getTimeNs()) : 0.0)
+                        .time(geoLocation.getTimeNs() != null && geoLocation.getTimeNs() > 0 ? TimeUnit.NANOSECONDS.toSeconds(geoLocation.getTimeNs()) : 0.0)
                         .build())
                 .collect(Collectors.toList());
     }
