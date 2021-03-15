@@ -1,6 +1,7 @@
 package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.TestConstants;
+import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.repository.NetworkTypeRepository;
 import at.rtr.rmbt.repository.TestRepository;
@@ -42,6 +43,8 @@ public class ResultServiceImplTest {
     private PingService pingService;
     @MockBean
     private SpeedService speedService;
+    @MockBean
+    private TestMapper testMapper;
 
     @Mock
     private HttpServletRequest httpServletRequest;
@@ -63,7 +66,7 @@ public class ResultServiceImplTest {
     public void setUp() {
         resultService = new ResultServiceImpl(testRepository, geoLocationService, radioCellService,
                 radioSignalService, cellLocationService, signalService, networkTypeRepository,
-                pingService, speedService, applicationProperties);
+                pingService, speedService, applicationProperties, testMapper);
     }
 
     @Test
@@ -71,7 +74,7 @@ public class ResultServiceImplTest {
         when(resultRequest.getTestToken()).thenReturn(TestConstants.DEFAULT_TEST_TOKEN);
         when(testRepository.findByUuidOrOpenTestUuid(TestConstants.DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
         when(resultRequest.getClientVersion()).thenReturn(TestConstants.DEFAULT_CLIENT_VERSION);
-        when(resultRequest.getClientName()).thenReturn(TestConstants.DEFAULT_CLIENT_NAME);
+        when(resultRequest.getClientName()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE);
         when(resultRequest.getDownloadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
         when(resultRequest.getUploadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
         when(resultRequest.getPingShortest()).thenReturn(TestConstants.DEFAULT_RESULT_PING_SHORTEST);
@@ -81,5 +84,6 @@ public class ResultServiceImplTest {
         resultService.processResultRequest(httpServletRequest, resultRequest);
 
         verify(testRepository).save(test);
+        verify(testMapper).updateTestWithResultRequest(resultRequest, test);
     }
 }

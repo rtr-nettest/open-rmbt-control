@@ -1,5 +1,6 @@
 package at.rtr.rmbt.request;
 
+import at.rtr.rmbt.enums.TestPlatform;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -32,12 +33,18 @@ public class SignalResultRequest {
     @JsonProperty(value = "client_uuid")
     private final UUID clientUUID;
 
+    @JsonProperty(value = "client_version")
+    private final String clientVersion;
+
+    @JsonProperty(value = "client_language")
+    private final String clientLanguage;
+
     @ApiModelProperty(notes = "Time zone of client", example = "Europe/Prague")
     @JsonProperty(value = "timezone")
     private final String timezone;
 
     @JsonProperty(value = "platform")
-    private final String platform;
+    private final TestPlatform platform;
 
     @JsonProperty(value = "product")
     private final String product;
@@ -58,7 +65,7 @@ public class SignalResultRequest {
     private final String clientSoftwareVersion;
 
     @JsonProperty(value = "network_type")
-    private final String networkType;
+    private final Integer networkType;
 
     @JsonProperty(value = "wifi_supplicant_state")
     private final String wifiSupplicantState;
@@ -79,7 +86,7 @@ public class SignalResultRequest {
     private final String telephonyNetworkOperator;
 
     @JsonProperty(value = "telephony_network_is_roaming")
-    private final String telephonyNetworkIsRoaming;
+    private final Boolean telephonyNetworkIsRoaming;
 
     @JsonProperty(value = "telephony_network_country")
     private final String telephonyNetworkCountry;
@@ -94,10 +101,10 @@ public class SignalResultRequest {
     private final String telephonyNetworkSimOperator;
 
     @JsonProperty(value = "telephony_phone_type")
-    private final String telephonyPhoneType;
+    private final Integer telephonyPhoneType;
 
     @JsonProperty(value = "telephony_data_state")
-    private final String telephonyDataState;
+    private final Integer telephonyDataState;
 
     @JsonProperty(value = "telephony_apn")
     private final String telephonyAPN;

@@ -207,6 +207,7 @@ public class SignalServiceImplTest {
 
         verify(test).setLastSequenceNumber(2);
         verify(testRepository).save(test);
+        verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
 
@@ -226,6 +227,7 @@ public class SignalServiceImplTest {
 
         assertEquals(TestConstants.DEFAULT_UUID, response.getTestUUID());
         verify(testRepository, times(2)).save(testArgumentCaptor.capture());
+        verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, testArgumentCaptor.getAllValues().get(0).getOpenTestUuid());
     }
 
@@ -249,6 +251,7 @@ public class SignalServiceImplTest {
 
         verify(test).setLastSequenceNumber(2);
         verify(testRepository).save(test);
+        verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         verify(radioSignalService).saveRadioSignalRequests(List.of(radioSignalRequest), test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
@@ -289,6 +292,7 @@ public class SignalServiceImplTest {
 
         verify(test).setLastSequenceNumber(2);
         verify(testRepository).save(test);
+        verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         verify(geoLocationService).processGeoLocationRequests(List.of(geoLocationRequestFirst, geoLocationRequestSecond), test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
@@ -317,6 +321,7 @@ public class SignalServiceImplTest {
         verify(test).setClientIpLocalType(HelperFunctions.IpType(defaultIpLocalAddress));
         verify(test).setNatType(HelperFunctions.getNatType(defaultIpLocalAddress, defaultIpPublicAddress));
         verify(testRepository).save(test);
+        verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
 

@@ -59,7 +59,7 @@ public class ResultControllerTest {
 
     private ResultRequest getResultRequest() {
         return ResultRequest.builder()
-                .clientName(TestConstants.DEFAULT_CLIENT_NAME)
+                .clientName(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE)
                 .build();
     }
 }

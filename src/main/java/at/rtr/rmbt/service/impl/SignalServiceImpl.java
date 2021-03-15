@@ -9,27 +9,12 @@ import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.InvalidSequenceException;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.mapper.TestMapper;
-import at.rtr.rmbt.model.GeoLocation;
-import at.rtr.rmbt.model.RadioCell;
-import at.rtr.rmbt.model.RadioSignal;
-import at.rtr.rmbt.model.RtrClient;
-import at.rtr.rmbt.model.Signal;
-import at.rtr.rmbt.model.Test;
-import at.rtr.rmbt.repository.ClientRepository;
-import at.rtr.rmbt.repository.GeoLocationRepository;
-import at.rtr.rmbt.repository.ProviderRepository;
-import at.rtr.rmbt.repository.RadioSignalRepository;
-import at.rtr.rmbt.repository.SignalRepository;
-import at.rtr.rmbt.repository.TestRepository;
+import at.rtr.rmbt.model.*;
+import at.rtr.rmbt.repository.*;
 import at.rtr.rmbt.request.SignalRegisterRequest;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
-import at.rtr.rmbt.response.SignalDetailsResponse;
-import at.rtr.rmbt.response.SignalLocationResponse;
-import at.rtr.rmbt.response.SignalMeasurementResponse;
-import at.rtr.rmbt.response.SignalResultResponse;
-import at.rtr.rmbt.response.SignalSettingsResponse;
-import at.rtr.rmbt.response.SignalStrengthResponse;
+import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoLocationService;
 import at.rtr.rmbt.service.RadioCellService;
 import at.rtr.rmbt.service.RadioSignalService;
@@ -49,13 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -147,6 +126,8 @@ public class SignalServiceImpl implements SignalService {
             throw new InvalidSequenceException();
         }
         updatedTest.setLastSequenceNumber(sequenceNumber.intValue());
+
+        testMapper.updateTestWithSignalResultRequest(signalResultRequest, updatedTest);
 
         updateIpAddress(signalResultRequest, updatedTest);
 
