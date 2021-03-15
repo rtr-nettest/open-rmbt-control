@@ -5,6 +5,7 @@ import at.rtr.rmbt.constant.ErrorMessage;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.exception.TestNotFoundException;
+import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.repository.NetworkTypeRepository;
@@ -39,6 +40,7 @@ public class ResultServiceImpl implements ResultService {
     private final PingService pingService;
     private final SpeedService speedService;
     private final ApplicationProperties applicationProperties;
+    private final TestMapper testMapper;
 
     private final static Pattern MCC_MNC_PATTERN = Pattern.compile("\\d{3}-\\d+");
 
@@ -50,9 +52,9 @@ public class ResultServiceImpl implements ResultService {
         Test test = testRepository.findByUuidOrOpenTestUuid(requestUUID)
                 .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.TEST_NOT_FOUND, requestUUID)));
         verifyClientVersion(resultRequest);
+        testMapper.updateTestWithResultRequest(resultRequest, test);
         test.setNetworkOperator(getOperator(resultRequest.getTelephonyNetworkOperator()));
         test.setNetworkSimOperator(getOperator(resultRequest.getTelephonyNetworkSimOperator()));
-        test.setUserServerSelection(resultRequest.isUserServerSelection());
         setRMBTClientInfo(resultRequest, test);
         setSourceIp(httpServletRequest, test);
         processSpeedData(resultRequest, test);
@@ -213,7 +215,7 @@ public class ResultServiceImpl implements ResultService {
     private void verifyClientVersion(ResultRequest resultRequest) {
         ValidateUtils.validateClientVersion(applicationProperties.getVersion(), resultRequest.getClientVersion());
 
-        if (!applicationProperties.getClientNames().contains(resultRequest.getClientName())) {
+        if (!applicationProperties.getClientNames().contains(resultRequest.getClientName().getLabel())) {
             throw new NotSupportedClientVersionException();
         }
     }
