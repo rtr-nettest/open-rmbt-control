@@ -334,6 +334,13 @@ public interface TestConstants {
     String DEFAULT_TEST_NDT_MAIN = "DEFAULT_TEST_NDT_MAIN";
     String DEFAULT_TEST_NDT_STAT = "DEFAULT_TEST_NDT_STAT";
     String DEFAULT_TEST_NDT_DIAG = "DEFAULT_TEST_NDT_DIAG";
+    String DEFAULT_USER_AGENT_STRING = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36";
+    String DEFAULT_REQUEST_URL = "DEFAULT_REQUEST_URL";
+    StringBuffer DEFAULT_REQUEST_URL_BUFFER = new StringBuffer(DEFAULT_REQUEST_URL);
+    String DEFAULT_USER_AGENT_PRODUCT = "Chrome";
+    String DEFAULT_USER_AGENT_VERSION = "89.0.4389.82";
+    String DEFAULT_USER_AGENT_CATEGORY = "pc";
+    String DEFAULT_USER_AGENT_OS = "Windows 10";
 
 
     interface Database {
