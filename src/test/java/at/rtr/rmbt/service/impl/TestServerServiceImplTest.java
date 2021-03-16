@@ -114,11 +114,10 @@ public class TestServerServiceImplTest {
         when(testServer.getUid()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_UID);
         when(testRepository.findLastTestByServerIdIn(Set.of(TestConstants.DEFAULT_TEST_SERVER_UID))).thenReturn(List.of(lastTest));
         when(testRepository.findLastSuccessTestByServerIdInAndStatusIn(Set.of(TestConstants.DEFAULT_TEST_SERVER_UID), List.of(TestStatus.FINISHED.toString()))).thenReturn(List.of(lastSuccessfulTest));
-        when(lastTest.getServerId()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_UID);
+        when(lastTest.getTestServer()).thenReturn(testServer);
         when(lastTest.getTime()).thenReturn(TestConstants.DEFAULT_LAST_TEST_ZONED_DATE_TIME);
-        when(lastSuccessfulTest.getServerId()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_UID);
+        when(lastSuccessfulTest.getTestServer()).thenReturn(testServer);
         when(lastSuccessfulTest.getTime()).thenReturn(TestConstants.DEFAULT_LAST_SUCCESSFUL_TEST_ZONED_DATE_TIME);
-
         when(testServerMapper.testServerToTestServerResponse(testServer, TestConstants.DEFAULT_LAST_TEST_TIMESTAMP, TestConstants.DEFAULT_LAST_SUCCESSFUL_TEST_TIMESTAMP, TestConstants.DEFAULT_FLAG_TRUE)).thenReturn(testServerResponse);
 
         var responseList = testServerService.getAllTestServer();

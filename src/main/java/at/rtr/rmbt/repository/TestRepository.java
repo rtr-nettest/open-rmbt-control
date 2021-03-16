@@ -1,5 +1,6 @@
 package at.rtr.rmbt.repository;
 
+import at.rtr.rmbt.dto.LteFrequencyDto;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.model.Test;
 import org.springframework.data.domain.Page;
@@ -46,6 +47,9 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long> {
     @Query(value = "SELECT * FROM test WHERE uuid = :testUUID AND (status is null or status in (:testStatuses))", nativeQuery = true)
     Optional<Test> findByUuidAndStatusesIn(UUID testUUID, Collection<String> testStatuses);
 
+    @Query(value = "SELECT * FROM test WHERE deleted = false AND implausible = false AND uuid = :testUUID AND (status is null or status in (:testStatuses))", nativeQuery = true)
+    Optional<Test> findByUuidAndStatusesInAndActive(UUID testUUID, Collection<String> testStatuses);
+
     @Query(
             value = "SELECT * " +
                     "FROM test t " +
@@ -78,4 +82,9 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long> {
 
     @Query("select t from Test t where t.uuid = :uuid or t.openTestUuid = :uuid")
     Optional<Test> findByUuidOrOpenTestUuid(UUID uuid);
+
+    @Query(value = "SELECT DISTINCT new at.rtr.rmbt.dto.LteFrequencyDto(r.channelNumber, r.technology) " +
+            "  FROM RadioCell r" +
+            "  WHERE r.test.openTestUuid = :openTestUUID AND r.active = true AND NOT r.technology = 'WLAN'")
+    List<LteFrequencyDto> findLteFrequencyByOpenTestUUID(UUID openTestUUID);
 }

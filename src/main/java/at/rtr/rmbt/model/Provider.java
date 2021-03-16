@@ -19,6 +19,9 @@ public class Provider {
     @Column(name = "uid")
     private Long id;
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "shortname")
+    private String shortName;
 }

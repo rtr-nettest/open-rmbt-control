@@ -38,14 +38,14 @@ public class RadioCellServiceImpl implements RadioCellService {
             RadioCell newRadioCell = radioCellMapper.radioCellRequestToRadioCell(cell, test);
             newRadioCells.add(newRadioCell);
 
-            if(newRadioCell.isActive()){
+            if (newRadioCell.isActive()) {
                 if (channelNumber == null) {
                     channelNumber = newRadioCell.getChannelNumber();
                 } else if (!channelNumber.equals(newRadioCell.getChannelNumber())) {
                     channelChanged = true;
                 }
 
-                if ( newRadioCell.getTechnology() != NetworkGroupName.WLAN) {
+                if (newRadioCell.getTechnology() != NetworkGroupName.WLAN) {
 
                     if (locationId == null && !locationIdChanged && newRadioCell.getLocationId() != null) {
                         locationId = newRadioCell.getLocationId().intValue();
@@ -68,7 +68,7 @@ public class RadioCellServiceImpl implements RadioCellService {
 
                     if (newRadioCell.getChannelNumber() != null && !radioBandChanged) {
 
-                        BandCalculationUtil.FrequencyInformation fi = BandCalculationUtil.getFrequencyInformationFromRadioCell(newRadioCell);
+                        BandCalculationUtil.FrequencyInformation fi = BandCalculationUtil.getFrequencyInformationFromChannelNumberAndTechnology(newRadioCell.getChannelNumber(), newRadioCell.getTechnology());
 
                         if (fi != null) {
                             if (radioBand == null || radioBand.equals(fi.getBand())) {

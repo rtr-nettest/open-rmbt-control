@@ -59,7 +59,8 @@ public class ResultServiceImplTest {
             "0.1.0 || 0.3.0 || ^1.0.0",
             1,
             2,
-            3
+            3,
+            10000
     );
 
     @Before

@@ -20,6 +20,7 @@ public class ApplicationProperties {
     private Integer threads;
     private Integer duration;
     private Integer pings;
+    private Integer accuracyDetailLimit;
 
     @Getter
     @Setter

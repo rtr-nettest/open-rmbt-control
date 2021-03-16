@@ -4,7 +4,6 @@ import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.TestServerNotFoundException;
 import at.rtr.rmbt.mapper.TestServerMapper;
-import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.repository.TestServerRepository;
@@ -77,10 +76,10 @@ public class TestServerServiceImpl implements TestServerService {
                 .collect(Collectors.toSet());
 
         Map<Long, Timestamp> lastTest = testRepository.findLastTestByServerIdIn(testServersId).stream()
-                .collect(Collectors.toMap(Test::getServerId, test -> Timestamp.valueOf(test.getTime().toLocalDateTime())));
+                .collect(Collectors.toMap(test -> test.getTestServer().getUid(), test -> Timestamp.valueOf(test.getTime().toLocalDateTime())));
 
         Map<Long, Timestamp> lastSuccessfulTest = testRepository.findLastSuccessTestByServerIdInAndStatusIn(testServersId, List.of(TestStatus.FINISHED.toString())).stream()
-                .collect(Collectors.toMap(Test::getServerId, test -> Timestamp.valueOf(test.getTime().toLocalDateTime())));
+                .collect(Collectors.toMap(test -> test.getTestServer().getUid(), test -> Timestamp.valueOf(test.getTime().toLocalDateTime())));
 
         return testServers.stream()
                 .map(x -> {
