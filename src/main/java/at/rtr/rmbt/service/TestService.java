@@ -1,7 +1,9 @@
 package at.rtr.rmbt.service;
 
 import at.rtr.rmbt.model.Test;
+import at.rtr.rmbt.request.TestResultDetailRequest;
 import at.rtr.rmbt.response.TestResponse;
+import at.rtr.rmbt.response.TestResultDetailResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,4 +20,6 @@ public interface TestService {
     List<String> getGroupNameByClientId(Long clientId);
 
     TestResponse getTestByUUID(UUID testUUID);
+
+    TestResultDetailResponse getTestResultDetailByTestUUID(TestResultDetailRequest testResultDetailRequest);
 }

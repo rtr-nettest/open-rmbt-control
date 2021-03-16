@@ -25,7 +25,7 @@ public class QosTestTypeDescMapperImplTest {
     }
 
     @Test
-    public void qosTestTypeDescToQosTestTypeDescResponse_whenCommonData_expectQoSTestTypeDescResponse() {
+    public void qosTestTypeDescToQoSTestTypeDescResponse_whenCommonData_expectQoSTestTypeDescResponse() {
         when(qosTestTypeDesc.getName()).thenReturn(TestConstants.DEFAULT_QOS_TEST_TYPE_DESC_NAME);
         when(qosTestTypeDesc.getTest()).thenReturn(TestConstants.DEFAULT_TEST_TYPE);
 

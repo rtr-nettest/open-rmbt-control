@@ -1,7 +1,9 @@
 package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.constant.URIConstants;
+import at.rtr.rmbt.request.TestResultDetailRequest;
 import at.rtr.rmbt.response.TestResponse;
+import at.rtr.rmbt.response.TestResultDetailResponse;
 import at.rtr.rmbt.service.TestService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +24,12 @@ public class TestController {
     @ResponseStatus(HttpStatus.OK)
     public TestResponse getTestByUUID(@PathVariable UUID testUUID) {
         return testService.getTestByUUID(testUUID);
+    }
+
+    @PostMapping(URIConstants.TEST_RESULT_DETAIL)
+    @ApiOperation(value = "Get test result detail")
+    @ResponseStatus(HttpStatus.OK)
+    public TestResultDetailResponse getTestResultDetailByTestUUID(@RequestBody TestResultDetailRequest testResultDetailRequestl) {
+        return testService.getTestResultDetailByTestUUID(testResultDetailRequestl);
     }
 }

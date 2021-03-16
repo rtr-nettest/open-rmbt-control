@@ -14,8 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -54,7 +52,8 @@ public class QosMeasurementServiceImplTest {
             "0.1.0 || 0.3.0 || ^1.0.0",
             1,
             2,
-            3
+            3,
+            1000
     );
 
     @Before

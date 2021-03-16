@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "geo_location")
-public class GeoLocation {
+public class GeoLocation implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

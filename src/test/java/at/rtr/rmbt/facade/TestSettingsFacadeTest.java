@@ -113,7 +113,8 @@ public class TestSettingsFacadeTest {
             "1.2",
             1,
             2,
-            3
+            3,
+            10000
     );
     private final RollBackService rollBackService = mock(RollBackService.class);
 
@@ -235,7 +236,7 @@ public class TestSettingsFacadeTest {
         assertEquals(testSettingsRequest.getTestSetVersion(), testResult.getClientVersion());
         assertEquals(testSettingsRequest.getSoftwareVersion(), testResult.getClientSoftwareVersion());
         assertEquals(request.getRemoteAddr(), testResult.getClientPublicIp());
-        assertEquals(testServer.getUid(), testResult.getServerId());
+        assertEquals(testServer.getUid(), testResult.getTestServer().getUid());
         assertEquals(testServer.getPortSsl(), testResult.getServerPort());
         assertEquals(applicationProperties.getDuration(), testResult.getDuration());
         assertEquals(testSettingsRequest.getNumberOfThreads(), testResult.getNumberOfThreads());

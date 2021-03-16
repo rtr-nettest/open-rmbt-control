@@ -82,4 +82,6 @@ public interface Config {
     List<ServerType> SERVER_WS_TEST_SERVER_TYPES = List.of(ServerType.RMBTws, ServerType.RMBThttp);
     List<ServerType> SERVER_QOS_TEST_SERVER_TYPES = List.of(ServerType.QoS);
     List<String> SIGNAL_RESULT_STATUSES = List.of(TestStatus.SIGNAL_STARTED.toString(), TestStatus.SIGNAL.toString());
+    List<String> TEST_RESULT_DETAIL_STATUSES = List.of(TestStatus.FINISHED.toString());
+    Integer SIGNIFICANT_PLACES = 2;
 }

@@ -297,7 +297,7 @@ public class TestSettingsFacade {
         test.setClientPublicIp(clientIpdAddress);
         test.setClientPublicIpAnonymized(HelperFunctions.anonymizeIp(clientAddress));
         test.setCountryGeoip(geoIpCountry);
-        test.setServerId(testServer.getUid());
+        test.setTestServer(testServer);
         test.setServerPort(serverTypeDetails.isEncrypted() ? testServer.getPortSsl() : testServer.getPort());
         test.setUseSsl(serverTypeDetails.isEncrypted());
         test.setTimezone(timeZoneId);

@@ -53,8 +53,9 @@ public class Test implements Serializable {
     @Column(name = "token")
     private String token;
 
-    @Column(name = "server_id")
-    private Long serverId;
+    @OneToOne
+    @JoinColumn(name = "server_id")
+    private TestServer testServer;
 
     @Column(name = "port")
     private Integer serverPort;
@@ -218,8 +219,9 @@ public class Test implements Serializable {
     @Column(name = "testSlot")
     private Integer testSlot;
 
-    @Column(name = "provider_id")
-    private Integer providerId;
+    @OneToOne
+    @JoinColumn(name = "provider_id")
+    private Provider provider;
 
     @Column(name = "network_is_roaming")
     private Boolean networkIsRoaming;
@@ -261,8 +263,9 @@ public class Test implements Serializable {
     @Column(name = "zip_code_geo")
     private Integer zipCodeGeo;
 
-    @Column(name = "mobile_provider_id")
-    private Integer mobileProviderId;
+    @OneToOne
+    @JoinColumn(name = "mobile_provider_id")
+    private Provider mobileProvider;
 
     @Column(name = "roaming_type")
     private Integer roamingType;
@@ -481,6 +484,17 @@ public class Test implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "test")
     private List<RadioCell> radioCell;
+
+    @OneToOne(mappedBy = "test")
+    private TestNdt testNdt;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "open_test_uuid",
+            referencedColumnName = "open_test_uuid",
+            insertable = false, nullable = false, updatable = false
+    )
+    private TestLocation testLocation;
 
     @PrePersist
     protected void preInsert() {

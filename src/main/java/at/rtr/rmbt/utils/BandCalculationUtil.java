@@ -16,7 +16,7 @@
 
 package at.rtr.rmbt.utils;
 
-import at.rtr.rmbt.model.RadioCell;
+import at.rtr.rmbt.enums.NetworkGroupName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,19 +25,17 @@ import java.util.List;
 
 public class BandCalculationUtil {
 
-    public static FrequencyInformation getFrequencyInformationFromRadioCell(RadioCell radioCell) {
-        if (radioCell.getChannelNumber() == null)
-            return null;
+    public static FrequencyInformation getFrequencyInformationFromChannelNumberAndTechnology(Integer channelNumber, NetworkGroupName technology) {
         FrequencyInformation fi = null;
-        switch (radioCell.getTechnology()) {
+        switch (technology) {
             case G2:
-                fi = BandCalculationUtil.getBandFromArfcn(radioCell.getChannelNumber().intValue());
+                fi = BandCalculationUtil.getBandFromArfcn(channelNumber);
                 break;
             case G3:
-                fi = BandCalculationUtil.getBandFromUarfcn(radioCell.getChannelNumber().intValue());
+                fi = BandCalculationUtil.getBandFromUarfcn(channelNumber);
                 break;
             case G4:
-                fi = BandCalculationUtil.getBandFromEarfcn(radioCell.getChannelNumber().intValue());
+                fi = BandCalculationUtil.getBandFromEarfcn(channelNumber);
                 break;
         }
         return fi;
