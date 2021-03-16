@@ -151,12 +151,11 @@ public class SignalServiceImpl implements SignalService {
                 .collect(Collectors.toMap(RadioCell::getUuid, Function.identity()));
 
         List<GeoLocation> geoLocations = geoLocationRepository.findAllByTestOrderByTimeAsc(test);
-
         return SignalDetailsResponse.builder()
                 .signalStrength(radioSignalRepository.findAllByCellUUIDInOrderByTimeAsc(radioCellUUIDs.keySet()).stream()
                         .map(signal -> {
                             var signalStrengthResponseBuilder = SignalStrengthResponse.builder()
-                                    .time(signal.getTimeNs() != null && signal.getTimeNs() > 0 ? TimeUnit.NANOSECONDS.toSeconds(signal.getTimeNs()) : 0.0)
+                                    .time(formatToSeconds(signal.getTimeNs()))
                                     .signalStrength(getSignalStrength(signal));
                             setRadioCellInfo(radioCellUUIDs, signal, signalStrengthResponseBuilder);
 
@@ -164,7 +163,7 @@ public class SignalServiceImpl implements SignalService {
                         })
                         .collect(Collectors.toList()))
                 .testResponse(testMapper.testToTestResponse(test))
-                .signalLocation(toLocationResponse(geoLocations, test))
+                .signalLocation(toLocationResponse(geoLocations))
                 .build();
     }
 
@@ -181,7 +180,7 @@ public class SignalServiceImpl implements SignalService {
                 );
     }
 
-    private List<SignalLocationResponse> toLocationResponse(List<GeoLocation> geoLocations, Test test) {
+    private List<SignalLocationResponse> toLocationResponse(List<GeoLocation> geoLocations) {
         return geoLocations.stream()
                 .map(geoLocation -> SignalLocationResponse.builder()
                         .accuracy(FormatUtils.format(Constants.SIGNAL_STRENGTH_ACCURACY_TEMPLATE, geoLocation.getAccuracy()))
@@ -189,7 +188,7 @@ public class SignalServiceImpl implements SignalService {
                         .altitude(FormatUtils.format(Constants.SIGNAL_STRENGTH_ALTITUDE_TEMPLATE, geoLocation.getAltitude()))
                         .bearing(FormatUtils.format(Constants.SIGNAL_STRENGTH_BEARING_TEMPLATE, geoLocation.getBearing()))
                         .location(geoLocation.getLocation())
-                        .time(geoLocation.getTimeNs() != null && geoLocation.getTimeNs() > 0 ? TimeUnit.NANOSECONDS.toSeconds(geoLocation.getTimeNs()) : 0.0)
+                        .time(formatToSeconds(geoLocation.getTimeNs()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -335,5 +334,9 @@ public class SignalServiceImpl implements SignalService {
     private String getDefaultResultUrl(HttpServletRequest req) {
         return String.format("%s://%s:%s%s", req.getScheme(), req.getServerName(), req.getServerPort(), req.getRequestURI())
                 .replace("Request", "Result");
+    }
+
+    private static Double formatToSeconds(Long timeNs) {
+        return timeNs != null && timeNs > 0 ? Math.round(timeNs / 1000000.0) / 1000.0 : 0.000;
     }
 }
