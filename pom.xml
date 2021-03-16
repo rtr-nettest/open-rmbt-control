@@ -178,6 +178,11 @@
             <artifactId>byte-buddy</artifactId>
             <version>1.10.20</version>
         </dependency>
+        <dependency>
+            <groupId>is.tagomor.woothee</groupId>
+            <artifactId>woothee-java</artifactId>
+            <version>1.11.0</version>
+        </dependency>
     </dependencies>
 
     <build>
