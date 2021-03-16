@@ -69,10 +69,6 @@ public class SignalServiceImplTest {
     @MockBean
     private GeoLocationMapper geoLocationMapper;
     @MockBean
-    private RadioCellMapper radioCellMapper;
-    @MockBean
-    private RadioSignalMapper radioSignalMapper;
-    @MockBean
     private RadioSignalService radioSignalService;
     @MockBean
     private TestMapper testMapper;
@@ -321,7 +317,7 @@ public class SignalServiceImplTest {
         when(geoLocationFirst.getAltitude()).thenReturn(TestConstants.DEFAULT_ALTITUDE);
         when(geoLocationFirst.getBearing()).thenReturn(TestConstants.DEFAULT_BEARING);
         when(geoLocationFirst.getLocation()).thenReturn(geometryLocation);
-        when(geoLocationFirst.getTimeNs()).thenReturn(-DEFAULT_TIME_NS);
+        when(geoLocationFirst.getTimeNs()).thenReturn(DEFAULT_TIME_NS);
         when(radioSignalRepository.findAllByCellUUIDInOrderByTimeAsc(Set.of(TestConstants.DEFAULT_RADIO_CELL_UUID))).thenReturn(List.of(radioSignal));
         when(radioSignal.getTimeNs()).thenReturn(DEFAULT_TIME_NS);
         when(radioSignal.getCellUUID()).thenReturn(TestConstants.DEFAULT_RADIO_CELL_UUID);
@@ -425,7 +421,7 @@ public class SignalServiceImplTest {
                                 .pci(TestConstants.DEFAULT_PRIMARY_SCRAMBLING_CODE)
                                 .signalStrength(TestConstants.DEFAULT_SIGNAL_STRENGTH_RESPONSE)
                                 .tac(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST)
-                                .time((double) TimeUnit.NANOSECONDS.toSeconds(DEFAULT_TIME_NS))
+                                .time(0.385)
                                 .build()))
                 .signalLocation(Collections.singletonList(
                         SignalLocationResponse.builder()
@@ -434,7 +430,7 @@ public class SignalServiceImplTest {
                                 .accuracy(TestConstants.DEFAULT_SIGNAL_STRENGTH_ACCURACY_RESPONSE)
                                 .speed(TestConstants.DEFAULT_SIGNAL_STRENGTH_SPEED_RESPONSE)
                                 .location(geometryLocation)
-                                .time(0.0)
+                                .time(0.385)
                                 .build()))
                 .testResponse(getTestResponse())
                 .build();
