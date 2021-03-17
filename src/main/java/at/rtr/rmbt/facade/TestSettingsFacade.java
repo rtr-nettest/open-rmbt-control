@@ -306,11 +306,15 @@ public class TestSettingsFacade {
         test.setNumberOfThreads(numberOfThreads);
         test.setStatus(TestStatus.STARTED);
         test.setSoftwareRevision(testSettingsRequest.getSoftwareRevision());
-        test.setClientTestCounter(testSettingsRequest.getTestCounter() == -1 ? null : testSettingsRequest.getTestCounter().longValue());
         test.setClientPreviousTestStatus(testSettingsRequest.getPreviousTestStatus());
         test.setPublicIpAsn(asn);
         test.setPublicIpAsName(asName);
         test.setCountryAsn(asCountry);
+        test.setClientTestCounter(
+            testSettingsRequest.getTestCounter() == null || testSettingsRequest.getTestCounter() == -1 ?
+                null :
+                testSettingsRequest.getTestCounter().longValue()
+        );
         String reverseDns = HelperFunctions.reverseDNSLookup(clientAddress);
         if (StringUtils.isNotBlank(reverseDns))
             test.setPublicIpRdns(reverseDns.replaceFirst("\\.$", ""));

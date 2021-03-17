@@ -57,7 +57,7 @@ public class TestSettingsFacadeTest {
             .softwareVersionCode(1)
             .ndt(false)
             .previousTestStatus(null)
-            .testCounter(-1)
+            .testCounter(null)
             .softwareRevision("1")
             .softwareVersion("1")
             .userServerSelection(true)
