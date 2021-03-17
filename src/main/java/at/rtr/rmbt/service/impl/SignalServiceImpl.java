@@ -170,7 +170,7 @@ public class SignalServiceImpl implements SignalService {
     private void setRadioCellInfo(Map<UUID, RadioCell> radioCellUUIDs, RadioSignal signal, SignalStrengthResponse.SignalStrengthResponseBuilder builder) {
         Optional.ofNullable(radioCellUUIDs.get(signal.getCellUUID()))
                 .ifPresent(radioCell -> builder
-                        .technology(radioCell.getTechnology().getLabelEn())
+                        .technology(HelperFunctions.getNetworkTypeName(signal.getNetworkTypeId()))
                         .ci(radioCell.getAreaCode())
                         .tac(radioCell.getLocationId())
                         .pci(radioCell.getPrimaryScramblingCode())

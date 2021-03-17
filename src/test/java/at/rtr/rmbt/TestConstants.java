@@ -129,6 +129,8 @@ public interface TestConstants {
     Integer DEFAULT_SIZE = 10;
     String DEFAULT_SORT = "uuid,desc";
     String DEFAULT_SORT_PROPERTY = "uuid";
+    String DEFAULT_NETWORK_NAME = "2G (GSM)";
+    Integer DEFAULT_NETWORK_ID = 16;
     Long DEFAULT_MILLIS = 1613064639000L;
     Long DEFAULT_TIME_NS = 385093800L;
     Long DEFAULT_TIME_NS_LAST = 415093800L;

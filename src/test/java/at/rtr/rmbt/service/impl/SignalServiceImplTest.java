@@ -35,8 +35,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
+import static at.rtr.rmbt.TestConstants.DEFAULT_NETWORK_ID;
+import static at.rtr.rmbt.TestConstants.DEFAULT_NETWORK_NAME;
 import static at.rtr.rmbt.TestConstants.DEFAULT_TIME_NS;
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
 import static org.junit.Assert.assertEquals;
@@ -111,8 +112,6 @@ public class SignalServiceImplTest {
     private GeoLocation geoLocationFirst;
     @Mock
     private GeoLocation geoLocationSecond;
-    @Mock
-    private TestResponse testResponse;
     @Mock
     private Geometry geometryLocation;
     @Mock
@@ -324,6 +323,7 @@ public class SignalServiceImplTest {
         when(radioSignal.getSignalStrength()).thenReturn(TestConstants.DEFAULT_SIGNAL_STRENGTH_FIRST);
         when(radioSignal.getTimingAdvance()).thenReturn(TestConstants.DEFAULT_TIMING_ADVANCE);
         when(radioSignal.getLteRSRQ()).thenReturn(TestConstants.DEFAULT_LTE_RSRQ_FIRST);
+        when(radioSignal.getNetworkTypeId()).thenReturn(DEFAULT_NETWORK_ID);
         when(testMapper.testToTestResponse(test)).thenReturn(getTestResponse());
 
         var actual = signalService.getSignalStrength(TestConstants.DEFAULT_UUID);
@@ -413,7 +413,7 @@ public class SignalServiceImplTest {
         return SignalDetailsResponse.builder()
                 .signalStrength(Collections.singletonList(
                         SignalStrengthResponse.builder()
-                                .technology(TestConstants.DEFAULT_TECHNOLOGY_FIRST.getLabelEn())
+                                .technology(DEFAULT_NETWORK_NAME)
                                 .band(TestConstants.DEFAULT_BAND)
                                 .ci(TestConstants.DEFAULT_AREA_CODE_FIRST)
                                 .earfcn(TestConstants.DEFAULT_CHANNEL_NUMBER_FIRST)
