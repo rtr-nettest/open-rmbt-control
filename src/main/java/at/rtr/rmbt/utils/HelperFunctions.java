@@ -70,12 +70,12 @@ public class HelperFunctions {
 
         double temp;
         // latitude
-        temp = java.lang.Math.abs(geoLat);
+        temp = Math.abs(geoLat);
         latd = (int) temp;
         latm = (temp - latd) * 60.0;
 
         // longitude
-        temp = java.lang.Math.abs(geoLong);
+        temp = Math.abs(geoLong);
         lond = (int) temp;
         lonm = (temp - lond) * 60.0;
 

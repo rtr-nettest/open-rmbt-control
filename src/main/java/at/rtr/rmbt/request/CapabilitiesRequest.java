@@ -3,10 +3,12 @@ package at.rtr.rmbt.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
 @Builder
+@EqualsAndHashCode
 public class CapabilitiesRequest {
 
     @JsonProperty(value = "classification")

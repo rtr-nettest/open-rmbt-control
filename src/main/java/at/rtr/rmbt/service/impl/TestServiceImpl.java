@@ -11,26 +11,25 @@ import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
+import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.repository.TestRepository;
+import at.rtr.rmbt.request.CapabilitiesRequest;
 import at.rtr.rmbt.request.TestResultDetailRequest;
-import at.rtr.rmbt.response.TestResponse;
-import at.rtr.rmbt.response.TestResultDetailContainerResponse;
-import at.rtr.rmbt.response.TestResultDetailResponse;
+import at.rtr.rmbt.request.TestResultRequest;
+import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoAnalyticsService;
 import at.rtr.rmbt.service.TestService;
-import at.rtr.rmbt.utils.BandCalculationUtil;
-import at.rtr.rmbt.utils.FormatUtils;
-import at.rtr.rmbt.utils.HelperFunctions;
-import at.rtr.rmbt.utils.MessageUtils;
+import at.rtr.rmbt.utils.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.Format;
+import java.text.MessageFormat;
 import java.util.*;
 
 @Service
@@ -42,6 +41,7 @@ public class TestServiceImpl implements TestService {
     private final ApplicationProperties applicationProperties;
     private final GeoAnalyticsService geoAnalyticsService;
     private final MessageSource messageSource;
+    private final SettingsRepository settingsRepository;
 
     @Override
     public Test save(Test test) {
@@ -96,33 +96,258 @@ public class TestServiceImpl implements TestService {
                 .build();
     }
 
-    private void addGeoLocation(List<TestResultDetailContainerResponse> propertiesList, Locale locale, TestLocation testLocation, UUID openTestUUID) {
-        Double latField = testLocation.getGeoLat();
-        Double longField = testLocation.getGeoLong();
-        Double accuracyField = testLocation.getGeoAccuracy();
-        String providerField = testLocation.getGeoProvider();
-        if (Objects.nonNull(latField) && Objects.nonNull(longField) && Objects.nonNull(accuracyField)) {
-            final double accuracy = accuracyField;
-            if (accuracy < applicationProperties.getAccuracyDetailLimit()) {
-                final StringBuilder geoString = new StringBuilder(HelperFunctions.geoToString(latField,
-                        longField));
-                geoString.append(" (");
-                if (Objects.nonNull(providerField)) {
-                    String provider = providerField.toUpperCase(Locale.US);
-                    switch (provider) {
-                        case "NETWORK":
-                            provider = getStringFromBundle("key_geo_source_network", locale);
-                            break;
-                        case "GPS":
-                            provider = getStringFromBundle("key_geo_source_gps", locale);
-                            break;
-                    }
-                    geoString.append(provider);
-                    geoString.append(", ");
+    @Override
+    public TestResultContainerResponse getTestResult(TestResultRequest testResultRequest) {
+        Test test = testRepository.findByUuidAndStatusesIn(testResultRequest.getTestUUID(), Config.TEST_RESULT_STATUSES)
+                .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.TEST_NOT_FOUND, testResultRequest.getTestUUID())));
+        Locale locale = MessageUtils.getLocaleFormLanguage(testResultRequest.getLanguage(), applicationProperties.getLanguage());
+        String timeString = TimeUtils.getTimeStringFromTest(test, locale);
+        TestResultResponse testResultResponse = TestResultResponse.builder()
+                .measurement(getMeasurements(test, locale, testResultRequest.getCapabilitiesRequest()))
+                .openTestUUID(String.format(Constants.TEST_RESULT_DETAIL_OPEN_TEST_UUID_TEMPLATE, test.getOpenTestUuid()))
+                .shareSubject(MessageFormat.format(getStringFromBundle("RESULT_SHARE_SUBJECT", locale), timeString))
+                .shareText(getShareText(test, timeString, locale))
+                .timeString(timeString)
+                .build();
+        return TestResultContainerResponse.builder()
+                .testResultResponses(List.of(testResultResponse))
+                .build();
+    }
+
+    private List<TestResultMeasurementResponse> getMeasurements(Test test, Locale locale, CapabilitiesRequest capabilitiesRequest) {
+        List<TestResultMeasurementResponse> measurementResponses = new ArrayList<>();
+        addDownloadTestResultMeasurementResponse(measurementResponses, test, locale, capabilitiesRequest);
+        addUploadTestResultMeasurementResponse(measurementResponses, test, locale, capabilitiesRequest);
+        addPingTestResultMeasurementResponse(measurementResponses, test, locale, capabilitiesRequest);
+        addSignalTestResultMeasurementResponse(measurementResponses, test, locale, capabilitiesRequest);
+        return measurementResponses;
+    }
+
+    private void addSignalTestResultMeasurementResponse(List<TestResultMeasurementResponse> measurementResponses, Test test, Locale locale, CapabilitiesRequest capabilitiesRequest) {
+        boolean dualSim = isDualSim(test);
+        boolean useSignal = isUseSignal(test, dualSim);
+
+        if (useSignal) {
+            if (Objects.nonNull(test.getSignalStrength()) || Objects.nonNull(test.getLteRsrp())) {
+                TestResultMeasurementResponse.TestResultMeasurementResponseBuilder signalResponseBuilder = TestResultMeasurementResponse.builder()
+                        .value(getSignalString(test, locale, useSignal));
+                if (Objects.nonNull(test.getSignalStrength())) {
+                    int[] threshold = ClassificationUtils.getThresholdForSignal(test.getNetworkType());
+                    signalResponseBuilder
+                            .classification(ClassificationUtils.classify(threshold, test.getSignalStrength(), capabilitiesRequest.getClassification().getCount()))
+                            .title(getStringFromBundle("RESULT_SIGNAL", locale));
+                } else {
+                    signalResponseBuilder
+                            .classification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_SIGNAL_RSRP, test.getLteRsrp(), capabilitiesRequest.getClassification().getCount()))
+                            .title(getStringFromBundle("RESULT_SIGNAL_RSRP", locale));
                 }
-                geoString.append(String.format(Locale.US, "+/- %.0f m", accuracy));
-                geoString.append(")");
-                addString(propertiesList, locale, "location", geoString.toString());
+
+                TestResultMeasurementResponse signalResponse = signalResponseBuilder.build();
+                measurementResponses.add(signalResponse);
+            }
+        }
+    }
+
+    private void addPingTestResultMeasurementResponse(List<TestResultMeasurementResponse> measurementResponses, Test test, Locale locale, CapabilitiesRequest capabilitiesRequest) {
+        Optional.ofNullable(test.getPingMedian())
+                .ifPresent(pingMedian -> {
+                    TestResultMeasurementResponse pingResponse = TestResultMeasurementResponse.builder()
+                            .title(getStringFromBundle("RESULT_PING", locale))
+                            .value(getPingString(test, locale))
+                            .classification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_PING, pingMedian, capabilitiesRequest.getClassification().getCount()))
+                            .build();
+                    measurementResponses.add(pingResponse);
+                });
+    }
+
+    private void addUploadTestResultMeasurementResponse(List<TestResultMeasurementResponse> measurementResponses, Test test, Locale locale, CapabilitiesRequest capabilitiesRequest) {
+        Optional.ofNullable(test.getUploadSpeed())
+                .ifPresent(uploadSpeed -> {
+                    TestResultMeasurementResponse uploadResponse = TestResultMeasurementResponse.builder()
+                            .title(getStringFromBundle("RESULT_UPLOAD", locale))
+                            .value(getUploadString(test, locale))
+                            .classification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_UPLOAD, uploadSpeed, capabilitiesRequest.getClassification().getCount()))
+                            .build();
+                    measurementResponses.add(uploadResponse);
+                });
+    }
+
+    private void addDownloadTestResultMeasurementResponse(List<TestResultMeasurementResponse> measurementResponses, Test test, Locale locale, CapabilitiesRequest capabilitiesRequest) {
+        Optional.ofNullable(test.getDownloadSpeed())
+                .ifPresent(downloadSpeed -> {
+                    TestResultMeasurementResponse downloadResponse = TestResultMeasurementResponse.builder()
+                            .title(getStringFromBundle("RESULT_DOWNLOAD", locale))
+                            .value(getDownloadString(test, locale))
+                            .classification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_DOWNLOAD, downloadSpeed, capabilitiesRequest.getClassification().getCount()))
+                            .build();
+                    measurementResponses.add(downloadResponse);
+                });
+    }
+
+    private String getShareText(Test test, String timeString, Locale locale) {
+        boolean dualSim = isDualSim(test);
+        boolean useSignal = isUseSignal(test, dualSim);
+        String signalString = getSignalString(test, locale, useSignal);
+        String shareLocationString = getShareLocationString(test, locale);
+        String downloadString = getDownloadString(test, locale);
+        String uploadString = getUploadString(test, locale);
+        String pingString = getPingString(test, locale);
+        String shareTextField4 = getShareTextField4(test, locale, signalString);
+        String platformString = getPlatformString(test);
+        String modelString = getModelString(test);
+        String networkTypeString = getNetworkTypeString(test);
+        String providerString = getProviderString(test, locale);
+        String mobileNetworkString = getMobileNetworkString(test, locale);
+        String urlShareString = getUrlShareString(test, locale);
+
+        if (dualSim) {
+            return MessageFormat.format(getStringFromBundle("RESULT_SHARE_TEXT", locale),
+                    timeString,
+                    downloadString,
+                    uploadString,
+                    pingString,
+                    shareTextField4,
+                    getStringFromBundle("RESULT_DUAL_SIM", locale),
+                    StringUtils.EMPTY,
+                    StringUtils.EMPTY,
+                    platformString,
+                    modelString,
+                    shareLocationString,
+                    urlShareString);
+        } else {
+            return MessageFormat.format(getStringFromBundle("RESULT_SHARE_TEXT", locale),
+                    timeString,
+                    downloadString,
+                    uploadString,
+                    pingString,
+                    shareTextField4,
+                    networkTypeString,
+                    providerString,
+                    mobileNetworkString,
+                    platformString,
+                    modelString,
+                    shareLocationString,
+                    urlShareString);
+        }
+    }
+
+    private String getUrlShareString(Test test, Locale locale) {
+        return settingsRepository.findAllByLangOrLangIsNullAndKeyIn(locale.getLanguage(), List.of(Config.URL_SHARE_KEY)).stream()
+                .findFirst()
+                .map(Settings::getValue)
+                .map(value -> String.join(StringUtils.EMPTY, value, test.getOpenTestUuid().toString()))
+                .orElse(StringUtils.EMPTY);
+    }
+
+    private String getProviderString(Test test, Locale locale) {
+        return Optional.ofNullable(test.getProvider())
+                .map(Provider::getShortName)
+                .map(provider -> MessageFormat.format(getStringFromBundle("RESULT_SHARE_TEXT_PROVIDER_ADD", locale),
+                        provider))
+                .orElse(StringUtils.EMPTY);
+    }
+
+    private String getNetworkTypeString(Test test) {
+        return Optional.ofNullable(test.getNetworkType())
+                .map(HelperFunctions::getNetworkTypeName)
+                .orElse(StringUtils.EMPTY);
+    }
+
+    private String getModelString(Test test) {
+        return Optional.ofNullable(test.getModel())
+                .orElse(StringUtils.EMPTY);
+    }
+
+    private String getPlatformString(Test test) {
+        return Optional.ofNullable(test.getPlatform())
+                .map(TestPlatform::getLabel)
+                .orElse(StringUtils.EMPTY);
+    }
+
+    private String getShareLocationString(Test test, Locale locale) {
+        return Optional.ofNullable(test.getTestLocation())
+                .map(testLocation -> MessageFormat.format(getStringFromBundle("RESULT_SHARE_TEXT_LOCATION_ADD", locale), getGeoLocationString(testLocation, locale)))
+                .orElse(StringUtils.EMPTY);
+    }
+
+    private boolean isUseSignal(Test test, boolean dualSim) {
+        if (dualSim && Objects.nonNull(test.getSimCount())) {
+            return true;
+        }
+        return !dualSim;
+    }
+
+    private boolean isDualSim(Test test) {
+        if (Objects.nonNull(test.getNetworkType()) && test.getNetworkType() > 90) {
+            return false;
+        } else {
+            return Optional.ofNullable(test.getDualSim())
+                    .orElse(false);
+        }
+    }
+
+    private String getSignalString(Test test, Locale locale, boolean useSignal) {
+        if (useSignal) {
+            if (Objects.nonNull(test.getSignalStrength())) {
+                return FormatUtils.formatValueAndUnit(test.getSignalStrength(), getStringFromBundle("RESULT_SIGNAL_UNIT", locale));
+            }
+            if (Objects.nonNull(test.getLteRsrp())) {
+                return FormatUtils.formatValueAndUnit(test.getLteRsrp(), getStringFromBundle("RESULT_SIGNAL_UNIT", locale));
+            }
+        }
+        return null;
+    }
+
+    private String getPingString(Test test, Locale locale) {
+        return Optional.ofNullable(test.getPingMedian())
+                .map(x -> x / Constants.PING_CONVERSION_MULTIPLICATOR)
+                .map(ping -> FormatUtils.formatValueAndUnit(ping, getStringFromBundle("RESULT_PING_UNIT", locale), locale))
+                .orElse(StringUtils.EMPTY);
+    }
+
+    private String getUploadString(Test test, Locale locale) {
+        return Optional.ofNullable(test.getUploadSpeed())
+                .map(x -> x / Constants.BYTES_UNIT_CONVERSION_MULTIPLICATOR)
+                .map(downloadSpeed -> FormatUtils.formatValueAndUnit(downloadSpeed, getStringFromBundle("RESULT_UPLOAD_UNIT", locale), locale))
+                .orElse(StringUtils.EMPTY);
+    }
+
+    private String getDownloadString(Test test, Locale locale) {
+        return Optional.ofNullable(test.getDownloadSpeed())
+                .map(x -> x / Constants.BYTES_UNIT_CONVERSION_MULTIPLICATOR)
+                .map(downloadSpeed -> FormatUtils.formatValueAndUnit(downloadSpeed, getStringFromBundle("RESULT_DOWNLOAD_UNIT", locale), locale))
+                .orElse(StringUtils.EMPTY);
+    }
+
+    private String getMobileNetworkString(Test test, Locale locale) {
+        if (Objects.nonNull(test.getNetworkOperator())) {
+            String mobileString = Optional.ofNullable(test.getMobileProvider())
+                    .map(Provider::getShortName)
+                    .map(providerName -> String.format(Constants.PARENTHESES_TEMPLATE, providerName, test.getNetworkOperator()))
+                    .orElse(test.getNetworkOperator());
+            return MessageFormat.format(getStringFromBundle("RESULT_SHARE_TEXT_MOBILE_ADD", locale), mobileString);
+        } else {
+            return StringUtils.EMPTY;
+        }
+    }
+
+    private String getShareTextField4(Test test, Locale locale, String signalString) {
+        if (Objects.nonNull(signalString)) {
+            if (Objects.isNull(test.getLteRsrp())) {
+                return MessageFormat.format(getStringFromBundle("RESULT_SHARE_TEXT_SIGNAL_ADD", locale), signalString);
+            } else {
+                return MessageFormat.format(getStringFromBundle("RESULT_SHARE_TEXT_RSRP_ADD", locale), signalString);
+            }
+        } else {
+            return StringUtils.EMPTY;
+        }
+    }
+
+    private void addGeoLocation(List<TestResultDetailContainerResponse> propertiesList, Locale locale, TestLocation testLocation, UUID openTestUUID) {
+        if (Objects.nonNull(testLocation.getGeoLat()) && Objects.nonNull(testLocation.getGeoLong()) && Objects.nonNull(testLocation.getGeoAccuracy())) {
+            if (testLocation.getGeoAccuracy() < applicationProperties.getAccuracyDetailLimit()) {
+                final String geoString = getGeoLocationString(testLocation, locale);
+                addString(propertiesList, locale, "location", geoString);
 
                 Optional.ofNullable(geoAnalyticsService.getTestDistance(openTestUUID))
                         .filter(testDistance -> testDistance.getTotalDistance() > NumberUtils.DOUBLE_ZERO)
@@ -141,10 +366,35 @@ public class TestServiceImpl implements TestService {
                             .filter(geoSpeed -> geoSpeed > 0.1d)
                             .map(x -> Math.round(Constants.METERS_PER_SECOND_TO_KILOMETERS_PER_HOURS_MULTIPLICATOR * x))
                             .ifPresent(speed -> addLongAndUnitString(propertiesList, locale, "geo_speed", speed, "RESULT_KILOMETER_PER_HOUR_UNIT"));
-
                 });
         Optional.ofNullable(testLocation.getDtmLevel())
                 .ifPresent(dtmLevel -> addIntegerAndUnitString(propertiesList, locale, "dtm_level", dtmLevel, "RESULT_METER_UNIT"));
+    }
+
+    private String getGeoLocationString(TestLocation testLocation, Locale locale) {
+        Double latField = testLocation.getGeoLat();
+        Double longField = testLocation.getGeoLong();
+        Double accuracyField = testLocation.getGeoAccuracy();
+        String providerField = testLocation.getGeoProvider();
+        final StringBuilder geoString = new StringBuilder(HelperFunctions.geoToString(latField,
+                longField));
+        geoString.append(" (");
+        if (Objects.nonNull(providerField)) {
+            String provider = providerField.toUpperCase(Locale.US);
+            switch (provider) {
+                case "NETWORK":
+                    provider = getStringFromBundle("key_geo_source_network", locale);
+                    break;
+                case "GPS":
+                    provider = getStringFromBundle("key_geo_source_gps", locale);
+                    break;
+            }
+            geoString.append(provider);
+            geoString.append(", ");
+        }
+        geoString.append(String.format(Locale.US, "+/- %.0f m", accuracyField));
+        geoString.append(")");
+        return geoString.toString();
     }
 
     private void addOpenUUID(List<TestResultDetailContainerResponse> propertiesList, Test test, Locale locale) {
@@ -188,7 +438,7 @@ public class TestServiceImpl implements TestService {
                 .time(date.getTime())
                 .timezone(test.getTimezone())
                 .title(getStringFromBundleWithKeyPrefix("time", locale))
-                .value(getTimeValue(date, timeZone, locale))
+                .value(TimeUtils.getTimeString(date, timeZone, locale))
                 .build();
     }
 
@@ -196,13 +446,6 @@ public class TestServiceImpl implements TestService {
         Format timeZoneFormat = new DecimalFormat(Constants.TIMEZONE_PATTERN, new DecimalFormatSymbols(locale));
         double offset = timezone.getOffset(time) / Constants.MILLISECONDS_TO_HOURS;
         return String.format(Constants.TIMEZONE_TEMPLATE, timeZoneFormat.format(offset));
-    }
-
-    private String getTimeValue(Date date, TimeZone timeZone, Locale locale) {
-        final DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
-                DateFormat.MEDIUM, locale);
-        dateFormat.setTimeZone(timeZone);
-        return dateFormat.format(date);
     }
 
     private void addTestFields(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Test test) {

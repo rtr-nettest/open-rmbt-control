@@ -224,7 +224,7 @@ public interface TestConstants {
     String DEFAULT_TEST_TOKEN = String.join("_", DEFAULT_TEST_UUID.toString(), DEFAULT_TEXT);
     String DEFAULT_CLIENT_VERSION = "0.1";
     Integer DEFAULT_RESULT_DOWNLOAD_SPEED = 2122000;
-    Integer DEFAULT_RESULT_UPLOAD_SPEED = 10000320;
+    Integer DEFAULT_RESULT_UPLOAD_SPEED = 1020032;
     Long DEFAULT_RESULT_PING_SHORTEST = 3000L;
     String DEFAULT_OS_VERSION = "DEFAULT_OS_VERSION";
     String DEFAULT_API_LEVEL = "DEFAULT_API_LEVEL";
@@ -271,6 +271,7 @@ public interface TestConstants {
     String DEFAULT_TEST_CLIENT_IP_LOCAL_TYPE = "DEFAULT_TEST_CLIENT_IP_LOCAL_TYPE";
     String DEFAULT_TEST_NAT_TYPE = "DEFAULT_TEST_NAT_TYPE";
     Integer DEFAULT_TEST_DURATION = 1000;
+    Integer DEFAULT_TEST_SIM_COUNT = 1;
     Long DEFAULT_TIME_DOWNLOAD_OFFSET_NANOS = 2366333L;
     Long DEFAULT_TIME_UPLOAD_OFFSET_NANOS = 4422233L;
     String DEFAULT_TAG = "DEFAULT_TAG";
@@ -287,7 +288,7 @@ public interface TestConstants {
     Integer DEFAULT_TEST_ROAMING_TYPE = 1;
     String DEFAULT_TEST_RESULT_DETAIL_ROAMING_TYPE = "National";
     String DEFAULT_TEST_RESULT_DETAIL_SPEED_DOWNLOAD_VALUE = "2,100 Mbps";
-    String DEFAULT_TEST_RESULT_DETAIL_SPEED_UPLOAD_VALUE = "10,000 Mbps";
+    String DEFAULT_TEST_RESULT_DETAIL_SPEED_UPLOAD_VALUE = "1,000 Mbps";
     String DEFAULT_TEST_RESULT_DETAIL_PING_MEDIAN_VALUE = "58 ms";
     String DEFAULT_TEST_RESULT_DETAIL_WIFI_LINK_SPEED = "100 Mbps";
     String DEFAULT_TEST_RESULT_DETAIL_TOTAL_BYTES = "0.56 MB";
@@ -343,7 +344,38 @@ public interface TestConstants {
     String DEFAULT_USER_AGENT_VERSION = "89.0.4389.82";
     String DEFAULT_USER_AGENT_CATEGORY = "pc";
     String DEFAULT_USER_AGENT_OS = "Windows 10";
-
+    Integer DEFAULT_CLASSIFICATION_COUNT = 2;
+    String DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT = "RTR-NetTest result - Jan 19, 1970, 5:39:24 PM";
+    String DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_TRUE_SIGNAL_STRENGTH_NOT_NULL = "My Result:\n" +
+            "Date/time: Jan 19, 1970, 5:39:24 PM\n" +
+            "Download: 2,100 Mbps\n" +
+            "Upload: 1,000 Mbps\n" +
+            "Ping: 58 ms\n" +
+            "Signal strength: -111 dBm\n" +
+            "Network type: Dual SIM\n" +
+            "Platform: \n" +
+            "Model: \n" +
+            "\n" +
+            "\n";
+    String DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL = "My Result:\n" +
+            "Date/time: Jan 19, 1970, 5:39:24 PM\n" +
+            "Download: 2,100 Mbps\n" +
+            "Upload: 1,000 Mbps\n" +
+            "Ping: 58 ms\n" +
+            "Signal strength (RSRP): -5 dBm\n" +
+            "Network type: UNKNOWN\n" +
+            "Platform: \n" +
+            "Model: \n" +
+            "\n" +
+            "\n";
+    Integer DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_CLASSIFICATION = 2;
+    Integer DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_STRENGTH_CLASSIFICATION = 1;
+    String DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_STRENGTH_TITLE = "Signal";
+    String DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_LTE_RSRP_TITLE = "Signal (RSRP)";
+    String DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_DOWNLOAD_TITLE = "Download";
+    String DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_UPLOAD_TITLE = "Upload";
+    String DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_PING_TITLE = "Ping";
+    Integer DEFAULT_NEXT_TEST_SLOT = 4;
 
     interface Database {
         long CLIENT_TYPE_DESKTOP_UID = 1L;

@@ -9,11 +9,16 @@ import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
+import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.repository.TestRepository;
+import at.rtr.rmbt.request.CapabilitiesRequest;
+import at.rtr.rmbt.request.ClassificationRequest;
 import at.rtr.rmbt.request.TestResultDetailRequest;
+import at.rtr.rmbt.request.TestResultRequest;
 import at.rtr.rmbt.response.TestResponse;
 import at.rtr.rmbt.response.TestResultDetailContainerResponse;
 import at.rtr.rmbt.response.TestResultDetailResponse;
+import at.rtr.rmbt.response.TestResultMeasurementResponse;
 import at.rtr.rmbt.service.GeoAnalyticsService;
 import at.rtr.rmbt.service.TestService;
 import org.assertj.core.util.Lists;
@@ -29,6 +34,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -47,12 +53,20 @@ public class TestServiceImplTest {
     private TestMapper testMapper;
     @MockBean
     private GeoAnalyticsService geoAnalyticsService;
+    @MockBean
+    private SettingsRepository settingsRepository;
     @Mock
     private at.rtr.rmbt.model.Test test;
     @Mock
     private TestResponse testResponse;
     @Mock
     private TestResultDetailRequest testResultDetailRequest;
+    @Mock
+    private TestResultRequest testResultRequest;
+    @Mock
+    private CapabilitiesRequest capabilitiesRequest;
+    @Mock
+    private ClassificationRequest classificationRequest;
 
     private final ApplicationProperties applicationProperties = new ApplicationProperties(
             new ApplicationProperties.LanguageProperties(Set.of("en", "de"), "en"),
@@ -71,7 +85,7 @@ public class TestServiceImplTest {
         reloadableResourceBundleMessageSource.setBasename("classpath:SystemMessages");
         reloadableResourceBundleMessageSource.setDefaultEncoding("UTF-8");
         messageSource = reloadableResourceBundleMessageSource;
-        testService = new TestServiceImpl(testRepository, testMapper, applicationProperties, geoAnalyticsService, messageSource);
+        testService = new TestServiceImpl(testRepository, testMapper, applicationProperties, geoAnalyticsService, messageSource, settingsRepository);
     }
 
     @Test
@@ -218,6 +232,155 @@ public class TestServiceImplTest {
         }
         assertEquals(getBandTestResultDetailResponse(), result);
     }
+
+    @Test
+    public void getTestResult_whenSignalStrengthNotNullAndUseSignalTrueAndDualSimTrue_expectTestResultContainerResponse() {
+        when(testResultRequest.getLanguage()).thenReturn(TestConstants.LANGUAGE_EN);
+        when(testResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
+        when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
+        when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
+        when(test.getDualSim()).thenReturn(Boolean.TRUE);
+        when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
+        when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
+        when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_TEST_OPEN_TEST_UUID);
+        when(test.getSimCount()).thenReturn(TestConstants.DEFAULT_TEST_SIM_COUNT);
+        when(test.getDownloadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
+        when(test.getUploadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_UPLOAD_SPEED);
+        when(test.getPingMedian()).thenReturn(TestConstants.DEFAULT_TEST_PING_MEDIAN);
+        when(test.getSignalStrength()).thenReturn(TestConstants.DEFAULT_SIGNAL_STRENGTH_FIRST);
+        when(test.getLteRsrp()).thenReturn(null);
+
+        var result = testService.getTestResult(testResultRequest);
+        assertEquals(1, result.getTestResultResponses().size());
+        var testResultResponse = result.getTestResultResponses().get(0);
+        assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_OPEN_TEST_UUID, testResultResponse.getOpenTestUUID());
+        assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME, testResultResponse.getTimeString());
+        assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT, testResultResponse.getShareSubject());
+        assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_TRUE_SIGNAL_STRENGTH_NOT_NULL, testResultResponse.getShareText());
+        assertEquals(getMeasurementIfSignalStrengthNotNull(), testResultResponse.getMeasurement());
+    }
+
+    @Test
+    public void getTestResult_whenLteRSRPNotNullAndUseSignalTrueAndDualSimFalse_expectTestResultContainerResponse() {
+        when(testResultRequest.getLanguage()).thenReturn(TestConstants.LANGUAGE_EN);
+        when(testResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
+        when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
+        when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
+        when(test.getDualSim()).thenReturn(Boolean.FALSE);
+        when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
+        when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
+        when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_TEST_OPEN_TEST_UUID);
+        when(test.getSimCount()).thenReturn(TestConstants.DEFAULT_TEST_SIM_COUNT);
+        when(test.getDownloadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
+        when(test.getUploadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_UPLOAD_SPEED);
+        when(test.getPingMedian()).thenReturn(TestConstants.DEFAULT_TEST_PING_MEDIAN);
+        when(test.getSignalStrength()).thenReturn(null);
+        when(test.getLteRsrp()).thenReturn(TestConstants.DEFAULT_LTE_RSRP_FIRST);
+
+        var result = testService.getTestResult(testResultRequest);
+        assertEquals(1, result.getTestResultResponses().size());
+        var testResultResponse = result.getTestResultResponses().get(0);
+        assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_OPEN_TEST_UUID, testResultResponse.getOpenTestUUID());
+        assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME, testResultResponse.getTimeString());
+        assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT, testResultResponse.getShareSubject());
+        assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL, testResultResponse.getShareText());
+        assertEquals(getMeasurementIfLteRSRPNotNull(), testResultResponse.getMeasurement());
+    }
+
+    @Test
+    public void save_whenCommonData_expectSaved() {
+        testService.save(test);
+
+        verify(testRepository).save(test);
+    }
+
+    @Test
+    public void getRmbtSetProviderFromAs_whenCommonData_expectGetRmbtSetProviderFromAsCalled() {
+        when(testRepository.getRmbtNextTestSlot(TestConstants.DEFAULT_UID)).thenReturn(TestConstants.DEFAULT_NEXT_TEST_SLOT);
+
+        var response = testService.getRmbtNextTestSlot(TestConstants.DEFAULT_UID);
+        assertEquals(TestConstants.DEFAULT_NEXT_TEST_SLOT, response);
+    }
+
+    @Test
+    public void getRmbtNextTestSlot_whenCommonData_expectGetRmbtNextTestSlotCalled() {
+        when(testRepository.getRmbtSetProviderFromAs(TestConstants.DEFAULT_UID)).thenReturn(TestConstants.DEFAULT_PROVIDER);
+
+        var response = testService.getRmbtSetProviderFromAs(TestConstants.DEFAULT_UID);
+        assertEquals(TestConstants.DEFAULT_PROVIDER, response);
+
+    }
+
+    private List<TestResultMeasurementResponse> getMeasurementIfSignalStrengthNotNull() {
+        var speedDownloadMeasurementResponse = getSpeedDownloadMeasurementResponse();
+        var speedUploadMeasurementResponse = getSpeedUploadMeasurementResponse();
+        var pingMeasurementResponse = getPingMeasurementResponse();
+        var signalMeasurementResponse = getSignalStrengthMeasurementResponse();
+        return new ArrayList<>(List.of(
+                speedDownloadMeasurementResponse,
+                speedUploadMeasurementResponse,
+                pingMeasurementResponse,
+                signalMeasurementResponse
+        ));
+    }
+
+    private List<TestResultMeasurementResponse> getMeasurementIfLteRSRPNotNull() {
+        var speedDownloadMeasurementResponse = getSpeedDownloadMeasurementResponse();
+        var speedUploadMeasurementResponse = getSpeedUploadMeasurementResponse();
+        var pingMeasurementResponse = getPingMeasurementResponse();
+        var signalMeasurementResponse = getSignalLteRSRPMeasurementResponse();
+        return new ArrayList<>(List.of(
+                speedDownloadMeasurementResponse,
+                speedUploadMeasurementResponse,
+                pingMeasurementResponse,
+                signalMeasurementResponse
+        ));
+    }
+
+    private TestResultMeasurementResponse getSignalLteRSRPMeasurementResponse() {
+        return TestResultMeasurementResponse.builder()
+                .value(TestConstants.DEFAULT_TEST_RESULT_DETAIL_SIGNAL_RSRP_VALUE)
+                .title(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_LTE_RSRP_TITLE)
+                .classification(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_CLASSIFICATION)
+                .build();
+    }
+
+    private TestResultMeasurementResponse getSignalStrengthMeasurementResponse() {
+        return TestResultMeasurementResponse.builder()
+                .value(TestConstants.DEFAULT_TEST_RESULT_DETAIL_SIGNAL_STRENGTH_VALUE)
+                .title(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_STRENGTH_TITLE)
+                .classification(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_STRENGTH_CLASSIFICATION)
+                .build();
+    }
+
+    private TestResultMeasurementResponse getPingMeasurementResponse() {
+        return TestResultMeasurementResponse.builder()
+                .value(TestConstants.DEFAULT_TEST_RESULT_DETAIL_PING_MEDIAN_VALUE)
+                .title(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_PING_TITLE)
+                .classification(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_CLASSIFICATION)
+                .build();
+    }
+
+    private TestResultMeasurementResponse getSpeedUploadMeasurementResponse() {
+        return TestResultMeasurementResponse.builder()
+                .value(TestConstants.DEFAULT_TEST_RESULT_DETAIL_SPEED_UPLOAD_VALUE)
+                .title(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_UPLOAD_TITLE)
+                .classification(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_CLASSIFICATION)
+                .build();
+    }
+
+    private TestResultMeasurementResponse getSpeedDownloadMeasurementResponse() {
+        return TestResultMeasurementResponse.builder()
+                .value(TestConstants.DEFAULT_TEST_RESULT_DETAIL_SPEED_DOWNLOAD_VALUE)
+                .title(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_DOWNLOAD_TITLE)
+                .classification(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_CLASSIFICATION)
+                .build();
+    }
+
 
     private at.rtr.rmbt.model.Test getTimeTest() {
         return getDefaultTestBuilder()

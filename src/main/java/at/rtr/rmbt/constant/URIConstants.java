@@ -20,5 +20,6 @@ public interface URIConstants {
     String BY_TEST_UUID = "/{testUUID}";
     String MEASUREMENT_QOS_REQUEST = "/qosTestRequest";
     String TEST_RESULT_DETAIL = "/testresultdetail";
+    String TEST_RESULT = "/testresult";
     String REQUEST_DATA_COLLECTOR = "/requestDataCollector";
 }
