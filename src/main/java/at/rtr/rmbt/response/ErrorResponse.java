@@ -22,4 +22,8 @@ public class ErrorResponse {
     public ErrorResponse(String errorMessage) {
         addErrorString(errorMessage);
     }
+
+    public static ErrorResponse empty(){
+        return new ErrorResponse();
+    }
 }

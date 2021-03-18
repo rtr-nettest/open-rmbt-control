@@ -64,7 +64,7 @@ public class TestControllerTest {
         var response = getTestResultResponse();
         when(testService.getTestResult(request)).thenReturn(response);
 
-        mockMvc.perform(MockMvcRequestBuilders.post(String.join(StringUtils.EMPTY, URIConstants.TEST, URIConstants.TEST_RESULT))
+        mockMvc.perform(MockMvcRequestBuilders.post(String.join(StringUtils.EMPTY, URIConstants.TEST_RESULT))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtils.asJsonString(request)))
                 .andExpect(status().isOk())

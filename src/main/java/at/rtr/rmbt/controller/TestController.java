@@ -15,13 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(URIConstants.TEST)
 @RequiredArgsConstructor
 public class TestController {
 
     private final TestService testService;
 
-    @GetMapping(URIConstants.BY_TEST_UUID)
+    @GetMapping(URIConstants.TEST +  URIConstants.BY_TEST_UUID)
     @ApiOperation(value = "Get list of signal measurements")
     @ResponseStatus(HttpStatus.OK)
     public TestResponse getTestByUUID(@PathVariable UUID testUUID) {

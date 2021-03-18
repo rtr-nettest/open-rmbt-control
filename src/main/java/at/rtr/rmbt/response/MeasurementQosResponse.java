@@ -30,4 +30,8 @@ public class MeasurementQosResponse {
 
     @JsonProperty(value = "clientRemoteIp")
     private final String clientRemoteIp;
+
+    @JsonProperty(value = "error")
+    private final List<String> error;
+
 }

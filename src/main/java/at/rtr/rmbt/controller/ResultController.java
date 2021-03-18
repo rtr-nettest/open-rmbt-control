@@ -2,6 +2,7 @@ package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.request.ResultRequest;
+import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.service.ResultService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,7 +21,8 @@ public class ResultController {
 
     @ApiOperation("Update measurements")
     @PostMapping(URIConstants.RESULT_URL)
-    public void processResult(HttpServletRequest httpServletRequest, @RequestBody ResultRequest resultRequest) {
+    public ErrorResponse processResult(HttpServletRequest httpServletRequest, @RequestBody ResultRequest resultRequest) {
         resultService.processResultRequest(httpServletRequest, resultRequest);
+        return ErrorResponse.empty();
     }
 }
