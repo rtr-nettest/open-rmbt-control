@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
                 .testNumThreads(applicationProperties.getThreads())
                 .testNumPings(applicationProperties.getPings())
                 .clientRemoteIp(clientIpString)
+                .error(Collections.emptyList())
                 .build();
     }
 }

@@ -458,7 +458,7 @@ public class TestServiceImpl implements TestService {
                     .ifPresent(networkType -> addString(propertiesList, locale, "network_type", networkType));
             addString(propertiesList, locale, "network_sim_operator_name", test.getNetworkSimOperatorName());
             addString(propertiesList, locale, "network_sim_operator", test.getNetworkSimOperator());
-            addString(propertiesList, locale, "roaming", HelperFunctions.getRoamingType(messageSource, test.getRoamingType(), locale));
+            addString(propertiesList, locale, "roaming", HelperFunctions.getRoamingType(messageSource, test.getRoamingType() == null ? 0 : test.getRoamingType(), locale));
             Optional.of(test)
                     .map(Test::getMobileProvider)
                     .map(Provider::getShortName)

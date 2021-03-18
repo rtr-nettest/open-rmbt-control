@@ -18,6 +18,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +89,7 @@ public class QosMeasurementServiceImplTest {
                 .testDuration(applicationProperties.getDuration())
                 .testNumThreads(applicationProperties.getThreads())
                 .objectives(objectives)
+                .error(Collections.emptyList())
                 .build();
     }
 }
