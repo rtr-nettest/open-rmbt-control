@@ -30,4 +30,5 @@ public interface Constants {
     Double NANOS_TO_SECONDS_MULTIPLICATOR = 1000000000d;
     Double MILLISECONDS_TO_HOURS = 1000d * 60d * 60d;
     String TIMEZONE_PATTERN = "+0.##;-0.##";
+    Integer INTERNATIONAL_ROAMING_TYPE_BARRIER = 1;
 }

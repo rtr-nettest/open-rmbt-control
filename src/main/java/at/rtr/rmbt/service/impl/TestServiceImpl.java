@@ -11,6 +11,7 @@ import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
+import at.rtr.rmbt.repository.QoeClassificationRepository;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.CapabilitiesRequest;
@@ -42,6 +43,7 @@ public class TestServiceImpl implements TestService {
     private final GeoAnalyticsService geoAnalyticsService;
     private final MessageSource messageSource;
     private final SettingsRepository settingsRepository;
+    private final QoeClassificationRepository qoeClassificationRepository;
 
     @Override
     public Test save(Test test) {
@@ -102,16 +104,150 @@ public class TestServiceImpl implements TestService {
                 .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.TEST_NOT_FOUND, testResultRequest.getTestUUID())));
         Locale locale = MessageUtils.getLocaleFormLanguage(testResultRequest.getLanguage(), applicationProperties.getLanguage());
         String timeString = TimeUtils.getTimeStringFromTest(test, locale);
-        TestResultResponse testResultResponse = TestResultResponse.builder()
+        TestResultResponse.TestResultResponseBuilder testResultResponseBuilder = TestResultResponse.builder()
+                .time(test.getTime().toInstant().toEpochMilli())
+                .timezone(test.getTimezone())
+                .measurementResult(getMeasurementResult(test, testResultRequest.getCapabilitiesRequest()))
                 .measurement(getMeasurements(test, locale, testResultRequest.getCapabilitiesRequest()))
                 .openTestUUID(String.format(Constants.TEST_RESULT_DETAIL_OPEN_TEST_UUID_TEMPLATE, test.getOpenTestUuid()))
+                .openUUID(String.format(Constants.TEST_RESULT_DETAIL_OPEN_UUID_TEMPLATE, test.getOpenUuid()))
                 .shareSubject(MessageFormat.format(getStringFromBundle("RESULT_SHARE_SUBJECT", locale), timeString))
                 .shareText(getShareText(test, timeString, locale))
                 .timeString(timeString)
-                .build();
+                .qoeClassificationResponses(getQoeClassificationResponse());
+        setGeoLocationFields(testResultResponseBuilder, test, locale);
+        setNetFields(testResultResponseBuilder, test, locale);
         return TestResultContainerResponse.builder()
-                .testResultResponses(List.of(testResultResponse))
+                .testResultResponses(List.of(testResultResponseBuilder.build()))
                 .build();
+    }
+
+    private List<QoeClassificationResponse> getQoeClassificationResponse() {
+        qoeClassificationRepository.findAll();
+        return Collections.EMPTY_LIST;
+    }
+
+    private void setNetFields(TestResultResponse.TestResultResponseBuilder testResultResponseBuilder, Test test, Locale locale) {
+        List<NetItemResponse> netItemResponses = new ArrayList<>();
+        NetworkInfoResponse.NetworkInfoResponseBuilder networkInfoResponseBuilder = NetworkInfoResponse.builder();
+        boolean dualSim = isDualSim(test);
+        boolean useSignal = isUseSignal(test, dualSim);
+        if (useSignal) {
+            String networkTypeName = HelperFunctions.getNetworkTypeName(test.getNetworkType());
+            addNetItemResponse(locale, netItemResponses, networkTypeName, "RESULT_NETWORK_TYPE");
+            networkInfoResponseBuilder.networkTypeLabel(networkTypeName);
+        } else {
+            addNetItemResponse(locale, netItemResponses, getStringFromBundle("RESULT_DUAL_SIM", locale), "RESULT_NETWORK_TYPE");
+            networkInfoResponseBuilder.networkTypeLabel(getStringFromBundle("RESULT_DUAL_SIM", locale));
+        }
+        if (test.getNetworkType() == 98 || test.getNetworkType() == 99) { // mobile wifi or browser
+            Optional.ofNullable(test.getProvider())
+                    .map(Provider::getShortName)
+                    .ifPresent(providerName -> {
+                        addNetItemResponse(locale, netItemResponses, providerName, "RESULT_OPERATOR_NAME");
+                        networkInfoResponseBuilder.providerName(providerName);
+                    });
+            if (test.getNetworkType() == 99) {  // mobile wifi
+                Optional.ofNullable(test.getWifiSsid())
+                        .ifPresent(wifiSSID -> {
+                            addNetItemResponse(locale, netItemResponses, wifiSSID, "RESULT_WIFI_SSID");
+                            networkInfoResponseBuilder.wifiSSID(wifiSSID);
+                        });
+            }
+        } else {
+            if (!dualSim) {
+                Optional.ofNullable(test.getNetworkOperatorName())
+                        .ifPresent(networkOperatorName -> {
+                            addNetItemResponse(locale, netItemResponses, networkOperatorName, "RESULT_OPERATOR_NAME");
+                            networkInfoResponseBuilder.providerName(networkOperatorName);
+                        });
+
+                Optional.ofNullable(test.getRoamingType())
+                        .filter(roamingType -> roamingType > Constants.INTERNATIONAL_ROAMING_TYPE_BARRIER)
+                        .ifPresent(roamingType -> {
+                            String roamingTypeName = HelperFunctions.getRoamingType(messageSource, roamingType, locale);
+                            addNetItemResponse(locale, netItemResponses, roamingTypeName, "RESULT_ROAMING");
+                            networkInfoResponseBuilder.roamingTypeLabel(roamingTypeName);
+                        });
+            }
+        }
+        testResultResponseBuilder.netItemResponses(netItemResponses);
+        testResultResponseBuilder.networkInfoResponse(networkInfoResponseBuilder.build());
+        testResultResponseBuilder.networkType(test.getNetworkType());
+    }
+
+    private void addNetItemResponse(Locale locale, List<NetItemResponse> netItemResponses, String providerName, String titleKey) {
+        NetItemResponse netItemResponse = NetItemResponse.builder()
+                .title(getStringFromBundle(titleKey, locale))
+                .value(providerName)
+                .build();
+        netItemResponses.add(netItemResponse);
+    }
+
+    private void setGeoLocationFields(TestResultResponse.TestResultResponseBuilder testResultResponseBuilder, Test test, Locale locale) {
+        if (Objects.nonNull(test.getLatitude()) && Objects.nonNull(test.getLongitude()) && Objects.nonNull(test.getGeoAccuracy())) {
+            if (test.getGeoAccuracy() < applicationProperties.getAccuracyButtonLimit()) {
+                testResultResponseBuilder
+                        .geoLat(test.getLatitude())
+                        .geoLong(test.getLongitude());
+            }
+            testResultResponseBuilder.location(getShareLocationString(test, locale));
+        }
+    }
+
+    private MeasurementResultResponse getMeasurementResult(Test test, CapabilitiesRequest capabilitiesRequest) {
+        MeasurementResultResponse.MeasurementResultResponseBuilder measurementResultResponseBuilder = MeasurementResultResponse.builder();
+        setDownloadFields(test, measurementResultResponseBuilder, capabilitiesRequest);
+        setUploadFields(test, measurementResultResponseBuilder, capabilitiesRequest);
+        setPingFields(test, measurementResultResponseBuilder, capabilitiesRequest);
+        setSignalFields(test, measurementResultResponseBuilder, capabilitiesRequest);
+        return measurementResultResponseBuilder
+                .build();
+    }
+
+    private void setSignalFields(Test test, MeasurementResultResponse.MeasurementResultResponseBuilder measurementResultResponseBuilder, CapabilitiesRequest capabilitiesRequest) {
+        boolean dualSim = isDualSim(test);
+        boolean useSignal = isUseSignal(test, dualSim);
+        if (useSignal) {
+            if (Objects.nonNull(test.getSignalStrength())) {
+                int[] threshold = ClassificationUtils.getThresholdForSignal(test.getNetworkType());
+                measurementResultResponseBuilder
+                        .signalStrength(test.getSignalStrength())
+                        .signalClassification(ClassificationUtils.classify(threshold, test.getSignalStrength(), capabilitiesRequest.getClassification().getCount()));
+            }
+            if (Objects.nonNull(test.getLteRsrp())) {
+                measurementResultResponseBuilder
+                        .lteRSRP(test.getLteRsrp())
+                        .signalClassification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_SIGNAL_RSRP, test.getLteRsrp(), capabilitiesRequest.getClassification().getCount()));
+            }
+        }
+    }
+
+    private void setPingFields(Test test, MeasurementResultResponse.MeasurementResultResponseBuilder measurementResultResponseBuilder, CapabilitiesRequest capabilitiesRequest) {
+        Optional.ofNullable(test.getPingMedian())
+                .ifPresent(pingMedian -> {
+                    measurementResultResponseBuilder
+                            .pingClassification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_PING, pingMedian, capabilitiesRequest.getClassification().getCount()))
+                            .pingMs(getPingMsFromPingMedian(pingMedian));
+                });
+    }
+
+    private void setUploadFields(Test test, MeasurementResultResponse.MeasurementResultResponseBuilder measurementResultResponseBuilder, CapabilitiesRequest capabilitiesRequest) {
+        Optional.ofNullable(test.getUploadSpeed())
+                .ifPresent(uploadSpeed -> measurementResultResponseBuilder
+                        .uploadClassification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_UPLOAD, uploadSpeed, capabilitiesRequest.getClassification().getCount()))
+                        .uploadKBit(uploadSpeed));
+    }
+
+    private void setDownloadFields(Test test, MeasurementResultResponse.MeasurementResultResponseBuilder measurementResultResponseBuilder, CapabilitiesRequest capabilitiesRequest) {
+        Optional.ofNullable(test.getDownloadSpeed())
+                .ifPresent(downloadSpeed -> measurementResultResponseBuilder
+                        .downloadClassification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_DOWNLOAD, downloadSpeed, capabilitiesRequest.getClassification().getCount()))
+                        .downloadKBit(downloadSpeed));
+    }
+
+    private double getPingMsFromPingMedian(Long x) {
+        return x / Constants.PING_CONVERSION_MULTIPLICATOR;
     }
 
     private List<TestResultMeasurementResponse> getMeasurements(Test test, Locale locale, CapabilitiesRequest capabilitiesRequest) {
@@ -300,8 +436,8 @@ public class TestServiceImpl implements TestService {
 
     private String getPingString(Test test, Locale locale) {
         return Optional.ofNullable(test.getPingMedian())
-                .map(x -> x / Constants.PING_CONVERSION_MULTIPLICATOR)
-                .map(ping -> FormatUtils.formatValueAndUnit(ping, getStringFromBundle("RESULT_PING_UNIT", locale), locale))
+                .map(this::getPingMsFromPingMedian)
+                .map(pingMs -> FormatUtils.formatValueAndUnit(pingMs, getStringFromBundle("RESULT_PING_UNIT", locale), locale))
                 .orElse(StringUtils.EMPTY);
     }
 
@@ -471,7 +607,7 @@ public class TestServiceImpl implements TestService {
                 .map(x -> x / Constants.BYTES_UNIT_CONVERSION_MULTIPLICATOR)
                 .ifPresent(uploadSpeed -> addDoubleAndUnitString(propertiesList, locale, "speed_upload", uploadSpeed, "RESULT_UPLOAD_UNIT"));
         Optional.ofNullable(test.getPingMedian())
-                .map(x -> x / Constants.PING_CONVERSION_MULTIPLICATOR)
+                .map(this::getPingMsFromPingMedian)
                 .ifPresent(pingMedian -> addDoubleAndUnitString(propertiesList, locale, "ping_median", pingMedian, "RESULT_PING_UNIT"));
         addString(propertiesList, locale, "country_asn", test.getCountryAsn());
         addString(propertiesList, locale, "country_geoip", test.getCountryGeoip());

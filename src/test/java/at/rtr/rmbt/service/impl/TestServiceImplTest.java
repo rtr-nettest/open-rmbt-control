@@ -9,16 +9,14 @@ import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
+import at.rtr.rmbt.repository.QoeClassificationRepository;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.CapabilitiesRequest;
 import at.rtr.rmbt.request.ClassificationRequest;
 import at.rtr.rmbt.request.TestResultDetailRequest;
 import at.rtr.rmbt.request.TestResultRequest;
-import at.rtr.rmbt.response.TestResponse;
-import at.rtr.rmbt.response.TestResultDetailContainerResponse;
-import at.rtr.rmbt.response.TestResultDetailResponse;
-import at.rtr.rmbt.response.TestResultMeasurementResponse;
+import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoAnalyticsService;
 import at.rtr.rmbt.service.TestService;
 import org.assertj.core.util.Lists;
@@ -55,6 +53,8 @@ public class TestServiceImplTest {
     private GeoAnalyticsService geoAnalyticsService;
     @MockBean
     private SettingsRepository settingsRepository;
+    @MockBean
+    private QoeClassificationRepository qoeClassificationRepository;
     @Mock
     private at.rtr.rmbt.model.Test test;
     @Mock
@@ -75,7 +75,8 @@ public class TestServiceImplTest {
             1,
             2,
             3,
-            10000
+            10000,
+            2000
     );
 
     @Before
@@ -85,7 +86,7 @@ public class TestServiceImplTest {
         reloadableResourceBundleMessageSource.setBasename("classpath:SystemMessages");
         reloadableResourceBundleMessageSource.setDefaultEncoding("UTF-8");
         messageSource = reloadableResourceBundleMessageSource;
-        testService = new TestServiceImpl(testRepository, testMapper, applicationProperties, geoAnalyticsService, messageSource, settingsRepository);
+        testService = new TestServiceImpl(testRepository, testMapper, applicationProperties, geoAnalyticsService, messageSource, settingsRepository, qoeClassificationRepository);
     }
 
     @Test
@@ -280,6 +281,8 @@ public class TestServiceImplTest {
         when(test.getPingMedian()).thenReturn(TestConstants.DEFAULT_TEST_PING_MEDIAN);
         when(test.getSignalStrength()).thenReturn(null);
         when(test.getLteRsrp()).thenReturn(TestConstants.DEFAULT_LTE_RSRP_FIRST);
+        when(test.getNetworkOperatorName()).thenReturn(TestConstants.DEFAULT_TELEPHONY_NETWORK_OPERATOR_NAME);
+        when(test.getRoamingType()).thenReturn(TestConstants.DEFAULT_ROAMING_TYPE_ID);
 
         var result = testService.getTestResult(testResultRequest);
         assertEquals(1, result.getTestResultResponses().size());
@@ -289,6 +292,80 @@ public class TestServiceImplTest {
         assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT, testResultResponse.getShareSubject());
         assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL, testResultResponse.getShareText());
         assertEquals(getMeasurementIfLteRSRPNotNull(), testResultResponse.getMeasurement());
+    }
+
+    @Test
+    public void getTestResult_whenDualSimFalseAndBrowser_expectTestResultContainerResponse() {
+        when(testResultRequest.getLanguage()).thenReturn(TestConstants.LANGUAGE_EN);
+        when(testResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
+        when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
+        when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
+        when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
+        when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
+        when(test.getDualSim()).thenReturn(Boolean.TRUE);
+        when(test.getNetworkType()).thenReturn(TestConstants.DEFAULT_NETWORK_TYPE_WLAN_ID);
+        when(test.getSimCount()).thenReturn(null);
+        when(test.getWifiSsid()).thenReturn(TestConstants.DEFAULT_WIFI_SSID);
+        when(test.getProvider()).thenReturn(getProvider());
+
+        var result = testService.getTestResult(testResultRequest);
+
+        assertEquals(1, result.getTestResultResponses().size());
+        var testResultResponse = result.getTestResultResponses().get(0);
+        assertEquals(TestConstants.DEFAULT_NETWORK_TYPE_WLAN_VALUE, testResultResponse.getNetworkInfoResponse().getNetworkTypeLabel());
+        assertEquals(TestConstants.DEFAULT_WIFI_SSID, testResultResponse.getNetworkInfoResponse().getWifiSSID());
+        assertEquals(TestConstants.DEFAULT_TEST_PROVIDER_NAME, testResultResponse.getNetworkInfoResponse().getProviderName());
+        assertEquals(3, testResultResponse.getNetItemResponses().size());
+        assertEquals(getNetItemResponses(TestConstants.DEFAULT_NETWORK_TYPE_WLAN_VALUE, TestConstants.DEFAULT_NET_ITEM_RESPONSE_NETWORK_TYPE_TITLE), testResultResponse.getNetItemResponses().get(0));
+        assertEquals(getNetItemResponses(TestConstants.DEFAULT_TEST_PROVIDER_NAME, TestConstants.DEFAULT_NET_ITEM_RESPONSE_OPERATOR_NAME_TITLE), testResultResponse.getNetItemResponses().get(1));
+        assertEquals(getNetItemResponses(TestConstants.DEFAULT_WIFI_SSID, TestConstants.DEFAULT_NET_ITEM_RESPONSE_WIFI_SSID_TITLE), testResultResponse.getNetItemResponses().get(2));
+
+
+    }
+
+    @Test
+    public void getTestResult_whenDualSimFalseAndNotBrowserAndNotWLAN_expectTestResultContainerResponse() {
+        when(testResultRequest.getLanguage()).thenReturn(TestConstants.LANGUAGE_EN);
+        when(testResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
+        when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
+        when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
+        when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
+        when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
+        when(test.getDualSim()).thenReturn(Boolean.FALSE);
+        when(test.getNetworkOperatorName()).thenReturn(TestConstants.DEFAULT_TELEPHONY_NETWORK_OPERATOR_NAME);
+        when(test.getRoamingType()).thenReturn(TestConstants.DEFAULT_ROAMING_TYPE_ID);
+
+        var result = testService.getTestResult(testResultRequest);
+
+        assertEquals(1, result.getTestResultResponses().size());
+        var testResultResponse = result.getTestResultResponses().get(0);
+        assertEquals(TestConstants.DEFAULT_TELEPHONY_NETWORK_OPERATOR_NAME, testResultResponse.getNetworkInfoResponse().getProviderName());
+        assertEquals(TestConstants.DEFAULT_ROAMING_TYPE_VALUE, testResultResponse.getNetworkInfoResponse().getRoamingTypeLabel());
+        assertEquals(3, testResultResponse.getNetItemResponses().size());
+        assertEquals(getNetItemResponses(TestConstants.DEFAULT_TELEPHONY_NETWORK_OPERATOR_NAME, TestConstants.DEFAULT_NET_ITEM_RESPONSE_OPERATOR_NAME_TITLE), testResultResponse.getNetItemResponses().get(1));
+        assertEquals(getNetItemResponses(TestConstants.DEFAULT_ROAMING_TYPE_VALUE, TestConstants.DEFAULT_NET_ITEM_RESPONSE_ROAMING_TITLE), testResultResponse.getNetItemResponses().get(2));
+
+    }
+
+    @Test
+    public void getTestResult_whenDEFAULT_expectTestResultContainerResponse() {
+        when(testResultRequest.getLanguage()).thenReturn(TestConstants.LANGUAGE_EN);
+        when(testResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
+        when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
+        when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
+        when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
+        when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
+
+        var result = testService.getTestResult(testResultRequest);
+
+        assertEquals(1, result.getTestResultResponses().size());
+        var testResultResponse = result.getTestResultResponses().get(0);
     }
 
     @Test
@@ -313,6 +390,13 @@ public class TestServiceImplTest {
         var response = testService.getRmbtSetProviderFromAs(TestConstants.DEFAULT_UID);
         assertEquals(TestConstants.DEFAULT_PROVIDER, response);
 
+    }
+
+    private NetItemResponse getNetItemResponses(String value, String title) {
+        return NetItemResponse.builder()
+                .title(title)
+                .value(value)
+                .build();
     }
 
     private List<TestResultMeasurementResponse> getMeasurementIfSignalStrengthNotNull() {
@@ -453,7 +537,7 @@ public class TestServiceImplTest {
                 .networkType(TestConstants.DEFAULT_NETWORK_TYPE_ID)
                 .networkSimOperatorName(TestConstants.DEFAULT_TELEPHONY_NETWORK_SIM_OPERATOR_NAME)
                 .networkSimOperator(TestConstants.DEFAULT_TEST_NETWORK_SIM_OPERATOR)
-                .roamingType(TestConstants.DEFAULT_TEST_ROAMING_TYPE)
+                .roamingType(TestConstants.DEFAULT_ROAMING_TYPE_ID)
                 .networkOperatorName(TestConstants.DEFAULT_TELEPHONY_NETWORK_OPERATOR_NAME)
                 .build();
     }
@@ -668,10 +752,10 @@ public class TestServiceImplTest {
                 getTestResultDetailContainerResponse("key_signal_strength", TestConstants.DEFAULT_TEST_RESULT_DETAIL_SIGNAL_STRENGTH_VALUE),
                 getTestResultDetailContainerResponse("key_signal_rsrp", TestConstants.DEFAULT_TEST_RESULT_DETAIL_SIGNAL_RSRP_VALUE),
                 getTestResultDetailContainerResponse("key_signal_rsrq", TestConstants.DEFAULT_TEST_RESULT_DETAIL_SIGNAL_RSRQ_VALUE),
-                getTestResultDetailContainerResponse("key_network_type", TestConstants.DEFAULT_TEST_RESULT_DETAIL_NETWORK_TYPE_VALUE),
+                getTestResultDetailContainerResponse("key_network_type", TestConstants.DEFAULT_NETWORK_TYPE_VALUE),
                 getTestResultDetailContainerResponse("key_network_sim_operator_name", TestConstants.DEFAULT_TELEPHONY_NETWORK_SIM_OPERATOR_NAME),
                 getTestResultDetailContainerResponse("key_network_sim_operator", TestConstants.DEFAULT_TEST_NETWORK_SIM_OPERATOR),
-                getTestResultDetailContainerResponse("key_roaming", TestConstants.DEFAULT_TEST_RESULT_DETAIL_ROAMING_TYPE),
+                getTestResultDetailContainerResponse("key_roaming", TestConstants.DEFAULT_ROAMING_TYPE_VALUE),
                 getTestResultDetailContainerResponse("key_network_operator_name", TestConstants.DEFAULT_TELEPHONY_NETWORK_OPERATOR_NAME)
         ));
         return TestResultDetailResponse.builder()

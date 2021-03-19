@@ -499,5 +499,6 @@ public class Test implements Serializable {
     @PrePersist
     protected void preInsert() {
         this.timestamp = ZonedDateTime.now();
+        this.time = ZonedDateTime.now();
     }
 }

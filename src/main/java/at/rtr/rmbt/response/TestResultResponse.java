@@ -14,8 +14,8 @@ import java.util.List;
 @ToString
 public class TestResultResponse {
 
-    @JsonProperty(value = "measurement")
-    private final List<TestResultMeasurementResponse> measurement;
+    @JsonProperty(value = "open_uuid")
+    private final String openUUID;
 
     @JsonProperty(value = "open_test_uuid")
     private final String openTestUUID;
@@ -26,6 +26,39 @@ public class TestResultResponse {
     @JsonProperty(value = "share_text")
     private final String shareText;
 
+    @JsonProperty(value = "timezone")
+    private final String timezone;
+
+    @JsonProperty(value = "measurement")
+    private final List<TestResultMeasurementResponse> measurement;
+
+    @JsonProperty(value = "measurement_result")
+    private final MeasurementResultResponse measurementResult;
+
+    @JsonProperty(value = "geo_long")
+    private final Double geoLong;
+
+    @JsonProperty(value = "geo_lat")
+    private final Double geoLat;
+
+    @JsonProperty(value = "location")
+    private final String location;
+
+    @JsonProperty(value = "time")
+    private final Long time;
+
     @JsonProperty(value = "time_string")
     private final String timeString;
+
+    @JsonProperty(value = "net")
+    private final List<NetItemResponse> netItemResponses;
+
+    @JsonProperty(value = "network_info")
+    private final NetworkInfoResponse networkInfoResponse;
+
+    @JsonProperty(value = "network_type")
+    private final Integer networkType;
+
+    @JsonProperty(value = "qoe_classification")
+    private final List<QoeClassificationResponse> qoeClassificationResponses;
 }
