@@ -1,7 +1,13 @@
 package at.rtr.rmbt.utils;
 
+import at.rtr.rmbt.enums.QoEClassificationThresholdsCriteria;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @UtilityClass

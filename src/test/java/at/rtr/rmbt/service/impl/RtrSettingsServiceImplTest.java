@@ -99,7 +99,8 @@ public class RtrSettingsServiceImplTest {
             1,
             2,
             3,
-            10000
+            10000,
+            2000
     );
 
     @Before

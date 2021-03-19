@@ -21,6 +21,7 @@ public class ApplicationProperties {
     private Integer duration;
     private Integer pings;
     private Integer accuracyDetailLimit;
+    private Integer accuracyButtonLimit;
 
     @Getter
     @Setter

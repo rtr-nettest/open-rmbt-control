@@ -32,6 +32,7 @@ auth0:
 app:
   rmbt:
     accuracyDetailLimit: 10000
+    accuracyButtonLimit: 2000
     duration: 7
     pings: 10
     threads: 3

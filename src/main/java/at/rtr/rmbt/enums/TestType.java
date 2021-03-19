@@ -34,7 +34,7 @@ public enum TestType {
             return null;
         }
         for (TestType testType : values()) {
-            if (testType.value.equals(value))
+            if (testType.value.equals(value.toLowerCase()))
                 return testType;
         }
         throw new IllegalArgumentException();

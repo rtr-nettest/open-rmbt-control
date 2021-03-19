@@ -55,7 +55,8 @@ public class QosMeasurementServiceImplTest {
             1,
             2,
             3,
-            1000
+            1000,
+            2000
     );
 
     @Before
