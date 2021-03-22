@@ -80,7 +80,7 @@ public class ResultServiceImplTest {
         when(resultRequest.getDownloadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
         when(resultRequest.getUploadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
         when(resultRequest.getPingShortest()).thenReturn(TestConstants.DEFAULT_RESULT_PING_SHORTEST);
-        when(httpServletRequest.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP);
+        when(httpServletRequest.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(test.getNetworkType()).thenReturn(TestConstants.DEFAULT_NETWORK_TYPE_ID);
 
         resultService.processResultRequest(httpServletRequest, resultRequest);

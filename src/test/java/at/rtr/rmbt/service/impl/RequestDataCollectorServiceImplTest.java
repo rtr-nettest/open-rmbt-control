@@ -1,6 +1,7 @@
 package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.TestConstants;
+import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.service.RequestDataCollectorService;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,10 +34,10 @@ public class RequestDataCollectorServiceImplTest {
         when(request.getRequestURL()).thenReturn(TestConstants.DEFAULT_REQUEST_URL_BUFFER);
         when(request.getLocales()).thenReturn(Collections.enumeration(List.of(Locale.ENGLISH, Locale.FRANCE)));
         when(request.getHeader("User-Agent")).thenReturn(TestConstants.DEFAULT_USER_AGENT_STRING);
-        when(request.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP);
+        when(request.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
 
         var response = requestDataCollectorService.getDataCollectorResponse(request, headers);
-        assertEquals(TestConstants.DEFAULT_IP, response.getIp());
+        assertEquals(TestConstants.DEFAULT_IP_V4, response.getIp());
         assertEquals(TestConstants.DEFAULT_USER_AGENT_STRING, response.getAgent());
         assertEquals(TestConstants.DEFAULT_REQUEST_URL, response.getUrl());
         assertEquals(List.of(Locale.ENGLISH.toString(), Locale.FRANCE.toString()), response.getLanguages());
@@ -45,5 +46,25 @@ public class RequestDataCollectorServiceImplTest {
         assertEquals(TestConstants.DEFAULT_USER_AGENT_CATEGORY, response.getCategory());
         assertEquals(TestConstants.DEFAULT_USER_AGENT_OS, response.getOs());
         assertEquals(headers, response.getHeaders());
+    }
+
+    @Test
+    public void getIpVersion_whenIpV4_expectIpResponse() {
+        when(request.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
+
+        var response = requestDataCollectorService.getIpVersion(request, headers);
+
+        assertEquals(TestConstants.DEFAULT_IP_V4, response.getIp());
+        assertEquals(Constants.INET_4_IP_VERSION, response.getVersion());
+    }
+
+    @Test
+    public void getIpVersion_whenIpV6_expectIpResponse() {
+        when(request.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP_V6);
+
+        var response = requestDataCollectorService.getIpVersion(request, headers);
+
+        assertEquals(TestConstants.DEFAULT_IP_V6, response.getIp());
+        assertEquals(Constants.INET_6_IP_VERSION, response.getVersion());
     }
 }

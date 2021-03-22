@@ -135,7 +135,7 @@ public class SignalServiceImplTest {
     @Test
     public void registerSignal_whenCommonRequest_expectSignalResponse() {
         var expectedResponse = getRegisterSignalResponse();
-        when(httpServletRequest.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP);
+        when(httpServletRequest.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(httpServletRequest.getHeader(HeaderConstants.URL)).thenReturn(TestConstants.DEFAULT_URL);
         when(signalRegisterRequest.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
         when(signalRegisterRequest.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
@@ -273,15 +273,15 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
         when(signalResultRequest.getSequenceNumber()).thenReturn(2L);
         when(signalResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
-        when(signalResultRequest.getTestIpLocal()).thenReturn(TestConstants.DEFAULT_IP);
+        when(signalResultRequest.getTestIpLocal()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
-        when(test.getClientPublicIp()).thenReturn(TestConstants.DEFAULT_IP);
+        when(test.getClientPublicIp()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(test.getUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
-        InetAddress defaultIpLocalAddress = InetAddresses.forString(TestConstants.DEFAULT_IP);
-        InetAddress defaultIpPublicAddress = InetAddresses.forString(TestConstants.DEFAULT_IP);
+        InetAddress defaultIpLocalAddress = InetAddresses.forString(TestConstants.DEFAULT_IP_V4);
+        InetAddress defaultIpPublicAddress = InetAddresses.forString(TestConstants.DEFAULT_IP_V4);
 
         var response = signalService.processSignalResult(signalResultRequest);
 
@@ -446,7 +446,7 @@ public class SignalServiceImplTest {
     private SignalSettingsResponse getRegisterSignalResponse() {
         return SignalSettingsResponse.builder()
                 .resultUrl(String.join(TestConstants.DEFAULT_URL, SIGNAL_RESULT))
-                .clientRemoteIp(TestConstants.DEFAULT_IP)
+                .clientRemoteIp(TestConstants.DEFAULT_IP_V4)
                 .provider(TestConstants.DEFAULT_PROVIDER)
                 .testUUID(TestConstants.DEFAULT_UUID)
                 .build();

@@ -96,7 +96,8 @@ public interface TestConstants {
     Integer DEFAULT_GKZ_SA = 13;
     Integer DEFAULT_LAND_COVER = 100;
     Integer DEFAULT_SETTLEMENT_TYPE = 3;
-    String DEFAULT_IP = "37.57.0.215";
+    String DEFAULT_IP_V4 = "37.57.0.215";
+    String DEFAULT_IP_V6 = "2dfc:0:0:0:0217:cbff:fe8c:0";
     String DEFAULT_RESULT_URL = "DEFAULT_RESULT_URL";
     String DEFAULT_URL = "DEFAULT_RESULT_URL";
     Long DEFAULT_TIME_INSTANT = 1615164630L;

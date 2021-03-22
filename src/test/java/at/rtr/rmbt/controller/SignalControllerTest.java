@@ -71,7 +71,7 @@ public class SignalControllerTest {
                 .content(TestUtils.asJsonString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.result_url").value(TestConstants.DEFAULT_RESULT_URL))
-                .andExpect(jsonPath("$.client_remote_ip").value(TestConstants.DEFAULT_IP))
+                .andExpect(jsonPath("$.client_remote_ip").value(TestConstants.DEFAULT_IP_V4))
                 .andExpect(jsonPath("$.provider").value(TestConstants.DEFAULT_PROVIDER))
                 .andExpect(jsonPath("$.test_uuid").value(TestConstants.DEFAULT_UUID.toString()));
 
@@ -186,7 +186,7 @@ public class SignalControllerTest {
     private SignalSettingsResponse getRegisterSignalResponse() {
         return SignalSettingsResponse.builder()
                 .resultUrl(TestConstants.DEFAULT_RESULT_URL)
-                .clientRemoteIp(TestConstants.DEFAULT_IP)
+                .clientRemoteIp(TestConstants.DEFAULT_IP_V4)
                 .provider(TestConstants.DEFAULT_PROVIDER)
                 .testUUID(TestConstants.DEFAULT_UUID)
                 .build();
