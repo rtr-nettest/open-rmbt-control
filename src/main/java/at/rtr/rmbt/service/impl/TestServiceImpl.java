@@ -4,6 +4,7 @@ import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.constant.ErrorMessage;
 import at.rtr.rmbt.dto.LteFrequencyDto;
+import at.rtr.rmbt.dto.QoeClassificationThresholds;
 import at.rtr.rmbt.enums.NetworkGroupName;
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestPlatform;
@@ -11,7 +12,6 @@ import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
-import at.rtr.rmbt.repository.QoeClassificationRepository;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.CapabilitiesRequest;
@@ -19,6 +19,7 @@ import at.rtr.rmbt.request.TestResultDetailRequest;
 import at.rtr.rmbt.request.TestResultRequest;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoAnalyticsService;
+import at.rtr.rmbt.service.QoeClassificationService;
 import at.rtr.rmbt.service.TestService;
 import at.rtr.rmbt.utils.*;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class TestServiceImpl implements TestService {
     private final GeoAnalyticsService geoAnalyticsService;
     private final MessageSource messageSource;
     private final SettingsRepository settingsRepository;
-    private final QoeClassificationRepository qoeClassificationRepository;
+    private final QoeClassificationService qoeClassificationService;
 
     @Override
     public Test save(Test test) {
@@ -114,7 +115,7 @@ public class TestServiceImpl implements TestService {
                 .shareSubject(MessageFormat.format(getStringFromBundle("RESULT_SHARE_SUBJECT", locale), timeString))
                 .shareText(getShareText(test, timeString, locale))
                 .timeString(timeString)
-                .qoeClassificationResponses(getQoeClassificationResponse());
+                .qoeClassificationResponses(getQoeClassificationResponse(test));
         setGeoLocationFields(testResultResponseBuilder, test, locale);
         setNetFields(testResultResponseBuilder, test, locale);
         return TestResultContainerResponse.builder()
@@ -122,9 +123,17 @@ public class TestServiceImpl implements TestService {
                 .build();
     }
 
-    private List<QoeClassificationResponse> getQoeClassificationResponse() {
-        qoeClassificationRepository.findAll();
-        return Collections.EMPTY_LIST;
+    private List<QoeClassificationResponse> getQoeClassificationResponse(Test test) {
+        long pingNs = Optional.ofNullable(test.getPingMedian())
+                .orElse(NumberUtils.LONG_ZERO);
+        long downKBps = Optional.ofNullable(test.getDownloadSpeed())
+                .map(Integer::longValue)
+                .orElse(NumberUtils.LONG_ZERO);
+        long upKbps = Optional.ofNullable(test.getUploadSpeed())
+                .map(Integer::longValue)
+                .orElse(NumberUtils.LONG_ZERO);
+        List<QoeClassificationThresholds> qoeClassificationThresholds = qoeClassificationService.getQoeClassificationThreshold();
+        return ClassificationUtils.classify(pingNs, downKBps, upKbps, qoeClassificationThresholds);
     }
 
     private void setNetFields(TestResultResponse.TestResultResponseBuilder testResultResponseBuilder, Test test, Locale locale) {
@@ -140,14 +149,16 @@ public class TestServiceImpl implements TestService {
             addNetItemResponse(locale, netItemResponses, getStringFromBundle("RESULT_DUAL_SIM", locale), "RESULT_NETWORK_TYPE");
             networkInfoResponseBuilder.networkTypeLabel(getStringFromBundle("RESULT_DUAL_SIM", locale));
         }
-        if (test.getNetworkType() == 98 || test.getNetworkType() == 99) { // mobile wifi or browser
+        if (test.getNetworkType() == 98 || test.getNetworkType() == 99) // mobile wifi or browser
+        {
             Optional.ofNullable(test.getProvider())
                     .map(Provider::getShortName)
                     .ifPresent(providerName -> {
                         addNetItemResponse(locale, netItemResponses, providerName, "RESULT_OPERATOR_NAME");
                         networkInfoResponseBuilder.providerName(providerName);
                     });
-            if (test.getNetworkType() == 99) {  // mobile wifi
+            if (test.getNetworkType() == 99)  // mobile wifi
+            {
                 Optional.ofNullable(test.getWifiSsid())
                         .ifPresent(wifiSSID -> {
                             addNetItemResponse(locale, netItemResponses, wifiSSID, "RESULT_WIFI_SSID");
@@ -225,11 +236,9 @@ public class TestServiceImpl implements TestService {
 
     private void setPingFields(Test test, MeasurementResultResponse.MeasurementResultResponseBuilder measurementResultResponseBuilder, CapabilitiesRequest capabilitiesRequest) {
         Optional.ofNullable(test.getPingMedian())
-                .ifPresent(pingMedian -> {
-                    measurementResultResponseBuilder
-                            .pingClassification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_PING, pingMedian, capabilitiesRequest.getClassification().getCount()))
-                            .pingMs(getPingMsFromPingMedian(pingMedian));
-                });
+                .ifPresent(pingMedian -> measurementResultResponseBuilder
+                        .pingClassification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_PING, pingMedian, capabilitiesRequest.getClassification().getCount()))
+                        .pingMs(getPingMsFromPingMedian(pingMedian)));
     }
 
     private void setUploadFields(Test test, MeasurementResultResponse.MeasurementResultResponseBuilder measurementResultResponseBuilder, CapabilitiesRequest capabilitiesRequest) {

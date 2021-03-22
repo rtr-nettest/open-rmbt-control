@@ -382,6 +382,9 @@ public interface TestConstants {
     String DEFAULT_NET_ITEM_RESPONSE_WIFI_SSID_TITLE = "WLAN SSID";
     String DEFAULT_NET_ITEM_RESPONSE_OPERATOR_NAME_TITLE = "Operator";
     String DEFAULT_NET_ITEM_RESPONSE_ROAMING_TITLE = "Roaming";
+    QoeCategory DEFAULT_QOE_CATEGORY = QoeCategory.CLOUD;
+    Integer DEFAULT_QOE_CLASSIFICATION = 4;
+    Double DEFAULT_QUALITY = 1d;
 
     interface Database {
         long CLIENT_TYPE_DESKTOP_UID = 1L;
