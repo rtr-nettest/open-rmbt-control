@@ -4,6 +4,7 @@ import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.dto.LteFrequencyDto;
+import at.rtr.rmbt.dto.QoeClassificationThresholds;
 import at.rtr.rmbt.dto.TestDistance;
 import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.TestMapper;
@@ -18,6 +19,7 @@ import at.rtr.rmbt.request.TestResultDetailRequest;
 import at.rtr.rmbt.request.TestResultRequest;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoAnalyticsService;
+import at.rtr.rmbt.service.QoeClassificationService;
 import at.rtr.rmbt.service.TestService;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
@@ -54,7 +56,7 @@ public class TestServiceImplTest {
     @MockBean
     private SettingsRepository settingsRepository;
     @MockBean
-    private QoeClassificationRepository qoeClassificationRepository;
+    private QoeClassificationService qoeClassificationService;
     @Mock
     private at.rtr.rmbt.model.Test test;
     @Mock
@@ -67,6 +69,8 @@ public class TestServiceImplTest {
     private CapabilitiesRequest capabilitiesRequest;
     @Mock
     private ClassificationRequest classificationRequest;
+    @Mock
+    private QoeClassificationThresholds qoeClassificationThresholds;
 
     private final ApplicationProperties applicationProperties = new ApplicationProperties(
             new ApplicationProperties.LanguageProperties(Set.of("en", "de"), "en"),
@@ -86,7 +90,7 @@ public class TestServiceImplTest {
         reloadableResourceBundleMessageSource.setBasename("classpath:SystemMessages");
         reloadableResourceBundleMessageSource.setDefaultEncoding("UTF-8");
         messageSource = reloadableResourceBundleMessageSource;
-        testService = new TestServiceImpl(testRepository, testMapper, applicationProperties, geoAnalyticsService, messageSource, settingsRepository, qoeClassificationRepository);
+        testService = new TestServiceImpl(testRepository, testMapper, applicationProperties, geoAnalyticsService, messageSource, settingsRepository, qoeClassificationService);
     }
 
     @Test
@@ -352,6 +356,33 @@ public class TestServiceImplTest {
     }
 
     @Test
+    public void getTestResult_whenQoeClassificaitonNotNull_expectTestResultContainerResponse() {
+        when(testResultRequest.getLanguage()).thenReturn(TestConstants.LANGUAGE_EN);
+        when(testResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
+        when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
+        when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
+        when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
+        when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
+        when(test.getPingMedian()).thenReturn(TestConstants.DEFAULT_TEST_PING_MEDIAN);
+        when(test.getDownloadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
+        when(test.getUploadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_UPLOAD_SPEED);
+        when(qoeClassificationService.getQoeClassificationThreshold()).thenReturn(List.of(qoeClassificationThresholds));
+        when(qoeClassificationThresholds.getQoeCategory()).thenReturn(TestConstants.DEFAULT_QOE_CATEGORY);
+
+        var result = testService.getTestResult(testResultRequest);
+
+        assertEquals(1, result.getTestResultResponses().size());
+        var testResultResponse = result.getTestResultResponses().get(0);
+        assertEquals(1, testResultResponse.getQoeClassificationResponses().size());
+        var qoeClassificationResponse = testResultResponse.getQoeClassificationResponses().get(0);
+        assertEquals(TestConstants.DEFAULT_QOE_CATEGORY.getValue(), qoeClassificationResponse.getCategory());
+        assertEquals(TestConstants.DEFAULT_QOE_CLASSIFICATION, qoeClassificationResponse.getClassification());
+        assertEquals(TestConstants.DEFAULT_QUALITY, qoeClassificationResponse.getQuality());
+    }
+
+    @Test
     public void getTestResult_whenDEFAULT_expectTestResultContainerResponse() {
         when(testResultRequest.getLanguage()).thenReturn(TestConstants.LANGUAGE_EN);
         when(testResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
@@ -365,7 +396,6 @@ public class TestServiceImplTest {
         var result = testService.getTestResult(testResultRequest);
 
         assertEquals(1, result.getTestResultResponses().size());
-        var testResultResponse = result.getTestResultResponses().get(0);
     }
 
     @Test
