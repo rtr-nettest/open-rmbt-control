@@ -22,4 +22,5 @@ public interface URIConstants {
     String TEST_RESULT_DETAIL = "/testresultdetail";
     String TEST_RESULT = "/testresult";
     String REQUEST_DATA_COLLECTOR = "/requestDataCollector";
+    String IP = "/ip";
 }

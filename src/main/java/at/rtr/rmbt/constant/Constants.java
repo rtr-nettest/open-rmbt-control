@@ -31,4 +31,6 @@ public interface Constants {
     Double MILLISECONDS_TO_HOURS = 1000d * 60d * 60d;
     String TIMEZONE_PATTERN = "+0.##;-0.##";
     Integer INTERNATIONAL_ROAMING_TYPE_BARRIER = 1;
+    String INET_4_IP_VERSION = "4";
+    String INET_6_IP_VERSION = "6";
 }

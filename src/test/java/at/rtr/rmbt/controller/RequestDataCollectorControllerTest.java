@@ -2,8 +2,10 @@ package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.advice.RtrAdvice;
+import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.response.DataCollectorResponse;
+import at.rtr.rmbt.response.IpResponse;
 import at.rtr.rmbt.service.RequestDataCollectorService;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +50,7 @@ public class RequestDataCollectorControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get(URIConstants.REQUEST_DATA_COLLECTOR))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$.ip").value(TestConstants.DEFAULT_IP))
+                .andExpect(jsonPath("$.ip").value(TestConstants.DEFAULT_IP_V4))
                 .andExpect(jsonPath("$.agent").value(TestConstants.DEFAULT_USER_AGENT_STRING))
                 .andExpect(jsonPath("$.url").value(TestConstants.DEFAULT_REQUEST_URL))
                 .andExpect(jsonPath("$.languages[0]").value(Locale.ENGLISH.toString()))
@@ -61,9 +63,29 @@ public class RequestDataCollectorControllerTest {
 
     }
 
+    @Test
+    public void getClientIpVersion_whenCommonData_expectIpResponse() throws Exception {
+        var ipResponse = getIpResponse();
+        when(requestDataCollectorService.getIpVersion(any(), any())).thenReturn(ipResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(URIConstants.IP))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.ip").value(TestConstants.DEFAULT_IP_V4))
+                .andExpect(jsonPath("$.v").value(Constants.INET_4_IP_VERSION));
+
+    }
+
+    private IpResponse getIpResponse() {
+        return IpResponse.builder()
+                .ip(TestConstants.DEFAULT_IP_V4)
+                .version(Constants.INET_4_IP_VERSION)
+                .build();
+    }
+
     private DataCollectorResponse getDataCollectorResponse() {
         return DataCollectorResponse.builder()
-                .ip(TestConstants.DEFAULT_IP)
+                .ip(TestConstants.DEFAULT_IP_V4)
                 .agent(TestConstants.DEFAULT_USER_AGENT_STRING)
                 .url(TestConstants.DEFAULT_REQUEST_URL)
                 .languages(List.of(Locale.ENGLISH.toString(), Locale.FRANCE.toString()))

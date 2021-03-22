@@ -48,7 +48,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
             JwtWebSecurityConfigurer.forRS256(audience, issuer)
                     .configure(httpSecurity)
                     .authorizeRequests()
-                    .antMatchers(REQUEST_DATA_COLLECTOR, TEST_RESULT_DETAIL, MEASUREMENT_QOS_REQUEST, SIGNAL_REQUEST, SIGNAL_RESULT, NEWS_URL, REGISTRATION_URL,
+                    .antMatchers(IP, REQUEST_DATA_COLLECTOR, TEST_RESULT_DETAIL, MEASUREMENT_QOS_REQUEST, SIGNAL_REQUEST, SIGNAL_RESULT, NEWS_URL, REGISTRATION_URL,
                             RESULT_QOS_URL, RESULT_URL, SETTINGS_URL, PROVIDERS, TEST_RESULT).permitAll()
                     .antMatchers(ADMIN_SIGNAL).hasAuthority("read:reports/signal")
                     .antMatchers(ADMIN_SIGNAL).hasAnyAuthority(clients)

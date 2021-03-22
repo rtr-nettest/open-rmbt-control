@@ -18,7 +18,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -67,8 +66,8 @@ public class QosMeasurementServiceImplTest {
     @Test
     public void getQosParameters_whenCommonData_expectMeasurementQosResponse() {
         var expectedResponse = getMeasurementQosResponse();
-        var clientAddress = InetAddresses.forString(TestConstants.DEFAULT_IP);
-        when(httpServletRequest.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP);
+        var clientAddress = InetAddresses.forString(TestConstants.DEFAULT_IP_V4);
+        when(httpServletRequest.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(qosTestObjectiveRepository.getByTestClassIdIn(List.of(1))).thenReturn(List.of(qosTestObjectiveFirst, qosTestObjectiveSecond));
         when(qosTestObjectiveFirst.getTestType()).thenReturn(TestConstants.DEFAULT_TEST_TYPE);
         when(qosTestObjectiveSecond.getTestType()).thenReturn(TestConstants.DEFAULT_TEST_TYPE);
@@ -85,7 +84,7 @@ public class QosMeasurementServiceImplTest {
         objectives.put(TestConstants.DEFAULT_TEST_TYPE, List.of(qosParamsResponseFirst, qosParamsResponseSecond));
 
         return MeasurementQosResponse.builder()
-                .clientRemoteIp(TestConstants.DEFAULT_IP)
+                .clientRemoteIp(TestConstants.DEFAULT_IP_V4)
                 .testNumPings(applicationProperties.getPings())
                 .testDuration(applicationProperties.getDuration())
                 .testNumThreads(applicationProperties.getThreads())
