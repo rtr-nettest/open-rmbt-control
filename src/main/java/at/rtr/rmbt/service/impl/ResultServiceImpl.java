@@ -13,6 +13,7 @@ import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.ResultRequest;
 import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.GeometryUtils;
+import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import at.rtr.rmbt.utils.HelperFunctions;
 import at.rtr.rmbt.utils.ValidateUtils;
 import com.google.common.net.InetAddresses;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,7 +47,7 @@ public class ResultServiceImpl implements ResultService {
     private final static Pattern MCC_MNC_PATTERN = Pattern.compile("\\d{3}-\\d+");
 
     @Override
-    public void processResultRequest(HttpServletRequest httpServletRequest, ResultRequest resultRequest) {
+    public void processResultRequest(HttpServletRequest httpServletRequest, ResultRequest resultRequest, Map<String, String> headers) {
         UUID requestUUID = UUID.fromString(resultRequest.getTestToken().split("_")[0]);
 
         Test test = testRepository.findByUuidOrOpenTestUuid(requestUUID)
@@ -55,7 +57,7 @@ public class ResultServiceImpl implements ResultService {
         test.setNetworkOperator(getOperator(resultRequest.getTelephonyNetworkOperator()));
         test.setNetworkSimOperator(getOperator(resultRequest.getTelephonyNetworkSimOperator()));
         setRMBTClientInfo(resultRequest, test);
-        setSourceIp(httpServletRequest, test);
+        setSourceIp(httpServletRequest, headers, test);
         processSpeedData(resultRequest, test);
         testRepository.refresh(test);
         processPingData(resultRequest, test);
@@ -183,8 +185,8 @@ public class ResultServiceImpl implements ResultService {
         }
     }
 
-    private void setSourceIp(HttpServletRequest httpServletRequest, Test test) {
-        InetAddress sourceAddress = InetAddresses.forString(httpServletRequest.getRemoteAddr());
+    private void setSourceIp(HttpServletRequest httpServletRequest, Map<String, String> headers, Test test) {
+        InetAddress sourceAddress = InetAddresses.forString(HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers));
         test.setSourceIp(InetAddresses.toAddrString(sourceAddress));
         test.setSourceIpAnonymized(HelperFunctions.anonymizeIp(sourceAddress));
     }

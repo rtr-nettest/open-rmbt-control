@@ -13,13 +13,14 @@ import org.springframework.data.domain.Pageable;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 public interface SignalService {
 
     Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable);
 
-    SignalSettingsResponse registerSignal(SignalRegisterRequest signalRegisterRequest, HttpServletRequest httpServletRequest);
+    SignalSettingsResponse registerSignal(SignalRegisterRequest signalRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers);
 
     SignalResultResponse processSignalResult(SignalResultRequest signalResultRequest);
 

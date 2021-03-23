@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @Api("Test Settings")
 @RestController
@@ -28,7 +29,7 @@ public class RegistrationController {
 
     @ApiOperation(value = "Update test settings", notes = "Request to update configuration for basic test")
     @PostMapping
-    public TestSettingsResponse updateTestSettings(@RequestBody TestSettingsRequest testSettingsRequest, HttpServletRequest request) {
-        return testSettingsFacade.updateTestSettings(testSettingsRequest, request);
+    public TestSettingsResponse updateTestSettings(@RequestBody TestSettingsRequest testSettingsRequest, HttpServletRequest request, Map<String, String> headers) {
+        return testSettingsFacade.updateTestSettings(testSettingsRequest, request, headers);
     }
 }

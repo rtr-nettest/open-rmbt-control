@@ -3,6 +3,8 @@ package at.rtr.rmbt.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
+import java.util.Objects;
+
 @Getter
 public enum TestPlatform {
     ANDROID("Android");
@@ -15,6 +17,9 @@ public enum TestPlatform {
 
     @JsonCreator
     public static TestPlatform forValue(String value) {
+        if (Objects.isNull(value)) {
+            return null;
+        }
         try {
             return valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) { // if value not found by name - try find by label

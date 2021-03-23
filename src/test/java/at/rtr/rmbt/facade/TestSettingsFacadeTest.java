@@ -100,6 +100,7 @@ public class TestSettingsFacadeTest {
     @Mock
     private LoopModeSettings loopModeSettings;
     private TestServer testServer;
+    private final Map<String, String> headers = new HashMap<>();
 
     private final LoopModeSettingsService loopModeSettingsService = mock(LoopModeSettingsService.class);
     private final ClientTypeService clientTypeService = mock(ClientTypeService.class);
@@ -136,7 +137,7 @@ public class TestSettingsFacadeTest {
     @Before
     public void setUp() {
         request = new MockHttpServletRequest();
-        request.setRemoteAddr("185.38.216.246");
+        request.setLocalAddr("185.38.216.246");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         var serverTypeDetails = ServerTypeDetails.builder()
             .serverType(ServerType.RMBT)
@@ -161,7 +162,7 @@ public class TestSettingsFacadeTest {
     public void updateTestSettings() {
         ArgumentCaptor<at.rtr.rmbt.model.Test> testArgumentCaptor = ArgumentCaptor.forClass(at.rtr.rmbt.model.Test.class);
         mockUpdateTestSettings();
-        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
+        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request, headers);
         verifyUpdateTestSettings(testArgumentCaptor, result);
     }
 
@@ -171,7 +172,7 @@ public class TestSettingsFacadeTest {
         String realUrl = "http://custom-url.org/";
         request.addHeader(HeaderConstants.URL, realUrl);
         mockUpdateTestSettings();
-        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
+        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request, headers);
         verifyUpdateTestSettings(testArgumentCaptor, result);
         assertTrue(result.getResultUrl().startsWith(realUrl));
         assertTrue(result.getResultQosUrl().startsWith(realUrl));
@@ -181,7 +182,7 @@ public class TestSettingsFacadeTest {
     public void updateTestSettings_encryptedFalse_usedPortField() {
         mockStubToTestEncryption();
         testServer.getServerTypeDetails().iterator().next().setEncrypted(false);
-        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
+        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request, headers);
         assertEquals(testServer.getPort(), result.getTestServerPort());
         assertFalse(result.getTestServerEncryption());
     }
@@ -189,7 +190,7 @@ public class TestSettingsFacadeTest {
     @Test
     public void updateTestSettings_encryptedTrue_usedSSLPortField() {
         mockStubToTestEncryption();
-        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
+        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request, headers);
         assertEquals(testServer.getPortSsl(), result.getTestServerPort());
         assertTrue(result.getTestServerEncryption());
     }
@@ -197,7 +198,7 @@ public class TestSettingsFacadeTest {
     @Test
     public void updateTestSettings_existInServerTypes_expectFromResponse() {
         mockStubToTestEncryption();
-        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
+        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request, headers);
         assertEquals(ServerType.RMBT, result.getTestServerType());
     }
 
@@ -208,7 +209,7 @@ public class TestSettingsFacadeTest {
                 .serverType(ServerType.HW_PROBE)
                 .build();
         testServer.setServerTypeDetails(Set.of(serverTypeDetails));
-        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request);
+        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request, headers);
         assertEquals(ServerType.HW_PROBE, result.getTestServerType());
     }
 
@@ -217,7 +218,7 @@ public class TestSettingsFacadeTest {
         mockStubToTestEncryption();
         testServer.setServerTypeDetails(Collections.emptySet());
         when(messageSource.getMessage(eq("ERROR_TEST_SERVER"), eq(null), eq(Locale.ENGLISH))).thenReturn(DEFAULT_TEXT);
-        TestSettingsResponse response = facade.updateTestSettings(testSettingsRequest, request);
+        TestSettingsResponse response = facade.updateTestSettings(testSettingsRequest, request, headers);
         assertEquals(DEFAULT_TEXT, response.getErrorList().get(0));
     }
 
@@ -236,7 +237,7 @@ public class TestSettingsFacadeTest {
         assertEquals(testSettingsRequest.getServerType(), testResult.getClientName());
         assertEquals(testSettingsRequest.getTestSetVersion(), testResult.getClientVersion());
         assertEquals(testSettingsRequest.getSoftwareVersion(), testResult.getClientSoftwareVersion());
-        assertEquals(request.getRemoteAddr(), testResult.getClientPublicIp());
+        assertEquals(request.getLocalAddr(), testResult.getClientPublicIp());
         assertEquals(testServer.getUid(), testResult.getTestServer().getUid());
         assertEquals(testServer.getPortSsl(), testResult.getServerPort());
         assertEquals(applicationProperties.getDuration(), testResult.getDuration());
@@ -303,7 +304,7 @@ public class TestSettingsFacadeTest {
         assertEquals(result.getTestDuration(), applicationProperties.getDuration().toString());
         assertEquals(result.getTestNumberOfThreads(), secondTestResult.getNumberOfThreads().toString());
         assertEquals(result.getTestNumberOfPings(), applicationProperties.getPings().toString());
-        assertEquals(result.getClientRemoteIp(), request.getRemoteAddr());
+        assertEquals(result.getClientRemoteIp(), request.getLocalAddr());
     }
 
 }

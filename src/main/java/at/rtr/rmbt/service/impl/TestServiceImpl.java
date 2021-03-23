@@ -594,7 +594,7 @@ public class TestServiceImpl implements TestService {
     }
 
     private void addTestFields(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Test test) {
-        if (Objects.nonNull(test.getDualSim()) && !test.getDualSim()) {
+        if (!isDualSim(test)) {
             addIntegerAndUnitString(propertiesList, locale, "signal_strength", test.getSignalStrength(), "RESULT_SIGNAL_UNIT");
             addIntegerAndUnitString(propertiesList, locale, "signal_rsrp", test.getLteRsrp(), "RESULT_SIGNAL_UNIT");
             addIntegerAndUnitString(propertiesList, locale, "signal_rsrq", test.getLteRsrq(), "RESULT_DB_UNIT");
@@ -602,8 +602,13 @@ public class TestServiceImpl implements TestService {
                     .map(HelperFunctions::getNetworkTypeName)
                     .ifPresent(networkType -> addString(propertiesList, locale, "network_type", networkType));
             addString(propertiesList, locale, "network_sim_operator_name", test.getNetworkSimOperatorName());
-            addString(propertiesList, locale, "network_sim_operator", test.getNetworkSimOperator());
-            addString(propertiesList, locale, "roaming", HelperFunctions.getRoamingType(messageSource, test.getRoamingType() == null ? 0 : test.getRoamingType(), locale));
+            addString(propertiesList,
+                    locale,
+                    "network_sim_operator",
+                    test.getNetworkSimOperator());
+            Optional.ofNullable(test.getRoamingType())
+                    .map(roamingType -> HelperFunctions.getRoamingType(messageSource, roamingType, locale))
+                    .ifPresent(roamingName -> addString(propertiesList, locale, "roaming", roamingName));
             Optional.of(test)
                     .map(Test::getMobileProvider)
                     .map(Provider::getShortName)

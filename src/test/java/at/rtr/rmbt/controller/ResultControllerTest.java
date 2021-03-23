@@ -52,7 +52,7 @@ public class ResultControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(resultService).processResultRequest(any(), resultRequestArgumentCaptor.capture());
+        verify(resultService).processResultRequest(any(), resultRequestArgumentCaptor.capture(), any());
 
         assertEquals(request, resultRequestArgumentCaptor.getValue());
     }

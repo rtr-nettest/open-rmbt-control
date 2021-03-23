@@ -59,6 +59,7 @@ public class QosMeasurementServiceImplTest {
     @Before
     public void setUp() {
         qosMeasurementService = new QosMeasurementServiceImpl(qosTestObjectiveRepository, qosTestObjectiveMapper, applicationProperties);
+        headers = new HashMap<>();
     }
 
     @Test
