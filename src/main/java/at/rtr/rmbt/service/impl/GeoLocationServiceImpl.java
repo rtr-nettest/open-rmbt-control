@@ -30,7 +30,7 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 
         for (GeoLocationRequest geoDataItem : geoLocations) {
             if (Objects.nonNull(geoDataItem.getTstamp()) && Objects.nonNull(geoDataItem.getGeoLat()) && Objects.nonNull(geoDataItem.getGeoLong())) {
-                if (geoDataItem.getTimeNs() > -20000000000L) {// todo update to another value from RTR branch
+//                if (geoDataItem.getTimeNs() > -20000000000L) {// todo update to another value from RTR branch
                     GeoLocation geoLoc = geoLocationMapper.geoLocationRequestToGeoLocation(geoDataItem, test);
                     
                     if (geoLoc.getAccuracy() < minAccuracy) {
@@ -38,7 +38,7 @@ public class GeoLocationServiceImpl implements GeoLocationService {
                         firstAccuratePosition = geoLoc;
                     }
                     actualGeoLocation.add(geoLoc);
-                }
+//                }
             }
         }
         geoLocationRepository.saveAll(actualGeoLocation);
