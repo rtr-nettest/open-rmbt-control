@@ -15,7 +15,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
-import static at.rtr.rmbt.constant.URIConstants.*;
+import static at.rtr.rmbt.constant.URIConstants.ADMIN_NEWS;
+import static at.rtr.rmbt.constant.URIConstants.ADMIN_SETTING;
+import static at.rtr.rmbt.constant.URIConstants.ADMIN_SIGNAL;
+import static at.rtr.rmbt.constant.URIConstants.IP;
+import static at.rtr.rmbt.constant.URIConstants.MEASUREMENT_QOS_REQUEST;
+import static at.rtr.rmbt.constant.URIConstants.NEWS_URL;
+import static at.rtr.rmbt.constant.URIConstants.PROVIDERS;
+import static at.rtr.rmbt.constant.URIConstants.REGISTRATION_URL;
+import static at.rtr.rmbt.constant.URIConstants.REQUEST_DATA_COLLECTOR;
+import static at.rtr.rmbt.constant.URIConstants.RESULT_QOS_URL;
+import static at.rtr.rmbt.constant.URIConstants.RESULT_URL;
+import static at.rtr.rmbt.constant.URIConstants.SETTINGS_URL;
+import static at.rtr.rmbt.constant.URIConstants.SIGNAL_REQUEST;
+import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
+import static at.rtr.rmbt.constant.URIConstants.TEST_RESULT;
+import static at.rtr.rmbt.constant.URIConstants.TEST_RESULT_DETAIL;
+import static at.rtr.rmbt.constant.URIConstants.TEST_SERVER;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
@@ -65,7 +81,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         @Override
         public void configure(WebSecurity web) throws Exception {
             // ignoring security for swagger APIs
-            web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/health").and()
+            web.ignoring().antMatchers("/swagger-ui/**", "/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/health").and()
                     .ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
         }
     }
