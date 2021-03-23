@@ -174,7 +174,8 @@ public class SignalServiceImpl implements SignalService {
 
         List<GeoLocation> geoLocations = geoLocationRepository.findAllByTestOrderByTimeAsc(test);
         List<RadioSignal> radioSignals = radioSignalRepository.findAllByCellUUIDInOrderByTimeAsc(radioCellUUIDs.keySet());
-        log.debug("Info signal number:" + radioSignals.size());
+        log.info("Info signal number:" + radioSignals.size());
+        log.info("Info location number:" + geoLocations.size());
         return SignalDetailsResponse.builder()
                 .signalStrength(radioSignals.stream()
                         .map(signal -> {

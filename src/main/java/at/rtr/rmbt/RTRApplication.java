@@ -1,6 +1,7 @@
 package at.rtr.rmbt;
 
 import at.rtr.rmbt.properties.ApplicationProperties;
+import at.rtr.rmbt.repository.impl.CustomRepositoryImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -12,7 +13,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = {"at.rtr.rmbt"})
-@EnableJpaRepositories(basePackages = {"at.rtr.rmbt.repository"})
+@EnableJpaRepositories(basePackages = {"at.rtr.rmbt.repository"}, repositoryBaseClass = CustomRepositoryImpl.class)
 @EntityScan(basePackages = {"at.rtr.rmbt.model"})
 @PropertySource({"classpath:git.properties"})
 @EnableConfigurationProperties(ApplicationProperties.class)

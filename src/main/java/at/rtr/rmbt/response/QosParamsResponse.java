@@ -11,16 +11,16 @@ import lombok.Getter;
 public class QosParamsResponse {
 
     @JsonProperty(value = "qos_test_uid")
-    private final Long qosTestUid;
+    private final String qosTestUid;
 
     @JsonProperty(value = "concurrency_group")
-    private final Integer concurrencyGroup;
+    private final String concurrencyGroup;
 
     @JsonProperty(value = "server_addr")
     private final String serverAddress;
 
     @JsonProperty(value = "server_port")
-    private final Integer serverPort;
+    private final String serverPort;
 
     @JsonProperty(value = "port")
     private final String port;

@@ -19,16 +19,16 @@ public class MeasurementQosResponse {
     @JsonProperty(value = "objectives")
     private final Map<TestType, List<QosParamsResponse>> objectives;
 
-    @JsonProperty(value = "testDuration")
+    @JsonProperty(value = "test_duration")
     private final Integer testDuration;
 
-    @JsonProperty(value = "testNumThreads")
+    @JsonProperty(value = "test_numthreads")
     private final Integer testNumThreads;
 
-    @JsonProperty(value = "testNumPings")
+    @JsonProperty(value = "test_numpings")
     private final Integer testNumPings;
 
-    @JsonProperty(value = "clientRemoteIp")
+    @JsonProperty(value = "client_remote_ip")
     private final String clientRemoteIp;
 
     @JsonProperty(value = "error")

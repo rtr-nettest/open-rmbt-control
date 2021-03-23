@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface TestRepository extends PagingAndSortingRepository<Test, Long> {
+public interface TestRepository extends PagingAndSortingRepository<Test, Long>, CustomRepository<Test, Long> {
     @Procedure("rmbt_set_provider_from_as")
     String getRmbtSetProviderFromAs(Long testUid);
 

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static at.rtr.rmbt.constant.HeaderConstants.HEADER_NGINX_X_FORWARDED_FOR;
@@ -20,11 +21,11 @@ import static at.rtr.rmbt.constant.HeaderConstants.USER_AGENT;
 public class HeaderExtrudeUtil {
 
     public String getIpFromNgNixHeader(HttpServletRequest request, Map<String, String> headers) {
-        return headers.entrySet().stream()
+        return Optional.ofNullable(headers).orElse(Collections.emptyMap()).entrySet().stream()
                 .filter(x -> StringUtils.equalsAnyIgnoreCase(x.getKey(), HEADER_NGINX_X_FORWARDED_FOR, IP))
                 .findFirst()
                 .map(Map.Entry::getValue)
-                .orElse(request.getRemoteAddr());
+                .orElse(request.getLocalAddr());
     }
 
     public Map<String, String> getHeadersWithoutIpAndUrl(Map<String, String> headers) {

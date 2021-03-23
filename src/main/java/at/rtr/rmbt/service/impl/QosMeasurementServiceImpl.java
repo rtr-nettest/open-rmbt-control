@@ -7,17 +7,14 @@ import at.rtr.rmbt.repository.QosTestObjectiveRepository;
 import at.rtr.rmbt.response.MeasurementQosResponse;
 import at.rtr.rmbt.response.QosParamsResponse;
 import at.rtr.rmbt.service.QosMeasurementService;
+import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +27,8 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
     private static final int STATIC_CLASS_NAME = 1;
 
     @Override
-    public MeasurementQosResponse getQosParameters(HttpServletRequest httpServletRequest) {
-        InetAddress clientAddress = InetAddresses.forString(httpServletRequest.getRemoteAddr());
+    public MeasurementQosResponse getQosParameters(HttpServletRequest httpServletRequest, Map<String, String> headers) {
+        InetAddress clientAddress = InetAddresses.forString(HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers));
         String clientIpString = InetAddresses.toAddrString(clientAddress);
 
         Map<TestType, List<QosParamsResponse>> objectives = new HashMap<>();

@@ -14,10 +14,10 @@ public class QosTestObjectiveMapperImpl implements QosTestObjectiveMapper {
     @Override
     public QosParamsResponse qosTestObjectiveToQosParamsResponse(QosTestObjective qosTestObjective, InetAddress clientAddress) {
         return QosParamsResponse.builder()
-                .qosTestUid(qosTestObjective.getUid())
-                .concurrencyGroup(qosTestObjective.getConcurrencyGroup())
+                .qosTestUid(String.valueOf(qosTestObjective.getUid()))
+                .concurrencyGroup(String.valueOf(qosTestObjective.getConcurrencyGroup()))
                 .serverAddress(getServerAddress(qosTestObjective, clientAddress))
-                .serverPort(qosTestObjective.getTestServer().getPortSsl())
+                .serverPort(String.valueOf(qosTestObjective.getTestServer().getPortSsl()))
                 .port(qosTestObjective.getParam().getPort())
                 .request(qosTestObjective.getParam().getRequest())
                 .timeout(qosTestObjective.getParam().getTimeout())

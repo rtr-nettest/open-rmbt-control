@@ -34,7 +34,7 @@ public class RequestDataCollectorServiceImplTest {
         when(request.getRequestURL()).thenReturn(TestConstants.DEFAULT_REQUEST_URL_BUFFER);
         when(request.getLocales()).thenReturn(Collections.enumeration(List.of(Locale.ENGLISH, Locale.FRANCE)));
         when(request.getHeader("User-Agent")).thenReturn(TestConstants.DEFAULT_USER_AGENT_STRING);
-        when(request.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
+        when(request.getLocalAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
 
         var response = requestDataCollectorService.getDataCollectorResponse(request, headers);
         assertEquals(TestConstants.DEFAULT_IP_V4, response.getIp());
@@ -50,7 +50,7 @@ public class RequestDataCollectorServiceImplTest {
 
     @Test
     public void getIpVersion_whenIpV4_expectIpResponse() {
-        when(request.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
+        when(request.getLocalAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
 
         var response = requestDataCollectorService.getIpVersion(request, headers);
 
@@ -60,7 +60,7 @@ public class RequestDataCollectorServiceImplTest {
 
     @Test
     public void getIpVersion_whenIpV6_expectIpResponse() {
-        when(request.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP_V6);
+        when(request.getLocalAddr()).thenReturn(TestConstants.DEFAULT_IP_V6);
 
         var response = requestDataCollectorService.getIpVersion(request, headers);
 
