@@ -18,11 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -47,6 +43,8 @@ public class QosMeasurementServiceImplTest {
     @Mock
     private QosParamsResponse qosParamsResponseSecond;
 
+    private Map<String, String> headers;
+
     private final ApplicationProperties applicationProperties = new ApplicationProperties(
             new ApplicationProperties.LanguageProperties(Set.of("en", "de"), "en"),
             Set.of("RMBT", "RMBTjs", "Open-RMBT", "RMBTws", "HW-PROBE"),
@@ -67,14 +65,14 @@ public class QosMeasurementServiceImplTest {
     public void getQosParameters_whenCommonData_expectMeasurementQosResponse() {
         var expectedResponse = getMeasurementQosResponse();
         var clientAddress = InetAddresses.forString(TestConstants.DEFAULT_IP_V4);
-        when(httpServletRequest.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
+        when(httpServletRequest.getLocalAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(qosTestObjectiveRepository.getByTestClassIdIn(List.of(1))).thenReturn(List.of(qosTestObjectiveFirst, qosTestObjectiveSecond));
         when(qosTestObjectiveFirst.getTestType()).thenReturn(TestConstants.DEFAULT_TEST_TYPE);
         when(qosTestObjectiveSecond.getTestType()).thenReturn(TestConstants.DEFAULT_TEST_TYPE);
         when(qosTestObjectiveMapper.qosTestObjectiveToQosParamsResponse(qosTestObjectiveFirst, clientAddress)).thenReturn(qosParamsResponseFirst);
         when(qosTestObjectiveMapper.qosTestObjectiveToQosParamsResponse(qosTestObjectiveSecond, clientAddress)).thenReturn(qosParamsResponseSecond);
 
-        var response = qosMeasurementService.getQosParameters(httpServletRequest);
+        var response = qosMeasurementService.getQosParameters(httpServletRequest, headers);
 
         assertEquals(expectedResponse, response);
     }

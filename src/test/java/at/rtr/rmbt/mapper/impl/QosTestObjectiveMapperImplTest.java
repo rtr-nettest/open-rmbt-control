@@ -2,8 +2,8 @@ package at.rtr.rmbt.mapper.impl;
 
 import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.mapper.QosTestObjectiveMapper;
-import at.rtr.rmbt.model.QosTestObjective;
 import at.rtr.rmbt.model.QosParams;
+import at.rtr.rmbt.model.QosTestObjective;
 import at.rtr.rmbt.model.TestServer;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,10 +47,10 @@ public class QosTestObjectiveMapperImplTest {
 
         var response = qosTestObjectiveMapper.qosTestObjectiveToQosParamsResponse(qosTestObjective, inetAddress);
 
-        assertEquals(TestConstants.DEFAULT_UID, response.getQosTestUid());
-        assertEquals(TestConstants.DEFAULT_CONCURRENCY_GROUP, response.getConcurrencyGroup());
+        assertEquals(TestConstants.DEFAULT_UID.toString(), response.getQosTestUid());
+        assertEquals(TestConstants.DEFAULT_CONCURRENCY_GROUP.toString(), response.getConcurrencyGroup());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V4, response.getServerAddress());
-        assertEquals(TestConstants.DEFAULT_TEST_SERVER_PORT_SSL, response.getServerPort());
+        assertEquals(TestConstants.DEFAULT_TEST_SERVER_PORT_SSL.toString(), response.getServerPort());
         assertEquals(TestConstants.DEFAULT_QOS_PARAM_PORT, response.getPort());
         assertEquals(TestConstants.DEFAULT_QOS_PARAM_REQUEST, response.getRequest());
         assertEquals(TestConstants.DEFAULT_QOS_PARAM_TIMEOUT, response.getTimeout());
@@ -81,10 +81,10 @@ public class QosTestObjectiveMapperImplTest {
 
         var response = qosTestObjectiveMapper.qosTestObjectiveToQosParamsResponse(qosTestObjective, inetAddress);
 
-        assertEquals(TestConstants.DEFAULT_UID, response.getQosTestUid());
-        assertEquals(TestConstants.DEFAULT_CONCURRENCY_GROUP, response.getConcurrencyGroup());
+        assertEquals(TestConstants.DEFAULT_UID.toString(), response.getQosTestUid());
+        assertEquals(TestConstants.DEFAULT_CONCURRENCY_GROUP.toString(), response.getConcurrencyGroup());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS_IP_V6, response.getServerAddress());
-        assertEquals(TestConstants.DEFAULT_TEST_SERVER_PORT_SSL, response.getServerPort());
+        assertEquals(TestConstants.DEFAULT_TEST_SERVER_PORT_SSL.toString(), response.getServerPort());
         assertEquals(TestConstants.DEFAULT_QOS_PARAM_PORT, response.getPort());
         assertEquals(TestConstants.DEFAULT_QOS_PARAM_REQUEST, response.getRequest());
         assertEquals(TestConstants.DEFAULT_QOS_PARAM_TIMEOUT, response.getTimeout());

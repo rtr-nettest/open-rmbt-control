@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 @Getter
 @ToString
-public class TestResultContainerResponse {
+public class TestResultContainerResponse extends ErrorResponse {
 
     @JsonProperty(value = "testresult")
     private final List<TestResultResponse> testResultResponses;

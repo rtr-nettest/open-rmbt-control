@@ -36,7 +36,7 @@ public class QosMeasurementControllerTest {
     @Test
     public void provideMeasurementQosParameters_whenCommonData_expectMeasurementQosResponse() throws Exception {
         var response = getMeasurementQosResponse();
-        when(qosMeasurementService.getQosParameters(any())).thenReturn(response);
+        when(qosMeasurementService.getQosParameters(any(), any())).thenReturn(response);
 
         mockMvc.perform(post(URIConstants.MEASUREMENT_QOS_REQUEST))
                 .andDo(print())

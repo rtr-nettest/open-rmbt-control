@@ -12,6 +12,7 @@ import at.rtr.rmbt.repository.NetworkTypeRepository;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.ResultRequest;
 import at.rtr.rmbt.service.*;
+import at.rtr.rmbt.utils.GeometryUtils;
 import at.rtr.rmbt.utils.HelperFunctions;
 import at.rtr.rmbt.utils.ValidateUtils;
 import com.google.common.net.InetAddresses;
@@ -19,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,7 +45,6 @@ public class ResultServiceImpl implements ResultService {
     private final static Pattern MCC_MNC_PATTERN = Pattern.compile("\\d{3}-\\d+");
 
     @Override
-    @Transactional
     public void processResultRequest(HttpServletRequest httpServletRequest, ResultRequest resultRequest) {
         UUID requestUUID = UUID.fromString(resultRequest.getTestToken().split("_")[0]);
 
@@ -58,6 +57,7 @@ public class ResultServiceImpl implements ResultService {
         setRMBTClientInfo(resultRequest, test);
         setSourceIp(httpServletRequest, test);
         processSpeedData(resultRequest, test);
+        testRepository.refresh(test);
         processPingData(resultRequest, test);
         processGeoLocation(resultRequest, test);
         processRadioInfo(resultRequest, test);
@@ -67,7 +67,12 @@ public class ResultServiceImpl implements ResultService {
         setAndroidPermission(resultRequest, test);
         setSpeedAndPing(resultRequest, test);
         setStatus(resultRequest, test);
+        updateLocation(test);
         testRepository.save(test);
+    }
+
+    private void updateLocation(Test test) {
+        test.setLocation(GeometryUtils.getGeometryFromLongitudeAndLatitude(test.getLongitude(), test.getLatitude()));
     }
 
     private void setStatus(ResultRequest resultRequest, Test test) {

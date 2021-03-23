@@ -27,6 +27,7 @@ public class BandCalculationUtil {
 
     public static FrequencyInformation getFrequencyInformationFromChannelNumberAndTechnology(Integer channelNumber, NetworkGroupName technology) {
         FrequencyInformation fi = null;
+        channelNumber = channelNumber == null ? 0 : channelNumber;
         switch (technology) {
             case G2:
                 fi = BandCalculationUtil.getBandFromArfcn(channelNumber);
