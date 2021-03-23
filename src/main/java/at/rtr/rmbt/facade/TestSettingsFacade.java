@@ -89,12 +89,6 @@ public class TestSettingsFacade {
         String asCountry = null;
         String clientIpAddress = HeaderExtrudeUtil.getIpFromNgNixHeader(request, headers);
         InetAddress clientAddress = null;
-        System.out.println("clientIpAddres " + clientIpAddress);
-        System.out.println("clientIpAddresRemote  " + request.getRemoteAddr());
-        System.out.println("http:   " + request.toString());
-
-        headers.forEach((a,b)-> System.out.println("key " + a + "||value " + b));
-
         try {
             clientAddress = InetAddress.getByName(clientIpAddress);
         } catch (UnknownHostException ignored) {
