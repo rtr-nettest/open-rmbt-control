@@ -15,6 +15,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -63,6 +65,7 @@ public class ResultServiceImplTest {
             10000,
             2000
     );
+    private final Map<String, String> headers = new HashMap<>();
 
     @Before
     public void setUp() {
@@ -80,10 +83,10 @@ public class ResultServiceImplTest {
         when(resultRequest.getDownloadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
         when(resultRequest.getUploadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
         when(resultRequest.getPingShortest()).thenReturn(TestConstants.DEFAULT_RESULT_PING_SHORTEST);
-        when(httpServletRequest.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
+        when(httpServletRequest.getLocalAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(test.getNetworkType()).thenReturn(TestConstants.DEFAULT_NETWORK_TYPE_ID);
 
-        resultService.processResultRequest(httpServletRequest, resultRequest);
+        resultService.processResultRequest(httpServletRequest, resultRequest, headers);
 
         verify(testRepository).save(test);
         verify(testMapper).updateTestWithResultRequest(resultRequest, test);

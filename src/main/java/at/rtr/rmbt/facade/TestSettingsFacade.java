@@ -12,6 +12,7 @@ import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.TestSettingsResponse;
 import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.GeoIpHelper;
+import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import at.rtr.rmbt.utils.HelperFunctions;
 import at.rtr.rmbt.utils.ValidateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -81,12 +82,12 @@ public class TestSettingsFacade {
     }
 
     @Transactional
-    public TestSettingsResponse updateTestSettings(TestSettingsRequest testSettingsRequest, HttpServletRequest request) {
+    public TestSettingsResponse updateTestSettings(TestSettingsRequest testSettingsRequest, HttpServletRequest request, Map<String, String> headers) {
         long startTime = System.currentTimeMillis();
         Long asn;
         String asName = null;
         String asCountry = null;
-        String clientIpAddress = request.getRemoteAddr();
+        String clientIpAddress = HeaderExtrudeUtil.getIpFromNgNixHeader(request, headers);
         InetAddress clientAddress = null;
         try {
             clientAddress = InetAddress.getByName(clientIpAddress);
@@ -311,9 +312,9 @@ public class TestSettingsFacade {
         test.setPublicIpAsName(asName);
         test.setCountryAsn(asCountry);
         test.setClientTestCounter(
-            testSettingsRequest.getTestCounter() == null || testSettingsRequest.getTestCounter() == -1 ?
-                null :
-                testSettingsRequest.getTestCounter().longValue()
+                testSettingsRequest.getTestCounter() == null || testSettingsRequest.getTestCounter() == -1 ?
+                        null :
+                        testSettingsRequest.getTestCounter().longValue()
         );
         String reverseDns = HelperFunctions.reverseDNSLookup(clientAddress);
         if (StringUtils.isNotBlank(reverseDns))

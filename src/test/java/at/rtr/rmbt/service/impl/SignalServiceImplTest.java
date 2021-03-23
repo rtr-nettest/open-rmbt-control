@@ -5,7 +5,9 @@ import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.constant.HeaderConstants;
 import at.rtr.rmbt.enums.TestStatus;
-import at.rtr.rmbt.mapper.*;
+import at.rtr.rmbt.mapper.GeoLocationMapper;
+import at.rtr.rmbt.mapper.SignalMapper;
+import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.repository.*;
 import at.rtr.rmbt.request.*;
@@ -31,14 +33,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import static at.rtr.rmbt.TestConstants.DEFAULT_NETWORK_ID;
-import static at.rtr.rmbt.TestConstants.DEFAULT_NETWORK_NAME;
-import static at.rtr.rmbt.TestConstants.DEFAULT_TIME_NS;
+import static at.rtr.rmbt.TestConstants.*;
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -125,6 +122,8 @@ public class SignalServiceImplTest {
     @Captor
     private ArgumentCaptor<at.rtr.rmbt.model.Test> testArgumentCaptor;
 
+    private final Map<String, String> headers = new HashMap<>();
+
     @Before
     public void setUp() {
         signalService = new SignalServiceImpl(testRepository, providerRepository,
@@ -135,7 +134,7 @@ public class SignalServiceImplTest {
     @Test
     public void registerSignal_whenCommonRequest_expectSignalResponse() {
         var expectedResponse = getRegisterSignalResponse();
-        when(httpServletRequest.getRemoteAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
+        when(httpServletRequest.getLocalAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(httpServletRequest.getHeader(HeaderConstants.URL)).thenReturn(TestConstants.DEFAULT_URL);
         when(signalRegisterRequest.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
         when(signalRegisterRequest.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
@@ -145,7 +144,7 @@ public class SignalServiceImplTest {
         when(savedTest.getUid()).thenReturn(TestConstants.DEFAULT_UID);
         when(savedTest.getUuid()).thenReturn(TestConstants.DEFAULT_UUID);
 
-        var actualResponse = signalService.registerSignal(signalRegisterRequest, httpServletRequest);
+        var actualResponse = signalService.registerSignal(signalRegisterRequest, httpServletRequest, headers);
 
         assertEquals(expectedResponse, actualResponse);
     }

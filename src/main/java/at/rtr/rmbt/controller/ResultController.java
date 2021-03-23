@@ -9,9 +9,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @Api("Result")
 @RestController
@@ -21,8 +23,10 @@ public class ResultController {
 
     @ApiOperation("Update measurements")
     @PostMapping(URIConstants.RESULT_URL)
-    public ErrorResponse processResult(HttpServletRequest httpServletRequest, @RequestBody ResultRequest resultRequest) {
-        resultService.processResultRequest(httpServletRequest, resultRequest);
+    public ErrorResponse processResult(HttpServletRequest httpServletRequest,
+                                       @RequestHeader Map<String, String> headers,
+                                       @RequestBody ResultRequest resultRequest) {
+        resultService.processResultRequest(httpServletRequest, resultRequest, headers);
         return ErrorResponse.empty();
     }
 }

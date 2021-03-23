@@ -16,15 +16,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,8 +34,10 @@ public class SignalController {
     @PostMapping(URIConstants.SIGNAL_REQUEST)
     @ApiOperation(value = "Register signal", notes = "Request to obtain configuration for signal monitoring")
     @ResponseStatus(HttpStatus.CREATED)
-    public SignalSettingsResponse registerSignal(HttpServletRequest httpServletRequest, @RequestBody SignalRegisterRequest signalRegisterRequest) {
-        return signalService.registerSignal(signalRegisterRequest, httpServletRequest);
+    public SignalSettingsResponse registerSignal(HttpServletRequest httpServletRequest,
+                                                 @RequestHeader Map<String, String> headers,
+                                                 @RequestBody SignalRegisterRequest signalRegisterRequest) {
+        return signalService.registerSignal(signalRegisterRequest, httpServletRequest, headers);
     }
 
     @GetMapping(URIConstants.ADMIN_SIGNAL)
@@ -59,7 +57,7 @@ public class SignalController {
         log.info("--------------- RadioInfo  Cells  -------------");
 
         Optional.ofNullable(signalResultRequest.getRadioInfo())
-                .map(l->l.getCells())
+                .map(l -> l.getCells())
                 .orElse(Collections.emptyList())
                 .forEach(l -> {
                     log.info("UUID " + (l.getUuid() == null ? "null" : l.getUuid().toString()));
@@ -67,8 +65,8 @@ public class SignalController {
                 });
 
         log.info("--------------- RadioInfo  Signals -------------");
-        Optional.ofNullable( signalResultRequest.getRadioInfo())
-                .map(l->l.getSignals())
+        Optional.ofNullable(signalResultRequest.getRadioInfo())
+                .map(l -> l.getSignals())
                 .orElse(Collections.emptyList())
                 .forEach(l -> {
                     log.info("CellUUID " + (l.getCellUUID() == null ? "null" : l.getCellUUID().toString()));

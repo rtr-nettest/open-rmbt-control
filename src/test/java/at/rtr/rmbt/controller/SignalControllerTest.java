@@ -64,7 +64,7 @@ public class SignalControllerTest {
     public void registerSignal_whenCommonData_expectRegisterSignalCalled() throws Exception {
         var request = getRegisterSignalRequest();
         var response = getRegisterSignalResponse();
-        when(signalService.registerSignal(any(), any())).thenReturn(response);
+        when(signalService.registerSignal(any(), any(), any())).thenReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.post(SIGNAL_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -75,7 +75,7 @@ public class SignalControllerTest {
                 .andExpect(jsonPath("$.provider").value(TestConstants.DEFAULT_PROVIDER))
                 .andExpect(jsonPath("$.test_uuid").value(TestConstants.DEFAULT_UUID.toString()));
 
-        verify(signalService).registerSignal(signalRequestArgumentCaptor.capture(), any());
+        verify(signalService).registerSignal(signalRequestArgumentCaptor.capture(), any(), any());
 
         assertEquals(request, signalRequestArgumentCaptor.getValue());
     }

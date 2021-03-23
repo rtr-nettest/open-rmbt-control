@@ -100,7 +100,7 @@ public class RegistrationControllerTest {
             Lists.emptyList()
         );
 
-        when(testSettingsFacade.updateTestSettings(eq(testSettingsRequest), any())).thenReturn(testSettingsResponse);
+        when(testSettingsFacade.updateTestSettings(eq(testSettingsRequest), any(), any())).thenReturn(testSettingsResponse);
 
         mockMvc.perform(
             post("/testRequest")
@@ -110,6 +110,6 @@ public class RegistrationControllerTest {
         ).andExpect(status().isOk())
             .andExpect(content().json(TestUtils.asJsonString(testSettingsResponse)));
 
-        verify(testSettingsFacade).updateTestSettings(eq(testSettingsRequest), any());
+        verify(testSettingsFacade).updateTestSettings(eq(testSettingsRequest), any(), any());
     }
 }
