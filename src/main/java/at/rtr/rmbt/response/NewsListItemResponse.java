@@ -2,6 +2,8 @@ package at.rtr.rmbt.response;
 
 import at.rtr.rmbt.enums.NewsStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,11 +50,11 @@ public class NewsListItemResponse {
     private final Boolean android;
 
     @JsonProperty("startDate")
-    @ApiModelProperty(notes = "When to start showing news", example = "2020-01-01T13:00:00.123+02:00")
+    @ApiModelProperty(notes = "When to start showing news")
     private final ZonedDateTime startDate;
 
     @JsonProperty("endDate")
-    @ApiModelProperty(notes = "When to end showing news", example = "2020-01-01T13:00:00.123+02:00")
+    @ApiModelProperty(notes = "When to end showing news")
     private final ZonedDateTime endDate;
 
     @JsonProperty("androidMinSoftwareVersion")

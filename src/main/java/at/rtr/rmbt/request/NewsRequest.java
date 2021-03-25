@@ -52,10 +52,10 @@ public class NewsRequest {
     private final Long androidMaxSoftwareVersion;
 
     @JsonProperty("startDate")
-    @ApiModelProperty(notes = "When to start showing news", example = "2020-01-01T13:00:00.123+02:00")
+    @ApiModelProperty(notes = "When to start showing news")
     private final ZonedDateTime startDate;
 
     @JsonProperty("endDate")
-    @ApiModelProperty(notes = "When to end showing news", example = "2020-01-01T13:00:00.123+02:00")
+    @ApiModelProperty(notes = "When to end showing news")
     private final ZonedDateTime endDate;
 }
