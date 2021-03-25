@@ -81,7 +81,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         @Override
         public void configure(WebSecurity web) throws Exception {
             // ignoring security for swagger APIs
-            web.ignoring().antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/health").and()
+            web.ignoring().antMatchers("/v3/**", "/swagger-ui/**", "/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/health").and()
                     .ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
         }
     }
