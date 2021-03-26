@@ -9,17 +9,36 @@ import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.InvalidSequenceException;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.mapper.TestMapper;
-import at.rtr.rmbt.model.*;
-import at.rtr.rmbt.repository.*;
+import at.rtr.rmbt.model.GeoLocation;
+import at.rtr.rmbt.model.RadioCell;
+import at.rtr.rmbt.model.RadioSignal;
+import at.rtr.rmbt.model.RtrClient;
+import at.rtr.rmbt.model.Signal;
+import at.rtr.rmbt.model.Test;
+import at.rtr.rmbt.repository.ClientRepository;
+import at.rtr.rmbt.repository.GeoLocationRepository;
+import at.rtr.rmbt.repository.ProviderRepository;
+import at.rtr.rmbt.repository.RadioSignalRepository;
+import at.rtr.rmbt.repository.SignalRepository;
+import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.SignalRegisterRequest;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
-import at.rtr.rmbt.response.*;
+import at.rtr.rmbt.response.SignalDetailsResponse;
+import at.rtr.rmbt.response.SignalLocationResponse;
+import at.rtr.rmbt.response.SignalMeasurementResponse;
+import at.rtr.rmbt.response.SignalResultResponse;
+import at.rtr.rmbt.response.SignalSettingsResponse;
+import at.rtr.rmbt.response.SignalStrengthResponse;
 import at.rtr.rmbt.service.GeoLocationService;
 import at.rtr.rmbt.service.RadioCellService;
 import at.rtr.rmbt.service.RadioSignalService;
 import at.rtr.rmbt.service.SignalService;
-import at.rtr.rmbt.utils.*;
+import at.rtr.rmbt.utils.BandCalculationUtil;
+import at.rtr.rmbt.utils.FormatUtils;
+import at.rtr.rmbt.utils.HeaderExtrudeUtil;
+import at.rtr.rmbt.utils.HelperFunctions;
+import at.rtr.rmbt.utils.TimeUtils;
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,13 +51,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static at.rtr.rmbt.constant.HeaderConstants.URL;
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
+import static at.rtr.rmbt.enums.TestStatus.ABORTED;
+import static at.rtr.rmbt.enums.TestStatus.END;
+import static at.rtr.rmbt.enums.TestStatus.ERROR;
+import static at.rtr.rmbt.enums.TestStatus.ERROR_DOWN;
+import static at.rtr.rmbt.enums.TestStatus.ERROR_INIT;
+import static at.rtr.rmbt.enums.TestStatus.ERROR_UP;
+import static at.rtr.rmbt.enums.TestStatus.FINISHED;
+import static at.rtr.rmbt.enums.TestStatus.SIGNAL;
+import static at.rtr.rmbt.enums.TestStatus.SIGNAL_STARTED;
+import static at.rtr.rmbt.enums.TestStatus.STARTED;
 
 @Slf4j
 @Service
@@ -60,7 +95,8 @@ public class SignalServiceImpl implements SignalService {
 
     @Override
     public Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable) {
-        return testRepository.findAllByStatusInAndRadioCellIsNotEmpty(List.of(), pageable) //todo update with possible statuses
+        return testRepository.findAllByStatusInAndRadioCellIsNotEmpty(List.of(ABORTED, END,
+                ERROR, ERROR_DOWN, ERROR_INIT, ERROR_UP, FINISHED, SIGNAL, STARTED, SIGNAL_STARTED), pageable) //todo update with possible statuses
                 .map(signalMapper::signalToSignalMeasurementResponse);
     }
 

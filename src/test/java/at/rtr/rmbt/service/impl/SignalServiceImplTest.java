@@ -4,14 +4,33 @@ import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.constant.HeaderConstants;
-import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.mapper.GeoLocationMapper;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.mapper.TestMapper;
-import at.rtr.rmbt.model.*;
-import at.rtr.rmbt.repository.*;
-import at.rtr.rmbt.request.*;
-import at.rtr.rmbt.response.*;
+import at.rtr.rmbt.model.GeoLocation;
+import at.rtr.rmbt.model.RadioCell;
+import at.rtr.rmbt.model.RadioSignal;
+import at.rtr.rmbt.model.RtrClient;
+import at.rtr.rmbt.model.Signal;
+import at.rtr.rmbt.repository.ClientRepository;
+import at.rtr.rmbt.repository.GeoLocationRepository;
+import at.rtr.rmbt.repository.ProviderRepository;
+import at.rtr.rmbt.repository.RadioSignalRepository;
+import at.rtr.rmbt.repository.SignalRepository;
+import at.rtr.rmbt.repository.TestRepository;
+import at.rtr.rmbt.request.GeoLocationRequest;
+import at.rtr.rmbt.request.RadioCellRequest;
+import at.rtr.rmbt.request.RadioInfoRequest;
+import at.rtr.rmbt.request.RadioSignalRequest;
+import at.rtr.rmbt.request.SignalRegisterRequest;
+import at.rtr.rmbt.request.SignalRequest;
+import at.rtr.rmbt.request.SignalResultRequest;
+import at.rtr.rmbt.response.SignalDetailsResponse;
+import at.rtr.rmbt.response.SignalLocationResponse;
+import at.rtr.rmbt.response.SignalMeasurementResponse;
+import at.rtr.rmbt.response.SignalSettingsResponse;
+import at.rtr.rmbt.response.SignalStrengthResponse;
+import at.rtr.rmbt.response.TestResponse;
 import at.rtr.rmbt.service.GeoLocationService;
 import at.rtr.rmbt.service.RadioCellService;
 import at.rtr.rmbt.service.RadioSignalService;
@@ -33,14 +52,24 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
-import static at.rtr.rmbt.TestConstants.*;
+import static at.rtr.rmbt.TestConstants.DEFAULT_NETWORK_ID;
+import static at.rtr.rmbt.TestConstants.DEFAULT_NETWORK_NAME;
+import static at.rtr.rmbt.TestConstants.DEFAULT_TIME_NS;
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
+import static at.rtr.rmbt.enums.TestStatus.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class SignalServiceImplTest {
@@ -151,7 +180,8 @@ public class SignalServiceImplTest {
 
     @Test
     public void getSignalsHistory_correctInvocation_expectPageWithResponse() {
-        when(testRepository.findAllByStatusInAndRadioCellIsNotEmpty(eq(List.of()), eq(pageable)))
+        when(testRepository.findAllByStatusInAndRadioCellIsNotEmpty(eq(List.of( ABORTED, END, ERROR, ERROR_DOWN,
+                ERROR_INIT, ERROR_UP, FINISHED, SIGNAL, STARTED, SIGNAL_STARTED)), eq(pageable)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(savedTest)));
         when(page.getContent()).thenReturn(Collections.singletonList(savedTest));
         when(signalMapper.signalToSignalMeasurementResponse(savedTest)).thenReturn(signalMeasurementResponse);
