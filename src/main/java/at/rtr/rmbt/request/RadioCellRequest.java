@@ -20,7 +20,7 @@ public class RadioCellRequest {
     @JsonProperty(value = "location_id")
     private final Long locationId;
 
-    @JsonProperty(value = "mmc")
+    @JsonProperty(value = "mcc")
     private final Long mcc;
 
     @JsonProperty(value = "mnc")
