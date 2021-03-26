@@ -3,10 +3,7 @@ package at.rtr.rmbt.facade;
 import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.config.RollBackService;
 import at.rtr.rmbt.constant.HeaderConstants;
-import at.rtr.rmbt.enums.ClientType;
-import at.rtr.rmbt.enums.ServerType;
-import at.rtr.rmbt.enums.TestPlatform;
-import at.rtr.rmbt.enums.TestStatus;
+import at.rtr.rmbt.enums.*;
 import at.rtr.rmbt.model.LoopModeSettings;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.model.ServerTypeDetails;
@@ -76,6 +73,7 @@ public class TestSettingsFacadeTest {
             .loopModeInfo(loopModeInfo)
             .capabilities(null)
             .androidPermissionStatus(null)
+            .measurementType(MeasurementType.DEDICATED)
             .build();
 
     private static final at.rtr.rmbt.model.ClientType clientType = new at.rtr.rmbt.model.ClientType(10L, ClientType.DESKTOP);
@@ -246,6 +244,7 @@ public class TestSettingsFacadeTest {
         assertEquals(testSettingsRequest.isNdt(), testResult.getRunNdt());
         assertEquals(testSettingsRequest.getSoftwareRevision(), testResult.getSoftwareRevision());
         assertTrue(testResult.getUseSsl());
+        assertEquals(testSettingsRequest.getMeasurementType(), testResult.getMeasurementType());
     }
 
     private void mockUpdateTestSettings() {

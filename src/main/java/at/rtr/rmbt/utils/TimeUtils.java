@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 @UtilityClass
 public class TimeUtils {
@@ -40,5 +41,13 @@ public class TimeUtils {
         final DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale);
         dateFormat.setTimeZone(timeZone);
         return dateFormat.format(date);
+    }
+
+    public Double formatToSeconds(Long timeNs) {
+        return timeNs != null && timeNs > 0 ? Math.round(timeNs / 1000000.0) / 1000.0 : 0.000;
+    }
+
+    public Long formatToSecondsRound(Long timeNs) {
+        return timeNs != null && timeNs > 0 ? TimeUnit.NANOSECONDS.toSeconds(timeNs) : 0;
     }
 }

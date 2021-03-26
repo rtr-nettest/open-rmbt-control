@@ -2,11 +2,8 @@ package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.advice.RtrAdvice;
+import at.rtr.rmbt.enums.*;
 import at.rtr.rmbt.facade.TestSettingsFacade;
-import at.rtr.rmbt.enums.ClientType;
-import at.rtr.rmbt.enums.ServerType;
-import at.rtr.rmbt.enums.TestPlatform;
-import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.TestSettingsResponse;
@@ -74,7 +71,9 @@ public class RegistrationControllerTest {
                 new TestSettingsRequest.Capabilities.ClassificationCapabilities(1),
                 new TestSettingsRequest.Capabilities.QosCapabilities(true),
                 true
-            ), Collections.emptyList()
+            ),
+            Collections.emptyList(),
+            MeasurementType.DEDICATED
         );
 
         TestSettingsResponse testSettingsResponse = new TestSettingsResponse(

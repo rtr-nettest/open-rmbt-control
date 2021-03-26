@@ -1,12 +1,11 @@
 package at.rtr.rmbt.mapper.impl;
 
-import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.enums.NetworkGroupName;
 import at.rtr.rmbt.mapper.SignalMapper;
-import at.rtr.rmbt.model.LoopModeSettings;
-import at.rtr.rmbt.model.RadioCell;
-import at.rtr.rmbt.model.RtrClient;
+import at.rtr.rmbt.model.*;
+import at.rtr.rmbt.repository.GeoLocationRepository;
+import at.rtr.rmbt.repository.RadioSignalRepository;
 import at.rtr.rmbt.request.SignalRequest;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +15,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static at.rtr.rmbt.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,39 +37,55 @@ public class SignalMapperImplTest {
     private at.rtr.rmbt.model.Test test;
     @Mock
     private SignalRequest signalRequest;
+    @Mock
+    private GeoLocation geoLocation;
+    @Mock
+    private RadioSignal radioSignal;
 
     @MockBean
     private UUIDGenerator uuidGenerator;
+    @MockBean
+    private RadioSignalRepository radioSignalRepository;
+    @MockBean
+    private GeoLocationRepository geoLocationRepository;
 
     @Before
     public void setUp() {
-        mapper = new SignalMapperImpl(uuidGenerator);
+        mapper = new SignalMapperImpl(uuidGenerator, radioSignalRepository, geoLocationRepository);
     }
 
     @Test
     public void signalToSignalMeasurementResponse_correctParameters_expectResponse() {
         var test = buildTest(NetworkGroupName.G2, null);
+        test.setRadioCell(Collections.singletonList(radioCell));
+        when(radioCell.getUuid()).thenReturn(DEFAULT_RADIO_CELL_UUID);
+        when(radioSignalRepository.findMaxByCellUUIDIn(List.of(DEFAULT_RADIO_CELL_UUID))).thenReturn(Optional.of(7000000000L));
+        when(geoLocationRepository.findMaxByTest(test)).thenReturn(Optional.of(5000000000L));
         var actual = mapper.signalToSignalMeasurementResponse(test);
-        assertEquals(5, actual.getDuration());
+        assertEquals(7L, actual.getDuration());
         assertEquals(DEFAULT_ZONED_DATE_TIME, actual.getTime());
         assertEquals(DEFAULT_LOCATION, actual.getLocation());
         assertEquals(NetworkGroupName.G2.getLabelEn(), actual.getTechnology());
-        assertEquals("Regular", actual.getTestType());
+        assertEquals(DEFAULT_MEASUREMENT_TYPE_FLAG.getValueEn(), actual.getTestType());
         assertEquals(DEFAULT_CLIENT_UUID, actual.getUserUuid());
         assertEquals(DEFAULT_UUID, actual.getTestUuid());
     }
 
     @Test
-    public void signalToSignalMeasurementResponse_correctParametersWithNull_expectResponse() {
+    public void signalToSignalMeasurementResponse_correctParametersWithNullAndGeoLocationEmpty_expectResponse() {
         var test = buildTest(null, loopModeSettings);
         test.setRadioCell(Collections.singletonList(radioCell));
+        when(geoLocationRepository.findAllByTestOrderByTimeAsc(test)).thenReturn(Collections.emptyList());
         when(radioCell.getTechnology()).thenReturn(NetworkGroupName.G2);
+        when(radioCell.getUuid()).thenReturn(DEFAULT_RADIO_CELL_UUID);
+        when(radioSignalRepository.findMaxByCellUUIDIn(List.of(DEFAULT_RADIO_CELL_UUID))).thenReturn(Optional.of(7000000000L));
+        when(radioSignal.getTimeNs()).thenReturn(7000000000L);
         var actual = mapper.signalToSignalMeasurementResponse(test);
-        assertEquals(5, actual.getDuration());
+        assertEquals(7L, actual.getDuration());
         assertEquals(DEFAULT_ZONED_DATE_TIME, actual.getTime());
         assertEquals(DEFAULT_LOCATION, actual.getLocation());
         assertEquals(NetworkGroupName.G2.getLabelEn(), actual.getTechnology());
-        assertEquals("Loop", actual.getTestType());
+        assertEquals(DEFAULT_MEASUREMENT_TYPE_FLAG.getValueEn(), actual.getTestType());
         assertEquals(DEFAULT_CLIENT_UUID, actual.getUserUuid());
         assertEquals(DEFAULT_UUID, actual.getTestUuid());
     }
@@ -78,12 +95,13 @@ public class SignalMapperImplTest {
         var test = buildTest(null, loopModeSettings);
         test.setRadioCell(Collections.singletonList(radioCell));
         when(radioCell.getTechnology()).thenReturn(null);
+        when(geoLocationRepository.findMaxByTest(test)).thenReturn(Optional.of(5000000000L));
         var actual = mapper.signalToSignalMeasurementResponse(test);
-        assertEquals(5, actual.getDuration());
+        assertEquals(5L, actual.getDuration());
         assertEquals(DEFAULT_ZONED_DATE_TIME, actual.getTime());
         assertEquals(DEFAULT_LOCATION, actual.getLocation());
         assertNull(actual.getTechnology());
-        assertEquals("Loop", actual.getTestType());
+        assertEquals(DEFAULT_MEASUREMENT_TYPE_FLAG.getValueEn(), actual.getTestType());
         assertEquals(DEFAULT_CLIENT_UUID, actual.getUserUuid());
         assertEquals(DEFAULT_UUID, actual.getTestUuid());
     }
@@ -135,6 +153,7 @@ public class SignalMapperImplTest {
                 .networkGroupName(ngn)
                 .loopModeSettings(lms)
                 .client(client)
+                .measurementType(DEFAULT_MEASUREMENT_TYPE_FLAG)
                 .build();
     }
 
