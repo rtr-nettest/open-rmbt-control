@@ -60,7 +60,7 @@ public class SignalServiceImpl implements SignalService {
 
     @Override
     public Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable) {
-        return testRepository.findAllByStatusInAndRadioCellIsNotEmpty(List.of(TestStatus.SIGNAL), pageable)
+        return testRepository.findAllByStatusInAndRadioCellIsNotEmpty(List.of(), pageable) //todo update with possible statuses
                 .map(signalMapper::signalToSignalMeasurementResponse);
     }
 

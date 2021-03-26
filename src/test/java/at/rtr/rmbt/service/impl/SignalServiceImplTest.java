@@ -151,7 +151,7 @@ public class SignalServiceImplTest {
 
     @Test
     public void getSignalsHistory_correctInvocation_expectPageWithResponse() {
-        when(testRepository.findAllByStatusInAndRadioCellIsNotEmpty(eq(List.of(TestStatus.SIGNAL)), eq(pageable)))
+        when(testRepository.findAllByStatusInAndRadioCellIsNotEmpty(eq(List.of()), eq(pageable)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(savedTest)));
         when(page.getContent()).thenReturn(Collections.singletonList(savedTest));
         when(signalMapper.signalToSignalMeasurementResponse(savedTest)).thenReturn(signalMeasurementResponse);
