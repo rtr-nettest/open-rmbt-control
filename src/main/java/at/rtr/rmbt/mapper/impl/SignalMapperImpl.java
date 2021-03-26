@@ -2,7 +2,6 @@ package at.rtr.rmbt.mapper.impl;
 
 import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.enums.MeasurementType;
-import at.rtr.rmbt.enums.NetworkGroupName;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.model.RadioCell;
 import at.rtr.rmbt.model.Signal;
@@ -11,6 +10,7 @@ import at.rtr.rmbt.repository.GeoLocationRepository;
 import at.rtr.rmbt.repository.RadioSignalRepository;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.response.SignalMeasurementResponse;
+import at.rtr.rmbt.utils.HelperFunctions;
 import at.rtr.rmbt.utils.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -31,21 +31,21 @@ public class SignalMapperImpl implements SignalMapper {
 
     @Override
     public SignalMeasurementResponse signalToSignalMeasurementResponse(Test test) {
+        List<UUID> radioCellUUIDs = test.getRadioCell().stream()
+                .map(RadioCell::getUuid)
+                .collect(Collectors.toList());
         return SignalMeasurementResponse.builder()
                 .testUuid(test.getUuid())
                 .userUuid(test.getClient().getUuid())
-                .technology(test.getNetworkGroupName() == null ? getTechnology(test) : test.getNetworkGroupName().getLabelEn())
+                .technology(getTechnology(radioCellUUIDs))
                 .testType(test.getMeasurementType() == null ? MeasurementType.DEDICATED.getValueEn() : test.getMeasurementType().getValueEn())
                 .location(test.getLocation())
-                .duration(calculateDuration(test))
+                .duration(calculateDuration(test, radioCellUUIDs))
                 .time(test.getTime())
                 .build();
     }
 
-    private Long calculateDuration(Test test) {
-        List<UUID> radioCellUUIDs = test.getRadioCell().stream()
-                .map(RadioCell::getUuid)
-                .collect(Collectors.toList());
+    private Long calculateDuration(Test test, List<UUID> radioCellUUIDs) {
         long lastRadioSignalTimeNs = radioSignalRepository.findMaxByCellUUIDIn(radioCellUUIDs)
                 .orElse(NumberUtils.LONG_ZERO);
         long lastGeoLocationTimeNs = geoLocationRepository.findMaxByTest(test)
@@ -73,12 +73,11 @@ public class SignalMapperImpl implements SignalMapper {
                 .build();
     }
 
-    private String getTechnology(Test test) {
-        return test.getRadioCell().stream()
-                .map(RadioCell::getTechnology)
+    private String getTechnology(List<UUID> radioCellUUIDs) {
+        return radioSignalRepository.findDistinctNetworkTypeIdByCellUUIDIn(radioCellUUIDs)
+                .stream()
                 .filter(Objects::nonNull)
-                .map(NetworkGroupName::getLabelEn)
-                .findFirst()
-                .orElse(null);
+                .map(HelperFunctions::getNetworkTypeName)
+                .collect(Collectors.joining(" + "));
     }
 }

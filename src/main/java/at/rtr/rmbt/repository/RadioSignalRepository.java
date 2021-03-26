@@ -15,5 +15,8 @@ public interface RadioSignalRepository extends JpaRepository<RadioSignal, Long> 
 
     @Query(value = "SELECT MAX(r.timeNs) from RadioSignal r where r.cellUUID in (:cellUUIDs)")
     Optional<Long> findMaxByCellUUIDIn(Collection<UUID> cellUUIDs);
+
+    @Query(value = "SELECT DISTINCT (r.networkTypeId) from RadioSignal r where r.cellUUID in (:cellUUIDs)")
+    List<Integer> findDistinctNetworkTypeIdByCellUUIDIn(Collection<UUID> cellUUIDs);
 }
 
