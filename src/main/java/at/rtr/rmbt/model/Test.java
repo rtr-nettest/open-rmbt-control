@@ -496,6 +496,10 @@ public class Test implements Serializable {
     )
     private TestLocation testLocation;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "measurement_type_flag")
+    private MeasurementType measurementType;
+
     @PrePersist
     protected void preInsert() {
         this.timestamp = ZonedDateTime.now();

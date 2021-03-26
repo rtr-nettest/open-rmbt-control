@@ -1,5 +1,6 @@
 package at.rtr.rmbt.response;
 
+import at.rtr.rmbt.enums.MeasurementType;
 import com.bedatadriven.jackson.datatype.jts.serialization.GeometrySerializer;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,7 +36,7 @@ public class SignalMeasurementResponse {
     private final Geometry location;
 
     @JsonProperty(value = "duration")
-    private final Integer duration;
+    private final Long duration;
 
     @JsonProperty(value = "time")
     private final ZonedDateTime time;

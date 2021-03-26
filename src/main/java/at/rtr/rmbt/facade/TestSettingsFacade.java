@@ -320,6 +320,7 @@ public class TestSettingsFacade {
         if (StringUtils.isNotBlank(reverseDns))
             test.setPublicIpRdns(reverseDns.replaceFirst("\\.$", ""));
         test.setRunNdt(testSettingsRequest.isNdt());
+        test.setMeasurementType(testSettingsRequest.getMeasurementType());
         return test;
     }
 

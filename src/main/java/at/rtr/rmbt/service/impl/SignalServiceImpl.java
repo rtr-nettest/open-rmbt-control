@@ -60,7 +60,7 @@ public class SignalServiceImpl implements SignalService {
 
     @Override
     public Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable) {
-        return testRepository.findAllByStatusIn(List.of(TestStatus.SIGNAL_STARTED, TestStatus.SIGNAL), pageable)
+        return testRepository.findAllByStatusInAndRadioCellIsNotEmpty(List.of(TestStatus.SIGNAL), pageable)
                 .map(signalMapper::signalToSignalMeasurementResponse);
     }
 
@@ -95,6 +95,7 @@ public class SignalServiceImpl implements SignalService {
                 .status(TestStatus.SIGNAL_STARTED)
                 .lastSequenceNumber(-1)
                 .useSsl(false)//TODO hardcode because of database constraint
+                .measurementType(signalRegisterRequest.getMeasurementType())
                 .build();
 
         var savedTest = testRepository.save(test);
@@ -156,7 +157,7 @@ public class SignalServiceImpl implements SignalService {
                 .signalStrength(radioSignals.stream()
                         .map(signal -> {
                             var signalStrengthResponseBuilder = SignalStrengthResponse.builder()
-                                    .time(formatToSeconds(signal.getTimeNs()))
+                                    .time(TimeUtils.formatToSeconds(signal.getTimeNs()))
                                     .signalStrength(getSignalStrength(signal));
                             setRadioCellInfo(radioCellUUIDs, signal, signalStrengthResponseBuilder);
                             return signalStrengthResponseBuilder.build();
@@ -188,7 +189,7 @@ public class SignalServiceImpl implements SignalService {
                         .altitude(FormatUtils.format(Constants.SIGNAL_STRENGTH_ALTITUDE_TEMPLATE, geoLocation.getAltitude()))
                         .bearing(FormatUtils.format(Constants.SIGNAL_STRENGTH_BEARING_TEMPLATE, geoLocation.getBearing()))
                         .location(geoLocation.getLocation())
-                        .time(formatToSeconds(geoLocation.getTimeNs()))
+                        .time(TimeUtils.formatToSeconds(geoLocation.getTimeNs()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -334,9 +335,5 @@ public class SignalServiceImpl implements SignalService {
     private String getDefaultResultUrl(HttpServletRequest req) {
         return String.format("%s://%s:%s%s", req.getScheme(), req.getServerName(), req.getServerPort(), req.getRequestURI())
                 .replace("Request", "Result");
-    }
-
-    private static Double formatToSeconds(Long timeNs) {
-        return timeNs != null && timeNs > 0 ? Math.round(timeNs / 1000000.0) / 1000.0 : 0.000;
     }
 }

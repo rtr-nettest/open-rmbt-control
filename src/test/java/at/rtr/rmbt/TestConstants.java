@@ -386,6 +386,7 @@ public interface TestConstants {
     QoeCategory DEFAULT_QOE_CATEGORY = QoeCategory.CLOUD;
     Integer DEFAULT_QOE_CLASSIFICATION = 4;
     Double DEFAULT_QUALITY = 1d;
+    MeasurementType DEFAULT_MEASUREMENT_TYPE_FLAG = MeasurementType.REGULAR;
 
     interface Database {
         long CLIENT_TYPE_DESKTOP_UID = 1L;

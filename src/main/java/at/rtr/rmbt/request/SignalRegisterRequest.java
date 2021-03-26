@@ -1,5 +1,6 @@
 package at.rtr.rmbt.request;
 
+import at.rtr.rmbt.enums.MeasurementType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -28,4 +29,8 @@ public class SignalRegisterRequest {
     @ApiModelProperty(notes = "Time instant of client", example = "1571665024591")
     @JsonProperty(value = "time")
     private final Long time;
+
+    @ApiModelProperty(notes = "Measurement type", example = "dedicated")
+    @JsonProperty(value = "measurement_type_flag")
+    private final MeasurementType measurementType;
 }

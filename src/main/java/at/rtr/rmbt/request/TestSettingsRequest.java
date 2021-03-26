@@ -1,9 +1,6 @@
 package at.rtr.rmbt.request;
 
-import at.rtr.rmbt.enums.ClientType;
-import at.rtr.rmbt.enums.ServerType;
-import at.rtr.rmbt.enums.TestPlatform;
-import at.rtr.rmbt.enums.TestStatus;
+import at.rtr.rmbt.enums.*;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -106,6 +103,9 @@ public class TestSettingsRequest {
 
     @JsonProperty("android_permission_status")
     private List<PermissionState> androidPermissionStatus;
+
+    @JsonProperty("measurement_type_flag")
+    private MeasurementType measurementType;
 
     public enum ProtocolVersion {
         IPV4("ipv4"), IPV6("ipv6");
