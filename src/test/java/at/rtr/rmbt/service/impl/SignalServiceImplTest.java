@@ -180,8 +180,7 @@ public class SignalServiceImplTest {
 
     @Test
     public void getSignalsHistory_correctInvocation_expectPageWithResponse() {
-        when(testRepository.findAllByStatusInAndRadioCellIsNotEmpty(eq(List.of( ABORTED, END, ERROR, ERROR_DOWN,
-                ERROR_INIT, ERROR_UP, FINISHED, SIGNAL, STARTED, SIGNAL_STARTED)), eq(pageable)))
+        when(testRepository.findAllByRadioCellIsNotEmpty(eq(pageable)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(savedTest)));
         when(page.getContent()).thenReturn(Collections.singletonList(savedTest));
         when(signalMapper.signalToSignalMeasurementResponse(savedTest)).thenReturn(signalMeasurementResponse);
@@ -328,7 +327,7 @@ public class SignalServiceImplTest {
     public void getSignalStrength_whenCommonData_expectListSignalStrengthResponse() {
         var response = getSignalStrengthResponse();
 
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_UUID, Config.SIGNAL_RESULT_STATUSES))
+        when(testRepository.findByUuid(TestConstants.DEFAULT_UUID))
                 .thenReturn(Optional.of(test));
         when(test.getRadioCell()).thenReturn(List.of(radioCell));
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_TEST_TIME);
@@ -407,7 +406,7 @@ public class SignalServiceImplTest {
 
     @Test
     public void getSignalStrength_whenCommonDataStrengthNull_expectListSignalStrengthResponse() {
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_UUID, Config.SIGNAL_RESULT_STATUSES))
+        when(testRepository.findByUuid(TestConstants.DEFAULT_UUID))
                 .thenReturn(Optional.of(test));
         when(test.getRadioCell()).thenReturn(List.of(radioCell));
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_TEST_TIME);

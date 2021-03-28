@@ -5,12 +5,21 @@ import at.rtr.rmbt.constant.HeaderConstants;
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.TestServerNotFoundException;
-import at.rtr.rmbt.model.*;
+import at.rtr.rmbt.model.ClientType;
+import at.rtr.rmbt.model.LoopModeSettings;
+import at.rtr.rmbt.model.RtrClient;
+import at.rtr.rmbt.model.ServerTypeDetails;
+import at.rtr.rmbt.model.Test;
+import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.TestSettingsResponse;
-import at.rtr.rmbt.service.*;
+import at.rtr.rmbt.service.ClientService;
+import at.rtr.rmbt.service.ClientTypeService;
+import at.rtr.rmbt.service.LoopModeSettingsService;
+import at.rtr.rmbt.service.TestServerService;
+import at.rtr.rmbt.service.TestService;
 import at.rtr.rmbt.utils.GeoIpHelper;
 import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import at.rtr.rmbt.utils.HelperFunctions;
@@ -36,7 +45,13 @@ import java.net.UnknownHostException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.UUID;
 
 import static at.rtr.rmbt.constant.URIConstants.RESULT_QOS_URL;
 import static at.rtr.rmbt.constant.URIConstants.RESULT_URL;
@@ -368,8 +383,10 @@ public class TestSettingsFacade {
 
     private LoopModeSettings toLoopModeSettings(TestSettingsRequest.LoopModeInfo loopModeInfo) {
         var loopModeSettings = new LoopModeSettings();
-        loopModeSettings.setClientUuid(UUID.fromString(loopModeInfo.getClientUuid()));
-        loopModeSettings.setTestUuid(UUID.fromString(loopModeInfo.getTestUuid()));
+        if (loopModeInfo.getClientUuid() != null)
+            loopModeSettings.setClientUuid(UUID.fromString(loopModeInfo.getClientUuid()));
+        if (loopModeInfo.getTestUuid() != null)
+            loopModeSettings.setTestUuid(UUID.fromString(loopModeInfo.getTestUuid()));
         loopModeSettings.setMaxDelay(loopModeInfo.getMaxDelay());
         loopModeSettings.setMaxMovement(loopModeInfo.getMaxMovement());
         loopModeSettings.setMaxTests(loopModeInfo.getMaxTests());

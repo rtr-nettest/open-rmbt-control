@@ -1,6 +1,5 @@
 package at.rtr.rmbt.response;
 
-import at.rtr.rmbt.enums.MeasurementType;
 import com.bedatadriven.jackson.datatype.jts.serialization.GeometrySerializer;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;

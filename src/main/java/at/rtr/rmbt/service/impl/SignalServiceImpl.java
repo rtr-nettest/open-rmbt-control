@@ -64,16 +64,6 @@ import java.util.stream.Stream;
 
 import static at.rtr.rmbt.constant.HeaderConstants.URL;
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
-import static at.rtr.rmbt.enums.TestStatus.ABORTED;
-import static at.rtr.rmbt.enums.TestStatus.END;
-import static at.rtr.rmbt.enums.TestStatus.ERROR;
-import static at.rtr.rmbt.enums.TestStatus.ERROR_DOWN;
-import static at.rtr.rmbt.enums.TestStatus.ERROR_INIT;
-import static at.rtr.rmbt.enums.TestStatus.ERROR_UP;
-import static at.rtr.rmbt.enums.TestStatus.FINISHED;
-import static at.rtr.rmbt.enums.TestStatus.SIGNAL;
-import static at.rtr.rmbt.enums.TestStatus.SIGNAL_STARTED;
-import static at.rtr.rmbt.enums.TestStatus.STARTED;
 
 @Slf4j
 @Service
@@ -95,8 +85,7 @@ public class SignalServiceImpl implements SignalService {
 
     @Override
     public Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable) {
-        return testRepository.findAllByStatusInAndRadioCellIsNotEmpty(List.of(ABORTED, END,
-                ERROR, ERROR_DOWN, ERROR_INIT, ERROR_UP, FINISHED, SIGNAL, STARTED, SIGNAL_STARTED), pageable) //todo update with possible statuses
+        return testRepository.findAllByRadioCellIsNotEmpty(pageable) //todo update with possible statuses
                 .map(signalMapper::signalToSignalMeasurementResponse);
     }
 
@@ -180,7 +169,7 @@ public class SignalServiceImpl implements SignalService {
 
     @Override
     public SignalDetailsResponse getSignalStrength(UUID testUUID) {
-        Test test = testRepository.findByUuidAndStatusesIn(testUUID, Config.SIGNAL_RESULT_STATUSES)
+        Test test = testRepository.findByUuid(testUUID)
                 .orElseThrow();
         Map<UUID, RadioCell> radioCellUUIDs = test.getRadioCell().stream()
                 .collect(Collectors.toMap(RadioCell::getUuid, Function.identity()));
