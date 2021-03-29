@@ -63,7 +63,6 @@ import static at.rtr.rmbt.TestConstants.DEFAULT_NETWORK_ID;
 import static at.rtr.rmbt.TestConstants.DEFAULT_NETWORK_NAME;
 import static at.rtr.rmbt.TestConstants.DEFAULT_TIME_NS;
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
-import static at.rtr.rmbt.enums.TestStatus.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -180,7 +179,7 @@ public class SignalServiceImplTest {
 
     @Test
     public void getSignalsHistory_correctInvocation_expectPageWithResponse() {
-        when(testRepository.findAllByRadioCellIsNotEmpty(eq(pageable)))
+        when(testRepository.findAllByRadioCellIsNotEmptyAndNetworkTypeNotIn(eq(pageable), eq(Collections.singletonList(99))))
                 .thenReturn(new PageImpl<>(Collections.singletonList(savedTest)));
         when(page.getContent()).thenReturn(Collections.singletonList(savedTest));
         when(signalMapper.signalToSignalMeasurementResponse(savedTest)).thenReturn(signalMeasurementResponse);

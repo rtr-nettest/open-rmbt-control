@@ -33,4 +33,6 @@ public interface Constants {
     Integer INTERNATIONAL_ROAMING_TYPE_BARRIER = 1;
     String INET_4_IP_VERSION = "4";
     String INET_6_IP_VERSION = "6";
+    Integer NETWORK_TYPE_WLAN = 99;
+
 }

@@ -53,6 +53,7 @@ import java.net.InetAddress;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,6 +63,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static at.rtr.rmbt.constant.Constants.NETWORK_TYPE_WLAN;
 import static at.rtr.rmbt.constant.HeaderConstants.URL;
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
 
@@ -83,9 +85,10 @@ public class SignalServiceImpl implements SignalService {
     private final RadioSignalService radioSignalService;
     private final SignalRepository signalRepository;
 
+
     @Override
     public Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable) {
-        return testRepository.findAllByRadioCellIsNotEmpty(pageable) //todo update with possible statuses
+        return testRepository.findAllByRadioCellIsNotEmptyAndNetworkTypeNotIn(pageable, Collections.singletonList(NETWORK_TYPE_WLAN))
                 .map(signalMapper::signalToSignalMeasurementResponse);
     }
 
