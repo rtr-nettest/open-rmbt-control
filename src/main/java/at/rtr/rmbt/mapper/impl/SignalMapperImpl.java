@@ -7,6 +7,7 @@ import at.rtr.rmbt.model.RadioCell;
 import at.rtr.rmbt.model.Signal;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.repository.GeoLocationRepository;
+import at.rtr.rmbt.repository.MccmncToNameRepository;
 import at.rtr.rmbt.repository.RadioSignalRepository;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.response.SignalMeasurementResponse;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,12 +30,23 @@ public class SignalMapperImpl implements SignalMapper {
     private final UUIDGenerator uuidGenerator;
     private final RadioSignalRepository radioSignalRepository;
     private final GeoLocationRepository geoLocationRepository;
+    private final MccmncToNameRepository mccmncToNameRepository;
 
     @Override
     public SignalMeasurementResponse signalToSignalMeasurementResponse(Test test) {
+        //todo rewrite to one query
         List<UUID> radioCellUUIDs = test.getRadioCell().stream()
                 .map(RadioCell::getUuid)
                 .collect(Collectors.toList());
+
+        Set<String> mccMnc = test.getRadioCell().stream()
+                .filter(l -> l.getMcc() != null && l.getMnc() != null)
+                .map(l -> l.getMcc() + "-" + String.format("%02d", l.getMnc()))
+                .collect(Collectors.toSet());
+
+        String finalMcc = String.join(" + ", mccMnc);
+        String operatorName = String.join(" + ", mccmncToNameRepository.getCountryByMvvMnc(mccMnc));
+
         return SignalMeasurementResponse.builder()
                 .testUuid(test.getUuid())
                 .userUuid(test.getClient().getUuid())
@@ -42,6 +55,8 @@ public class SignalMapperImpl implements SignalMapper {
                 .location(test.getLocation())
                 .duration(calculateDuration(test, radioCellUUIDs))
                 .time(test.getTime())
+                .networkOperatorName(operatorName)
+                .mccMnc(finalMcc)
                 .build();
     }
 

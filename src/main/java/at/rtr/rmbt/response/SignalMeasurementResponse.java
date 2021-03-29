@@ -27,6 +27,12 @@ public class SignalMeasurementResponse {
     @JsonProperty(value = "testType")
     private final String testType;
 
+    @JsonProperty(value = "mccMnc")
+    private final String mccMnc;
+
+    @JsonProperty(value = "networkOperatorName")
+    private final String networkOperatorName;
+
     @JsonProperty(value = "technology")
     private final String technology;
 
