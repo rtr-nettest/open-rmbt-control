@@ -48,6 +48,10 @@ public class TimeUtils {
     }
 
     public Long formatToSecondsRound(Long timeNs) {
+        String.format("%d min, %d sec",
+                TimeUnit.MILLISECONDS.toMinutes(timeNs),
+                TimeUnit.MILLISECONDS.toSeconds(timeNs) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeNs)));
         return timeNs != null && timeNs > 0 ? TimeUnit.NANOSECONDS.toSeconds(timeNs) : 0;
     }
 }

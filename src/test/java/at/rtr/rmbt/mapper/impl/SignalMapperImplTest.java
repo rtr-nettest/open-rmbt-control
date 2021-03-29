@@ -8,6 +8,7 @@ import at.rtr.rmbt.model.RadioCell;
 import at.rtr.rmbt.model.RadioSignal;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.repository.GeoLocationRepository;
+import at.rtr.rmbt.repository.MccmncToNameRepository;
 import at.rtr.rmbt.repository.RadioSignalRepository;
 import at.rtr.rmbt.request.SignalRequest;
 import org.junit.Before;
@@ -21,18 +22,26 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static at.rtr.rmbt.TestConstants.DEFAULT_CLIENT_UUID;
+import static at.rtr.rmbt.TestConstants.DEFAULT_COUNTRY_AT;
+import static at.rtr.rmbt.TestConstants.DEFAULT_COUNTRY_NO;
 import static at.rtr.rmbt.TestConstants.DEFAULT_GSM_BIT_ERROR_RATE;
 import static at.rtr.rmbt.TestConstants.DEFAULT_LOCATION;
 import static at.rtr.rmbt.TestConstants.DEFAULT_LTE_CQI_FIRST;
 import static at.rtr.rmbt.TestConstants.DEFAULT_LTE_RSRP_FIRST;
 import static at.rtr.rmbt.TestConstants.DEFAULT_LTE_RSRQ_FIRST;
 import static at.rtr.rmbt.TestConstants.DEFAULT_LTE_RSSNR;
+import static at.rtr.rmbt.TestConstants.DEFAULT_MCC;
+import static at.rtr.rmbt.TestConstants.DEFAULT_MCC_MNC;
 import static at.rtr.rmbt.TestConstants.DEFAULT_MEASUREMENT_TYPE_FLAG;
+import static at.rtr.rmbt.TestConstants.DEFAULT_MNC;
 import static at.rtr.rmbt.TestConstants.DEFAULT_NETWORK_TYPE_ID;
 import static at.rtr.rmbt.TestConstants.DEFAULT_RADIO_CELL_UUID;
 import static at.rtr.rmbt.TestConstants.DEFAULT_SIGNAL_STRENGTH_FIRST;
+import static at.rtr.rmbt.TestConstants.DEFAULT_TEST_OPERATOR;
+import static at.rtr.rmbt.TestConstants.DEFAULT_TEST_OPERATOR_NAME;
 import static at.rtr.rmbt.TestConstants.DEFAULT_TEST_UUID;
 import static at.rtr.rmbt.TestConstants.DEFAULT_TIMEZONE;
 import static at.rtr.rmbt.TestConstants.DEFAULT_TIME_INSTANT;
@@ -67,10 +76,13 @@ public class SignalMapperImplTest {
     private RadioSignalRepository radioSignalRepository;
     @MockBean
     private GeoLocationRepository geoLocationRepository;
+    @MockBean
+    private MccmncToNameRepository mccmncToNameRepository;
 
     @Before
     public void setUp() {
-        mapper = new SignalMapperImpl(uuidGenerator, radioSignalRepository, geoLocationRepository);
+        mapper = new SignalMapperImpl(uuidGenerator, radioSignalRepository,
+                geoLocationRepository, mccmncToNameRepository);
     }
 
     @Test
@@ -116,15 +128,21 @@ public class SignalMapperImplTest {
         var test = buildTest(null, loopModeSettings);
         test.setRadioCell(Collections.singletonList(radioCell));
         when(radioCell.getTechnology()).thenReturn(null);
+        when(radioCell.getMcc()).thenReturn(DEFAULT_MCC);
+        when(radioCell.getMnc()).thenReturn(DEFAULT_MNC);
+        when(mccmncToNameRepository.getCountryByMvvMnc(Set.of(DEFAULT_MCC_MNC)))
+                .thenReturn(Arrays.asList(DEFAULT_COUNTRY_AT, DEFAULT_COUNTRY_NO));
         when(geoLocationRepository.findMaxByTest(test)).thenReturn(Optional.of(5000000000L));
         var actual = mapper.signalToSignalMeasurementResponse(test);
         assertEquals(5L, actual.getDuration());
         assertEquals(DEFAULT_ZONED_DATE_TIME, actual.getTime());
         assertEquals(DEFAULT_LOCATION, actual.getLocation());
-        assertEquals("" ,actual.getTechnology());
+        assertEquals("", actual.getTechnology());
         assertEquals(DEFAULT_MEASUREMENT_TYPE_FLAG.getValueEn(), actual.getTestType());
         assertEquals(DEFAULT_CLIENT_UUID, actual.getUserUuid());
         assertEquals(DEFAULT_UUID, actual.getTestUuid());
+        assertEquals(DEFAULT_MCC_MNC, actual.getMccMnc());
+        assertEquals(DEFAULT_COUNTRY_AT + " + " + DEFAULT_COUNTRY_NO, actual.getNetworkOperatorName());
     }
 
     @Test
@@ -172,9 +190,20 @@ public class SignalMapperImplTest {
                 .location(DEFAULT_LOCATION)
                 .uuid(DEFAULT_UUID)
                 .networkGroupName(ngn)
+                .networkOperator("Test")
                 .loopModeSettings(lms)
                 .client(client)
+                .networkOperator(DEFAULT_TEST_OPERATOR)
+                .networkOperatorName(DEFAULT_TEST_OPERATOR_NAME)
                 .measurementType(DEFAULT_MEASUREMENT_TYPE_FLAG)
+                .radioCell(Collections.singletonList(buildRadioCell()))
+                .build();
+    }
+
+    private RadioCell buildRadioCell() {
+        return RadioCell.builder()
+                .mcc(DEFAULT_MCC)
+                .mnc(DEFAULT_MNC)
                 .build();
     }
 
