@@ -93,7 +93,9 @@ public class HelperFunctions {
         return String.format("%s %2d°%02.3f'  %s %2d°%02.3f'", dirLat, latd, latm, dirLon, lond, lonm);
     }
 
-    public static String getNetworkTypeName(final int type) {
+    public static String getNetworkTypeName(final Integer type) {
+        if (type == null)
+            return "UNKNOWN";
         switch (type) {
             case 1:
             case 16:
