@@ -18,6 +18,7 @@ import java.util.List;
 import static at.rtr.rmbt.constant.URIConstants.ADMIN_NEWS;
 import static at.rtr.rmbt.constant.URIConstants.ADMIN_SETTING;
 import static at.rtr.rmbt.constant.URIConstants.ADMIN_SIGNAL;
+import static at.rtr.rmbt.constant.URIConstants.HISTORY;
 import static at.rtr.rmbt.constant.URIConstants.IP;
 import static at.rtr.rmbt.constant.URIConstants.MEASUREMENT_QOS_REQUEST;
 import static at.rtr.rmbt.constant.URIConstants.NEWS_URL;
@@ -65,7 +66,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                     .configure(httpSecurity)
                     .authorizeRequests()
                     .antMatchers(IP, REQUEST_DATA_COLLECTOR, TEST_RESULT_DETAIL, MEASUREMENT_QOS_REQUEST, SIGNAL_REQUEST, SIGNAL_RESULT, NEWS_URL, REGISTRATION_URL,
-                            RESULT_QOS_URL, RESULT_URL, SETTINGS_URL, PROVIDERS, TEST_RESULT).permitAll()
+                            RESULT_QOS_URL, RESULT_URL, SETTINGS_URL, PROVIDERS, TEST_RESULT, HISTORY).permitAll()
                     .antMatchers(ADMIN_SIGNAL).hasAuthority("read:reports/signal")
                     .antMatchers(ADMIN_SIGNAL).hasAnyAuthority(clients)
                     .antMatchers(ADMIN_NEWS).hasAuthority("read:config/news")
