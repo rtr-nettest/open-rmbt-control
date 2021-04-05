@@ -24,6 +24,7 @@ spring:
     database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
   flyway:
     enabled: true
+RMBT_SECRETKEY: RMBT_SECRETKEY
 
 auth0:
   issuer: https://specure.eu.auth0.com/
@@ -56,6 +57,7 @@ app:
       - Open-RMBT
       - RMBTws
       - HW-PROBE
+      - RTR-Netztest
 
 elastic-index:
   basicTenantIndexes:

@@ -97,7 +97,7 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public Optional<Test> getByOpenTestUuidAndClientId(UUID openTestUUID, UUID clientUUID) {
-        return testRepository.findByOpenTestUuidAndClientIdAndImplausibleIsFalseAndDeletedIsFalse(openTestUUID, clientUUID);
+        return testRepository.findByOpenTestUuidAndClientUuidAndImplausibleIsFalseAndDeletedIsFalse(openTestUUID, clientUUID);
     }
 
     @Override
