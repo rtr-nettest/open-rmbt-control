@@ -1,8 +1,10 @@
 package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.constant.URIConstants;
+import at.rtr.rmbt.request.HistoryRequest;
 import at.rtr.rmbt.request.TestResultDetailRequest;
 import at.rtr.rmbt.request.TestResultRequest;
+import at.rtr.rmbt.response.HistoryResponse;
 import at.rtr.rmbt.response.TestResponse;
 import at.rtr.rmbt.response.TestResultContainerResponse;
 import at.rtr.rmbt.response.TestResultDetailResponse;
@@ -20,7 +22,7 @@ public class TestController {
 
     private final TestService testService;
 
-    @GetMapping(URIConstants.TEST +  URIConstants.BY_TEST_UUID)
+    @GetMapping(URIConstants.TEST + URIConstants.BY_TEST_UUID)
     @ApiOperation(value = "Get list of signal measurements")
     @ResponseStatus(HttpStatus.OK)
     public TestResponse getTestByUUID(@PathVariable UUID testUUID) {
@@ -39,5 +41,11 @@ public class TestController {
     @ResponseStatus(HttpStatus.OK)
     public TestResultContainerResponse getTestResultByTestUUID(@RequestBody TestResultRequest testResultRequest) {
         return testService.getTestResult(testResultRequest);
+    }
+
+    @PostMapping(URIConstants.HISTORY)
+    @ApiOperation(value = "Gets test history for the client device and synchronized devices")
+    public HistoryResponse getHistory(@RequestBody HistoryRequest historyRequest) {
+        return testService.getHistory(historyRequest);
     }
 }

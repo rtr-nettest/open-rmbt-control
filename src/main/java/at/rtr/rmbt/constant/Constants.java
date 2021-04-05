@@ -14,6 +14,7 @@ public interface Constants {
     String SIGNAL_STRENGTH_ALTITUDE_TEMPLATE = "%s m";
     String SIGNAL_STRENGTH_BEARING_TEMPLATE = "%s\u00B0";
     String SIGNAL_STRENGTH_SPEED_TEMPLATE = "%s km/h";
+    String SQL_QUERY_STRING_VALUE_TEMPLATE = "'%s'";
     String SIGNAL_STRENGTH_DELIMITER = ", ";
     Integer MIN_SPEED = 0;
     Integer MAX_SPEED = 10000000;
@@ -22,6 +23,7 @@ public interface Constants {
     String VALUE_AND_UNIT_TEMPLATE = "%s %s";
     String TEST_RESULT_DETAIL_OPEN_TEST_UUID_TEMPLATE = "O%s";
     String TEST_RESULT_DETAIL_OPEN_UUID_TEMPLATE = "P%s";
+    String TEST_HISTORY_LOOP_UUID_TEMPLATE = "L%s";
     String PARENTHESES_TEMPLATE = "%s (%s)";
     String TIMEZONE_TEMPLATE = "UTC%sh";
     Double BYTES_UNIT_CONVERSION_MULTIPLICATOR = 1000d;
@@ -33,6 +35,6 @@ public interface Constants {
     Integer INTERNATIONAL_ROAMING_TYPE_BARRIER = 1;
     String INET_4_IP_VERSION = "4";
     String INET_6_IP_VERSION = "6";
+    Integer NOT_SYNCED_CLIENT_GROUP_ID = 0;
     Integer NETWORK_TYPE_WLAN = 99;
-
 }

@@ -347,10 +347,10 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .build();
     }
 
-    private HistoryResponse getHistoryResponse(Long clientId) {
+    private SettingsHistoryResponse getHistoryResponse(Long clientId) {
         var devices = getSyncGroupDeviceList(clientId);
         var networks = getGroupName(clientId);
-        return HistoryResponse.builder()
+        return SettingsHistoryResponse.builder()
                 .devices(devices)
                 .networks(networks)
                 .build();

@@ -1,18 +1,19 @@
 package at.rtr.rmbt.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.List;
 
 @Builder
 @Getter
-public class HistoryResponse {
+@EqualsAndHashCode(callSuper = true)
+public class HistoryResponse extends ErrorResponse {
 
-    @JsonProperty(value = "devices")
-    private final List<String> devices;
-
-    @JsonProperty(value = "networks")
-    private final List<String> networks;
+    @ApiModelProperty(notes = "Client test history")
+    @JsonProperty(value = "history")
+    private final List<HistoryItemResponse> history;
 }

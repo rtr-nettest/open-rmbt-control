@@ -8,13 +8,18 @@ import at.rtr.rmbt.dto.QoeClassificationThresholds;
 import at.rtr.rmbt.enums.NetworkGroupName;
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestPlatform;
+import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.TestNotFoundException;
+import at.rtr.rmbt.mapper.TestHistoryMapper;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
+import at.rtr.rmbt.repository.ClientRepository;
 import at.rtr.rmbt.repository.SettingsRepository;
+import at.rtr.rmbt.repository.TestHistoryRepository;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.CapabilitiesRequest;
+import at.rtr.rmbt.request.HistoryRequest;
 import at.rtr.rmbt.request.TestResultDetailRequest;
 import at.rtr.rmbt.request.TestResultRequest;
 import at.rtr.rmbt.response.*;
@@ -23,6 +28,7 @@ import at.rtr.rmbt.service.QoeClassificationService;
 import at.rtr.rmbt.service.TestService;
 import at.rtr.rmbt.utils.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.context.MessageSource;
@@ -33,6 +39,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.Format;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +52,9 @@ public class TestServiceImpl implements TestService {
     private final MessageSource messageSource;
     private final SettingsRepository settingsRepository;
     private final QoeClassificationService qoeClassificationService;
+    private final ClientRepository clientRepository;
+    private final TestHistoryRepository testHistoryRepository;
+    private final TestHistoryMapper testHistoryMapper;
 
     @Override
     public Test save(Test test) {
@@ -133,6 +143,19 @@ public class TestServiceImpl implements TestService {
                 .build();
     }
 
+    @Override
+    public HistoryResponse getHistory(HistoryRequest historyRequest) {
+        Locale locale = MessageUtils.getLocaleFormLanguage(ObjectUtils.defaultIfNull(historyRequest.getLanguage(), StringUtils.EMPTY), applicationProperties.getLanguage());
+        RtrClient client = clientRepository.findByUuid(historyRequest.getClientUUID())
+                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, historyRequest.getClientUUID())));
+        List<HistoryItemResponse> historyItemResponses = testHistoryRepository.getTestHistoryByDevicesAndNetworksAndClient(historyRequest.getResultLimit(), historyRequest.getResultOffset(), historyRequest.getDevices(), historyRequest.getNetworks(), client).stream()
+                .map(testHistory -> testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, historyRequest.getCapabilities().getClassification().getCount(), locale))
+                .collect(Collectors.toList());
+        return HistoryResponse.builder()
+                .history(historyItemResponses)
+                .build();
+    }
+
     private List<QoeClassificationResponse> getQoeClassificationResponse(Test test) {
         long pingNs = Optional.ofNullable(test.getPingMedian())
                 .orElse(NumberUtils.LONG_ZERO);
@@ -149,8 +172,8 @@ public class TestServiceImpl implements TestService {
     private void setNetFields(TestResultResponse.TestResultResponseBuilder testResultResponseBuilder, Test test, Locale locale) {
         List<NetItemResponse> netItemResponses = new ArrayList<>();
         NetworkInfoResponse.NetworkInfoResponseBuilder networkInfoResponseBuilder = NetworkInfoResponse.builder();
-        boolean dualSim = isDualSim(test);
-        boolean useSignal = isUseSignal(test, dualSim);
+        boolean dualSim = MeasurementUtils.isDualSim(test.getNetworkType(), test.getDualSim());
+        boolean useSignal = MeasurementUtils.isUseSignal(test.getSimCount(), dualSim);
         if (useSignal) {
             String networkTypeName = HelperFunctions.getNetworkTypeName(test.getNetworkType());
             addNetItemResponse(locale, netItemResponses, networkTypeName, "RESULT_NETWORK_TYPE");
@@ -227,8 +250,8 @@ public class TestServiceImpl implements TestService {
     }
 
     private void setSignalFields(Test test, MeasurementResultResponse.MeasurementResultResponseBuilder measurementResultResponseBuilder, CapabilitiesRequest capabilitiesRequest) {
-        boolean dualSim = isDualSim(test);
-        boolean useSignal = isUseSignal(test, dualSim);
+        boolean dualSim = MeasurementUtils.isDualSim(test.getNetworkType(), test.getDualSim());
+        boolean useSignal = MeasurementUtils.isUseSignal(test.getSimCount(), dualSim);
         if (useSignal) {
             if (Objects.nonNull(test.getSignalStrength())) {
                 int[] threshold = ClassificationUtils.getThresholdForSignal(test.getNetworkType());
@@ -279,8 +302,8 @@ public class TestServiceImpl implements TestService {
     }
 
     private void addSignalTestResultMeasurementResponse(List<TestResultMeasurementResponse> measurementResponses, Test test, Locale locale, CapabilitiesRequest capabilitiesRequest) {
-        boolean dualSim = isDualSim(test);
-        boolean useSignal = isUseSignal(test, dualSim);
+        boolean dualSim = MeasurementUtils.isDualSim(test.getNetworkType(), test.getDualSim());
+        boolean useSignal = MeasurementUtils.isUseSignal(test.getSimCount(), dualSim);
 
         if (useSignal) {
             if (Objects.nonNull(test.getSignalStrength()) || Objects.nonNull(test.getLteRsrp())) {
@@ -340,8 +363,8 @@ public class TestServiceImpl implements TestService {
     }
 
     private String getShareText(Test test, String timeString, Locale locale) {
-        boolean dualSim = isDualSim(test);
-        boolean useSignal = isUseSignal(test, dualSim);
+        boolean dualSim = MeasurementUtils.isDualSim(test.getNetworkType(), test.getDualSim());
+        boolean useSignal = MeasurementUtils.isUseSignal(test.getSimCount(), dualSim);
         String signalString = getSignalString(test, locale, useSignal);
         String shareLocationString = getShareLocationString(test, locale);
         String downloadString = getDownloadString(test, locale);
@@ -423,22 +446,6 @@ public class TestServiceImpl implements TestService {
         return Optional.ofNullable(test.getTestLocation())
                 .map(testLocation -> MessageFormat.format(getStringFromBundle("RESULT_SHARE_TEXT_LOCATION_ADD", locale), getGeoLocationString(testLocation, locale)))
                 .orElse(StringUtils.EMPTY);
-    }
-
-    private boolean isUseSignal(Test test, boolean dualSim) {
-        if (dualSim && Objects.nonNull(test.getSimCount())) {
-            return true;
-        }
-        return !dualSim;
-    }
-
-    private boolean isDualSim(Test test) {
-        if (Objects.nonNull(test.getNetworkType()) && test.getNetworkType() > 90) {
-            return false;
-        } else {
-            return Optional.ofNullable(test.getDualSim())
-                    .orElse(false);
-        }
     }
 
     private String getSignalString(Test test, Locale locale, boolean useSignal) {
@@ -604,7 +611,7 @@ public class TestServiceImpl implements TestService {
     }
 
     private void addTestFields(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Test test) {
-        if (!isDualSim(test)) {
+        if (!MeasurementUtils.isDualSim(test.getNetworkType(), test.getDualSim())) {
             addIntegerAndUnitString(propertiesList, locale, "signal_strength", test.getSignalStrength(), "RESULT_SIGNAL_UNIT");
             addIntegerAndUnitString(propertiesList, locale, "signal_rsrp", test.getLteRsrp(), "RESULT_SIGNAL_UNIT");
             addIntegerAndUnitString(propertiesList, locale, "signal_rsrq", test.getLteRsrq(), "RESULT_DB_UNIT");

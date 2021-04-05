@@ -69,7 +69,7 @@ public class TestControllerTest {
                 .content(TestUtils.asJsonString(request)))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$.testresult[0].time_string").value(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME))
+                .andExpect(jsonPath("$.testresult[0].time_string").value(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME_STRING))
                 .andExpect(jsonPath("$.testresult[0].share_text").value(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL))
                 .andExpect(jsonPath("$.testresult[0].share_subject").value(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT))
                 .andExpect(jsonPath("$.testresult[0].open_test_uuid").value(TestConstants.DEFAULT_TEST_RESULT_DETAIL_OPEN_TEST_UUID));
@@ -89,7 +89,7 @@ public class TestControllerTest {
 
     private TestResultContainerResponse getTestResultResponse() {
         TestResultResponse testResultResponse = TestResultResponse.builder()
-                .timeString(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME)
+                .timeString(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME_STRING)
                 .shareText(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL)
                 .shareSubject(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT)
                 .openTestUUID(TestConstants.DEFAULT_TEST_RESULT_DETAIL_OPEN_TEST_UUID)

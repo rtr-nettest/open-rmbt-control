@@ -6,17 +6,17 @@ import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.dto.LteFrequencyDto;
 import at.rtr.rmbt.dto.QoeClassificationThresholds;
 import at.rtr.rmbt.dto.TestDistance;
+import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.TestNotFoundException;
+import at.rtr.rmbt.mapper.TestHistoryMapper;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
-import at.rtr.rmbt.repository.QoeClassificationRepository;
+import at.rtr.rmbt.repository.ClientRepository;
 import at.rtr.rmbt.repository.SettingsRepository;
+import at.rtr.rmbt.repository.TestHistoryRepository;
 import at.rtr.rmbt.repository.TestRepository;
-import at.rtr.rmbt.request.CapabilitiesRequest;
-import at.rtr.rmbt.request.ClassificationRequest;
-import at.rtr.rmbt.request.TestResultDetailRequest;
-import at.rtr.rmbt.request.TestResultRequest;
+import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoAnalyticsService;
 import at.rtr.rmbt.service.QoeClassificationService;
@@ -57,6 +57,12 @@ public class TestServiceImplTest {
     private SettingsRepository settingsRepository;
     @MockBean
     private QoeClassificationService qoeClassificationService;
+    @MockBean
+    private ClientRepository clientRepository;
+    @MockBean
+    private TestHistoryRepository testHistoryRepository;
+    @MockBean
+    private TestHistoryMapper testHistoryMapper;
     @Mock
     private at.rtr.rmbt.model.Test test;
     @Mock
@@ -71,6 +77,14 @@ public class TestServiceImplTest {
     private ClassificationRequest classificationRequest;
     @Mock
     private QoeClassificationThresholds qoeClassificationThresholds;
+    @Mock
+    private HistoryRequest historyRequest;
+    @Mock
+    private HistoryItemResponse historyItemResponse;
+    @Mock
+    private TestHistory testHistory;
+    @Mock
+    private RtrClient client;
 
     private final ApplicationProperties applicationProperties = new ApplicationProperties(
             new ApplicationProperties.LanguageProperties(Set.of("en", "de"), "en"),
@@ -90,7 +104,7 @@ public class TestServiceImplTest {
         reloadableResourceBundleMessageSource.setBasename("classpath:SystemMessages");
         reloadableResourceBundleMessageSource.setDefaultEncoding("UTF-8");
         messageSource = reloadableResourceBundleMessageSource;
-        testService = new TestServiceImpl(testRepository, testMapper, applicationProperties, geoAnalyticsService, messageSource, settingsRepository, qoeClassificationService);
+        testService = new TestServiceImpl(testRepository, testMapper, applicationProperties, geoAnalyticsService, messageSource, settingsRepository, qoeClassificationService, clientRepository, testHistoryRepository, testHistoryMapper);
     }
 
     @Test
@@ -261,7 +275,7 @@ public class TestServiceImplTest {
         assertEquals(1, result.getTestResultResponses().size());
         var testResultResponse = result.getTestResultResponses().get(0);
         assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_OPEN_TEST_UUID, testResultResponse.getOpenTestUUID());
-        assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME, testResultResponse.getTimeString());
+        assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME_STRING, testResultResponse.getTimeString());
         assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT, testResultResponse.getShareSubject());
         assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_TRUE_SIGNAL_STRENGTH_NOT_NULL, testResultResponse.getShareText());
         assertEquals(getMeasurementIfSignalStrengthNotNull(), testResultResponse.getMeasurement());
@@ -292,7 +306,7 @@ public class TestServiceImplTest {
         assertEquals(1, result.getTestResultResponses().size());
         var testResultResponse = result.getTestResultResponses().get(0);
         assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_OPEN_TEST_UUID, testResultResponse.getOpenTestUUID());
-        assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME, testResultResponse.getTimeString());
+        assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME_STRING, testResultResponse.getTimeString());
         assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT, testResultResponse.getShareSubject());
         assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL, testResultResponse.getShareText());
         assertEquals(getMeasurementIfLteRSRPNotNull(), testResultResponse.getMeasurement());
@@ -420,6 +434,37 @@ public class TestServiceImplTest {
         var response = testService.getRmbtSetProviderFromAs(TestConstants.DEFAULT_UID);
         assertEquals(TestConstants.DEFAULT_PROVIDER, response);
 
+    }
+
+    @Test
+    public void getHistory_whenCommonData_expectHistoryResponse() {
+        when(historyRequest.getLanguage()).thenReturn(TestConstants.LANGUAGE_EN);
+        when(historyRequest.getClientUUID()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(historyRequest.getResultLimit()).thenReturn(TestConstants.DEFAULT_RESULT_LIMIT);
+        when(historyRequest.getResultOffset()).thenReturn(TestConstants.DEFAULT_RESULT_OFFSET);
+        when(historyRequest.getDevices()).thenReturn(List.of(TestConstants.DEFAULT_DEVICE));
+        when(historyRequest.getNetworks()).thenReturn(List.of(TestConstants.DEFAULT_NETWORK_NAME));
+        when(historyRequest.getCapabilities()).thenReturn(capabilitiesRequest);
+        when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
+        when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
+        when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(client));
+        when(testHistoryRepository
+                .getTestHistoryByDevicesAndNetworksAndClient(
+                        TestConstants.DEFAULT_RESULT_LIMIT,
+                        TestConstants.DEFAULT_RESULT_OFFSET,
+                        List.of(TestConstants.DEFAULT_DEVICE),
+                        List.of(TestConstants.DEFAULT_NETWORK_NAME),
+                        client))
+                .thenReturn(List.of(testHistory));
+        when(testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, TestConstants.DEFAULT_CLASSIFICATION_COUNT, Locale.ENGLISH)).thenReturn(historyItemResponse);
+
+        var response = testService.getHistory(historyRequest);
+        assertEquals(List.of(historyItemResponse), response.getHistory());
+    }
+
+    @Test(expected = ClientNotFoundException.class)
+    public void getHistory_whenClientNotFound_expectException() {
+        testService.getHistory(historyRequest);
     }
 
     private NetItemResponse getNetItemResponses(String value, String title) {
@@ -795,7 +840,7 @@ public class TestServiceImplTest {
 
     private TestResultDetailResponse getTimeTestResultDetailResponse() {
         var timeResponse = TestResultDetailContainerResponse.builder()
-                .value(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME)
+                .value(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME_STRING)
                 .title(messageSource.getMessage("key_time", null, Locale.ENGLISH))
                 .timezone(TestConstants.DEFAULT_TIMEZONE)
                 .time(TestConstants.DEFAULT_TIME_INSTANT)

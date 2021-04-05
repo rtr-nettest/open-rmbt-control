@@ -23,4 +23,5 @@ public interface URIConstants {
     String TEST_RESULT = "/testresult";
     String REQUEST_DATA_COLLECTOR = "/requestDataCollector";
     String IP = "/ip";
+    String HISTORY = "/history";
 }

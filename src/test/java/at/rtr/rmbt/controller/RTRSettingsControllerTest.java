@@ -246,7 +246,7 @@ public class RTRSettingsControllerTest {
                 .host(DEFAULT_MAP_SERVER_HOST)
                 .build();
 
-        var history = HistoryResponse.builder()
+        var history = SettingsHistoryResponse.builder()
                 .networks(List.of(DEFAULT_HISTORY_NETWORK))
                 .devices(List.of(DEFAULT_HISTORY_DEVICE))
                 .build();
