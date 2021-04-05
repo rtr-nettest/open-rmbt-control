@@ -1,7 +1,6 @@
 package at.rtr.rmbt.repository;
 
 import at.rtr.rmbt.dto.LteFrequencyDto;
-import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.model.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -84,7 +83,7 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
     Optional<Test> findByUuidOrOpenTestUuid(UUID uuid);
 
     Optional<Test> findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(UUID uuid);
-    Optional<Test> findByOpenTestUuidAndClientIdAndImplausibleIsFalseAndDeletedIsFalse(UUID uuid, UUID clientId);
+    Optional<Test> findByOpenTestUuidAndClientUuidAndImplausibleIsFalseAndDeletedIsFalse(UUID uuid, UUID clientId);
 
     @Query(value = "SELECT DISTINCT new at.rtr.rmbt.dto.LteFrequencyDto(r.channelNumber, r.technology) " +
             "  FROM RadioCell r" +
