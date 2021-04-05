@@ -10,8 +10,8 @@ import java.util.Objects;
 public enum MeasurementType {
     REGULAR("regular", "Regular"),
     DEDICATED("dedicated", "Dedicated"),
-    LOOP_ACTIVE("loop_active", "Loop"),
-    LOOP_WAITING("loop_waiting", "Loop");
+    LOOP_ACTIVE("loop_active", "Loop Active"),
+    LOOP_WAITING("loop_waiting", "Loop Waiting");
 
     private final String value;
     private final String valueEn;

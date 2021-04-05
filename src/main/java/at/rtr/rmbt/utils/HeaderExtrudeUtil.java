@@ -22,7 +22,7 @@ public class HeaderExtrudeUtil {
 
     public String getIpFromNgNixHeader(HttpServletRequest request, Map<String, String> headers) {
         return Optional.ofNullable(headers).orElse(Collections.emptyMap()).entrySet().stream()
-                .filter(x -> StringUtils.equalsAnyIgnoreCase(x.getKey(), HEADER_NGINX_X_FORWARDED_FOR, IP))
+                .filter(x -> StringUtils.equalsAnyIgnoreCase(x.getKey(), IP))
                 .findFirst()
                 .map(Map.Entry::getValue)
                 .orElse(request.getLocalAddr());

@@ -11,6 +11,7 @@ import org.locationtech.jts.geom.Point;
 
 import java.sql.Timestamp;
 import java.time.*;
+import java.util.Date;
 import java.util.UUID;
 
 public interface TestConstants {
@@ -28,6 +29,7 @@ public interface TestConstants {
     UUID DEFAULT_TEST_OPEN_UUID = UUID.fromString("04cb9392-846b-11eb-8dcd-0242ac130003");
     UUID DEFAULT_TEST_OPEN_TEST_UUID = UUID.fromString("dd4ac406-8469-11eb-8dcd-0242ac130003");
     UUID DEFAULT_GEO_LOCATION_UUID = UUID.fromString("33ab584e-6ef2-11eb-ae93-0282ac130213");
+    UUID DEFAULT_LOOP_UUID = UUID.fromString("2458713e-9362-11eb-a8b3-0242ac130003");
     Long DEFAULT_UID = 2L;
     Long DEFAULT_GEO_LOCATION_UID_FIRST = 7L;
     Long DEFAULT_GEO_LOCATION_UID_SECOND = 8L;
@@ -103,6 +105,7 @@ public interface TestConstants {
     Long DEFAULT_TIME_INSTANT = 1615164630L;
     ZonedDateTime ZONED_DATE_TIME = ZonedDateTime.now();
     ZonedDateTime DEFAULT_ZONED_DATE_TIME = ZonedDateTime.ofInstant(Instant.ofEpochMilli(DEFAULT_TIME_INSTANT), ZoneId.of(DEFAULT_TIMEZONE));
+    Date DEFAULT_DATE_TIME = Date.from(Instant.ofEpochMilli(DEFAULT_TIME_INSTANT));
     ZonedDateTime DEFAULT_TEST_TIME = ZonedDateTime.of(LocalDateTime.of(2021, 1, 20, 7, 32), ZoneId.of("UTC"));
     ZonedDateTime DEFAULT_SIGNAL_TIME = ZonedDateTime.of(LocalDateTime.of(2021, 1, 20, 7, 32), ZoneId.of("UTC"));
     String DEFAULT_TEST_SERVER_WEB_ADDRESS = "DEFAULT_TEST_SERVER_WEB_ADDRESS";
@@ -322,7 +325,7 @@ public interface TestConstants {
     String DEFAULT_TEST_RESULT_DETAIL_SPEED_UPLOAD_NDT = "1.2 Mbps";
     String DEFAULT_TEST_RESULT_DETAIL_FREQUENCY_DL = "940 MHz";
     String DEFAULT_TEST_RESULT_DETAIL_RADIO_BAND = "8 (GSM 900)";
-    String DEFAULT_TEST_RESULT_DETAIL_TIME = "Jan 19, 1970, 5:39:24 PM";
+    String DEFAULT_TEST_RESULT_DETAIL_TIME_STRING = "Jan 19, 1970, 5:39:24 PM";
     String DEFAULT_TEST_RESULT_DETAIL_TIMEZONE = "UTC+1h";
     Integer DEFAULT_TEST_LOCATION_LINK_DISTANCE = 5;
     Integer DEFAULT_TEST_LOCATION_EDGE_ID = 15;
@@ -391,6 +394,16 @@ public interface TestConstants {
     QoeCategory DEFAULT_QOE_CATEGORY = QoeCategory.CLOUD;
     Integer DEFAULT_QOE_CLASSIFICATION = 4;
     Double DEFAULT_QUALITY = 1d;
+    Integer DEFAULT_RESULT_LIMIT = 1;
+    Integer DEFAULT_RESULT_OFFSET = 2;
+    String DEFAULT_FORMATTED_SPEED_UPLOAD = "1,020.03";
+    String DEFAULT_FORMATTED_SPEED_DOWNLOAD = "2,122";
+    String DEFAULT_FORMATTED_PING = "58.42";
+    String DEFAULT_FORMATTED_PING_SHORTEST = "58.42";
+    String DEFAULT_HISTORY_RESPONSE_ITEM_LOOP_UUID = "L2458713e-9362-11eb-a8b3-0242ac130003";
+    String DEFAULT_TEST_HISTORY_FINAL_QUERY = "SELECT DISTINCT t.uuid, time, timezone, speed_upload, speed_download, ping_median, lte_rsrp, signal_strength, dual_sim, sim_count, network_type, nt.group_name network_type_group_name, l.loop_uuid loop_uuid, COALESCE(adm.fullname, t.model) model FROM test t LEFT JOIN device_map adm ON adm.codename=t.model LEFT JOIN network_type nt ON t.network_type=nt.uid LEFT JOIN test_loopmode l ON (l.test_uuid = t.uuid) WHERE t.deleted = false AND t.implausible = false AND t.status = 'FINISHED'  AND client_id = 2  AND (COALESCE(adm.fullname, t.model) IN ('DEFAULT_DEVICE'))  AND nt.group_name IN ('2G (GSM)') ORDER BY time DESC  LIMIT 1 OFFSET 2";
+    String DEFAULT_TEST_HISTORY_FINAL_QUERY_CLIENT_SYNCED = "SELECT DISTINCT t.uuid, time, timezone, speed_upload, speed_download, ping_median, lte_rsrp, signal_strength, dual_sim, sim_count, network_type, nt.group_name network_type_group_name, l.loop_uuid loop_uuid, COALESCE(adm.fullname, t.model) model FROM test t LEFT JOIN device_map adm ON adm.codename=t.model LEFT JOIN network_type nt ON t.network_type=nt.uid LEFT JOIN test_loopmode l ON (l.test_uuid = t.uuid) WHERE t.deleted = false AND t.implausible = false AND t.status = 'FINISHED'  AND (t.client_id IN (SELECT 2 UNION SELECT uid FROM client WHERE sync_group_id = 5 ))  AND (COALESCE(adm.fullname, t.model) IN ('DEFAULT_DEVICE'))  AND nt.group_name IN ('2G (GSM)') ORDER BY time DESC  LIMIT 1 OFFSET 2";
+    Integer DEFAULT_CLIENT_SYNC_GROUP_ID = 5;
     MeasurementType DEFAULT_MEASUREMENT_TYPE_FLAG = MeasurementType.REGULAR;
 
     interface Database {
