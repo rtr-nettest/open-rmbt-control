@@ -81,6 +81,16 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
+    public Optional<Test> getByOpenTestUuid(UUID openTestUUID) {
+        return testRepository.findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(openTestUUID);
+    }
+
+    @Override
+    public Optional<Test> getByOpenTestUuidAndClientId(UUID openTestUUID, UUID clientUUID) {
+        return testRepository.findByOpenTestUuidAndClientIdAndImplausibleIsFalseAndDeletedIsFalse(openTestUUID, clientUUID);
+    }
+
+    @Override
     public TestResultDetailResponse getTestResultDetailByTestUUID(TestResultDetailRequest testResultDetailRequest) {
         final Locale locale = MessageUtils.getLocaleFormLanguage(testResultDetailRequest.getLanguage(), applicationProperties.getLanguage());
         List<TestResultDetailContainerResponse> propertiesList = new ArrayList<>();

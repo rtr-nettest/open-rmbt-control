@@ -8,7 +8,6 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Setter
@@ -39,7 +38,7 @@ public class QosTestObjective {
 
     @Column(name = "results", columnDefinition = "json")
     @Type(type = "json")
-    private List<QosResults> results;
+    private String results;
 
     @Column(name = "concurrency_group")
     private Integer concurrencyGroup;

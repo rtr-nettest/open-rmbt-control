@@ -8,7 +8,6 @@ import at.rtr.rmbt.model.LoopModeSettings;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.model.ServerTypeDetails;
 import at.rtr.rmbt.model.TestServer;
-import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.TestSettingsResponse;
 import at.rtr.rmbt.service.*;
@@ -29,6 +28,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.*;
 
 import static at.rtr.rmbt.TestConstants.*;
+import static at.rtr.rmbt.TestFixtures.applicationProperties;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -106,16 +106,6 @@ public class TestSettingsFacadeTest {
     private final TestServerService testServerService = mock(TestServerService.class);
     private final TestService testService = mock(TestService.class);
     private final MessageSource messageSource = mock(MessageSource.class);
-    private final ApplicationProperties applicationProperties = new ApplicationProperties(
-            new ApplicationProperties.LanguageProperties(Set.of("en", "de"), "en"),
-            Set.of("RMBT", "RMBTjs", "Open-RMBT", "RMBTws", "HW-PROBE"),
-            "1.2",
-            1,
-            2,
-            3,
-            10000,
-            2000
-    );
     private final RollBackService rollBackService = mock(RollBackService.class);
 
     private final TestSettingsFacade facade = new TestSettingsFacade(
