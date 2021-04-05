@@ -8,6 +8,7 @@ import at.rtr.rmbt.response.TestResultContainerResponse;
 import at.rtr.rmbt.response.TestResultDetailResponse;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface TestService {
@@ -22,6 +23,10 @@ public interface TestService {
     List<String> getGroupNameByClientId(Long clientId);
 
     TestResponse getTestByUUID(UUID testUUID);
+
+    Optional<Test> getByOpenTestUuid(UUID openTestUuid);
+
+    Optional<Test> getByOpenTestUuidAndClientId(UUID openTestUUID, UUID clientUUID);
 
     TestResultDetailResponse getTestResultDetailByTestUUID(TestResultDetailRequest testResultDetailRequest);
 
