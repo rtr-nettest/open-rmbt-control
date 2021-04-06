@@ -3,8 +3,7 @@ package at.rtr.rmbt.controller;
 import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.advice.RtrAdvice;
-import at.rtr.rmbt.request.SignalRegisterRequest;
-import at.rtr.rmbt.request.SignalResultRequest;
+import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.SignalService;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -27,6 +26,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
+import java.util.List;
 
 import static at.rtr.rmbt.constant.URIConstants.*;
 import static org.hamcrest.Matchers.hasSize;
@@ -101,6 +101,7 @@ public class SignalControllerTest {
     @Test
     public void processSignalResult_whenCommonData_expectProcessSignalResultCalled() throws Exception {
         var request = getSignalResultRequest();
+        ArgumentCaptor<SignalResultRequest> captor = ArgumentCaptor.forClass(SignalResultRequest.class);
         var response = getSignalResultResponse();
         when(signalService.processSignalResult(any())).thenReturn(response);
 
@@ -110,7 +111,8 @@ public class SignalControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.test_uuid").value(TestConstants.DEFAULT_UUID.toString()));
 
-        verify(signalService).processSignalResult(request);
+        verify(signalService).processSignalResult(captor.capture());
+        assertEquals(TestConstants.DEFAULT_UUID, captor.getValue().getTestUUID());
     }
 
     @Test
@@ -179,6 +181,10 @@ public class SignalControllerTest {
 
     private SignalResultRequest getSignalResultRequest() {
         return SignalResultRequest.builder()
+            .radioInfo(RadioInfoRequest.builder()
+                .signals(List.of(RadioSignalRequest.builder().build()))
+                .cells(List.of(RadioCellRequest.builder().build()))
+                .build())
                 .testUUID(TestConstants.DEFAULT_UUID)
                 .build();
     }

@@ -90,6 +90,7 @@ stages:
         src/main/java/at/rtr/rmbt/**/repository/**,
         src/main/java/at/rtr/rmbt/**/request/**,
         src/main/java/at/rtr/rmbt/**/response/**,
+        src/main/java/at/rtr/rmbt/**/exception/**,
         srс/main/resources/**,
         **/*Application.java"
     - |

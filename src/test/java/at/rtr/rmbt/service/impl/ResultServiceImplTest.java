@@ -83,8 +83,12 @@ public class ResultServiceImplTest {
         when(resultRequest.getDownloadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
         when(resultRequest.getUploadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
         when(resultRequest.getPingShortest()).thenReturn(TestConstants.DEFAULT_RESULT_PING_SHORTEST);
+        when(resultRequest.getTestIpLocal()).thenReturn(TestConstants.DEFAULT_IP_V4);
+        when(resultRequest.getTestIpServer()).thenReturn(TestConstants.DEFAULT_IP_V4);
+        when(resultRequest.getTestStatus()).thenReturn("SUCCESS");
         when(httpServletRequest.getLocalAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(test.getNetworkType()).thenReturn(TestConstants.DEFAULT_NETWORK_TYPE_ID);
+        when(test.getClientPublicIp()).thenReturn(TestConstants.DEFAULT_IP_V4);
 
         resultService.processResultRequest(httpServletRequest, resultRequest, headers);
 
