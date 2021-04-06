@@ -1,5 +1,6 @@
 package at.rtr.rmbt.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -8,6 +9,7 @@ import lombok.Getter;
 @Builder
 @Getter
 @EqualsAndHashCode
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class QosParamsResponse {
 
     @JsonProperty(value = "qos_test_uid")
