@@ -405,6 +405,22 @@ public interface TestConstants {
     String DEFAULT_TEST_HISTORY_FINAL_QUERY_CLIENT_SYNCED = "SELECT DISTINCT t.uuid, time, timezone, speed_upload, speed_download, ping_median, lte_rsrp, signal_strength, dual_sim, sim_count, network_type, nt.group_name network_type_group_name, l.loop_uuid loop_uuid, COALESCE(adm.fullname, t.model) model FROM test t LEFT JOIN device_map adm ON adm.codename=t.model LEFT JOIN network_type nt ON t.network_type=nt.uid LEFT JOIN test_loopmode l ON (l.test_uuid = t.uuid) WHERE t.deleted = false AND t.implausible = false AND t.status = 'FINISHED'  AND (t.client_id IN (SELECT 2 UNION SELECT uid FROM client WHERE sync_group_id = 5 ))  AND (COALESCE(adm.fullname, t.model) IN ('DEFAULT_DEVICE'))  AND nt.group_name IN ('2G (GSM)') ORDER BY time DESC  LIMIT 1 OFFSET 2";
     Integer DEFAULT_CLIENT_SYNC_GROUP_ID = 5;
     MeasurementType DEFAULT_MEASUREMENT_TYPE_FLAG = MeasurementType.REGULAR;
+    String DEFAULT_SYNC_CODE = "DEFAULT_SYNC_CODE";
+    Long DEFAULT_CLIENT_UID_BY_SYNC_CODE = 5L;
+    Long DEFAULT_CLIENT_UID_BY_CLIENT_UUID = 7L;
+    Integer DEFAULT_SYNC_GROUP_UID = 13;
+    Integer DEFAULT_CLIENT_SYNC_GROUP_UID_BY_UUID = 4;
+    Integer DEFAULT_CLIENT_SYNC_GROUP_UID_BY_SYNC_CODE = 8;
+    String DEFAULT_SYNC_SUCCESSFUL_MSG_TEXT = "The synchronisation was successful.";
+    String DEFAULT_SYNC_SUCCESSFUL_MSG_TITLE = "Successful";
+    String DEFAULT_SYNC_UNKNOWN_CLIENT_MSG_TITLE = "Unknown client";
+    String DEFAULT_SYNC_UNKNOWN_CLIENT_MSG_TEXT = "Your client is not registered in our system.";
+    String DEFAULT_SYNC_WRONG_CODE_MSG_TITLE = "Wrong code";
+    String DEFAULT_SYNC_WRONG_CODE_MSG_TEXT = "The code you entered does not exist.";
+    String DEFAULT_SYNC_ALREADY_SYNCHRONIZED_MSG_TITLE = "Already synchronized";
+    String DEFAULT_SYNC_ALREADY_SYNCHRONIZED_MSG_TEXT = "The devices are already synchronized with each other.";
+    String DEFAULT_SYNC_SAME_DEVICE_MSG_TITLE = "Same device";
+    String DEFAULT_SYNC_SAME_DEVICE_MSG_TEXT = "You can not synchronise with the same device.";
 
     interface Database {
         long CLIENT_TYPE_DESKTOP_UID = 1L;
