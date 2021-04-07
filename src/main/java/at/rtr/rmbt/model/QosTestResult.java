@@ -1,7 +1,9 @@
 package at.rtr.rmbt.model;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.*;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
@@ -17,7 +19,8 @@ import java.util.Map;
 @Entity
 @Table(name = "qos_test_result")
 @TypeDefs({
-    @TypeDef(name = "json", typeClass = JsonStringType.class)
+    @TypeDef(name = "json", typeClass = JsonStringType.class),
+    @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 })
 public class QosTestResult {
     @Id
@@ -44,7 +47,8 @@ public class QosTestResult {
     @Column(name = "deleted")
     private boolean deleted;
 
-    @Column(name = "result")
+    @Type(type = "jsonb")
+    @Column(name = "result", columnDefinition = "json")
     private String result;
 
     @Transient

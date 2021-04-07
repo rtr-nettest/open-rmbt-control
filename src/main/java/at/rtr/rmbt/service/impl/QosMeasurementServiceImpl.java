@@ -158,6 +158,8 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
             QosTestResult testResult = new QosTestResult();
             testResult.setResult(objectMapper.writeValueAsString(resultJson));
             testResult.setTestUid(test.getUid());
+            testResult.setSuccessCount(0);
+            testResult.setFailureCount(0);
             long qosTestId = testObject.getQosTestUid() != null ? testObject.getQosTestUid() : Long.MIN_VALUE;
             qosTestObjectiveRepository.findById(qosTestId).ifPresent(testResult::setQosTestObjective);
             qosTestResultService.save(testResult);
