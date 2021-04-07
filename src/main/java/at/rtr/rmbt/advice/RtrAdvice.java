@@ -57,5 +57,11 @@ public class RtrAdvice {
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException ex) {
         return new ErrorResponse(ex.getMessage());
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(SyncException.class)
+    public ErrorResponse handleSyncException(SyncException ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
 }
 

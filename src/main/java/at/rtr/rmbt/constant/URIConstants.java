@@ -24,4 +24,5 @@ public interface URIConstants {
     String REQUEST_DATA_COLLECTOR = "/requestDataCollector";
     String IP = "/ip";
     String HISTORY = "/history";
+    String SYNC = "/sync";
 }
