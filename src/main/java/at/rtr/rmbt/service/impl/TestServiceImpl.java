@@ -19,6 +19,7 @@ import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.repository.TestHistoryRepository;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.CapabilitiesRequest;
+import at.rtr.rmbt.request.ClassificationRequest;
 import at.rtr.rmbt.request.HistoryRequest;
 import at.rtr.rmbt.request.TestResultDetailRequest;
 import at.rtr.rmbt.request.TestResultRequest;
@@ -148,8 +149,12 @@ public class TestServiceImpl implements TestService {
         Locale locale = MessageUtils.getLocaleFormLanguage(ObjectUtils.defaultIfNull(historyRequest.getLanguage(), StringUtils.EMPTY), applicationProperties.getLanguage());
         RtrClient client = clientRepository.findByUuid(historyRequest.getClientUUID())
                 .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, historyRequest.getClientUUID())));
+        Integer count = Optional.ofNullable(historyRequest.getCapabilities())
+                .map(CapabilitiesRequest::getClassification)
+                .map(ClassificationRequest::getCount)
+                .orElse(0);
         List<HistoryItemResponse> historyItemResponses = testHistoryRepository.getTestHistoryByDevicesAndNetworksAndClient(historyRequest.getResultLimit(), historyRequest.getResultOffset(), historyRequest.getDevices(), historyRequest.getNetworks(), client).stream()
-                .map(testHistory -> testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, historyRequest.getCapabilities().getClassification().getCount(), locale))
+                .map(testHistory -> testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, count, locale))
                 .collect(Collectors.toList());
         return HistoryResponse.builder()
                 .history(historyItemResponses)
