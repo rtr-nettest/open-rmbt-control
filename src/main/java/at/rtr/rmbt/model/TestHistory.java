@@ -36,7 +36,7 @@ public class TestHistory {
     private Long pingMedian;
 
     @Column(name = "lte_rsrp")
-    private Integer lteRSRP;
+    private Integer lteRsrp;
 
     @Column(name = "signal_strength")
     private Integer signalStrength;
@@ -54,7 +54,7 @@ public class TestHistory {
     private String networkTypeGroupName;
 
     @Column(name = "loop_uuid")
-    private UUID loopUUID;
+    private UUID loopUuid;
 
     @Column(name = "model")
     private String model;
