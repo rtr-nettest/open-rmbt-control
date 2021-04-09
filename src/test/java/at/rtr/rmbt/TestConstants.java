@@ -396,10 +396,10 @@ public interface TestConstants {
     Double DEFAULT_QUALITY = 1d;
     Integer DEFAULT_RESULT_LIMIT = 1;
     Integer DEFAULT_RESULT_OFFSET = 2;
-    String DEFAULT_FORMATTED_SPEED_UPLOAD = "1,020.03";
-    String DEFAULT_FORMATTED_SPEED_DOWNLOAD = "2,122";
-    String DEFAULT_FORMATTED_PING = "58.42";
-    String DEFAULT_FORMATTED_PING_SHORTEST = "58.42";
+    String DEFAULT_FORMATTED_SPEED_UPLOAD = "1,000";
+    String DEFAULT_FORMATTED_SPEED_DOWNLOAD = "2,100";
+    String DEFAULT_FORMATTED_PING = "58";
+    String DEFAULT_FORMATTED_PING_SHORTEST = "58";
     String DEFAULT_HISTORY_RESPONSE_ITEM_LOOP_UUID = "L2458713e-9362-11eb-a8b3-0242ac130003";
     String DEFAULT_TEST_HISTORY_FINAL_QUERY = "SELECT DISTINCT t.uuid, time, timezone, speed_upload, speed_download, ping_median, lte_rsrp, signal_strength, dual_sim, sim_count, network_type, nt.group_name network_type_group_name, l.loop_uuid loop_uuid, COALESCE(adm.fullname, t.model) model FROM test t LEFT JOIN device_map adm ON adm.codename=t.model LEFT JOIN network_type nt ON t.network_type=nt.uid LEFT JOIN test_loopmode l ON (l.test_uuid = t.uuid) WHERE t.deleted = false AND t.implausible = false AND t.status = 'FINISHED'  AND client_id = 2  AND (COALESCE(adm.fullname, t.model) IN ('DEFAULT_DEVICE'))  AND nt.group_name IN ('2G (GSM)') ORDER BY time DESC  LIMIT 1 OFFSET 2";
     String DEFAULT_TEST_HISTORY_FINAL_QUERY_CLIENT_SYNCED = "SELECT DISTINCT t.uuid, time, timezone, speed_upload, speed_download, ping_median, lte_rsrp, signal_strength, dual_sim, sim_count, network_type, nt.group_name network_type_group_name, l.loop_uuid loop_uuid, COALESCE(adm.fullname, t.model) model FROM test t LEFT JOIN device_map adm ON adm.codename=t.model LEFT JOIN network_type nt ON t.network_type=nt.uid LEFT JOIN test_loopmode l ON (l.test_uuid = t.uuid) WHERE t.deleted = false AND t.implausible = false AND t.status = 'FINISHED'  AND (t.client_id IN (SELECT 2 UNION SELECT uid FROM client WHERE sync_group_id = 5 ))  AND (COALESCE(adm.fullname, t.model) IN ('DEFAULT_DEVICE'))  AND nt.group_name IN ('2G (GSM)') ORDER BY time DESC  LIMIT 1 OFFSET 2";

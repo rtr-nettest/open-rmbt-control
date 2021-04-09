@@ -19,6 +19,7 @@ import java.util.UUID;
 @UtilityClass
 public class FormatUtils {
     public static NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
+    public static MathContext mathContext = new MathContext(Config.SIGNIFICANT_PLACES, RoundingMode.HALF_UP);
 
     public static String format(String template, Integer value) {
         return Optional.ofNullable(value)
@@ -36,7 +37,6 @@ public class FormatUtils {
 
     public static String formatValueAndUnit(Double value, String unitValue, Locale locale) {
         Format format = NumberFormat.getNumberInstance(locale);
-        MathContext mathContext = new MathContext(Config.SIGNIFICANT_PLACES, RoundingMode.HALF_UP);
         return String.format(Constants.VALUE_AND_UNIT_TEMPLATE, format.format(new BigDecimal(value, mathContext)), unitValue);
     }
 
@@ -52,6 +52,7 @@ public class FormatUtils {
         return Optional.ofNullable(speed)
                 .map(s -> ObjectUtils.defaultIfNull(s, NumberUtils.INTEGER_ZERO))
                 .map(x -> x / Constants.BYTES_UNIT_CONVERSION_MULTIPLICATOR)
+                .map(x -> new BigDecimal(x, mathContext))
                 .map(numberFormat::format)
                 .orElse(StringUtils.EMPTY);
     }
@@ -60,6 +61,7 @@ public class FormatUtils {
         return Optional.ofNullable(ping)
                 .map(s -> ObjectUtils.defaultIfNull(s, NumberUtils.LONG_ZERO))
                 .map(x -> x / Constants.PING_CONVERSION_MULTIPLICATOR)
+                .map(x -> new BigDecimal(x, mathContext))
                 .map(numberFormat::format)
                 .orElse(StringUtils.EMPTY);
     }
