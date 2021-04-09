@@ -30,7 +30,7 @@ public class TestHistoryMapperImplTest {
                 .speedUpload(TestConstants.DEFAULT_RESULT_UPLOAD_SPEED)
                 .pingMedian(TestConstants.DEFAULT_TEST_PING_MEDIAN)
                 .networkTypeGroupName(TestConstants.DEFAULT_TECHNOLOGY_FIRST.getLabelEn())
-                .loopUUID(TestConstants.DEFAULT_LOOP_UUID)
+                .loopUuid(TestConstants.DEFAULT_LOOP_UUID)
                 .model(TestConstants.DEFAULT_MODEL)
                 .dualSim(TestConstants.DEFAULT_DUAL_SIM)
                 .simCount(TestConstants.DEFAULT_TEST_SIM_COUNT)
@@ -67,7 +67,7 @@ public class TestHistoryMapperImplTest {
 
     @Test
     public void testHistoryToHistoryItemResponse_whenLteRSPRNotNull_expectHistoryItemResponse() {
-        testHistory.setLteRSRP(TestConstants.DEFAULT_LTE_RSRP_FIRST);
+        testHistory.setLteRsrp(TestConstants.DEFAULT_LTE_RSRP_FIRST);
         var expectedHistoryItemResponse = expectedHistoryItemResponseBuilder
                 .lteRSRP(TestConstants.DEFAULT_LTE_RSRP_FIRST)
                 .signalClassification(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_CLASSIFICATION)

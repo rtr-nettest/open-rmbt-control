@@ -30,7 +30,7 @@ public class TestHistoryMapperImpl implements TestHistoryMapper {
                 .pingShortest(FormatUtils.formatPing(testHistory.getPingMedian()))
                 .model(testHistory.getModel())
                 .networkType(testHistory.getNetworkTypeGroupName())
-                .loopUUID(FormatUtils.formatLoopUUID(testHistory.getLoopUUID()))
+                .loopUUID(FormatUtils.formatLoopUUID(testHistory.getLoopUuid()))
                 .speedUploadClassification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_UPLOAD, ObjectUtils.defaultIfNull(testHistory.getSpeedUpload(), NumberUtils.INTEGER_ZERO), classificationCount))
                 .speedDownloadClassification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_DOWNLOAD, ObjectUtils.defaultIfNull(testHistory.getSpeedDownload(), NumberUtils.INTEGER_ZERO), classificationCount))
                 .pingClassification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_PING, ObjectUtils.defaultIfNull(testHistory.getPingMedian(), NumberUtils.LONG_ZERO), classificationCount))
@@ -49,10 +49,10 @@ public class TestHistoryMapperImpl implements TestHistoryMapper {
                         .signalStrength(testHistory.getSignalStrength())
                         .signalClassification(ClassificationUtils.classify(threshold, ObjectUtils.defaultIfNull(testHistory.getSignalStrength(), NumberUtils.INTEGER_ZERO), classificationCount));
             }
-            if (Objects.nonNull(testHistory.getLteRSRP())) {
+            if (Objects.nonNull(testHistory.getLteRsrp())) {
                 historyItemResponseBuilder
-                        .lteRSRP(testHistory.getLteRSRP())
-                        .signalClassification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_SIGNAL_RSRP, ObjectUtils.defaultIfNull(testHistory.getLteRSRP(), NumberUtils.INTEGER_ZERO), classificationCount));
+                        .lteRSRP(testHistory.getLteRsrp())
+                        .signalClassification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_SIGNAL_RSRP, ObjectUtils.defaultIfNull(testHistory.getLteRsrp(), NumberUtils.INTEGER_ZERO), classificationCount));
             }
         }
     }
