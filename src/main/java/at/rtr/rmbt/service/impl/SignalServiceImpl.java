@@ -235,7 +235,7 @@ public class SignalServiceImpl implements SignalService {
             newSignals.add(newSignal);
             if (test.getNetworkType() == 99) // wlan
             {
-                if (newSignal.getWifiRSSI() < minSignalStrength) {
+                if (newSignal != null && newSignal.getWifiRSSI() < minSignalStrength) {
                     minSignalStrength = newSignal.getWifiRSSI();
                 }
             } else if (newSignal.getSignalStrength() < minSignalStrength) {
