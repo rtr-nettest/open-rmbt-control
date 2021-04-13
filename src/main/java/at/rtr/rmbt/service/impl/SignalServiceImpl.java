@@ -235,22 +235,22 @@ public class SignalServiceImpl implements SignalService {
             newSignals.add(newSignal);
             if (test.getNetworkType() == 99) // wlan
             {
-                if (newSignal != null && newSignal.getWifiRSSI() < minSignalStrength) {
+                if (newSignal.getWifiRSSI() != null && newSignal.getWifiRSSI() < minSignalStrength) {
                     minSignalStrength = newSignal.getWifiRSSI();
                 }
-            } else if (newSignal.getSignalStrength() < minSignalStrength) {
+            } else if (newSignal.getSignalStrength() != null && newSignal.getSignalStrength() < minSignalStrength) {
                 minSignalStrength = newSignal.getSignalStrength();
             }
 
-            if (newSignal.getLteRSRP() < minLteRsrp) {
+            if (newSignal.getLteRSRP() != null && newSignal.getLteRSRP() < minLteRsrp) {
                 minLteRsrp = newSignal.getLteRSRP();
             }
 
-            if (newSignal.getLteRSRQ() < minLteRsrq && !(Math.abs(newSignal.getLteRSRQ()) > 19.5 || Math.abs(newSignal.getLteRSRQ()) < 3.0)) {
+            if (newSignal.getLteRSRP() != null && (newSignal.getLteRSRQ() < minLteRsrq && !(Math.abs(newSignal.getLteRSRQ()) > 19.5 || Math.abs(newSignal.getLteRSRQ()) < 3.0))) {
                 minLteRsrq = newSignal.getLteRSRQ();
             }
 
-            if (newSignal.getWifiLinkSpeed() < minLinkSpeed) {
+            if (newSignal.getWifiLinkSpeed() != null && newSignal.getWifiLinkSpeed() < minLinkSpeed) {
                 minLinkSpeed = newSignal.getWifiLinkSpeed();
             }
         }
