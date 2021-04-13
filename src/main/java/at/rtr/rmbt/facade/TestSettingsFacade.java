@@ -137,8 +137,10 @@ public class TestSettingsFacade {
                 loopModeSettings.setClientUuid(uuid);
 
                 //if no loop mode uuid is set - generate one
-                if (loopModeSettings.getLoopUuid() == null)
+                if (loopModeInfo.getLoopUuid() == null)
                     loopModeSettings.setLoopUuid(UUID.randomUUID());
+                else
+                    loopModeSettings.setLoopUuid(UUID.fromString(loopModeInfo.getLoopUuid()));
 
                 //old clients expect a "text_counter"
                 if (loopModeSettings.getTestCounter() == null)
@@ -288,7 +290,6 @@ public class TestSettingsFacade {
             logger.info(objectMapper.writeValueAsString(response));
         } catch (JsonProcessingException ignored) {
         }
-
         return response;
     }
 
