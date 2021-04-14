@@ -103,7 +103,6 @@ public class TestSettingsFacade {
         String asName = null;
         String asCountry = null;
         String clientIpAddress = HeaderExtrudeUtil.getIpFromNgNixHeader(request, headers);
-        logger.info("IP: " + clientIpAddress);
         InetAddress clientAddress = null;
         try {
             clientAddress = InetAddress.getByName(clientIpAddress);

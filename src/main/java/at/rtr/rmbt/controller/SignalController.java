@@ -51,32 +51,6 @@ public class SignalController {
     @ApiOperation(value = "Process signal result")
     @ResponseStatus(HttpStatus.OK)
     public SignalResultResponse processSignalResult(@RequestBody SignalResultRequest signalResultRequest) {
-        log.info("--------------- UUID -------------");
-
-        log.info(signalResultRequest.getClientUUID() == null ? "null" : signalResultRequest.getClientUUID().toString());
-        log.info("--------------- RadioInfo  Cells  -------------");
-
-        Optional.ofNullable(signalResultRequest.getRadioInfo())
-                .map(l -> l.getCells())
-                .orElse(Collections.emptyList())
-                .forEach(l -> {
-                    log.info("UUID " + (l.getUuid() == null ? "null" : l.getUuid().toString()));
-                    log.info("Technology " + (l.getTechnology() == null ? "null" : l.getTechnology().toString()));
-                });
-
-        log.info("--------------- RadioInfo  Signals -------------");
-        Optional.ofNullable(signalResultRequest.getRadioInfo())
-                .map(l -> l.getSignals())
-                .orElse(Collections.emptyList())
-                .forEach(l -> {
-                    log.info("CellUUID " + (l.getCellUUID() == null ? "null" : l.getCellUUID().toString()));
-                    log.info("NetworkTypeId " + (l.getNetworkTypeId() == null ? "null" : l.getNetworkTypeId().toString()));
-                    log.info("LteRSRP " + (l.getLteRSRP() == null ? "null" : l.getLteRSRP().toString()));
-                    log.info("Signal " + (l.getSignal() == null ? "null" : l.getSignal().toString()));
-                    log.info("TimeNS " + (l.getTimeNs() == null ? "null" : l.getTimeNs().toString()));
-                });
-        log.info("--------------- End -------------");
-
         return signalService.processSignalResult(signalResultRequest);
     }
 
