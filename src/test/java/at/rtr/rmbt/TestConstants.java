@@ -421,6 +421,8 @@ public interface TestConstants {
     String DEFAULT_SYNC_ALREADY_SYNCHRONIZED_MSG_TEXT = "The devices are already synchronized with each other.";
     String DEFAULT_SYNC_SAME_DEVICE_MSG_TITLE = "Same device";
     String DEFAULT_SYNC_SAME_DEVICE_MSG_TEXT = "You can not synchronise with the same device.";
+    String DEFAULT_SYSTEM_UUID_VALUE = "d916af3d-acb9-46e0-b84e-3f8bac20ef5d";
+    String DEFAULT_APPLICATION_HOST = "DEFAULT_APPLICATION_HOST";
 
     interface Database {
         long CLIENT_TYPE_DESKTOP_UID = 1L;

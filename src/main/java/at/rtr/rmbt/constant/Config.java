@@ -30,6 +30,7 @@ public interface Config {
     String URL_IPV4_CHECK_KEY = "url_ipv4_check";
     String URL_IPV6_CHECK_KEY = "url_ipv6_check";
     String URL_MAP_SERVER_KEY = "url_map_server";
+    String SYSTEM_UUID_KEY = "system_UUID";
 
 
     List<String> ADMIN_SETTINGS_KEYS = List.of(SIGNAL_RESULT_URL_KEY,

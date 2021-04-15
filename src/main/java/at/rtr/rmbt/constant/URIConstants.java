@@ -25,4 +25,5 @@ public interface URIConstants {
     String IP = "/ip";
     String HISTORY = "/history";
     String SYNC = "/sync";
+    String VERSION = "/version";
 }
