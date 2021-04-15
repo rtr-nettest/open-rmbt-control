@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -39,7 +39,7 @@ public class ApplicationVersionControllerTest {
     public void getApplicationVersion_whenCommonData_expectApplicationVersionResponse() throws Exception {
         var applicationVersionResponse = getApplicationVersionResponse();
         when(applicationVersionService.getApplicationVersion()).thenReturn(applicationVersionResponse);
-        mockMvc.perform(post(URIConstants.VERSION))
+        mockMvc.perform(get(URIConstants.VERSION))
                 .andDo(print())
                 .andExpect(content().json(TestUtils.asJsonString(applicationVersionResponse)));
     }
