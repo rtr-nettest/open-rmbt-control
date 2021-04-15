@@ -58,6 +58,9 @@ app:
       - RMBTws
       - HW-PROBE
       - RTR-Netztest
+      -
+application-version:
+  host: rtr-api-dev
 
 elastic-index:
   basicTenantIndexes:

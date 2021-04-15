@@ -34,6 +34,7 @@ import static at.rtr.rmbt.constant.URIConstants.SYNC;
 import static at.rtr.rmbt.constant.URIConstants.TEST_RESULT;
 import static at.rtr.rmbt.constant.URIConstants.TEST_RESULT_DETAIL;
 import static at.rtr.rmbt.constant.URIConstants.TEST_SERVER;
+import static at.rtr.rmbt.constant.URIConstants.VERSION;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
@@ -67,7 +68,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                     .configure(httpSecurity)
                     .authorizeRequests()
                     .antMatchers(IP, REQUEST_DATA_COLLECTOR, TEST_RESULT_DETAIL, MEASUREMENT_QOS_REQUEST, SIGNAL_REQUEST, SIGNAL_RESULT, NEWS_URL, REGISTRATION_URL,
-                            RESULT_QOS_URL, RESULT_URL, SETTINGS_URL, PROVIDERS, TEST_RESULT, HISTORY, SYNC).permitAll()
+                            RESULT_QOS_URL, RESULT_URL, SETTINGS_URL, PROVIDERS, TEST_RESULT, HISTORY, SYNC, VERSION).permitAll()
                     .antMatchers(ADMIN_SIGNAL).hasAuthority("read:reports/signal")
                     .antMatchers(ADMIN_SIGNAL).hasAnyAuthority(clients)
                     .antMatchers(ADMIN_NEWS).hasAuthority("read:config/news")

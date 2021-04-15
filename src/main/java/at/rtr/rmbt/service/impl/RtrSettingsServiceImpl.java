@@ -2,6 +2,7 @@ package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
+import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.model.Settings;
@@ -251,13 +252,13 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
 
     private VersionResponse getVersionResponse() {
         return VersionResponse.builder()
-                .controlServerVersion(String.format("%s_%s", branch, describe))
+                .controlServerVersion(String.format(Constants.VERSION_TEMPLATE, branch, describe))
                 .build();
     }
 
     private AdminSettingsVersionResponse getAdminSettingsVersionResponse() {
         return AdminSettingsVersionResponse.builder()
-                .controlServerVersion(String.format("%s_%s", branch, describe))
+                .controlServerVersion(String.format(Constants.VERSION_TEMPLATE, branch, describe))
                 .build();
     }
 
