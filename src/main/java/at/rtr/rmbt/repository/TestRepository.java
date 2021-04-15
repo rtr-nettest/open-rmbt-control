@@ -83,6 +83,7 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
     Optional<Test> findByUuidOrOpenTestUuid(UUID uuid);
 
     Optional<Test> findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(UUID uuid);
+    Optional<Test> findByUuidAndImplausibleIsFalseAndDeletedIsFalse(UUID uuid);
     Optional<Test> findByOpenTestUuidAndClientUuidAndImplausibleIsFalseAndDeletedIsFalse(UUID uuid, UUID clientId);
 
     @Query(value = "SELECT DISTINCT new at.rtr.rmbt.dto.LteFrequencyDto(r.channelNumber, r.technology) " +

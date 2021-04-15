@@ -21,13 +21,12 @@ public class QosTestTypeDesc {
     @Column(name = "uid")
     private Long id;
 
-    @Column(name = "value")
+    @Column(name = "test_desc")
     private String description;
 
-    @Column(name = "value_name")
+    @Column(name = "test_name")
     private String name;
 
     @Column(name = "test")
-    @Enumerated(EnumType.STRING)
     private TestType test;
 }

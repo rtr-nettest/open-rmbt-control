@@ -1,17 +1,19 @@
 package at.rtr.rmbt;
 
+import at.rtr.rmbt.enums.ClientType;
 import at.rtr.rmbt.enums.NewsStatus;
 import at.rtr.rmbt.enums.TestType;
-import at.rtr.rmbt.model.News;
-import at.rtr.rmbt.model.NewsView;
+import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.request.NewsRequest;
 import at.rtr.rmbt.request.QosResultRequest;
 import at.rtr.rmbt.request.QosSendTestResultItem;
 import at.rtr.rmbt.response.NewsListItemResponse;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static at.rtr.rmbt.TestConstants.*;
 
@@ -25,6 +27,23 @@ public interface TestFixtures {
         3,
         10000,
         2000
+    );
+
+    at.rtr.rmbt.model.ClientType clientType = new at.rtr.rmbt.model.ClientType(10L, ClientType.DESKTOP);
+
+    RtrClient client = new RtrClient(
+        2L,
+        UUID.randomUUID(),
+        clientType,
+        ZONED_DATE_TIME,
+        null,
+        null,
+        true,
+        ZONED_DATE_TIME,
+        false,
+        1L,
+        ZONED_DATE_TIME,
+        ZONED_DATE_TIME
     );
 
     News newsEn = prepareNews()
@@ -102,6 +121,31 @@ public interface TestFixtures {
         .androidClientUUID(DEFAULT_CLIENT_UUID.toString())
         .qosResults(List.of(qosSendTestResultItem))
         .build();
+
+
+    QosTestObjective qosTestObjective = new QosTestObjective(
+        qosSendTestResultItem.getQosTestUid(),
+        TestType.DNS,
+        1,
+        null,
+        null,
+        1,
+        null
+    );
+
+    QosTestResult qosTestResult = new QosTestResult(
+        1L,
+        DEFAULT_UID,
+        qosTestObjective,
+        1,
+        0,
+        false,
+        false,
+        "{\"operator\":null,\"on_failure\":null,\"on_success\":null,\"evaluate\":null,\"end_time_ns\":null,\"start_time_ns\":46962439926,\"duration_ns\":120941000,\"success_condition\":true,\"failure_type\":\"default\",\"success_type\":\"default\",\"on_failure_behaviour\":\"nothing\",\"on_success_behaviour\":\"nothing\",\"priority\":2147483647,\"tcp_result_in\":null,\"tcp_objective_in_port\":null,\"tcp_result_in_response\":null,\"tcp_result_out\":\"OK\",\"tcp_objective_out_port\":22,\"tcp_result_out_response\":\"PING\",\"tcp_objective_timeout\":5000000000}",
+        "This is a test",
+        "Test is ok",
+        new HashMap<>()
+    );
 
     private static News.NewsBuilder prepareNews() {
         return News.builder()

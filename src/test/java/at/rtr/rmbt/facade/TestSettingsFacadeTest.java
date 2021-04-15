@@ -28,7 +28,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.*;
 
 import static at.rtr.rmbt.TestConstants.*;
-import static at.rtr.rmbt.TestFixtures.applicationProperties;
+import static at.rtr.rmbt.TestFixtures.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -75,23 +75,6 @@ public class TestSettingsFacadeTest {
             .androidPermissionStatus(null)
             .measurementType(MeasurementType.DEDICATED)
             .build();
-
-    private static final at.rtr.rmbt.model.ClientType clientType = new at.rtr.rmbt.model.ClientType(10L, ClientType.DESKTOP);
-
-    private static final RtrClient client = new RtrClient(
-            2L,
-            UUID.randomUUID(),
-            clientType,
-            ZONED_DATE_TIME,
-            null,
-            null,
-            true,
-            ZONED_DATE_TIME,
-            false,
-            1L,
-            ZONED_DATE_TIME,
-            ZONED_DATE_TIME
-    );
 
     @Mock
     private at.rtr.rmbt.model.Test test;

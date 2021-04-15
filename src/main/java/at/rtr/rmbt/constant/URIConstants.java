@@ -19,6 +19,7 @@ public interface URIConstants {
     String SIGNAL_STRENGTH_BY_UUID = "/signalStrength/{testUUID}";
     String BY_TEST_UUID = "/{testUUID}";
     String MEASUREMENT_QOS_REQUEST = "/qosTestRequest";
+    String MEASUREMENT_QOS_RESULT = "/qosTestResult";
     String TEST_RESULT_DETAIL = "/testresultdetail";
     String TEST_RESULT = "/testresult";
     String REQUEST_DATA_COLLECTOR = "/requestDataCollector";
