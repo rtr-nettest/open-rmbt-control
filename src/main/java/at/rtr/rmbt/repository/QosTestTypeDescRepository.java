@@ -9,9 +9,9 @@ import java.util.List;
 public interface QosTestTypeDescRepository extends JpaRepository<QosTestTypeDesc, Long> {
 
     @Query(value = "SELECT nnttd.uid AS uid, " +
-            "UPPER(cast(test as text)) as test, nntd.\"value\", " +
+            "UPPER(cast(test as text)) as test, nntd.\"value\" as test_desc, " +
             "nntd.lang, " +
-            "nntd2.\"value\" AS value_name, " +
+            "nntd2.\"value\" AS test_name, " +
             "nntd2.lang AS name_lang "
             + " FROM qos_test_type_desc AS nnttd "
             + " JOIN qos_test_desc nntd ON nnttd.test_desc = nntd.desc_key "
