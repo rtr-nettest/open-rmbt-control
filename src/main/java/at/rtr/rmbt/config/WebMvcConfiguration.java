@@ -15,26 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
-import static at.rtr.rmbt.constant.URIConstants.ADMIN_NEWS;
-import static at.rtr.rmbt.constant.URIConstants.ADMIN_SETTING;
-import static at.rtr.rmbt.constant.URIConstants.ADMIN_SIGNAL;
-import static at.rtr.rmbt.constant.URIConstants.HISTORY;
-import static at.rtr.rmbt.constant.URIConstants.IP;
-import static at.rtr.rmbt.constant.URIConstants.MEASUREMENT_QOS_REQUEST;
-import static at.rtr.rmbt.constant.URIConstants.NEWS_URL;
-import static at.rtr.rmbt.constant.URIConstants.PROVIDERS;
-import static at.rtr.rmbt.constant.URIConstants.REGISTRATION_URL;
-import static at.rtr.rmbt.constant.URIConstants.REQUEST_DATA_COLLECTOR;
-import static at.rtr.rmbt.constant.URIConstants.RESULT_QOS_URL;
-import static at.rtr.rmbt.constant.URIConstants.RESULT_URL;
-import static at.rtr.rmbt.constant.URIConstants.SETTINGS_URL;
-import static at.rtr.rmbt.constant.URIConstants.SIGNAL_REQUEST;
-import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
-import static at.rtr.rmbt.constant.URIConstants.SYNC;
-import static at.rtr.rmbt.constant.URIConstants.TEST_RESULT;
-import static at.rtr.rmbt.constant.URIConstants.TEST_RESULT_DETAIL;
-import static at.rtr.rmbt.constant.URIConstants.TEST_SERVER;
-import static at.rtr.rmbt.constant.URIConstants.VERSION;
+import static at.rtr.rmbt.constant.URIConstants.*;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
@@ -68,7 +49,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                     .configure(httpSecurity)
                     .authorizeRequests()
                     .antMatchers(IP, REQUEST_DATA_COLLECTOR, TEST_RESULT_DETAIL, MEASUREMENT_QOS_REQUEST, SIGNAL_REQUEST, SIGNAL_RESULT, NEWS_URL, REGISTRATION_URL,
-                            RESULT_QOS_URL, RESULT_URL, SETTINGS_URL, PROVIDERS, TEST_RESULT, HISTORY, SYNC, VERSION).permitAll()
+                            RESULT_QOS_URL, RESULT_URL, SETTINGS_URL, PROVIDERS, TEST_RESULT, HISTORY, SYNC, MEASUREMENT_QOS_RESULT, VERSION).permitAll()
                     .antMatchers(ADMIN_SIGNAL).hasAuthority("read:reports/signal")
                     .antMatchers(ADMIN_SIGNAL).hasAnyAuthority(clients)
                     .antMatchers(ADMIN_NEWS).hasAuthority("read:config/news")

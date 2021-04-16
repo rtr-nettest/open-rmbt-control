@@ -3,13 +3,31 @@ package at.rtr.rmbt.utils;
 import at.rtr.rmbt.dto.qos.*;
 import at.rtr.rmbt.enums.TestType;
 import at.rtr.rmbt.exception.HstoreParseException;
+import at.rtr.rmbt.mapper.QosTestResultMapper;
+import at.rtr.rmbt.model.QosTestDesc;
 import at.rtr.rmbt.model.QosTestResult;
+import at.rtr.rmbt.model.QosTestTypeDesc;
+import at.rtr.rmbt.model.Test;
+import at.rtr.rmbt.properties.ApplicationProperties;
+import at.rtr.rmbt.repository.QosTestDescRepository;
+import at.rtr.rmbt.repository.QosTestResultRepository;
+import at.rtr.rmbt.repository.QosTestTypeDescRepository;
+import at.rtr.rmbt.repository.TestRepository;
+import at.rtr.rmbt.request.CapabilitiesRequest;
+import at.rtr.rmbt.response.ErrorResponse;
+import at.rtr.rmbt.response.QosMeasurementsResponse.*;
 import at.rtr.rmbt.utils.hstoreparser.Hstore;
+import at.rtr.rmbt.utils.testscript.TestScriptInterpreter;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
+import org.springframework.context.MessageSource;
 
+import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class QosUtil {
 
@@ -43,7 +61,7 @@ public class QosUtil {
                 Class<? extends AbstractResult<?>> testClass = testResult.getQosTestObjective().getTestType().getClazz();
                 List<? extends AbstractResult<?>> expectedResults = objectMapper.readerForListOf(testClass)
                     .readValue(testResult.getQosTestObjective().getResults());
-                for (final  AbstractResult<?> expResult : expectedResults) {
+                for (final AbstractResult<?> expResult : expectedResults) {
                     //parse hstore string to object
                     if (expResult.getPriority() == Integer.MAX_VALUE) {
                         expResult.setPriority(priority--);
@@ -130,6 +148,195 @@ public class QosUtil {
         }
 
         return resultKeyType != null ? new ResultHolder(resultKeyType, event) : null;
+    }
+
+    public static void evaluate(
+        final QosMeasurementsResponseBuilder answer,
+        final QosTestResultMapper qosTestResultMapper,
+        final QosTestTypeDescRepository qosTestTypeDescRepository,
+        final MessageSource messageSource,
+        final ApplicationProperties applicationProperties,
+        final TestRepository testRepository,
+        final QosTestResultRepository qosTestResultRepository,
+        final UUID uuid,
+        final boolean isOpenTestUuid,
+        final ObjectMapper objectMapper,
+        final QosTestDescRepository qosTestDescRepository,
+        final Locale locale,
+        final ErrorResponse errorList,
+        final CapabilitiesRequest capabilities
+    ) throws SQLException, HstoreParseException, JSONException, IllegalArgumentException, IllegalAccessException, JsonProcessingException {
+        // Load Language Files for Client
+        Optional<Test> optionalTest = Optional.empty();
+
+        if (uuid != null) {
+            if (isOpenTestUuid) {
+                optionalTest = testRepository.findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(uuid);
+            } else {
+                optionalTest = testRepository.findByUuidAndImplausibleIsFalseAndDeletedIsFalse(uuid);
+            }
+        }
+
+        final long timeStampFullEval = System.currentTimeMillis();
+
+        if (optionalTest != null && optionalTest.isPresent() && optionalTest.get().getClient() != null) {
+            final ResultOptions resultOptions = new ResultOptions(locale);
+            final List<QosTestResultItem> resultList = new ArrayList<>();
+            Test test = optionalTest.get();
+
+            List<QosTestResult> testResultList = qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid());
+            if (testResultList == null || testResultList.isEmpty()) {
+                throw new UnsupportedOperationException("test " + test + " has no result list");
+            }
+            //map that contains all test types and their result descriptions determined by the test result <-> test objectives comparison
+            Map<TestType, TreeSet<ResultDesc>> resultKeys = new HashMap<>();
+
+            //test description set:
+            Set<String> testDescSet = new TreeSet<>();
+            //test summary set:
+            Set<String> testSummarySet = new TreeSet<>();
+
+
+            //Staring timestamp for evaluation time measurement
+            final long timeStampEval = System.currentTimeMillis();
+
+            //iterate through all result entries
+            for (final QosTestResult testResult : testResultList) {
+
+                //reset test counters
+                testResult.setFailureCount(0);
+                testResult.setSuccessCount(0);
+
+                //get the correct class of the result;
+                TestType testType = testResult.getQosTestObjective().getTestType();
+
+                if (testType == null) {
+                    continue;
+                }
+
+                Class<? extends AbstractResult<?>> clazz = testType.getClazz();
+                //parse hstore data
+                if (testResult.getQosTestObjective().getResults() != null) {
+                    AbstractResult<?> result = objectMapper.readValue(testResult.getResult(), clazz);
+                    result.setResultMap(objectMapper.readValue(testResult.getResult(), new TypeReference<>() {}));
+
+                    //add each test description key to the testDescSet (to fetch it later from the db)
+                    if (testResult.getTestDescription() != null) {
+                        testDescSet.add(testResult.getTestDescription());
+                    }
+                    if (testResult.getTestSummary() != null) {
+                        testSummarySet.add(testResult.getTestSummary());
+                    }
+                    testResult.setResult(objectMapper.writeValueAsString(result));
+
+                    //compare test results
+                    compareTestResults(testResult, result, resultKeys, testType, resultOptions, objectMapper);
+                }
+            }
+
+            //ending timestamp for evaluation time measurement
+            final long timeStampEvalEnd = System.currentTimeMillis();
+
+            //-------------------------------------------------------------
+            //fetch all result strings from the db
+
+            //FIRST: get all test descriptions
+            testDescSet.addAll(testSummarySet);
+
+            Map<String, String> testDescMap = qosTestDescRepository.findByKeysAndLocales(locale.getLanguage(), applicationProperties.getLanguage().getSupportedLanguages(), testDescSet)
+                .stream()
+                .collect(Collectors.toMap(QosTestDesc::getDescKey, QosTestDesc::getValue));
+
+            for (QosTestResult testResult : testResultList) {
+                //and set the test results + put each one to the result list json array
+                String preParsedDesc = testDescMap.get(testResult.getTestDescription());
+                AbstractResult<?> result = objectMapper.readValue(testResult.getResult(), testResult.getQosTestObjective().getTestType().getClazz());
+                if (preParsedDesc != null) {
+                    String description = String.valueOf(TestScriptInterpreter.interprete(
+                        testDescMap.get(testResult.getTestDescription()),
+                        QosUtil.HSTORE_PARSER,
+                        result,
+                        true,
+                        resultOptions
+                    ));
+                    testResult.setTestDescription(description);
+                }
+
+                //do the same for the test summary:
+                String preParsedSummary = testDescMap.get(testResult.getTestSummary());
+                if (preParsedSummary != null) {
+                    String description = String.valueOf(TestScriptInterpreter.interprete(testDescMap.get(testResult.getTestSummary()),
+                        QosUtil.HSTORE_PARSER, result, true, resultOptions));
+                    testResult.setTestSummary(description);
+                }
+
+                resultList.add(qosTestResultMapper.toQosTestResultItem(testResult, isOpenTestUuid));
+            }
+
+            //finally put results to json
+            if (!resultList.isEmpty()) {
+                answer.testResultDetails(resultList);
+            }
+
+            List<QosTestResultDescItem> resultDescArray = new ArrayList<>();
+
+            //SECOND: fetch all test result descriptions
+            for (TestType testType : resultKeys.keySet()) {
+                TreeSet<ResultDesc> descSet = resultKeys.get(testType);
+
+                //fetch results to same object
+                for (ResultDesc resultDesc : descSet) {
+                    resultDesc.setValue(testDescMap.get(resultDesc.getKey()));
+                }
+
+                //another tree set for duplicate entries:
+                //TODO: there must be a better solution
+                //(the issue is: compareTo() method returns diffrent values depending on the .value attribute (if it's set or not))
+                TreeSet<ResultDesc> descSetNew = new TreeSet<>();
+                //add fetched results to json
+
+                for (ResultDesc desc : descSet) {
+                    if (capabilities != null && capabilities.getQos() != null && !capabilities.getQos().isSupportsInfo()) {
+                        if (ResultDesc.STATUS_CODE_INFO.equals(desc.getStatusCode())) {
+                            continue;
+                        }
+                    }
+
+                    if (!descSetNew.contains(desc)) {
+                        descSetNew.add(desc);
+                    } else {
+                        for (ResultDesc d : descSetNew) {
+                            if (d.compareTo(desc) == 0) {
+                                d.getTestResultUidList().addAll(desc.getTestResultUidList());
+                            }
+                        }
+                    }
+                }
+
+                for (ResultDesc desc : descSetNew) {
+                    if (desc.getValue() != null) {
+                        resultDescArray.add(new QosTestResultDescItem(desc.getTestResultUidList(), desc.getTestType(), desc.getKey(), desc.getStatusCode(), desc.getParsedValue()));
+                    }
+                }
+
+            }
+
+            //put result descriptions to json
+            answer.testResultDetailDesc(resultDescArray);
+
+            List<QosTestResultTestDescItem> testTypeDescArray = new ArrayList<>();
+            for (QosTestTypeDesc desc : qosTestTypeDescRepository.findAll()) {
+                if (desc.getTest() != null) {
+                    testTypeDescArray.add(new QosTestResultTestDescItem(desc.getName(), desc.getTest(), desc.getDescription()));
+                }
+            }
+
+            //put result descriptions to json
+            answer.testResultDetailTestDesc(testTypeDescArray);
+            answer.evalTimes(new EvalTimes(timeStampEvalEnd - timeStampEval, System.currentTimeMillis() - timeStampFullEval));
+        } else {
+            errorList.addErrorString(messageSource.getMessage("ERROR_REQUEST_TEST_RESULT_DETAIL_NO_UUID", null, locale));
+        }
     }
 
     /**

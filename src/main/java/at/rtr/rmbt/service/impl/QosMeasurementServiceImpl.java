@@ -6,18 +6,19 @@ import at.rtr.rmbt.dto.qos.ResultOptions;
 import at.rtr.rmbt.enums.TestType;
 import at.rtr.rmbt.exception.HstoreParseException;
 import at.rtr.rmbt.mapper.QosTestObjectiveMapper;
+import at.rtr.rmbt.mapper.QosTestResultMapper;
 import at.rtr.rmbt.model.QosTestResult;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.properties.ApplicationProperties;
-import at.rtr.rmbt.repository.QosTestObjectiveRepository;
+import at.rtr.rmbt.repository.*;
+import at.rtr.rmbt.request.CapabilitiesRequest;
 import at.rtr.rmbt.request.QosResultRequest;
 import at.rtr.rmbt.request.QosSendTestResultItem;
 import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.MeasurementQosResponse;
+import at.rtr.rmbt.response.QosMeasurementsResponse;
 import at.rtr.rmbt.response.QosParamsResponse;
 import at.rtr.rmbt.service.QosMeasurementService;
-import at.rtr.rmbt.service.QosTestResultService;
-import at.rtr.rmbt.service.TestService;
 import at.rtr.rmbt.utils.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -26,26 +27,33 @@ import com.google.common.net.InetAddresses;
 import com.vdurmont.semver4j.SemverException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
+import java.sql.SQLException;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class QosMeasurementServiceImpl implements QosMeasurementService {
-
+    private static final Logger logger = LoggerFactory.getLogger(QosMeasurementServiceImpl.class);
     private static final int STATIC_CLASS_NAME = 1;
     private final QosTestObjectiveRepository qosTestObjectiveRepository;
     private final QosTestObjectiveMapper qosTestObjectiveMapper;
     private final ApplicationProperties applicationProperties;
-    private final TestService testService;
-    private final QosTestResultService qosTestResultService;
+    private final TestRepository testRepository;
+    private final QosTestResultRepository qosTestResultRepository;
     private final MessageSource messageSource;
     private final ObjectMapper objectMapper;
+    private final QosTestResultMapper qosTestResultMapper;
+    private final QosTestTypeDescRepository qosTestTypeDescRepository;
+    private final QosTestDescRepository qosTestDescRepository;
 
     @Value("${RMBT_SECRETKEY}")
     private String rmbtSecretKey;
@@ -104,10 +112,10 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
                 if (token.length > 2 && token[2].length() > 0) { // && hmac.equals(token[2])) (can be different server keys)
                     final Set<String> clientNames = applicationProperties.getClientNames();
                     ValidateUtils.validateClientVersion(applicationProperties.getVersion(), request.getClientVersion());
-                    Test test = testService.getByOpenTestUuid(testUuid)
+                    Test test = testRepository.findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(testUuid)
                         .orElseGet(() -> {
                             if (clientUuid != null)
-                                return testService.getByOpenTestUuidAndClientId(testUuid, clientUuid).orElse(null);
+                                return testRepository.findByOpenTestUuidAndClientUuidAndImplausibleIsFalseAndDeletedIsFalse(testUuid, clientUuid).orElse(null);
                             return null;
                         });
                     if (test != null) {
@@ -117,7 +125,7 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
                                 saveQosTestResults(test, qosResult);
                             }
 
-                            List<QosTestResult> testResultList = qosTestResultService.listByTestUid(test.getUid());
+                            List<QosTestResult> testResultList = qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid());
                             //map that contains all test types and their result descriptions determined by the test result <-> test objectives comparison
                             Map<TestType, TreeSet<ResultDesc>> resultKeys = new HashMap<>();
 
@@ -132,21 +140,64 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
                     errorList.addErrorString(messageSource.getMessage("ERROR_TEST_TOKEN_MALFORMED", null, locale));
                 }
             } catch (final IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
                 errorList.addErrorString(messageSource.getMessage("ERROR_TEST_TOKEN_MALFORMED", null, locale));
             } catch (HstoreParseException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
                 errorList.addErrorString(messageSource.getMessage("ERROR_DB_CONNECTION", null, locale));
             } catch (SemverException e) {
                 errorList.addErrorString(messageSource.getMessage("ERROR_CLIENT_VERSION", null, locale));
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
         } else {
             errorList.addErrorString(messageSource.getMessage("ERROR_TEST_TOKEN_MISSING", null, locale));
         }
 
         return errorList;
+    }
+
+    @Override
+    public QosMeasurementsResponse getQosResult(UUID qosTestUuid, String language, CapabilitiesRequest capabilitiesRequest) {
+        final ErrorResponse errorList = new ErrorResponse();
+        Locale locale = MessageUtils.getLocaleFormLanguage(language, applicationProperties.getLanguage());
+        QosMeasurementsResponse.QosMeasurementsResponseBuilder answer = QosMeasurementsResponse.builder();
+        try {
+            QosUtil.evaluate(
+                answer,
+                qosTestResultMapper,
+                qosTestTypeDescRepository,
+                messageSource,
+                applicationProperties,
+                testRepository,
+                qosTestResultRepository,
+                qosTestUuid,
+                false,
+                objectMapper,
+                qosTestDescRepository,
+                locale,
+                errorList,
+                capabilitiesRequest
+            );
+        } catch (final JSONException | IllegalArgumentException e) {
+            logger.error(e.getMessage(), e);
+            errorList.addErrorString(messageSource.getMessage("ERROR_REQUEST_JSON", null, locale));
+        } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
+            errorList.addErrorString(messageSource.getMessage("ERROR_DB_CONNECTION", null, locale));
+        } catch (HstoreParseException e) {
+            logger.error(e.getMessage(), e);
+            errorList.addErrorString(e.getMessage());
+        } catch (IllegalAccessException | JsonProcessingException e) {
+            logger.error(e.getMessage(), e);
+        } catch (UnsupportedOperationException e) {
+            logger.error(e.getMessage(), e);
+            errorList.addErrorString(messageSource.getMessage("ERROR_REQUEST_QOS_RESULT_DETAIL_NO_UUID", null, locale));
+        }
+
+        answer.errorResponse(errorList);
+
+        return answer.build();
     }
 
     private void saveQosTestResults(Test test, List<QosSendTestResultItem> qosResult) throws JsonProcessingException {
@@ -162,7 +213,7 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
             testResult.setFailureCount(0);
             long qosTestId = testObject.getQosTestUid() != null ? testObject.getQosTestUid() : Long.MIN_VALUE;
             qosTestObjectiveRepository.findById(qosTestId).ifPresent(testResult::setQosTestObjective);
-            qosTestResultService.save(testResult);
+            qosTestResultRepository.save(testResult);
         }
     }
 
@@ -179,7 +230,7 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
         QosUtil.compareTestResults(testResult, result, resultKeys, testType, resultOptions, objectMapper);
 
         //update all test results after the success and failure counters have been set
-        qosTestResultService.save(testResult);
+        qosTestResultRepository.save(testResult);
     }
 
     private UUID getClientUuid(QosResultRequest request) {
