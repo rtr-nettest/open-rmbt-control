@@ -27,4 +27,5 @@ public interface URIConstants {
     String HISTORY = "/history";
     String SYNC = "/sync";
     String VERSION = "/version";
+    String RESULT_UPDATE = "/resultUpdate";
 }

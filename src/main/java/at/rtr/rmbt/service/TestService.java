@@ -2,12 +2,10 @@ package at.rtr.rmbt.service;
 
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.request.HistoryRequest;
+import at.rtr.rmbt.request.ResultUpdateRequest;
 import at.rtr.rmbt.request.TestResultDetailRequest;
 import at.rtr.rmbt.request.TestResultRequest;
-import at.rtr.rmbt.response.HistoryResponse;
-import at.rtr.rmbt.response.TestResponse;
-import at.rtr.rmbt.response.TestResultContainerResponse;
-import at.rtr.rmbt.response.TestResultDetailResponse;
+import at.rtr.rmbt.response.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,4 +33,6 @@ public interface TestService {
     TestResultContainerResponse getTestResult(TestResultRequest testResultRequest);
 
     HistoryResponse getHistory(HistoryRequest historyRequest);
+
+    ResultUpdateResponse updateTestResult(ResultUpdateRequest resultUpdateRequest);
 }

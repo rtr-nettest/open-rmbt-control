@@ -6,6 +6,7 @@ import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.dto.LteFrequencyDto;
 import at.rtr.rmbt.dto.QoeClassificationThresholds;
 import at.rtr.rmbt.dto.TestDistance;
+import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.TestHistoryMapper;
@@ -19,6 +20,7 @@ import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoAnalyticsService;
+import at.rtr.rmbt.service.GeoLocationService;
 import at.rtr.rmbt.service.QoeClassificationService;
 import at.rtr.rmbt.service.TestService;
 import org.assertj.core.util.Lists;
@@ -34,8 +36,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 public class TestServiceImplTest {
@@ -63,6 +64,8 @@ public class TestServiceImplTest {
     private TestHistoryRepository testHistoryRepository;
     @MockBean
     private TestHistoryMapper testHistoryMapper;
+    @MockBean
+    private GeoLocationService geoLocationService;
     @Mock
     private at.rtr.rmbt.model.Test test;
     @Mock
@@ -85,6 +88,8 @@ public class TestServiceImplTest {
     private TestHistory testHistory;
     @Mock
     private RtrClient client;
+    @Mock
+    private ResultUpdateRequest resultUpdateRequest;
 
     private final ApplicationProperties applicationProperties = new ApplicationProperties(
             new ApplicationProperties.LanguageProperties(Set.of("en", "de"), "en"),
@@ -104,7 +109,9 @@ public class TestServiceImplTest {
         reloadableResourceBundleMessageSource.setBasename("classpath:SystemMessages");
         reloadableResourceBundleMessageSource.setDefaultEncoding("UTF-8");
         messageSource = reloadableResourceBundleMessageSource;
-        testService = new TestServiceImpl(testRepository, testMapper, applicationProperties, geoAnalyticsService, messageSource, settingsRepository, qoeClassificationService, clientRepository, testHistoryRepository, testHistoryMapper);
+        testService = new TestServiceImpl(testRepository, testMapper, applicationProperties, geoAnalyticsService,
+                messageSource, settingsRepository, qoeClassificationService, clientRepository, testHistoryRepository,
+                testHistoryMapper, geoLocationService);
     }
 
     @Test
@@ -465,6 +472,62 @@ public class TestServiceImplTest {
     @Test(expected = ClientNotFoundException.class)
     public void getHistory_whenClientNotFound_expectException() {
         testService.getHistory(historyRequest);
+    }
+
+    @Test
+    public void updateTestResult_whenCommonData_expectTestUpdated() {
+        when(resultUpdateRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(resultUpdateRequest.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(testRepository.findByUuid(TestConstants.DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
+        when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(client));
+        when(test.getClient()).thenReturn(client);
+
+        testService.updateTestResult(resultUpdateRequest);
+
+        verify(geoLocationService).updateGeoLocation(test, resultUpdateRequest);
+        verify(testRepository).save(test);
+    }
+
+    @Test
+    public void updateTestResult_whenTestIsAborted_expectTestUpdated() {
+        when(resultUpdateRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(resultUpdateRequest.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(resultUpdateRequest.isAborted()).thenReturn(true);
+        when(testRepository.findByUuid(TestConstants.DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
+        when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(client));
+        when(test.getClient()).thenReturn(client);
+
+        testService.updateTestResult(resultUpdateRequest);
+
+        verify(test).setStatus(TestStatus.ABORTED);
+        verifyNoInteractions(geoLocationService);
+        verify(testRepository).save(test);
+    }
+
+    @Test(expected = TestNotFoundException.class)
+    public void updateTestResult_whenTestNotFound_expectTestNotFoundException() {
+        when(resultUpdateRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+
+        testService.updateTestResult(resultUpdateRequest);
+    }
+
+    @Test(expected = ClientNotFoundException.class)
+    public void updateTestResult_whenClientNotFound_expectClientNotFoundException() {
+        when(resultUpdateRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(resultUpdateRequest.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(testRepository.findByUuid(TestConstants.DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
+
+        testService.updateTestResult(resultUpdateRequest);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void updateTestResult_whenTestClientNotMatchRequestClient_expectIllegalArgumentException() {
+        when(resultUpdateRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(resultUpdateRequest.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(testRepository.findByUuid(TestConstants.DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
+        when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(client));
+
+        testService.updateTestResult(resultUpdateRequest);
     }
 
     private NetItemResponse getNetItemResponses(String value, String title) {

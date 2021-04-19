@@ -31,6 +31,8 @@ public interface Config {
     String URL_IPV6_CHECK_KEY = "url_ipv6_check";
     String URL_MAP_SERVER_KEY = "url_map_server";
     String SYSTEM_UUID_KEY = "system_UUID";
+    String GEO_PROVIDER_MANUAL = "manual";
+    String GEO_PROVIDER_GEOCODER = "geocoder";
 
 
     List<String> ADMIN_SETTINGS_KEYS = List.of(SIGNAL_RESULT_URL_KEY,
