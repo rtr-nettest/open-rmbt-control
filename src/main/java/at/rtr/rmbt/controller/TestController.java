@@ -2,12 +2,10 @@ package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.request.HistoryRequest;
+import at.rtr.rmbt.request.ResultUpdateRequest;
 import at.rtr.rmbt.request.TestResultDetailRequest;
 import at.rtr.rmbt.request.TestResultRequest;
-import at.rtr.rmbt.response.HistoryResponse;
-import at.rtr.rmbt.response.TestResponse;
-import at.rtr.rmbt.response.TestResultContainerResponse;
-import at.rtr.rmbt.response.TestResultDetailResponse;
+import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.TestService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +45,11 @@ public class TestController {
     @ApiOperation(value = "Gets test history for the client device and synchronized devices")
     public HistoryResponse getHistory(@RequestBody HistoryRequest historyRequest) {
         return testService.getHistory(historyRequest);
+    }
+
+    @PostMapping(URIConstants.RESULT_UPDATE)
+    @ApiOperation(value = "Gets test history for the client device and synchronized devices")
+    public ResultUpdateResponse updateTestResult(@RequestBody ResultUpdateRequest resultUpdateRequest) {
+        return testService.updateTestResult(resultUpdateRequest);
     }
 }

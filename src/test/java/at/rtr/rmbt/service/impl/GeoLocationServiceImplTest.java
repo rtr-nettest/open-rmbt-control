@@ -1,10 +1,12 @@
 package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.TestConstants;
+import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.mapper.GeoLocationMapper;
 import at.rtr.rmbt.model.GeoLocation;
 import at.rtr.rmbt.repository.GeoLocationRepository;
 import at.rtr.rmbt.request.GeoLocationRequest;
+import at.rtr.rmbt.request.ResultUpdateRequest;
 import at.rtr.rmbt.service.GeoLocationService;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +39,8 @@ public class GeoLocationServiceImplTest {
     private GeoLocation geoLocationSecond;
     @Mock
     private at.rtr.rmbt.model.Test test;
+    @Mock
+    private ResultUpdateRequest resultUpdateRequest;
 
     @Before
     public void setUp() {
@@ -61,6 +65,29 @@ public class GeoLocationServiceImplTest {
         geoLocationService.processGeoLocationRequests(requests, test);
 
         verify(geoLocationRepository).saveAll(List.of(geoLocationFirst, geoLocationSecond));
+        verify(test).setGeoLocationUuid(TestConstants.DEFAULT_GEO_LOCATION_UUID);
+        verify(test).setGeoProvider(TestConstants.DEFAULT_PROVIDER);
+        verify(test).setGeoAccuracy(TestConstants.DEFAULT_ACCURACY_FIRST);
+        verify(test).setLongitude(TestConstants.DEFAULT_LONGITUDE);
+        verify(test).setLatitude(TestConstants.DEFAULT_LATITUDE);
+    }
+
+    @Test
+    public void updateGeoLocation_whenCommonData_expectGeoLocationUpdated() {
+        when(resultUpdateRequest.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_FIRST);
+        when(resultUpdateRequest.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE);
+        when(resultUpdateRequest.getGeoLong()).thenReturn(TestConstants.DEFAULT_LONGITUDE);
+        when(resultUpdateRequest.getProvider()).thenReturn(Config.GEO_PROVIDER_GEOCODER);
+        when(geoLocationMapper.buildNewGeoLocation(test, TestConstants.DEFAULT_LATITUDE, TestConstants.DEFAULT_LONGITUDE, TestConstants.DEFAULT_ACCURACY_FIRST, Config.GEO_PROVIDER_GEOCODER)).thenReturn(geoLocationFirst);
+        when(geoLocationFirst.getGeoLocationUUID()).thenReturn(TestConstants.DEFAULT_GEO_LOCATION_UUID);
+        when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_FIRST);
+        when(geoLocationFirst.getGeoLong()).thenReturn(TestConstants.DEFAULT_LONGITUDE);
+        when(geoLocationFirst.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE);
+        when(geoLocationFirst.getProvider()).thenReturn(TestConstants.DEFAULT_PROVIDER);
+
+        geoLocationService.updateGeoLocation(test, resultUpdateRequest);
+
+        verify(geoLocationRepository).save(geoLocationFirst);
         verify(test).setGeoLocationUuid(TestConstants.DEFAULT_GEO_LOCATION_UUID);
         verify(test).setGeoProvider(TestConstants.DEFAULT_PROVIDER);
         verify(test).setGeoAccuracy(TestConstants.DEFAULT_ACCURACY_FIRST);

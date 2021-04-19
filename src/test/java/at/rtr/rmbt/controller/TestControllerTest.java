@@ -6,7 +6,9 @@ import at.rtr.rmbt.advice.RtrAdvice;
 import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.request.CapabilitiesRequest;
 import at.rtr.rmbt.request.ClassificationRequest;
+import at.rtr.rmbt.request.ResultUpdateRequest;
 import at.rtr.rmbt.request.TestResultRequest;
+import at.rtr.rmbt.response.ResultUpdateResponse;
 import at.rtr.rmbt.response.TestResponse;
 import at.rtr.rmbt.response.TestResultContainerResponse;
 import at.rtr.rmbt.response.TestResultResponse;
@@ -73,6 +75,29 @@ public class TestControllerTest {
                 .andExpect(jsonPath("$.testresult[0].share_text").value(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL))
                 .andExpect(jsonPath("$.testresult[0].share_subject").value(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT))
                 .andExpect(jsonPath("$.testresult[0].open_test_uuid").value(TestConstants.DEFAULT_TEST_RESULT_DETAIL_OPEN_TEST_UUID));
+    }
+
+    @Test
+    public void updateTestResult_whenCommonData_expectResultUpdateResponse() throws Exception {
+        var request = getResultUpdateRequest();
+        when(testService.updateTestResult(request)).thenReturn(ResultUpdateResponse.builder().build());
+        mockMvc.perform(MockMvcRequestBuilders.post(URIConstants.RESULT_UPDATE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtils.asJsonString(request)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    private ResultUpdateRequest getResultUpdateRequest() {
+        return ResultUpdateRequest.builder()
+                .accuracy(TestConstants.DEFAULT_ACCURACY_FIRST)
+                .geoLat(TestConstants.DEFAULT_LATITUDE)
+                .geoLong(TestConstants.DEFAULT_LONGITUDE)
+                .isAborted(TestConstants.DEFAULT_FLAG_TRUE)
+                .provider(TestConstants.DEFAULT_PROVIDER)
+                .testUUID(TestConstants.DEFAULT_TEST_UUID)
+                .uuid(TestConstants.DEFAULT_CLIENT_UUID)
+                .build();
     }
 
     private TestResultRequest getTestResultRequest() {

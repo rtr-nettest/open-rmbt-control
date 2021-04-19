@@ -8,6 +8,7 @@ import at.rtr.rmbt.dto.QoeClassificationThresholds;
 import at.rtr.rmbt.enums.NetworkGroupName;
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestPlatform;
+import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.TestHistoryMapper;
@@ -18,13 +19,10 @@ import at.rtr.rmbt.repository.ClientRepository;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.repository.TestHistoryRepository;
 import at.rtr.rmbt.repository.TestRepository;
-import at.rtr.rmbt.request.CapabilitiesRequest;
-import at.rtr.rmbt.request.ClassificationRequest;
-import at.rtr.rmbt.request.HistoryRequest;
-import at.rtr.rmbt.request.TestResultDetailRequest;
-import at.rtr.rmbt.request.TestResultRequest;
+import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoAnalyticsService;
+import at.rtr.rmbt.service.GeoLocationService;
 import at.rtr.rmbt.service.QoeClassificationService;
 import at.rtr.rmbt.service.TestService;
 import at.rtr.rmbt.utils.*;
@@ -56,6 +54,7 @@ public class TestServiceImpl implements TestService {
     private final ClientRepository clientRepository;
     private final TestHistoryRepository testHistoryRepository;
     private final TestHistoryMapper testHistoryMapper;
+    private final GeoLocationService geoLocationService;
 
     @Override
     public Test save(Test test) {
@@ -158,6 +157,26 @@ public class TestServiceImpl implements TestService {
                 .collect(Collectors.toList());
         return HistoryResponse.builder()
                 .history(historyItemResponses)
+                .build();
+    }
+
+    @Override
+    public ResultUpdateResponse updateTestResult(ResultUpdateRequest resultUpdateRequest) {
+        Test test = testRepository.findByUuid(resultUpdateRequest.getTestUUID())
+                .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.TEST_NOT_FOUND, resultUpdateRequest.getTestUUID())));
+        RtrClient client = clientRepository.findByUuid(resultUpdateRequest.getUuid())
+                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, resultUpdateRequest.getUuid())));
+        if (!Objects.equals(client, test.getClient())) {
+            throw new IllegalArgumentException(ErrorMessage.CLIENT_DOES_MATCH_TEST);
+        }
+        if (resultUpdateRequest.isAborted()) {
+            test.setStatus(TestStatus.ABORTED);
+        } else {
+            geoLocationService.updateGeoLocation(test, resultUpdateRequest);
+            test.setLocation(GeometryUtils.getGeometryFromLongitudeAndLatitude(test.getLongitude(), test.getLatitude()));
+        }
+        testRepository.save(test);
+        return ResultUpdateResponse.builder()
                 .build();
     }
 

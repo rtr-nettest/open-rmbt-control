@@ -11,4 +11,5 @@ public interface ErrorMessage {
     String ERROR_DOWNLOAD_INSANE = "Download invalid";
     String ERROR_UPLOAD_INSANE = "Upload invalid";
     String ERROR_PING_INSANE = "Ping invalid";
+    String CLIENT_DOES_MATCH_TEST = "Client UUID does not match test";
 }
