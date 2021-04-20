@@ -11,7 +11,14 @@ import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.repository.NetworkTypeRepository;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.ResultRequest;
-import at.rtr.rmbt.service.*;
+import at.rtr.rmbt.service.CellLocationService;
+import at.rtr.rmbt.service.GeoLocationService;
+import at.rtr.rmbt.service.PingService;
+import at.rtr.rmbt.service.RadioCellService;
+import at.rtr.rmbt.service.RadioSignalService;
+import at.rtr.rmbt.service.ResultService;
+import at.rtr.rmbt.service.SignalService;
+import at.rtr.rmbt.service.SpeedService;
 import at.rtr.rmbt.utils.GeometryUtils;
 import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import at.rtr.rmbt.utils.HelperFunctions;
@@ -220,6 +227,10 @@ public class ResultServiceImpl implements ResultService {
     }
 
     private void verifyClientVersion(ResultRequest resultRequest) {
+        if (resultRequest.getClientVersion().isEmpty() && resultRequest.getTestStatus().equals("1")) { //try to hadle failed test
+            return;
+        }
+
         ValidateUtils.validateClientVersion(applicationProperties.getVersion(), resultRequest.getClientVersion());
 
         if (!applicationProperties.getClientNames().contains(resultRequest.getClientName().getLabel())) {
