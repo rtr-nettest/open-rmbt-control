@@ -17,7 +17,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "qos_test_objective")
 @TypeDefs({
-        @TypeDef(name = "json", typeClass = JsonStringType.class)
+    @TypeDef(name = "json", typeClass = JsonStringType.class)
 })
 public class QosTestObjective {
 
@@ -42,6 +42,12 @@ public class QosTestObjective {
 
     @Column(name = "concurrency_group")
     private Integer concurrencyGroup;
+
+    @Column(name = "test_desc")
+    private String testDescription;
+
+    @Column(name = "test_summary")
+    private String testSummary;
 
     @ManyToOne
     @JoinColumn(name = "test_server")
