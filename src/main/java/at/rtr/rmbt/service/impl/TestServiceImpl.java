@@ -180,6 +180,38 @@ public class TestServiceImpl implements TestService {
                 .build();
     }
 
+    @Override
+    public ImplausibleResponse setImplausible(ImplausibleRequest implausibleRequest) {
+        if (StringUtils.isBlank(implausibleRequest.getComment()) || StringUtils.isBlank(implausibleRequest.getUuid())) {
+            throw new IllegalArgumentException(ErrorMessage.REQUIRED_FIELDS_MISSING);
+        }
+        String comment = implausibleRequest.getComment().concat(Constants.WEB_COMMENT);
+        boolean implausible = ObjectUtils.defaultIfNull(implausibleRequest.getImplausible(), true);
+        String uuidField = getUUIDField(implausibleRequest.getUuid());
+        UUID uuid = UUID.fromString(implausibleRequest.getUuid().substring(Constants.UUID_PREFIX_SIZE));
+        Integer affectedRows = testRepository.updateImplausible(implausible, comment, uuidField, uuid);
+        return ImplausibleResponse.builder()
+                .affectedRows(affectedRows)
+                .status(Constants.STATUS_OK)
+                .build();
+    }
+
+    private String getUUIDField(String uuid) {
+        switch (uuid.charAt(0)) {
+            case 'P':
+                return "open_uuid";
+            case 'O':
+                return "open_test_uuid";
+            case 'T':
+                return "t.uuid";
+            case 'U':
+                return "c.uuid";
+            default:
+                throw new IllegalArgumentException(ErrorMessage.INVALID_UUID_TYPE);
+        }
+    }
+
+
     private List<QoeClassificationResponse> getQoeClassificationResponse(Test test) {
         long pingNs = Optional.ofNullable(test.getPingMedian())
                 .orElse(NumberUtils.LONG_ZERO);

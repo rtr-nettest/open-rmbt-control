@@ -423,6 +423,13 @@ public interface TestConstants {
     String DEFAULT_SYNC_SAME_DEVICE_MSG_TEXT = "You can not synchronise with the same device.";
     String DEFAULT_SYSTEM_UUID_VALUE = "d916af3d-acb9-46e0-b84e-3f8bac20ef5d";
     String DEFAULT_APPLICATION_HOST = "DEFAULT_APPLICATION_HOST";
+    String DEFAULT_COMMENT = "DEFAULT_COMMENT";
+    String DEFAULT_COMMENT_FORMATTED = "DEFAULT_COMMENT".concat(Constants.WEB_COMMENT);
+    String DEFAULT_P_UUID_FIELD = "open_uuid";
+    String DEFAULT_O_UUID_FIELD = "open_test_uuid";
+    String DEFAULT_T_UUID_FIELD = "t.uuid";
+    String DEFAULT_U_UUID_FIELD = "c.uuid";
+    Integer DEFAULT_AFFECTED_ROWS = 1;
 
     interface Database {
         long CLIENT_TYPE_DESKTOP_UID = 1L;

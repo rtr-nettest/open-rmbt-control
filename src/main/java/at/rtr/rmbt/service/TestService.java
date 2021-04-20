@@ -1,10 +1,7 @@
 package at.rtr.rmbt.service;
 
 import at.rtr.rmbt.model.Test;
-import at.rtr.rmbt.request.HistoryRequest;
-import at.rtr.rmbt.request.ResultUpdateRequest;
-import at.rtr.rmbt.request.TestResultDetailRequest;
-import at.rtr.rmbt.request.TestResultRequest;
+import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
 
 import java.util.List;
@@ -35,4 +32,6 @@ public interface TestService {
     HistoryResponse getHistory(HistoryRequest historyRequest);
 
     ResultUpdateResponse updateTestResult(ResultUpdateRequest resultUpdateRequest);
+
+    ImplausibleResponse setImplausible(ImplausibleRequest implausibleRequest);
 }

@@ -3,15 +3,10 @@ package at.rtr.rmbt.controller;
 import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.advice.RtrAdvice;
+import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.constant.URIConstants;
-import at.rtr.rmbt.request.CapabilitiesRequest;
-import at.rtr.rmbt.request.ClassificationRequest;
-import at.rtr.rmbt.request.ResultUpdateRequest;
-import at.rtr.rmbt.request.TestResultRequest;
-import at.rtr.rmbt.response.ResultUpdateResponse;
-import at.rtr.rmbt.response.TestResponse;
-import at.rtr.rmbt.response.TestResultContainerResponse;
-import at.rtr.rmbt.response.TestResultResponse;
+import at.rtr.rmbt.request.*;
+import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.TestService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -29,8 +24,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 public class TestControllerTest {
@@ -86,6 +80,33 @@ public class TestControllerTest {
                 .content(TestUtils.asJsonString(request)))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void setImplausible_whenCommonData_expectImplausibleResponse() throws Exception {
+        var request = getImplausibleRequest();
+        var response = getImplausibleResponse();
+        when(testService.setImplausible(request)).thenReturn(response);
+        mockMvc.perform(MockMvcRequestBuilders.post(URIConstants.ADMIN_SET_IMPLAUSIBLE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtils.asJsonString(request)))
+                .andDo(print())
+                .andExpect(content().json(TestUtils.asJsonString(response)));
+    }
+
+    private ImplausibleResponse getImplausibleResponse() {
+        return ImplausibleResponse.builder()
+                .status(Constants.STATUS_OK)
+                .affectedRows(TestConstants.DEFAULT_AFFECTED_ROWS)
+                .build();
+    }
+
+    private ImplausibleRequest getImplausibleRequest() {
+        return ImplausibleRequest.builder()
+                .comment(TestConstants.DEFAULT_COMMENT)
+                .implausible(TestConstants.DEFAULT_FLAG_TRUE)
+                .uuid("P".concat(TestConstants.DEFAULT_UUID.toString()))
+                .build();
     }
 
     private ResultUpdateRequest getResultUpdateRequest() {

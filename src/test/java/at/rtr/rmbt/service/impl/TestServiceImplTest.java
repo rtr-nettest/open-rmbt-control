@@ -90,6 +90,8 @@ public class TestServiceImplTest {
     private RtrClient client;
     @Mock
     private ResultUpdateRequest resultUpdateRequest;
+    @Mock
+    private ImplausibleRequest implausibleRequest;
 
     private final ApplicationProperties applicationProperties = new ApplicationProperties(
             new ApplicationProperties.LanguageProperties(Set.of("en", "de"), "en"),
@@ -528,6 +530,88 @@ public class TestServiceImplTest {
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(client));
 
         testService.updateTestResult(resultUpdateRequest);
+    }
+
+    @Test
+    public void setImplausible_whenPrefixP_expectUpdateImplausible() {
+        String uuid = "P".concat(TestConstants.DEFAULT_UUID.toString());
+        when(implausibleRequest.getUuid()).thenReturn(uuid);
+        when(implausibleRequest.getComment()).thenReturn(TestConstants.DEFAULT_COMMENT);
+        when(implausibleRequest.getImplausible()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        when(testRepository.updateImplausible(TestConstants.DEFAULT_FLAG_TRUE, TestConstants.DEFAULT_COMMENT_FORMATTED, TestConstants.DEFAULT_P_UUID_FIELD, TestConstants.DEFAULT_UUID)).thenReturn(TestConstants.DEFAULT_AFFECTED_ROWS);
+
+        var response = testService.setImplausible(implausibleRequest);
+
+        verify(testRepository).updateImplausible(TestConstants.DEFAULT_FLAG_TRUE, TestConstants.DEFAULT_COMMENT_FORMATTED, TestConstants.DEFAULT_P_UUID_FIELD, TestConstants.DEFAULT_UUID);
+        assertEquals(TestConstants.DEFAULT_AFFECTED_ROWS, response.getAffectedRows());
+        assertEquals(Constants.STATUS_OK, response.getStatus());
+    }
+
+    @Test
+    public void setImplausible_whenPrefixO_expectUpdateImplausible() {
+        String uuid = "O".concat(TestConstants.DEFAULT_UUID.toString());
+        when(implausibleRequest.getUuid()).thenReturn(uuid);
+        when(implausibleRequest.getComment()).thenReturn(TestConstants.DEFAULT_COMMENT);
+        when(implausibleRequest.getImplausible()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        when(testRepository.updateImplausible(TestConstants.DEFAULT_FLAG_TRUE, TestConstants.DEFAULT_COMMENT_FORMATTED, TestConstants.DEFAULT_O_UUID_FIELD, TestConstants.DEFAULT_UUID)).thenReturn(TestConstants.DEFAULT_AFFECTED_ROWS);
+
+        var response = testService.setImplausible(implausibleRequest);
+
+        verify(testRepository).updateImplausible(TestConstants.DEFAULT_FLAG_TRUE, TestConstants.DEFAULT_COMMENT_FORMATTED, TestConstants.DEFAULT_O_UUID_FIELD, TestConstants.DEFAULT_UUID);
+        assertEquals(TestConstants.DEFAULT_AFFECTED_ROWS, response.getAffectedRows());
+        assertEquals(Constants.STATUS_OK, response.getStatus());
+    }
+
+    @Test
+    public void setImplausible_whenPrefixT_expectUpdateImplausible() {
+        String uuid = "T".concat(TestConstants.DEFAULT_UUID.toString());
+        when(implausibleRequest.getUuid()).thenReturn(uuid);
+        when(implausibleRequest.getComment()).thenReturn(TestConstants.DEFAULT_COMMENT);
+        when(implausibleRequest.getImplausible()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        when(testRepository.updateImplausible(TestConstants.DEFAULT_FLAG_TRUE, TestConstants.DEFAULT_COMMENT_FORMATTED, TestConstants.DEFAULT_T_UUID_FIELD, TestConstants.DEFAULT_UUID)).thenReturn(TestConstants.DEFAULT_AFFECTED_ROWS);
+
+        var response = testService.setImplausible(implausibleRequest);
+
+        verify(testRepository).updateImplausible(TestConstants.DEFAULT_FLAG_TRUE, TestConstants.DEFAULT_COMMENT_FORMATTED, TestConstants.DEFAULT_T_UUID_FIELD, TestConstants.DEFAULT_UUID);
+        assertEquals(TestConstants.DEFAULT_AFFECTED_ROWS, response.getAffectedRows());
+        assertEquals(Constants.STATUS_OK, response.getStatus());
+    }
+
+    @Test
+    public void setImplausible_whenPrefixU_expectUpdateImplausible() {
+        String uuid = "U".concat(TestConstants.DEFAULT_UUID.toString());
+        when(implausibleRequest.getUuid()).thenReturn(uuid);
+        when(implausibleRequest.getComment()).thenReturn(TestConstants.DEFAULT_COMMENT);
+        when(implausibleRequest.getImplausible()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        when(testRepository.updateImplausible(TestConstants.DEFAULT_FLAG_TRUE, TestConstants.DEFAULT_COMMENT_FORMATTED, TestConstants.DEFAULT_U_UUID_FIELD, TestConstants.DEFAULT_UUID)).thenReturn(TestConstants.DEFAULT_AFFECTED_ROWS);
+
+        var response = testService.setImplausible(implausibleRequest);
+
+        verify(testRepository).updateImplausible(TestConstants.DEFAULT_FLAG_TRUE, TestConstants.DEFAULT_COMMENT_FORMATTED, TestConstants.DEFAULT_U_UUID_FIELD, TestConstants.DEFAULT_UUID);
+        assertEquals(TestConstants.DEFAULT_AFFECTED_ROWS, response.getAffectedRows());
+        assertEquals(Constants.STATUS_OK, response.getStatus());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setImplausible_whenPrefixQ_expectException() {
+        String uuid = "Q".concat(TestConstants.DEFAULT_UUID.toString());
+        when(implausibleRequest.getUuid()).thenReturn(uuid);
+        when(implausibleRequest.getComment()).thenReturn(TestConstants.DEFAULT_COMMENT);
+        when(implausibleRequest.getImplausible()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        when(testRepository.updateImplausible(TestConstants.DEFAULT_FLAG_TRUE, TestConstants.DEFAULT_COMMENT_FORMATTED, TestConstants.DEFAULT_U_UUID_FIELD, TestConstants.DEFAULT_UUID)).thenReturn(TestConstants.DEFAULT_AFFECTED_ROWS);
+
+        testService.setImplausible(implausibleRequest);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setImplausible_whenEmptyComment_expectException() {
+        String uuid = "Q".concat(TestConstants.DEFAULT_UUID.toString());
+        when(implausibleRequest.getUuid()).thenReturn(uuid);
+        when(implausibleRequest.getComment()).thenReturn(null);
+        when(implausibleRequest.getImplausible()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        when(testRepository.updateImplausible(TestConstants.DEFAULT_FLAG_TRUE, TestConstants.DEFAULT_COMMENT_FORMATTED, TestConstants.DEFAULT_U_UUID_FIELD, TestConstants.DEFAULT_UUID)).thenReturn(TestConstants.DEFAULT_AFFECTED_ROWS);
+
+        testService.setImplausible(implausibleRequest);
     }
 
     private NetItemResponse getNetItemResponses(String value, String title) {
