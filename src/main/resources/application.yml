@@ -24,6 +24,8 @@ spring:
     database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
   flyway:
     enabled: true
+  jackson:
+    default-property-inclusion: non_null
 RMBT_SECRETKEY: RMBT_SECRETKEY
 
 auth0:
