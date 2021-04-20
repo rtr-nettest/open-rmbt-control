@@ -130,6 +130,8 @@ public interface TestFixtures {
         null,
         null,
         1,
+        "test desc",
+        "test summary",
         null
     );
 

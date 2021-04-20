@@ -221,11 +221,11 @@ public class QosUtil {
                     result.setResultMap(objectMapper.readValue(testResult.getResult(), new TypeReference<>() {}));
 
                     //add each test description key to the testDescSet (to fetch it later from the db)
-                    if (testResult.getTestDescription() != null) {
-                        testDescSet.add(testResult.getTestDescription());
+                    if (testResult.getQosTestObjective().getTestDescription() != null) {
+                        testDescSet.add(testResult.getQosTestObjective().getTestDescription());
                     }
-                    if (testResult.getTestSummary() != null) {
-                        testSummarySet.add(testResult.getTestSummary());
+                    if (testResult.getQosTestObjective().getTestSummary() != null) {
+                        testSummarySet.add(testResult.getQosTestObjective().getTestSummary());
                     }
                     testResult.setResult(objectMapper.writeValueAsString(result));
 
@@ -249,11 +249,11 @@ public class QosUtil {
 
             for (QosTestResult testResult : testResultList) {
                 //and set the test results + put each one to the result list json array
-                String preParsedDesc = testDescMap.get(testResult.getTestDescription());
+                String preParsedDesc = testDescMap.get(testResult.getQosTestObjective().getTestDescription());
                 AbstractResult<?> result = objectMapper.readValue(testResult.getResult(), testResult.getQosTestObjective().getTestType().getClazz());
                 if (preParsedDesc != null) {
                     String description = String.valueOf(TestScriptInterpreter.interprete(
-                        testDescMap.get(testResult.getTestDescription()),
+                        testDescMap.get(testResult.getQosTestObjective().getTestDescription()),
                         QosUtil.HSTORE_PARSER,
                         result,
                         true,
@@ -263,9 +263,9 @@ public class QosUtil {
                 }
 
                 //do the same for the test summary:
-                String preParsedSummary = testDescMap.get(testResult.getTestSummary());
+                String preParsedSummary = testDescMap.get(testResult.getQosTestObjective().getTestSummary());
                 if (preParsedSummary != null) {
-                    String description = String.valueOf(TestScriptInterpreter.interprete(testDescMap.get(testResult.getTestSummary()),
+                    String description = String.valueOf(TestScriptInterpreter.interprete(testDescMap.get(testResult.getQosTestObjective().getTestSummary()),
                         QosUtil.HSTORE_PARSER, result, true, resultOptions));
                     testResult.setTestSummary(description);
                 }
