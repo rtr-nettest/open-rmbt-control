@@ -76,8 +76,7 @@ public class QosMeasurementControllerTest {
             Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList(),
-            new QosMeasurementsResponse.EvalTimes(1L, 2L),
-            new ErrorResponse()
+            new QosMeasurementsResponse.EvalTimes(1L, 2L)
         );
 
         when(qosMeasurementService.getQosResult(DEFAULT_TEST_UUID, "en", null)).thenReturn(response);
@@ -96,9 +95,8 @@ public class QosMeasurementControllerTest {
                     "   eval: 1," +
                     "   full: 2" +
                     "}," +
-                    "error: {" +
-                    "   error:[]" +
-                    "}}"
+                    "error: []" +
+                    "}"
             ));
     }
 

@@ -195,9 +195,10 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
             errorList.addErrorString(messageSource.getMessage("ERROR_REQUEST_QOS_RESULT_DETAIL_NO_UUID", null, locale));
         }
 
-        answer.errorResponse(errorList);
+        QosMeasurementsResponse response = answer.build();
+        response.getError().addAll(errorList.getError());
 
-        return answer.build();
+        return response;
     }
 
     private void saveQosTestResults(Test test, List<QosSendTestResultItem> qosResult) throws JsonProcessingException {
