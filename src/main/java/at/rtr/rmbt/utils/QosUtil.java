@@ -243,6 +243,13 @@ public class QosUtil {
             //FIRST: get all test descriptions
             testDescSet.addAll(testSummarySet);
 
+            for (TestType value : TestType.values()) {
+                testDescSet.add(value.getDescriptionKey());
+                testDescSet.add(value.getNameKey());
+            }
+
+            resultKeys.values().forEach(v -> v.forEach(resultDesc -> testDescSet.add(resultDesc.getKey())));
+
             Map<String, String> testDescMap = qosTestDescRepository.findByKeysAndLocales(locale.getLanguage(), applicationProperties.getLanguage().getSupportedLanguages(), testDescSet)
                 .stream()
                 .collect(Collectors.toMap(QosTestDesc::getDescKey, QosTestDesc::getValue));
@@ -315,10 +322,9 @@ public class QosUtil {
 
                 for (ResultDesc desc : descSetNew) {
                     if (desc.getValue() != null) {
-                        resultDescArray.add(new QosTestResultDescItem(desc.getTestResultUidList(), desc.getTestType(), desc.getKey(), desc.getStatusCode(), desc.getParsedValue()));
+                        resultDescArray.add(new QosTestResultDescItem(desc.getTestResultUidList(), desc.getTestType().name(), desc.getKey(), desc.getStatusCode(), desc.getParsedValue()));
                     }
                 }
-
             }
 
             //put result descriptions to json
@@ -327,7 +333,7 @@ public class QosUtil {
             List<QosTestResultTestDescItem> testTypeDescArray = new ArrayList<>();
             for (QosTestTypeDesc desc : qosTestTypeDescRepository.findAll()) {
                 if (desc.getTest() != null) {
-                    testTypeDescArray.add(new QosTestResultTestDescItem(desc.getName(), desc.getTest(), desc.getDescription()));
+                    testTypeDescArray.add(new QosTestResultTestDescItem(testDescMap.get(desc.getName()), desc.getTest(), testDescMap.get(desc.getDescription())));
                 }
             }
 
