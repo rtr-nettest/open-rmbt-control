@@ -38,4 +38,7 @@ public interface Constants {
     String INET_6_IP_VERSION = "6";
     Integer NOT_SYNCED_CLIENT_GROUP_ID = 0;
     Integer NETWORK_TYPE_WLAN = 99;
+    String STATUS_OK = "OK";
+    String WEB_COMMENT = " [web]";
+    Integer UUID_PREFIX_SIZE = 1;
 }

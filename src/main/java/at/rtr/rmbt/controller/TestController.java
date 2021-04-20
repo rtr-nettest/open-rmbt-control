@@ -1,10 +1,7 @@
 package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.constant.URIConstants;
-import at.rtr.rmbt.request.HistoryRequest;
-import at.rtr.rmbt.request.ResultUpdateRequest;
-import at.rtr.rmbt.request.TestResultDetailRequest;
-import at.rtr.rmbt.request.TestResultRequest;
+import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.TestService;
 import io.swagger.annotations.ApiOperation;
@@ -51,5 +48,11 @@ public class TestController {
     @ApiOperation(value = "Gets test history for the client device and synchronized devices")
     public ResultUpdateResponse updateTestResult(@RequestBody ResultUpdateRequest resultUpdateRequest) {
         return testService.updateTestResult(resultUpdateRequest);
+    }
+
+    @PostMapping(URIConstants.ADMIN_SET_IMPLAUSIBLE)
+    @ApiOperation(value = "Set implausible")
+    public ImplausibleResponse setImplausible(@RequestBody ImplausibleRequest implausibleRequest) {
+        return testService.setImplausible(implausibleRequest);
     }
 }
