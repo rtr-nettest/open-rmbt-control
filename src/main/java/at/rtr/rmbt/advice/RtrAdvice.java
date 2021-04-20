@@ -28,7 +28,7 @@ public class RtrAdvice {
         return new ErrorResponse(ERROR_DB_GET_CLIENTTYPE);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(NotSupportedClientVersionException.class)
     public ErrorResponse handleNotSupportedClientVersionException(NotSupportedClientVersionException ex) {
         return new ErrorResponse(ERROR_CLIENT_VERSION);
