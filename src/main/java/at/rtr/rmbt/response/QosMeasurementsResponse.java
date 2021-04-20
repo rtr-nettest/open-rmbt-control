@@ -62,9 +62,9 @@ public class QosMeasurementsResponse extends ErrorResponse {
         @ApiModelProperty(notes = "ids of the test performed", example = "[ 464646864, 46468468, 868895634, 86865846, 46848445 ]")
         @JsonProperty("uid")
         private List<Long> uid;
-        @ApiModelProperty(notes = "enum value of one of the type of the QoS test category", example = "WEBSITE")
+        @ApiModelProperty(notes = "Enum value of one of the type of the QoS test category (UPPERCASE)", example = "WEBSITE")
         @JsonProperty("test")
-        private TestType testType;
+        private String testType;
         @ApiModelProperty(notes = "key to be evaluated", example = "website.200")
         @JsonProperty("key")
         private String key;
