@@ -2,6 +2,7 @@ package at.rtr.rmbt.advice;
 
 import at.rtr.rmbt.exception.*;
 import at.rtr.rmbt.response.ErrorResponse;
+import com.vdurmont.semver4j.SemverException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,10 +29,16 @@ public class RtrAdvice {
         return new ErrorResponse(ERROR_DB_GET_CLIENTTYPE);
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NotSupportedClientVersionException.class)
     public ErrorResponse handleNotSupportedClientVersionException(NotSupportedClientVersionException ex) {
         return new ErrorResponse(ERROR_CLIENT_VERSION);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(EmptyClientVersionException.class)
+    public ErrorResponse semVersionException(EmptyClientVersionException ex) {
+        return new ErrorResponse("Empty client version");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
