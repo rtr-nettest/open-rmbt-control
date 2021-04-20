@@ -208,7 +208,7 @@ public class TestSettingsFacade {
                         throw new TestServerNotFoundException();
                     ServerTypeDetails serverTypeDetails = getServerTypeDetails(testSettingsRequest, testServer);
                     builder.testServerAddress(getServerAddress(ipv6, testServer))
-                            .testServerPort(serverTypeDetails.isEncrypted() ? testServer.getPortSsl() : testServer.getPort())
+                            .testServerPort(serverTypeDetails.isEncrypted() ? serverTypeDetails.getPortSsl() : serverTypeDetails.getPort())
                             .testServerName(testServer.getName() + " (" + testServer.getCity() + ")")
                             .testServerEncryption(serverTypeDetails.isEncrypted())
                             .testServerType(serverTypeDetails.getServerType())
