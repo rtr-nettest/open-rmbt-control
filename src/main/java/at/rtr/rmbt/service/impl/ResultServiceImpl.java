@@ -3,6 +3,7 @@ package at.rtr.rmbt.service.impl;
 import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.constant.ErrorMessage;
 import at.rtr.rmbt.enums.TestStatus;
+import at.rtr.rmbt.exception.EmptyClientVersionException;
 import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.TestMapper;
@@ -228,7 +229,7 @@ public class ResultServiceImpl implements ResultService {
 
     private void verifyClientVersion(ResultRequest resultRequest) {
         if (resultRequest.getClientVersion().isEmpty() && resultRequest.getTestStatus().equals("1")) { //try to hadle failed test
-            return;
+            throw new EmptyClientVersionException();
         }
 
         ValidateUtils.validateClientVersion(applicationProperties.getVersion(), resultRequest.getClientVersion());

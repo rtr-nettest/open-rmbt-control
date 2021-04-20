@@ -1,8 +1,13 @@
 package at.rtr.rmbt.advice;
 
-import at.rtr.rmbt.exception.*;
+import at.rtr.rmbt.exception.ClientNotFoundByNameException;
+import at.rtr.rmbt.exception.ClientNotFoundException;
+import at.rtr.rmbt.exception.EmptyClientVersionException;
+import at.rtr.rmbt.exception.InvalidSequenceException;
+import at.rtr.rmbt.exception.NotSupportedClientVersionException;
+import at.rtr.rmbt.exception.SyncException;
+import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.response.ErrorResponse;
-import com.vdurmont.semver4j.SemverException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,7 +16,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.sql.SQLException;
 
-import static at.rtr.rmbt.constant.ErrorMessage.*;
+import static at.rtr.rmbt.constant.ErrorMessage.ERROR_CLIENT_VERSION;
+import static at.rtr.rmbt.constant.ErrorMessage.ERROR_DB_GET_CLIENTTYPE;
+import static at.rtr.rmbt.constant.ErrorMessage.ERROR_INVALID_SEQUENCE;
+import static at.rtr.rmbt.constant.ErrorMessage.SQL_ERROR_MESSAGE;
 
 @Slf4j
 @RestControllerAdvice
@@ -38,7 +46,7 @@ public class RtrAdvice {
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(EmptyClientVersionException.class)
     public ErrorResponse semVersionException(EmptyClientVersionException ex) {
-        return new ErrorResponse("Empty client version");
+        return ErrorResponse.empty();
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
