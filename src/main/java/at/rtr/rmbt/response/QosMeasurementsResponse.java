@@ -14,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class QosMeasurementsResponse {
+public class QosMeasurementsResponse extends ErrorResponse {
     @ApiModelProperty(notes = "contains result for each particular test")
     @JsonProperty("testresultdetail")
     private List<QosTestResultItem> testResultDetails;
@@ -27,9 +27,6 @@ public class QosMeasurementsResponse {
     @ApiModelProperty
     @JsonProperty("eval_times")
     private EvalTimes evalTimes;
-    @ApiModelProperty(example = "[ \"First error message\", \"Second error message\" ]")
-    @JsonProperty("error")
-    private ErrorResponse errorResponse;
 
     @Getter
     @Setter

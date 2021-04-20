@@ -280,7 +280,7 @@ public class QosMeasurementServiceImplTest {
         QosMeasurementsResponse result = qosMeasurementService.getQosResult(DEFAULT_TEST_UUID, DEFAULT_LANGUAGE, null);
 
         assertNotNull(result.getEvalTimes());
-        assertTrue(result.getErrorResponse().getError().isEmpty());
+        assertTrue(result.getError().isEmpty());
     }
 
     private MeasurementQosResponse getMeasurementQosResponse() {
