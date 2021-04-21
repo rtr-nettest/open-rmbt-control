@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>at.rtr.rmbt</groupId>
     <artifactId>rtr</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>rtr</name>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <description>RTR backend project</description>
 
     <parent>
@@ -27,10 +27,15 @@
         <apache.commons.version>3.8.1</apache.commons.version>
         <org.testcontainers.version>1.15.1</org.testcontainers.version>
         <auth0-spring-security-api.version>1.4.0</auth0-spring-security-api.version>
+        <start-class>at.rtr.rmbt.RTRApplication</start-class>
     </properties>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
