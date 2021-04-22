@@ -260,7 +260,7 @@ public class QosUtil {
                 AbstractResult<?> result = objectMapper.readValue(testResult.getResult(), testResult.getQosTestObjective().getTestType().getClazz());
                 if (preParsedDesc != null) {
                     String description = String.valueOf(TestScriptInterpreter.interprete(
-                        testDescMap.get(testResult.getQosTestObjective().getTestDescription()),
+                        preParsedDesc,
                         QosUtil.HSTORE_PARSER,
                         result,
                         true,
@@ -272,8 +272,13 @@ public class QosUtil {
                 //do the same for the test summary:
                 String preParsedSummary = testDescMap.get(testResult.getQosTestObjective().getTestSummary());
                 if (preParsedSummary != null) {
-                    String description = String.valueOf(TestScriptInterpreter.interprete(testDescMap.get(testResult.getQosTestObjective().getTestSummary()),
-                        QosUtil.HSTORE_PARSER, result, true, resultOptions));
+                    String description = String.valueOf(TestScriptInterpreter.interprete(
+                        preParsedSummary,
+                        QosUtil.HSTORE_PARSER,
+                        result,
+                        true,
+                        resultOptions
+                    ));
                     testResult.setTestSummary(description);
                 }
 

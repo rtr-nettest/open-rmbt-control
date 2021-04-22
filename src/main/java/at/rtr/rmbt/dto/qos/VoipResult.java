@@ -126,6 +126,10 @@ public class VoipResult extends AbstractResult<VoipResult> {
     @HstoreKey("voip_result_out_long_seq")
     Object longSequenceOut;
 
+    @JsonProperty("voip_result_status")
+    @HstoreKey("voip_result_status")
+    String status;
+
     @Override
     public String toString() {
         return "VoipResult [inPort=" + inPort + ", outPort=" + outPort

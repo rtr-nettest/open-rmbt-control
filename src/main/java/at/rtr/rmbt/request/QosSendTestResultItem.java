@@ -222,23 +222,23 @@ public class QosSendTestResultItem {
     private Integer udpObjectiveOutPort;
 
     @ApiModelProperty(notes = "OK if test succeeds, else FAILED or TIMEOUT", example = "OK")
-    @JsonProperty("nontransparentproxy_result")
+    @JsonProperty("nontransproxy_result")
     private String nonTransparentProxyResult;
 
     @ApiModelProperty(notes = "request message", example = "GET")
-    @JsonProperty("nontransparentproxy_objective_request")
+    @JsonProperty("nontransproxy_objective_request")
     private String nonTransparentProxyObjectiveRequest;
 
     @ApiModelProperty(notes = "timeout in nanoseconds to test succeed", example = "5000000000")
-    @JsonProperty("nontransparentproxy_objective_timeout")
+    @JsonProperty("nontransproxy_objective_timeout")
     private Long nonTransparentProxyObjectiveTimeout;
 
     @ApiModelProperty(notes = "port to be tested", example = "48806")
-    @JsonProperty("nontransparentproxy_objective_port")
+    @JsonProperty("nontransproxy_objective_port")
     private Integer nonTransparentProxyObjectivePort;
 
     @ApiModelProperty(notes = "response message sent by server", example = "GET")
-    @JsonProperty("nontransparentproxy_result_response")
+    @JsonProperty("nontransproxy_result_response")
     private String nonTransparentProxyResultResponse;
 
     @ApiModelProperty(notes = "url to test", example = "http://webtest.nettest.at/qostest/reference05.jpg")
