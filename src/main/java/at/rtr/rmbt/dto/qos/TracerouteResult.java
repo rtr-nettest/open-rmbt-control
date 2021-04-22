@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * @author lb
@@ -61,6 +62,11 @@ public class TracerouteResult extends AbstractResult<TracerouteResult> {
     @HstoreKey("traceroute_result_details")
     @HstoreCollection(PathElement.class)
     private ArrayList<PathElement> resultEntries;
+
+    public void setResultMap(Map<String, Object> resultMap) {
+        this.resultMap = resultMap;
+        this.resultMap.put("traceroute_result_details", resultEntries);
+    }
 
     @Override
     public String toString() {

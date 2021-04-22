@@ -258,6 +258,7 @@ public class QosUtil {
                 //and set the test results + put each one to the result list json array
                 String preParsedDesc = testDescMap.get(testResult.getQosTestObjective().getTestDescription());
                 AbstractResult<?> result = objectMapper.readValue(testResult.getResult(), testResult.getQosTestObjective().getTestType().getClazz());
+                result.setResultMap(objectMapper.readValue(testResult.getResult(), new TypeReference<>() {}));
                 if (preParsedDesc != null) {
                     String description = String.valueOf(TestScriptInterpreter.interprete(
                         preParsedDesc,
