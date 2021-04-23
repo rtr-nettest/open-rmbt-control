@@ -283,6 +283,18 @@ public class QosMeasurementServiceImplTest {
         assertTrue(result.getError().isEmpty());
     }
 
+    @Test
+    public void evaluateQosByOpenTestUUID_whenCommonData_expectQosMeasurementsResponse() {
+        when(testRepository.findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(DEFAULT_TEST_OPEN_TEST_UUID)).thenReturn(Optional.of(test));
+        when(qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid())).thenReturn(List.of(qosTestResult));
+
+        QosMeasurementsResponse result = qosMeasurementService.evaluateQosByOpenTestUUID(DEFAULT_TEST_OPEN_TEST_UUID, DEFAULT_LANGUAGE);
+
+        assertNotNull(result.getEvalTimes());
+        assertTrue(result.getError().isEmpty());
+    }
+
+
     private MeasurementQosResponse getMeasurementQosResponse() {
         Map<TestType, List<QosParamsResponse>> objectives = new HashMap<>();
         objectives.put(TestConstants.DEFAULT_TEST_TYPE, List.of(qosParamsResponseFirst, qosParamsResponseSecond));

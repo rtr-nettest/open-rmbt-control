@@ -17,4 +17,6 @@ public interface QosMeasurementService {
     ErrorResponse saveQosMeasurementResult(QosResultRequest qosResultRequest);
 
     QosMeasurementsResponse getQosResult(UUID qosTestUuid, String language, CapabilitiesRequest capabilitiesRequest);
+
+    QosMeasurementsResponse evaluateQosByOpenTestUUID(UUID openTestUUID, String lang);
 }
