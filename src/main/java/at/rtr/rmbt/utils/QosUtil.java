@@ -185,6 +185,14 @@ public class QosUtil {
             Test test = optionalTest.get();
 
             List<QosTestResult> testResultList = qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid());
+            try {
+                if (testResultList == null || testResultList.isEmpty()) {
+                    Thread.sleep(5000);
+                    testResultList = qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid());
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             if (testResultList == null || testResultList.isEmpty()) {
                 throw new UnsupportedOperationException("test " + test + " has no result list");
             }
