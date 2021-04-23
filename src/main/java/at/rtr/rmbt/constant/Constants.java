@@ -41,4 +41,7 @@ public interface Constants {
     String STATUS_OK = "OK";
     String WEB_COMMENT = " [web]";
     Integer UUID_PREFIX_SIZE = 1;
+    boolean DEFAULT_QOS_SUPPORTS_INFO = false;
+    boolean DEFAULT_RMBT_HTTP = false;
+    Integer DEFAULT_CLASSIFICATION_COUNT = 3;
 }

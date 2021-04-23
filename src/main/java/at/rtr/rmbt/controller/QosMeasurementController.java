@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.UUID;
 
 import static at.rtr.rmbt.constant.URIConstants.*;
 
@@ -44,6 +46,11 @@ public class QosMeasurementController {
     @PostMapping(RESULT_QOS_URL)
     public ErrorResponse saveQosMeasurementResult(@RequestBody QosResultRequest qosResultRequest) {
         return qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
+    }
+
+    @PostMapping(value = {QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, QOS_BY_OPEN_TEST_UUID})
+    public QosMeasurementsResponse evaluateQosByOpenTestUUID(@PathVariable(name = "open_test_uuid") UUID openTestUUID, @PathVariable(name = "lang", required = false) String lang) {
+        return qosMeasurementService.evaluateQosByOpenTestUUID(openTestUUID, lang);
     }
 
     @ApiOperation("Save QoS test results")
