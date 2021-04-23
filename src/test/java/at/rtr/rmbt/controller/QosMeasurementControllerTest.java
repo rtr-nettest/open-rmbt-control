@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
 
-import static at.rtr.rmbt.TestConstants.DEFAULT_TEST_UUID;
+import static at.rtr.rmbt.TestConstants.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -72,12 +72,7 @@ public class QosMeasurementControllerTest {
 
     @Test
     public void getQosTestResults_whenCommonData_expectQosResults() throws Exception {
-        QosMeasurementsResponse response = new QosMeasurementsResponse(
-            Collections.emptyList(),
-            Collections.emptyList(),
-            Collections.emptyList(),
-            new QosMeasurementsResponse.EvalTimes(1L, 2L)
-        );
+        QosMeasurementsResponse response = getDefaultQosMeasurementResponse();
 
         when(qosMeasurementService.getQosResult(DEFAULT_TEST_UUID, "en", null)).thenReturn(response);
 
@@ -98,6 +93,26 @@ public class QosMeasurementControllerTest {
                     "error: []" +
                     "}"
             ));
+    }
+
+    @Test
+    public void evaluateQosByOpenTestUUID_whenCommonData_expectQosResults() throws Exception {
+        QosMeasurementsResponse response = getDefaultQosMeasurementResponse();
+
+        when(qosMeasurementService.evaluateQosByOpenTestUUID(DEFAULT_TEST_OPEN_TEST_UUID, LANGUAGE_EN)).thenReturn(response);
+
+        mockMvc.perform(post(URIConstants.QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, DEFAULT_TEST_OPEN_TEST_UUID, LANGUAGE_EN))
+                .andExpect(status().isOk())
+                .andExpect(content().json(TestUtils.asJsonString(response)));
+    }
+
+    private QosMeasurementsResponse getDefaultQosMeasurementResponse() {
+        return new QosMeasurementsResponse(
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                new QosMeasurementsResponse.EvalTimes(1L, 2L)
+        );
     }
 
     private MeasurementQosResponse getMeasurementQosResponse() {

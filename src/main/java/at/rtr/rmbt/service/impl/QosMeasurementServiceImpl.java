@@ -1,5 +1,6 @@
 package at.rtr.rmbt.service.impl;
 
+import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.dto.qos.AbstractResult;
 import at.rtr.rmbt.dto.qos.ResultDesc;
 import at.rtr.rmbt.dto.qos.ResultOptions;
@@ -11,9 +12,7 @@ import at.rtr.rmbt.model.QosTestResult;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.repository.*;
-import at.rtr.rmbt.request.CapabilitiesRequest;
-import at.rtr.rmbt.request.QosResultRequest;
-import at.rtr.rmbt.request.QosSendTestResultItem;
+import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.MeasurementQosResponse;
 import at.rtr.rmbt.response.QosMeasurementsResponse;
@@ -199,6 +198,55 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
         response.getError().addAll(errorList.getError());
 
         return response;
+    }
+
+    @Override
+    public QosMeasurementsResponse evaluateQosByOpenTestUUID(UUID openTestUUID, String lang) {
+        Locale locale = MessageUtils.getLocaleFormLanguage(lang, applicationProperties.getLanguage());
+        QosMeasurementsResponse.QosMeasurementsResponseBuilder answer = QosMeasurementsResponse.builder();
+        final ErrorResponse errorList = new ErrorResponse();
+        try {
+            QosUtil.evaluate(
+                    answer,
+                    qosTestResultMapper,
+                    qosTestTypeDescRepository,
+                    messageSource,
+                    applicationProperties,
+                    testRepository,
+                    qosTestResultRepository,
+                    openTestUUID,
+                    true,
+                    objectMapper,
+                    qosTestDescRepository,
+                    locale,
+                    errorList,
+                    getDefaultCapabilitiesRequest()
+            );
+        } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
+            errorList.addErrorString(messageSource.getMessage("ERROR_DB_CONNECTION", null, locale));
+        } catch (HstoreParseException e) {
+            logger.error(e.getMessage(), e);
+            errorList.addErrorString(e.getMessage());
+        } catch (IllegalAccessException | JsonProcessingException e) {
+            logger.error(e.getMessage(), e);
+        } catch (UnsupportedOperationException e) {
+            logger.error(e.getMessage(), e);
+            errorList.addErrorString(messageSource.getMessage("ERROR_REQUEST_QOS_RESULT_DETAIL_NO_UUID", null, locale));
+        }
+
+        QosMeasurementsResponse response = answer.build();
+        response.getError().addAll(errorList.getError());
+
+        return response;
+    }
+
+    private CapabilitiesRequest getDefaultCapabilitiesRequest() {
+        return CapabilitiesRequest.builder()
+                .classification(ClassificationRequest.builder().count(Constants.DEFAULT_CLASSIFICATION_COUNT).build())
+                .qos(QosRequest.builder().supportsInfo(Constants.DEFAULT_QOS_SUPPORTS_INFO).build())
+                .rmbtHttp(Constants.DEFAULT_RMBT_HTTP)
+                .build();
     }
 
     private void saveQosTestResults(Test test, List<QosSendTestResultItem> qosResult) throws JsonProcessingException {
