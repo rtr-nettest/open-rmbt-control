@@ -187,10 +187,10 @@ public class QosUtil {
             Test test = optionalTest.get();
 
             List<QosTestResult> testResultList = qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid());
-            int numberOfAttents = 6;
+            int numberOfAttents = 11;
             while ((testResultList == null || testResultList.isEmpty()) && numberOfAttents > 0){
             try {
-                log.info("Put thread to sleep for 8:");
+                log.info("Put thread to sleep for 5:");
                 if (testResultList == null || testResultList.isEmpty()) {
                     Thread.sleep(5000);
                     testResultList = qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid());
