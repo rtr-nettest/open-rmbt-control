@@ -1,7 +1,6 @@
 package at.rtr.rmbt.facade;
 
 import at.rtr.rmbt.config.RollBackService;
-import at.rtr.rmbt.constant.HeaderConstants;
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.TestServerNotFoundException;
@@ -31,11 +30,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.Inet4Address;
@@ -79,6 +78,9 @@ public class TestSettingsFacade {
     private final ObjectMapper objectMapper;
 
     private final RollBackService rollBackService;
+
+    @Value("${application-version.server-url}")
+    private String applicationServerUrl;
 
     @Autowired
     public TestSettingsFacade(LoopModeSettingsService loopModeSettingsService, ClientTypeService clientTypeService,
@@ -217,15 +219,14 @@ public class TestSettingsFacade {
                             .testNumberOfPings(String.valueOf(applicationProperties.getPings()))
                             .clientRemoteIp(clientIpAddress);
 
-                    String resultUrl;
-                    if (request.getHeader(HeaderConstants.URL) != null) {
-                        resultUrl = request.getHeader(HeaderConstants.URL);
-                    } else {
-                        resultUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                                .build()
-                                .toString();
-                    }
-                    resultUrl = "https://rtr-api-dev.nettest.org/RMBTControlServer";
+                    String resultUrl = applicationServerUrl;
+//                    if (request.getHeader(HeaderConstants.URL) != null) {
+//                        resultUrl = request.getHeader(HeaderConstants.URL);
+//                    } else {
+//                        resultUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+//                                .build()
+//                                .toString();
+//                    }
                     builder.resultUrl(resultUrl + RESULT_URL);
                     builder.resultQosUrl(resultUrl + RESULT_QOS_URL);
 

@@ -187,19 +187,6 @@ public class QosUtil {
             Test test = optionalTest.get();
 
             List<QosTestResult> testResultList = qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid());
-            int numberOfAttents = 11;
-            while ((testResultList == null || testResultList.isEmpty()) && numberOfAttents > 0){
-            try {
-                log.info("Put thread to sleep for 5:");
-                if (testResultList == null || testResultList.isEmpty()) {
-                    Thread.sleep(5000);
-                    testResultList = qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid());
-                }
-                numberOfAttents--;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            }
             if (testResultList == null || testResultList.isEmpty()) {
                 throw new UnsupportedOperationException("test " + test + " has no result list");
             }

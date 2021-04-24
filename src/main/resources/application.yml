@@ -63,6 +63,7 @@ app:
       -
 application-version:
   host: rtr-api-dev
+  server-url: http://localhost:80/RMBTControlServer
 
 elastic-index:
   basicTenantIndexes:
@@ -114,3 +115,6 @@ client-tenant:
 git:
   branch:${git.branch}
 
+application-version:
+  host: rtr-api-dev
+  server-url: https://rtr-api-dev.nettest.org/RMBTControlServer
