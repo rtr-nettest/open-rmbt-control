@@ -225,7 +225,7 @@ public class TestSettingsFacade {
                                 .build()
                                 .toString();
                     }
-
+                    resultUrl = "https://rtr-api-dev.nettest.org/RMBTControlServer";
                     builder.resultUrl(resultUrl + RESULT_URL);
                     builder.resultQosUrl(resultUrl + RESULT_QOS_URL);
 
