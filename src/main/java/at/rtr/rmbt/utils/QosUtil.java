@@ -187,7 +187,7 @@ public class QosUtil {
             List<QosTestResult> testResultList = qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid());
             try {
                 if (testResultList == null || testResultList.isEmpty()) {
-                    Thread.sleep(5000);
+                    Thread.sleep(8000);
                     testResultList = qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid());
                 }
             } catch (InterruptedException e) {
