@@ -21,6 +21,7 @@ import at.rtr.rmbt.utils.testscript.TestScriptInterpreter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.springframework.context.MessageSource;
@@ -29,6 +30,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class QosUtil {
 
     public static final Hstore HSTORE_PARSER = new Hstore(HttpProxyResult.class, NonTransparentProxyResult.class,
@@ -185,13 +187,18 @@ public class QosUtil {
             Test test = optionalTest.get();
 
             List<QosTestResult> testResultList = qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid());
+            int numberOfAttents = 6;
+            while ((testResultList == null || testResultList.isEmpty()) && numberOfAttents > 0){
             try {
+                log.info("Put thread to sleep for 8:");
                 if (testResultList == null || testResultList.isEmpty()) {
-                    Thread.sleep(8000);
+                    Thread.sleep(5000);
                     testResultList = qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid());
                 }
+                numberOfAttents--;
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
             }
             if (testResultList == null || testResultList.isEmpty()) {
                 throw new UnsupportedOperationException("test " + test + " has no result list");
