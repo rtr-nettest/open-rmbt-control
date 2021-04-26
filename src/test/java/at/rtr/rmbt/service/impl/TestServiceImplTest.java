@@ -119,9 +119,11 @@ public class TestServiceImplTest {
     @Test
     public void getDeviceHistory_whenCommonData_expectDevicesNameList() {
         var devices = Lists.newArrayList(TestConstants.DEFAULT_HISTORY_DEVICE);
-        when(testRepository.getDistinctModelByClientId(TestConstants.DEFAULT_UID)).thenReturn(devices);
+        List<Long> uidList = List.of(TestConstants.DEFAULT_UID);
 
-        var response = testService.getDeviceHistory(TestConstants.DEFAULT_UID);
+        when(testRepository.getDistinctModelByClientIdIn(uidList)).thenReturn(devices);
+
+        var response = testService.getDeviceHistory(uidList);
 
         assertEquals(devices, response);
     }
@@ -130,19 +132,21 @@ public class TestServiceImplTest {
     public void getDeviceHistory_whenUnknownDevice_expectDevicesNameList() {
         List<String> devices = new ArrayList<>();
         devices.add(null);
+        List<Long> uidList = List.of(TestConstants.DEFAULT_UID);
 
-        when(testRepository.getDistinctModelByClientId(TestConstants.DEFAULT_UID)).thenReturn(devices);
+        when(testRepository.getDistinctModelByClientIdIn(uidList)).thenReturn(devices);
 
-        var response = testService.getDeviceHistory(TestConstants.DEFAULT_UID);
+        var response = testService.getDeviceHistory(uidList);
 
         assertEquals(List.of(Constants.UNKNOWN_DEVICE), response);
     }
 
     @Test
     public void getGroupNameByClientId_whenCommonData_expectGroupNameList() {
-        when(testRepository.getDistinctGroupNameByClientId(TestConstants.DEFAULT_UID)).thenReturn(List.of(TestConstants.DEFAULT_HISTORY_NETWORK));
+        List<Long> uidList = List.of(TestConstants.DEFAULT_UID);
+        when(testRepository.getDistinctGroupNameByClientIdIn(uidList)).thenReturn(List.of(TestConstants.DEFAULT_HISTORY_NETWORK));
 
-        var response = testService.getGroupNameByClientId(TestConstants.DEFAULT_UID);
+        var response = testService.getGroupNameByClientIds(uidList);
 
         assertEquals(List.of(TestConstants.DEFAULT_HISTORY_NETWORK), response);
     }

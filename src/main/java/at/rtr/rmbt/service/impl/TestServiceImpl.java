@@ -72,15 +72,15 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public List<String> getDeviceHistory(Long clientId) {
-        var resultList = testRepository.getDistinctModelByClientId(clientId);
+    public List<String> getDeviceHistory(List<Long> clientIds) {
+        var resultList = testRepository.getDistinctModelByClientIdIn(clientIds);
         resultList.replaceAll(t -> Objects.isNull(t) ? Constants.UNKNOWN_DEVICE : t);
         return resultList;
     }
 
     @Override
-    public List<String> getGroupNameByClientId(Long clientId) {
-        return testRepository.getDistinctGroupNameByClientId(clientId);
+    public List<String> getGroupNameByClientIds(List<Long> clientIds) {
+        return testRepository.getDistinctGroupNameByClientIdIn(clientIds);
     }
 
     @Override

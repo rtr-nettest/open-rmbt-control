@@ -15,9 +15,9 @@ public interface TestService {
 
     Integer getRmbtNextTestSlot(Long testUid);
 
-    List<String> getDeviceHistory(Long clientId);
+    List<String> getDeviceHistory(List<Long> clientIds);
 
-    List<String> getGroupNameByClientId(Long clientId);
+    List<String> getGroupNameByClientIds(List<Long> clientIds);
 
     TestResponse getTestByUUID(UUID testUUID);
 

@@ -25,21 +25,21 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
             " JOIN network_type nt ON t.network_type=nt.uid " +
             "WHERE t.deleted = false" +
             " AND t.status = 'FINISHED' " +
-            " AND t.client_id = :clientId" +
+            " AND t.client_id IN :clientIds" +
             " AND group_name IS NOT NULL " +
             "ORDER BY group_name;", nativeQuery = true)
-    List<String> getDistinctGroupNameByClientId(Long clientId);
+    List<String> getDistinctGroupNameByClientIdIn(List<Long> clientIds);
 
 
     @Query(value = "SELECT DISTINCT COALESCE(adm.fullname, t.model) model"
             + " FROM test t"
             + " LEFT JOIN device_map adm ON adm.codename=t.model " +
-            "WHERE t.client_id = :clientId" +
+            "WHERE t.client_id IN :clientIds" +
             " AND t.deleted = false" +
             " AND t.implausible = false" +
             " AND t.status = 'FINISHED' " +
             "ORDER BY model ASC", nativeQuery = true)
-    List<String> getDistinctModelByClientId(Long clientId);
+    List<String> getDistinctModelByClientIdIn(List<Long> clientIds);
 
     Page<Test> findAllByRadioCellIsNotEmptyAndNetworkTypeNotIn(Pageable pageable, List<Integer> networkTypes);
 
