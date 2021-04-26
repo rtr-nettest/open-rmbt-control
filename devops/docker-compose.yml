@@ -1,0 +1,93 @@
+version: '2.4'
+
+volumes:
+  elastic-volume:
+
+networks:
+  elastic:
+
+services:
+  backend:
+    build:
+      context: ./backend
+      args:
+        spring_profiles: ${BACKEND_PROFILE}
+    container_name: rtr-backend
+    restart: unless-stopped
+    networks:
+      - elastic
+    ports:
+      - "${BACKEND_PORT}:8080"
+    logging:
+      driver: json-file
+      options:
+        max-size: '${COMPOSE_LOG_FILE_SIZE}'
+        max-file: '${COMPOSE_LOG_FILE_COUNT}'
+        compress: 'true'
+    environment:
+      CONTROL_SERVER_HOST: ${CONTROL_SERVER_HOST}
+      DB_NAME: ${BACKEND_DB_NAME}
+      DB_PASSWORD: ${BACKEND_DB_PASSWORD}
+      DB_PORT: ${BACKEND_DB_PORT}
+      DB_URI: ${BACKEND_DB_URI}
+      DB_USER: ${BACKEND_DB_USER}
+      SPRING_PROFILE: ${BACKEND_PROFILE}
+  ####### ELK
+  kibana:
+    image: library/kibana:7.2.0
+    container_name: kibana
+    restart: unless-stopped
+    networks:
+      - elastic
+    ports:
+      - "127.0.0.1:5601:5601"
+    logging:
+      driver: json-file
+      options:
+        max-size: '${COMPOSE_LOG_FILE_SIZE}'
+        max-file: '${COMPOSE_LOG_FILE_COUNT}'
+        compress: 'true'
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+
+  logstash:
+    image: logstash:7.2.0
+    container_name: logstash
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5000:5000"
+    networks:
+      - elastic
+    volumes:
+      - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: '${COMPOSE_LOG_FILE_SIZE}'
+        max-file: '${COMPOSE_LOG_FILE_COUNT}'
+        compress: 'true'
+    environment:
+      LS_JAVA_OPTS: '-Xms128m -Xmx256m'
+      ELASTICSEARCH_HOST: elasticsearch
+      ELASTICSEARCH_PORT: 9200
+
+  elasticsearch:
+    image: elasticsearch:7.2.0
+    container_name: elasticsearch
+    restart: unless-stopped
+    networks:
+      - elastic
+    ports:
+      - "127.0.0.1:9200:9200"
+    volumes:
+      - elastic-volume:/usr/share/elasticsearch/data
+    logging:
+      driver: json-file
+      options:
+        max-size: '${COMPOSE_LOG_FILE_SIZE}'
+        max-file: '${COMPOSE_LOG_FILE_COUNT}'
+        compress: 'true'
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: '-Xms256m -Xmx512m'
