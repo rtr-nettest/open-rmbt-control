@@ -349,20 +349,14 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
     }
 
     private SettingsHistoryResponse getHistoryResponse(Long clientId) {
-        var devices = getSyncGroupDeviceList(clientId);
-        var networks = getGroupName(clientId);
+        List<RtrClient> rtrClients = clientService.listSyncedClientsByClientUid(clientId);
+        List<Long> clientIds = rtrClients.stream().map(RtrClient::getUid).collect(Collectors.toList());
+        var devices = testService.getDeviceHistory(clientIds);
+        var networks = testService.getGroupNameByClientIds(clientIds);
         return SettingsHistoryResponse.builder()
-                .devices(devices)
-                .networks(networks)
-                .build();
-    }
-
-    private List<String> getGroupName(Long clientId) {
-        return testService.getGroupNameByClientId(clientId);
-    }
-
-    private List<String> getSyncGroupDeviceList(Long clientId) {
-        return testService.getDeviceHistory(clientId);
+            .devices(devices)
+            .networks(networks)
+            .build();
     }
 
     private boolean isTermAndConditionAccepted(RtrSettingsRequest rtrSettingsRequest) {

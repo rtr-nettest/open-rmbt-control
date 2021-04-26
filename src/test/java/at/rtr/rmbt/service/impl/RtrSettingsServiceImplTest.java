@@ -1,6 +1,7 @@
 package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.TestConstants;
+import at.rtr.rmbt.TestFixtures;
 import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.enums.ClientType;
@@ -38,11 +39,14 @@ import java.util.Set;
 import static at.rtr.rmbt.TestConstants.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class RtrSettingsServiceImplTest {
+
+    private static List<Long> uidList = List.of(TestConstants.DEFAULT_UID);
 
     private RtrSettingsService rtrSettingsService;
 
@@ -142,8 +146,9 @@ public class RtrSettingsServiceImplTest {
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
         when(qosTestTypeDescService.getAll(TestConstants.DEFAULT_LANGUAGE)).thenReturn(getQosTestTypeDescResponses());
-        when(testService.getDeviceHistory(TestConstants.DEFAULT_UID)).thenReturn(historyDevices);
-        when(testService.getGroupNameByClientId(TestConstants.DEFAULT_UID)).thenReturn(historyNetworks);
+        when(clientService.listSyncedClientsByClientUid(DEFAULT_UID)).thenReturn(List.of(TestFixtures.client));
+        when(testService.getDeviceHistory(argThat(t -> t.containsAll(uidList)))).thenReturn(historyDevices);
+        when(testService.getGroupNameByClientIds(argThat(t -> t.containsAll(uidList)))).thenReturn(historyNetworks);
         when(testServerService.getServers()).thenReturn(getServerResponseList());
         when(testServerService.getServersWs()).thenReturn(getServerWsResponseList());
         when(testServerService.getServersQos()).thenReturn(getServerQosResponseList());
@@ -180,8 +185,9 @@ public class RtrSettingsServiceImplTest {
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
         when(qosTestTypeDescService.getAll(TestConstants.DEFAULT_LANGUAGE)).thenReturn(getQosTestTypeDescResponses());
-        when(testService.getDeviceHistory(TestConstants.DEFAULT_UID)).thenReturn(historyDevices);
-        when(testService.getGroupNameByClientId(TestConstants.DEFAULT_UID)).thenReturn(historyNetworks);
+        when(clientService.listSyncedClientsByClientUid(DEFAULT_UID)).thenReturn(List.of(TestFixtures.client));
+        when(testService.getDeviceHistory(argThat(t -> t.containsAll(uidList)))).thenReturn(historyDevices);
+        when(testService.getGroupNameByClientIds(argThat(t -> t.containsAll(uidList)))).thenReturn(historyNetworks);
         when(testServerService.getServers()).thenReturn(getServerResponseList());
         when(testServerService.getServersWs()).thenReturn(getServerWsResponseList());
         when(testServerService.getServersQos()).thenReturn(getServerQosResponseList());

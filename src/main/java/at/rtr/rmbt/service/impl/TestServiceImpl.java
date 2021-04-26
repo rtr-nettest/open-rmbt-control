@@ -18,11 +18,7 @@ import at.rtr.rmbt.repository.ClientRepository;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.repository.TestHistoryRepository;
 import at.rtr.rmbt.repository.TestRepository;
-import at.rtr.rmbt.request.CapabilitiesRequest;
-import at.rtr.rmbt.request.ClassificationRequest;
-import at.rtr.rmbt.request.HistoryRequest;
-import at.rtr.rmbt.request.TestResultDetailRequest;
-import at.rtr.rmbt.request.TestResultRequest;
+import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoAnalyticsService;
 import at.rtr.rmbt.service.QoeClassificationService;
@@ -73,15 +69,15 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public List<String> getDeviceHistory(Long clientId) {
-        var resultList = testRepository.getDistinctModelByClientId(clientId);
+    public List<String> getDeviceHistory(List<Long> clientIds) {
+        var resultList = testRepository.getDistinctModelByClientIdIn(clientIds);
         resultList.replaceAll(t -> Objects.isNull(t) ? Constants.UNKNOWN_DEVICE : t);
         return resultList;
     }
 
     @Override
-    public List<String> getGroupNameByClientId(Long clientId) {
-        return testRepository.getDistinctGroupNameByClientId(clientId);
+    public List<String> getGroupNameByClientIds(List<Long> clientIds) {
+        return testRepository.getDistinctGroupNameByClientIdIn(clientIds);
     }
 
     @Override

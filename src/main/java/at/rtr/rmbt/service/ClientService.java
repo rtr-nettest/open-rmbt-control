@@ -4,6 +4,7 @@ import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.request.SyncRequest;
 import at.rtr.rmbt.response.SyncResponse;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ClientService {
@@ -13,4 +14,6 @@ public interface ClientService {
     RtrClient saveClient(RtrClient rtrClient);
 
     SyncResponse sync(SyncRequest syncRequest);
+
+    List<RtrClient> listSyncedClientsByClientUid(Long clientId);
 }
