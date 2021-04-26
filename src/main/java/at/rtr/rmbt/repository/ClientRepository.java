@@ -4,9 +4,9 @@ import at.rtr.rmbt.model.RtrClient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,6 +22,14 @@ public interface ClientRepository extends JpaRepository<RtrClient, Long> {
     Optional<RtrClient> getClientBySyncCode(String syncCode);
 
     Optional<RtrClient> getRtrClientByUuid(UUID uuid);
+
+    @Query(
+        value = "SELECT cc.* FROM client c " +
+            "INNER JOIN client cc ON c.sync_group_id = cc.sync_group_id " +
+            "WHERE c.uid = :clientUid",
+        nativeQuery = true
+    )
+    List<RtrClient> listSyncedClientsByClientUid(Long clientUid);
 
     @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE RtrClient c SET c.syncGroupId = :syncGroupId WHERE c.uid = :clientUidBySyncCode OR c.uid = :clientUidByUUID")

@@ -59,6 +59,11 @@ public class ClientServiceImpl implements ClientService {
                 .build();
     }
 
+    @Override
+    public List<RtrClient> listSyncedClientsByClientUid(Long clientId) {
+        return clientRepository.listSyncedClientsByClientUid(clientId);
+    }
+
     private SyncItemResponse getSyncItemResponse(SyncRequest syncRequest, Locale locale) {
         if (StringUtils.isBlank(syncRequest.getSyncCode())) {
             String syncCode = clientRepository.getSyncCode(syncRequest.getUuid())

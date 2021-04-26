@@ -32,7 +32,7 @@ public interface TestFixtures {
     at.rtr.rmbt.model.ClientType clientType = new at.rtr.rmbt.model.ClientType(10L, ClientType.DESKTOP);
 
     RtrClient client = new RtrClient(
-        2L,
+        DEFAULT_UID,
         UUID.randomUUID(),
         clientType,
         ZONED_DATE_TIME,
