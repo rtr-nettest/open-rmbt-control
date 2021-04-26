@@ -12,7 +12,7 @@
             <customFields>{"app_name":"control-service"}</customFields>
         </encoder>
     </appender>
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="logstash"/>
     </root>
 </configuration>
