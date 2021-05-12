@@ -12,15 +12,7 @@ import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.repository.NetworkTypeRepository;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.ResultRequest;
-import at.rtr.rmbt.service.CellLocationService;
-import at.rtr.rmbt.service.GeoLocationService;
-import at.rtr.rmbt.service.PingService;
-import at.rtr.rmbt.service.RadioCellService;
-import at.rtr.rmbt.service.RadioSignalService;
-import at.rtr.rmbt.service.ResultService;
-import at.rtr.rmbt.service.SignalService;
-import at.rtr.rmbt.service.SpeedService;
-import at.rtr.rmbt.utils.GeometryUtils;
+import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import at.rtr.rmbt.utils.HelperFunctions;
 import at.rtr.rmbt.utils.ValidateUtils;
@@ -61,6 +53,7 @@ public class ResultServiceImpl implements ResultService {
         Test test = testRepository.findByUuidOrOpenTestUuid(requestUUID)
                 .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.TEST_NOT_FOUND, requestUUID)));
         verifyClientVersion(resultRequest);
+        processPingData(resultRequest, test);
         testMapper.updateTestWithResultRequest(resultRequest, test);
         test.setNetworkOperator(getOperator(resultRequest.getTelephonyNetworkOperator()));
         test.setNetworkSimOperator(getOperator(resultRequest.getTelephonyNetworkSimOperator()));
@@ -68,7 +61,6 @@ public class ResultServiceImpl implements ResultService {
         setSourceIp(httpServletRequest, headers, test);
         processSpeedData(resultRequest, test);
         testRepository.refresh(test);
-        processPingData(resultRequest, test);
         processGeoLocation(resultRequest, test);
         processRadioInfo(resultRequest, test);
         processCellLocation(resultRequest, test);
@@ -77,12 +69,14 @@ public class ResultServiceImpl implements ResultService {
         setAndroidPermission(resultRequest, test);
         setSpeedAndPing(resultRequest, test);
         setStatus(resultRequest, test);
-        updateLocation(test);
         testRepository.save(test);
+        updateLocation(test);
     }
 
     private void updateLocation(Test test) {
-        test.setLocation(GeometryUtils.getGeometryFromLongitudeAndLatitude(test.getLongitude(), test.getLatitude()));
+        if (Objects.nonNull(test.getLatitude()) && Objects.nonNull(test.getLongitude())) {
+            testRepository.updateGeoLocation(test.getUid(), test.getLongitude(), test.getLatitude());
+        }
     }
 
     private void setStatus(ResultRequest resultRequest, Test test) {

@@ -26,7 +26,7 @@ public class TestSettingsRequest {
 
     @ApiModelProperty(notes = "Is NDT test going to be executed")
     @JsonProperty("ndt")
-    private boolean ndt;
+    private Boolean ndt;
 
     @ApiModelProperty(notes = "End status of the previous executed test")
     @JsonProperty("previousTestStatus")

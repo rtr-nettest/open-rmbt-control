@@ -35,7 +35,7 @@ public class GeoLocationRequest {
 
     @ApiModelProperty(notes = "Mock locatoin", example = "false")
     @JsonProperty(value = "mock_location")
-    private final boolean mockLocation;
+    private final Boolean mockLocation;
 
     @ApiModelProperty(notes = "Provider", example = "network")
     @JsonProperty(value = "provider")

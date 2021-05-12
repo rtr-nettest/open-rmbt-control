@@ -42,7 +42,7 @@ public class GeoLocationMapperImplTest {
         when(geoLocationRequest.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE);
         when(geoLocationRequest.getAltitude()).thenReturn(TestConstants.DEFAULT_ALTITUDE);
         when(geoLocationRequest.getBearing()).thenReturn(TestConstants.DEFAULT_BEARING);
-        when(geoLocationRequest.isMockLocation()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
+        when(geoLocationRequest.getMockLocation()).thenReturn(TestConstants.DEFAULT_FLAG_TRUE);
         when(geoLocationRequest.getProvider()).thenReturn(TestConstants.DEFAULT_PROVIDER);
         when(geoLocationRequest.getSpeed()).thenReturn(TestConstants.DEFAULT_SPEED);
         when(geoLocationRequest.getTimeNs()).thenReturn(TestConstants.DEFAULT_TIME);
@@ -56,7 +56,7 @@ public class GeoLocationMapperImplTest {
         assertEquals(TestConstants.DEFAULT_LONGITUDE, response.getGeoLong());
         assertEquals(TestConstants.DEFAULT_ALTITUDE, response.getAltitude());
         assertEquals(TestConstants.DEFAULT_BEARING, response.getBearing());
-        assertEquals(TestConstants.DEFAULT_FLAG_TRUE, response.isMockLocation());
+        assertEquals(TestConstants.DEFAULT_FLAG_TRUE, response.getMockLocation());
         assertEquals(TestConstants.DEFAULT_PROVIDER, response.getProvider());
         assertEquals(TestConstants.DEFAULT_SPEED, response.getSpeed());
         assertEquals(TestConstants.DEFAULT_TIME, response.getTimeNs());

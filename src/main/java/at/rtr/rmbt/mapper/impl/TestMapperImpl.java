@@ -60,6 +60,7 @@ public class TestMapperImpl implements TestMapper {
         test.setPhoneType(resultRequest.getTelephonyPhoneType());
         test.setDataState(resultRequest.getTelephonyDataState());
         test.setNetworkCountry(resultRequest.getTelephonyNetworkCountry());
+        test.setNetworkOperatorName(resultRequest.getTelephonyNetworkOperatorName());
         test.setNetworkSimCountry(resultRequest.getTelephonyNetworkSimCountry());
         test.setNetworkSimOperatorName(resultRequest.getTelephonyNetworkSimOperatorName());
         test.setWifiSsid(resultRequest.getWifiSSID());

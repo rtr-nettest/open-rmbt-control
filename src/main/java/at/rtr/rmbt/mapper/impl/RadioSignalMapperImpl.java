@@ -29,6 +29,7 @@ public class RadioSignalMapperImpl implements RadioSignalMapper {
             .lteRSRQ(radioSignalRequest.getLteRSRQ())
             .signalStrength(radioSignalRequest.getSignal())
             .timingAdvance(radioSignalRequest.getTimingAdvance())
+            .time(test.getTime().plusNanos(radioSignalRequest.getTimeNs()))
             .timeNs(radioSignalRequest.getTimeNs())
             .timeNsLast(radioSignalRequest.getTimeNsLast())
             .build();
