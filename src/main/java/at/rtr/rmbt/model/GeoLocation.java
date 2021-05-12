@@ -1,7 +1,6 @@
 package at.rtr.rmbt.model;
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;
@@ -36,7 +35,6 @@ public class GeoLocation implements Serializable {
     @Column(name = "time_ns")
     private Long timeNs;
 
-    @CreationTimestamp
     @Column(name = "time")
     private ZonedDateTime time;
 
@@ -62,7 +60,7 @@ public class GeoLocation implements Serializable {
     private Double geoLong;
 
     @Column(name = "mock_location")
-    private boolean mockLocation;
+    private Boolean mockLocation;
 
     @Column(name = "location")
     private Geometry location;

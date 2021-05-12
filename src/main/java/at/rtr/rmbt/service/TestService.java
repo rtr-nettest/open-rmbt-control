@@ -11,6 +11,8 @@ import java.util.UUID;
 public interface TestService {
     Test save(Test test);
 
+    void refresh(Test test);
+
     String getRmbtSetProviderFromAs(Long testUid);
 
     Integer getRmbtNextTestSlot(Long testUid);

@@ -36,7 +36,6 @@ public class RadioSignal {
     @Column(name = "time_ns_last")
     private Long timeNsLast;
 
-    @CreationTimestamp
     @Column(name = "time")
     private ZonedDateTime time;
 

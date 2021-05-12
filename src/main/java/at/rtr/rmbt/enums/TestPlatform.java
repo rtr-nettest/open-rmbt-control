@@ -7,7 +7,8 @@ import java.util.Objects;
 
 @Getter
 public enum TestPlatform {
-    ANDROID("Android");
+    ANDROID("Android"),
+    IOS("iOS");
 
     private String label;
 

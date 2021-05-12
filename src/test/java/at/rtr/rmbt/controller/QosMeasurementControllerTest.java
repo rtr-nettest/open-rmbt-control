@@ -23,6 +23,7 @@ import static at.rtr.rmbt.TestConstants.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -102,6 +103,17 @@ public class QosMeasurementControllerTest {
         when(qosMeasurementService.evaluateQosByOpenTestUUID(DEFAULT_TEST_OPEN_TEST_UUID, LANGUAGE_EN)).thenReturn(response);
 
         mockMvc.perform(post(URIConstants.QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, DEFAULT_TEST_OPEN_TEST_UUID, LANGUAGE_EN))
+                .andExpect(status().isOk())
+                .andExpect(content().json(TestUtils.asJsonString(response)));
+    }
+
+    @Test
+    public void getQosByOpenTestUUID_whenCommonData_expectQosResults() throws Exception {
+        QosMeasurementsResponse response = getDefaultQosMeasurementResponse();
+
+        when(qosMeasurementService.evaluateQosByOpenTestUUID(DEFAULT_TEST_OPEN_TEST_UUID, LANGUAGE_EN)).thenReturn(response);
+
+        mockMvc.perform(get(URIConstants.QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, DEFAULT_TEST_OPEN_TEST_UUID, LANGUAGE_EN))
                 .andExpect(status().isOk())
                 .andExpect(content().json(TestUtils.asJsonString(response)));
     }

@@ -164,6 +164,7 @@ public class SignalServiceImpl implements SignalService {
         processRadioInfo(signalResultRequest, updatedTest);
 
         testRepository.save(updatedTest);
+        testRepository.updateGeoLocation(updatedTest.getUid(), updatedTest.getLongitude(), updatedTest.getLatitude());
 
         return SignalResultResponse.builder()
                 .testUUID(updatedTest.getUuid())
