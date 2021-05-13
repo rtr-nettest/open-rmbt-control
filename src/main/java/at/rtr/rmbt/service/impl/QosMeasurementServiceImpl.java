@@ -250,8 +250,6 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
     }
 
     private void saveQosTestResults(Test test, List<QosSendTestResultItem> qosResult) throws JsonProcessingException {
-        Set<QosTestResult> resultsToSave = new HashSet<>();
-        logger.info("Starting to Save QoS");
         for (QosSendTestResultItem testObject : qosResult) {
             QosSendTestResultItem resultJson = testObject.toBuilder()
                 .testType(null)
@@ -264,10 +262,8 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
             testResult.setFailureCount(0);
             long qosTestId = testObject.getQosTestUid() != null ? testObject.getQosTestUid() : Long.MIN_VALUE;
             qosTestObjectiveRepository.findById(qosTestId).ifPresent(testResult::setQosTestObjective);
-            resultsToSave.add(testResult);
+            qosTestResultRepository.save(testResult);
         }
-        qosTestResultRepository.saveAll(resultsToSave);
-        logger.info("Finishing to Save QoS");
     }
 
     private void compareResultsAndSave(ResultOptions resultOptions, Map<TestType, TreeSet<ResultDesc>> resultKeys, QosTestResult testResult) throws JsonProcessingException, HstoreParseException, IllegalAccessException {
