@@ -58,7 +58,12 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public Test save(Test test) {
-        return testRepository.save(test);
+        return testRepository.saveAndFlush(test);
+    }
+
+    @Override
+    public void refresh(Test test) {
+        testRepository.refresh(test);
     }
 
     @Override
@@ -173,9 +178,10 @@ public class TestServiceImpl implements TestService {
             test.setStatus(TestStatus.ABORTED);
         } else {
             geoLocationService.updateGeoLocation(test, resultUpdateRequest);
-            test.setLocation(GeometryUtils.getGeometryFromLongitudeAndLatitude(test.getLongitude(), test.getLatitude()));
         }
         testRepository.save(test);
+        testRepository.updateGeoLocation(test.getUid(), test.getLongitude(), test.getLatitude());
+
         return ResultUpdateResponse.builder()
                 .build();
     }

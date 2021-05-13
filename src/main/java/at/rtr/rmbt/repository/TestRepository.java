@@ -4,10 +4,12 @@ import at.rtr.rmbt.dto.LteFrequencyDto;
 import at.rtr.rmbt.model.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -92,4 +94,9 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
             "  FROM RadioCell r" +
             "  WHERE r.test.openTestUuid = :openTestUUID AND r.active = true AND NOT r.technology = 'WLAN'")
     List<LteFrequencyDto> findLteFrequencyByOpenTestUUID(UUID openTestUUID);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE test SET location = ST_TRANSFORM(ST_SetSRID(ST_Point(:longitude, :latitude), 4326), 900913) WHERE uid = :testUid", nativeQuery = true)
+    void updateGeoLocation(Long testUid, Double longitude, Double latitude);
 }

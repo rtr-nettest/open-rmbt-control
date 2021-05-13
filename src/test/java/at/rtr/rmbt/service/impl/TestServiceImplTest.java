@@ -429,7 +429,14 @@ public class TestServiceImplTest {
     public void save_whenCommonData_expectSaved() {
         testService.save(test);
 
-        verify(testRepository).save(test);
+        verify(testRepository).saveAndFlush(test);
+    }
+
+    @Test
+    public void refresh_whenCommonData_expectRefreshed() {
+        testService.refresh(test);
+
+        verify(testRepository).refresh(test);
     }
 
     @Test

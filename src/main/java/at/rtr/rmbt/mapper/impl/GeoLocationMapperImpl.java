@@ -36,7 +36,7 @@ public class GeoLocationMapperImpl implements GeoLocationMapper {
                 .geoLat(geoLocationRequest.getGeoLat())
                 .geoLong(geoLocationRequest.getGeoLong())
                 .location(getLocationPointFromLongitudeAndLatitude(geoLocationRequest.getGeoLong(), geoLocationRequest.getGeoLat()))
-                .mockLocation(geoLocationRequest.isMockLocation())
+                .mockLocation(geoLocationRequest.getMockLocation())
                 .provider(geoLocationRequest.getProvider())
                 .speed(geoLocationRequest.getSpeed())
                 .timeNs(geoLocationRequest.getTimeNs())

@@ -53,6 +53,11 @@ public class QosMeasurementController {
         return qosMeasurementService.evaluateQosByOpenTestUUID(openTestUUID, lang);
     }
 
+    @GetMapping(value = {QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, QOS_BY_OPEN_TEST_UUID})
+    public QosMeasurementsResponse getQosByOpenTestUUID(@PathVariable(name = "open_test_uuid") UUID openTestUUID, @PathVariable(name = "lang", required = false) String lang) {
+        return qosMeasurementService.evaluateQosByOpenTestUUID(openTestUUID, lang);
+    }
+
     @ApiOperation("Save QoS test results")
     @GetMapping(RESULT_QOS_URL)
     public ErrorResponse saveQosMeasurementResultGet(@RequestBody QosResultRequest qosResultRequest) {

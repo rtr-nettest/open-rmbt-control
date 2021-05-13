@@ -35,6 +35,7 @@ public class RadioSignalMapperImplTest {
     public void radioSignalRequestToRadioSignal_whenCommonData_expectRadioSignal() {
         when(uuidGenerator.generateUUID()).thenReturn(TestConstants.DEFAULT_UUID);
         when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
         when(radioSignalRequest.getCellUUID()).thenReturn(TestConstants.DEFAULT_UUID);
         when(radioSignalRequest.getNetworkTypeId()).thenReturn(TestConstants.DEFAULT_NETWORK_TYPE_ID);
         when(radioSignalRequest.getBitErrorRate()).thenReturn(TestConstants.DEFAULT_BIT_ERROR_RATE);

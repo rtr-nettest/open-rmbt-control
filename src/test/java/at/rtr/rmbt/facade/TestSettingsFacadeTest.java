@@ -212,9 +212,9 @@ public class TestSettingsFacadeTest {
         assertEquals(testServer.getUid(), testResult.getTestServer().getUid());
         assertEquals(testServer.getPortSsl(), testResult.getServerPort());
         assertEquals(applicationProperties.getDuration(), testResult.getDuration());
-        assertEquals(testSettingsRequest.getNumberOfThreads(), testResult.getNumberOfThreads());
+        assertEquals(testSettingsRequest.getNumberOfThreads(), testResult.getNumberOfThreadsRequested());
         assertEquals(TestStatus.STARTED, testResult.getStatus());
-        assertEquals(testSettingsRequest.isNdt(), testResult.getRunNdt());
+        assertEquals(testSettingsRequest.getNdt(), testResult.getRunNdt());
         assertEquals(testSettingsRequest.getSoftwareRevision(), testResult.getSoftwareRevision());
         assertTrue(testResult.getUseSsl());
         assertEquals(testSettingsRequest.getMeasurementType(), testResult.getMeasurementType());
@@ -274,7 +274,7 @@ public class TestSettingsFacadeTest {
         assertEquals(result.getTestId(), secondTestResult.getUid());
         assertEquals(result.getTestServerPort(), testServer.getPortSsl());
         assertEquals(result.getTestDuration(), applicationProperties.getDuration().toString());
-        assertEquals(result.getTestNumberOfThreads(), secondTestResult.getNumberOfThreads().toString());
+        assertEquals(result.getTestNumberOfThreads(), secondTestResult.getNumberOfThreadsRequested().toString());
         assertEquals(result.getTestNumberOfPings(), applicationProperties.getPings().toString());
         assertEquals(result.getClientRemoteIp(), request.getLocalAddr());
     }

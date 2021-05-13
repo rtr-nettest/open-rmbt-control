@@ -4,13 +4,12 @@ package at.rtr.rmbt.model;
 import at.rtr.rmbt.enums.*;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+import org.hibernate.annotations.*;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -216,7 +215,7 @@ public class Test implements Serializable {
     @Column(name = "public_ip_as_name")
     private String publicIpAsName;
 
-    @Column(name = "testSlot")
+    @Column(name = "test_slot")
     private Integer testSlot;
 
     @OneToOne
