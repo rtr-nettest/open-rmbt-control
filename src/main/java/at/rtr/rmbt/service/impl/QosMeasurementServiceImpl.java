@@ -27,6 +27,7 @@ import com.vdurmont.semver4j.SemverException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,7 +94,7 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
         final ErrorResponse errorList = new ErrorResponse();
         final String lang = request.getClientLanguage();
         Locale locale = MessageUtils.getLocaleFormLanguage(lang, applicationProperties.getLanguage());
-        ResultOptions resultOptions = new ResultOptions(new Locale(lang));
+        ResultOptions resultOptions = new ResultOptions(locale);
 
         if (StringUtils.isNotBlank(request.getTestToken())) {
             final String[] token = request.getTestToken().split("_");
@@ -251,22 +252,23 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
 
     private void saveQosTestResults(Test test, List<QosSendTestResultItem> qosResult) throws JsonProcessingException {
         for (QosSendTestResultItem testObject : qosResult) {
-            QosSendTestResultItem resultJson = testObject.toBuilder()
-                .testType(null)
-                .qosTestUid(null)
-                .build();
+            JSONObject testObjectJson = new JSONObject(objectMapper.writeValueAsString(testObject));
+            JSONObject resultJson = new JSONObject(testObjectJson, JSONObject.getNames(testObjectJson));
+            resultJson.remove("test_type");
+            resultJson.remove("qos_test_uid");
             QosTestResult testResult = new QosTestResult();
-            testResult.setResult(objectMapper.writeValueAsString(resultJson));
+            testResult.setResult(resultJson.toString());
             testResult.setTestUid(test.getUid());
             testResult.setSuccessCount(0);
             testResult.setFailureCount(0);
             long qosTestId = testObject.getQosTestUid() != null ? testObject.getQosTestUid() : Long.MIN_VALUE;
             qosTestObjectiveRepository.findById(qosTestId).ifPresent(testResult::setQosTestObjective);
-            qosTestResultRepository.save(testResult);
+            qosTestResultRepository.saveAndFlush(testResult);
         }
     }
 
     private void compareResultsAndSave(ResultOptions resultOptions, Map<TestType, TreeSet<ResultDesc>> resultKeys, QosTestResult testResult) throws JsonProcessingException, HstoreParseException, IllegalAccessException {
+        final String resultActual = testResult.getResult();
         TestType testType = testResult.getQosTestObjective().getTestType(); //get the correct class of the result;
         testResult.setFailureCount(0);
         testResult.setSuccessCount(0);
@@ -277,9 +279,9 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
         testResult.setResult(objectMapper.writeValueAsString(result));
         //compare test results with expected results
         QosUtil.compareTestResults(testResult, result, resultKeys, testType, resultOptions, objectMapper);
-
+        testResult.setResult(resultActual);
         //update all test results after the success and failure counters have been set
-        qosTestResultRepository.save(testResult);
+        qosTestResultRepository.updateCounters(testResult.getSuccessCount(), testResult.getFailureCount(), testResult.getUid());
     }
 
     private UUID getClientUuid(QosResultRequest request) {

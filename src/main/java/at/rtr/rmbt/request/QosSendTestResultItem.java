@@ -23,47 +23,47 @@ public class QosSendTestResultItem {
 
     @ApiModelProperty(example = "2628208113", notes = "Duration of the test")
     @JsonProperty("duration_ns")
-    private long durationNs;
+    private Long durationNs;
 
     @ApiModelProperty(example = "59639502458", notes = "Start time of the test in nanoseconds, relative to start of the entire measurement")
     @JsonProperty("start_time_ns")
-    private long startTimeNs;
+    private Long startTimeNs;
 
     @ApiModelProperty(example = "100", notes = "VOIP shortest sequence without any error")
     @JsonProperty("voip_result_out_short_seq")
-    private long voipResultOutShortSeq;
+    private Long voipResultOutShortSeq;
 
     @ApiModelProperty(example = "0", notes = "VOIP longest incomming sequence with error")
     @JsonProperty("voip_result_in_sequence_error")
-    private long voipResultInSequenceError;
+    private Long voipResultInSequenceError;
 
     @ApiModelProperty(example = "10020000000", notes = "VOIP objective delay to wait in nanoseconds")
     @JsonProperty("voip_objective_delay")
-    private long voipObjectiveDelay;
+    private Long voipObjectiveDelay;
 
     @ApiModelProperty(example = "8000", notes = "VOIP objective sample rate")
     @JsonProperty("voip_objective_sample_rate")
-    private long voipObjectiveSampleRate;
+    private Long voipObjectiveSampleRate;
 
     @ApiModelProperty(example = "100", notes = "VOIP total number of packets emitted")
     @JsonProperty("voip_result_out_num_packets")
-    private int voipResultOutNumPackets;
+    private Integer voipResultOutNumPackets;
 
     @ApiModelProperty(example = "100", notes = "VOIP longest errorless sequence")
     @JsonProperty("voip_result_out_long_seq")
-    private int voipResultOutLongSeq;
+    private Integer voipResultOutLongSeq;
 
     @ApiModelProperty(example = "8", notes = "VOIP bits per sample")
     @JsonProperty("voip_objective_bits_per_sample")
-    private int voipObjectiveBitsPerSample;
+    private Integer voipObjectiveBitsPerSample;
 
     @ApiModelProperty(example = "10212357", notes = "VOIP max jitter out in nanos")
     @JsonProperty("voip_result_out_max_jitter")
-    private long voipResultOutMaxJitter;
+    private Long voipResultOutMaxJitter;
 
     @ApiModelProperty(example = "3610909", notes = "VOIP mean jitter out in nanos")
     @JsonProperty("voip_result_out_mean_jitter")
-    private long voipResultOutMeanJitter;
+    private Long voipResultOutMeanJitter;
 
     @ApiModelProperty(example = "OK", notes = "VOIP total result status")
     @JsonProperty("voip_result_status")
@@ -71,63 +71,63 @@ public class QosSendTestResultItem {
 
     @ApiModelProperty(example = "100", notes = "VOIP total number of incomming packets (outcoming and incoming should be equal to test to be successful)")
     @JsonProperty("voip_result_in_num_packets")
-    private int voipResultInNumPackets;
+    private Integer voipResultInNumPackets;
 
     @ApiModelProperty(example = "0", notes = "VOIP longest outgoing sequence with error")
     @JsonProperty("voip_result_out_sequence_error")
-    private int voipResultOutSequenceError;
+    private Integer voipResultOutSequenceError;
 
     @ApiModelProperty(example = "4009958", notes = "VOIP max incomming jitter in nanoseconds")
     @JsonProperty("voip_result_in_max_jitter")
-    private long voipResultInMaxJitter;
+    private Long voipResultInMaxJitter;
 
     @ApiModelProperty(example = "-135516126", notes = "VOIP incomming skew in nanoseconds")
     @JsonProperty("voip_result_in_skew")
-    private long voipResultInSkew;
+    private Long voipResultInSkew;
 
     @ApiModelProperty(example = "51375887", notes = "VOIP outgoing max delta in nanoseconds")
     @JsonProperty("voip_result_out_max_delta")
-    private long voipResultOutMaxDelta;
+    private Long voipResultOutMaxDelta;
 
     @ApiModelProperty(example = "null", notes = "VOIP input port")
     @JsonProperty("voip_objective_in_port")
-    private int voipObjectiveInPort;
+    private Integer voipObjectiveInPort;
 
     @ApiModelProperty(example = "2000000000", notes = "VOIP total call duration in nanoseconds")
     @JsonProperty("voip_objective_call_duration")
-    private long voipObjectiveCallDuration;
+    private Long voipObjectiveCallDuration;
 
     @ApiModelProperty(example = "100", notes = "VOIP shortest valid incomming sequence")
     @JsonProperty("voip_result_in_short_seq")
-    private long voipResultInShortSeq;
+    private Long voipResultInShortSeq;
 
     @ApiModelProperty(example = "19643375", notes = "VOIP incomming max delta in nanoseconds")
     @JsonProperty("voip_result_in_max_delta")
-    private long voipResultInMaxDelta;
+    private Long voipResultInMaxDelta;
 
     @ApiModelProperty(example = "8", notes = "VOIP payload objective")
     @JsonProperty("voip_objective_payload")
-    private int voipObjectivePayload;
+    private Integer voipObjectivePayload;
 
     @ApiModelProperty(example = "5060", notes = "VOIP outgoing port")
     @JsonProperty("voip_objective_out_port")
-    private int voipObjectiveOutPort;
+    private Integer voipObjectiveOutPort;
 
     @ApiModelProperty(example = "1533211", notes = "VOIP incomming mean jitter in nanoseconds")
     @JsonProperty("voip_result_in_mean_jitter")
-    private long voipResultInMeanJitter;
+    private Long voipResultInMeanJitter;
 
     @ApiModelProperty(example = "100", notes = "VOIP incomming longest errorless sequence")
     @JsonProperty("voip_result_in_long_seq")
-    private int voipResultInLongSeq;
+    private Integer voipResultInLongSeq;
 
     @ApiModelProperty(example = "-181283337", notes = "VOIP outgoing skew in nanoseconds")
     @JsonProperty("voip_result_out_skew")
-    private int voipResultOutSkew;
+    private Integer voipResultOutSkew;
 
     @ApiModelProperty(example = "30", notes = "max valid hops to count this test results as success")
     @JsonProperty("traceroute_objective_max_hops")
-    private int tracerouteObjectiveMaxHops;
+    private Integer tracerouteObjectiveMaxHops;
 
     @ApiModelProperty(notes = "Result items with addresses and times which were tested")
     @JsonProperty("traceroute_result_details")

@@ -142,8 +142,7 @@ public class QosMeasurementServiceImplTest {
         ErrorResponse response = qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
 
         assertTrue(response.getError().isEmpty());
-        verify(qosTestResultRepository).save(qosTestResult);
-        verify(qosTestResultRepository).save(qosTestResult);
+        verify(qosTestResultRepository, times(1)).saveAndFlush(any());
     }
 
     @Test
@@ -171,8 +170,7 @@ public class QosMeasurementServiceImplTest {
         ErrorResponse response = qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
 
         assertTrue(response.getError().isEmpty());
-        verify(qosTestResultRepository).save(qosTestResult);
-        verify(qosTestResultRepository).save(qosTestResult);
+        verify(qosTestResultRepository, times(1)).saveAndFlush(any());
     }
 
     @Test
@@ -195,8 +193,7 @@ public class QosMeasurementServiceImplTest {
         ErrorResponse response = qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
 
         assertTrue(response.getError().isEmpty());
-        verify(qosTestResultRepository).save(qosTestResult);
-        verify(qosTestResultRepository).save(qosTestResult);
+        verify(qosTestResultRepository, times(1)).saveAndFlush(any());
     }
 
     @Test
