@@ -15,7 +15,7 @@ import java.util.List;
 public class QosSendTestResultItem {
     @ApiModelProperty(notes = "Qos test uid")
     @JsonProperty("qos_test_uid")
-    private Long qosTestUid;
+    private long qosTestUid;
 
     @ApiModelProperty(example = "WEBSITE", notes = "Enum value of one of the type of the QoS test category")
     @JsonProperty("test_type")

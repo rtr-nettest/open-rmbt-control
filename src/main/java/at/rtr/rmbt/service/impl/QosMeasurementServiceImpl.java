@@ -129,9 +129,12 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
                             //map that contains all test types and their result descriptions determined by the test result <-> test objectives comparison
                             Map<TestType, TreeSet<ResultDesc>> resultKeys = new HashMap<>();
 
+                            Set<QosTestResult> qosTestResults = new HashSet<>();
                             for (QosTestResult testResult : testResultList) { // iterate through all result entries
-                                compareResultsAndSave(resultOptions, resultKeys, testResult);
+                                qosTestResults.add(compareResultsAndSave(resultOptions, resultKeys, testResult));
                             }
+                            qosTestResultRepository.saveAll(qosTestResults);
+
                         } else {
                             errorList.addErrorString(messageSource.getMessage("ERROR_CLIENT_VERSION", null, locale));
                         }
@@ -251,6 +254,7 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
     }
 
     private void saveQosTestResults(Test test, List<QosSendTestResultItem> qosResult) throws JsonProcessingException {
+        Set<QosTestResult> resultsToSave = new HashSet<>();
         for (QosSendTestResultItem testObject : qosResult) {
             JSONObject testObjectJson = new JSONObject(objectMapper.writeValueAsString(testObject));
             JSONObject resultJson = new JSONObject(testObjectJson, JSONObject.getNames(testObjectJson));
@@ -261,13 +265,13 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
             testResult.setTestUid(test.getUid());
             testResult.setSuccessCount(0);
             testResult.setFailureCount(0);
-            long qosTestId = testObject.getQosTestUid() != null ? testObject.getQosTestUid() : Long.MIN_VALUE;
-            qosTestObjectiveRepository.findById(qosTestId).ifPresent(testResult::setQosTestObjective);
-            qosTestResultRepository.saveAndFlush(testResult);
+            testResult.setQosTestObjective(qosTestObjectiveRepository.getOne(testObject.getQosTestUid()));
+            resultsToSave.add(testResult);
         }
+        qosTestResultRepository.saveAll(resultsToSave);
     }
 
-    private void compareResultsAndSave(ResultOptions resultOptions, Map<TestType, TreeSet<ResultDesc>> resultKeys, QosTestResult testResult) throws JsonProcessingException, HstoreParseException, IllegalAccessException {
+    private QosTestResult compareResultsAndSave(ResultOptions resultOptions, Map<TestType, TreeSet<ResultDesc>> resultKeys, QosTestResult testResult) throws JsonProcessingException, HstoreParseException, IllegalAccessException {
         final String resultActual = testResult.getResult();
         TestType testType = testResult.getQosTestObjective().getTestType(); //get the correct class of the result;
         testResult.setFailureCount(0);
@@ -281,7 +285,7 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
         QosUtil.compareTestResults(testResult, result, resultKeys, testType, resultOptions, objectMapper);
         testResult.setResult(resultActual);
         //update all test results after the success and failure counters have been set
-        qosTestResultRepository.updateCounters(testResult.getSuccessCount(), testResult.getFailureCount(), testResult.getUid());
+        return testResult;
     }
 
     private UUID getClientUuid(QosResultRequest request) {

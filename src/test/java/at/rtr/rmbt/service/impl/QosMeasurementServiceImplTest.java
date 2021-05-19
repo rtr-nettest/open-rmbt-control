@@ -129,7 +129,7 @@ public class QosMeasurementServiceImplTest {
         qosTestResult.setResult(mapper.writeValueAsString(
             qosSendTestResultItem.toBuilder()
                 .testType(null)
-                .qosTestUid(null)
+                .qosTestUid(0L)
                 .build()
         ));
         qosTestResult.setTestUid(test.getUid());
@@ -142,7 +142,7 @@ public class QosMeasurementServiceImplTest {
         ErrorResponse response = qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
 
         assertTrue(response.getError().isEmpty());
-        verify(qosTestResultRepository, times(1)).saveAndFlush(any());
+        verify(qosTestResultRepository, times(1)).saveAll(Set.of(qosTestResult));
     }
 
     @Test
@@ -151,7 +151,7 @@ public class QosMeasurementServiceImplTest {
         qosTestResult.setResult(mapper.writeValueAsString(
             qosSendTestResultItem.toBuilder()
                 .testType(null)
-                .qosTestUid(null)
+                .qosTestUid(0L)
                 .build()
         ));
         qosTestResult.setTestUid(test.getUid());
@@ -170,7 +170,7 @@ public class QosMeasurementServiceImplTest {
         ErrorResponse response = qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
 
         assertTrue(response.getError().isEmpty());
-        verify(qosTestResultRepository, times(1)).saveAndFlush(any());
+        verify(qosTestResultRepository, times(1)).saveAll(Set.of(qosTestResult));
     }
 
     @Test
@@ -179,7 +179,7 @@ public class QosMeasurementServiceImplTest {
         qosTestResult.setResult(mapper.writeValueAsString(
             qosSendTestResultItem.toBuilder()
                 .testType(null)
-                .qosTestUid(null)
+                .qosTestUid(0L)
                 .build()
         ));
         qosTestResult.setTestUid(test.getUid());
@@ -193,7 +193,7 @@ public class QosMeasurementServiceImplTest {
         ErrorResponse response = qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
 
         assertTrue(response.getError().isEmpty());
-        verify(qosTestResultRepository, times(1)).saveAndFlush(any());
+        verify(qosTestResultRepository, times(1)).saveAll(Set.of(qosTestResult));
     }
 
     @Test
