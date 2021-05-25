@@ -3,6 +3,7 @@ package at.rtr.rmbt.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Getter
 @Setter
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "linknet")
-public class Linknet {
+public class Linknet implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
