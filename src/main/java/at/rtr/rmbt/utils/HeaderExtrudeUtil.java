@@ -12,10 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static at.rtr.rmbt.constant.HeaderConstants.HEADER_NGINX_X_FORWARDED_FOR;
-import static at.rtr.rmbt.constant.HeaderConstants.IP;
-import static at.rtr.rmbt.constant.HeaderConstants.URL;
-import static at.rtr.rmbt.constant.HeaderConstants.USER_AGENT;
+import static at.rtr.rmbt.constant.HeaderConstants.*;
 
 @UtilityClass
 public class HeaderExtrudeUtil {
@@ -30,7 +27,7 @@ public class HeaderExtrudeUtil {
 
     public Map<String, String> getHeadersWithoutIpAndUrl(Map<String, String> headers) {
         return headers.entrySet().stream()
-                .filter(x -> !StringUtils.equalsAnyIgnoreCase(x.getKey(), IP, URL))
+                .filter(x -> !StringUtils.equalsAnyIgnoreCase(x.getKey(), IP, URL, HOST))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

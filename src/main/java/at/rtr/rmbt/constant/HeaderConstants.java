@@ -6,4 +6,5 @@ public interface HeaderConstants {
     String URL = "X-Real-URL";
     String HEADER_NGINX_X_FORWARDED_FOR = "x-forwarded-for";
     String USER_AGENT = "User-Agent";
+    String HOST = "Host";
 }
