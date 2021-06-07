@@ -33,6 +33,7 @@ public interface Config {
     String SYSTEM_UUID_KEY = "system_UUID";
     String GEO_PROVIDER_MANUAL = "manual";
     String GEO_PROVIDER_GEOCODER = "geocoder";
+    String GEO_PROVIDER_GPS = "gps";
 
 
     List<String> ADMIN_SETTINGS_KEYS = List.of(SIGNAL_RESULT_URL_KEY,

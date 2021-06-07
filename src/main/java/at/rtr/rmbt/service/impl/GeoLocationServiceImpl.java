@@ -66,7 +66,9 @@ public class GeoLocationServiceImpl implements GeoLocationService {
     private boolean isGeoNotNullAndProviderIsSupported(double geoLat, double geoLong, String provider) {
         return !Double.isNaN(geoLat) &&
                 !Double.isNaN(geoLong) &&
-                (provider.equals(Config.GEO_PROVIDER_GEOCODER) || provider.equals(Config.GEO_PROVIDER_MANUAL));
+                (provider.equals(Config.GEO_PROVIDER_GEOCODER) ||
+                        provider.equals(Config.GEO_PROVIDER_MANUAL) ||
+                        provider.equals(Config.GEO_PROVIDER_GPS));
     }
 
     private void updateTestGeo(Test test, GeoLocation geoLocation) {
