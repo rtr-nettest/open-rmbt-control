@@ -68,35 +68,31 @@ public class ResultServiceImpl implements ResultService {
         setNetworkType(test);
         setAndroidPermission(resultRequest, test);
         setSpeedAndPing(resultRequest, test);
-        setStatus(resultRequest, test);
         testRepository.save(test);
-        updateLocation(test);
+        updateLocationAndStatus(test, getStatus(resultRequest, test));
     }
 
-    private void updateLocation(Test test) {
+    private void updateLocationAndStatus(Test test, TestStatus testStatus) {
         if (Objects.nonNull(test.getLatitude()) && Objects.nonNull(test.getLongitude())) {
-            testRepository.updateGeoLocation(test.getUid(), test.getLongitude(), test.getLatitude());
+            testRepository.updateGeoLocationAndStatus(test.getUid(), test.getLongitude(), test.getLatitude(), testStatus.name());
         }
     }
 
-    private void setStatus(ResultRequest resultRequest, Test test) {
-        test.setStatus(TestStatus.FINISHED);
+    private TestStatus getStatus(ResultRequest resultRequest, Test test) {
         if (Objects.nonNull(resultRequest.getTestStatus())) {
             switch (resultRequest.getTestStatus()) {
                 case "0":
                 case "SUCCESS":
-                    test.setStatus(TestStatus.FINISHED);
-                    break;
+                    return TestStatus.FINISHED;
                 case "1":
                 case "ERROR":
-                    test.setStatus(TestStatus.ERROR);
-                    break;
+                    return TestStatus.ERROR;
                 case "2":
                 case "ABORTED":
-                    test.setStatus(TestStatus.ABORTED);
-                    break;
+                    return TestStatus.ABORTED;
             }
         }
+        return TestStatus.FINISHED;
     }
 
     private void setNetworkType(Test test) {
