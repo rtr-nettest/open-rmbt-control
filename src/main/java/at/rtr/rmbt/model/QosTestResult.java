@@ -25,7 +25,8 @@ import java.util.Map;
 public class QosTestResult {
     @Id
     @Column(name = "uid")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "qos_test_result_seq")
+    @SequenceGenerator(name = "qos_test_result_seq", sequenceName = "qos_test_result_uid_seq", allocationSize = 1)
     private Long uid;
 
     @Column(name = "test_uid")

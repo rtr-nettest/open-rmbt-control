@@ -104,4 +104,9 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
     @Transactional
     @Query(value = "UPDATE test SET location = ST_TRANSFORM(ST_SetSRID(ST_Point(:longitude, :latitude), 4326), 900913) WHERE uid = :testUid", nativeQuery = true)
     void updateGeoLocation(Long testUid, Double longitude, Double latitude);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE test SET status = :status WHERE uid = :testUid", nativeQuery = true)
+    void updateStatus(Long testUid, String status);
 }

@@ -356,5 +356,9 @@ public class QosSendTestResultItem {
         @ApiModelProperty(notes = "Time to live of the entry in seconds", example = "261")
         @JsonProperty("dns_result_ttl")
         private Long dnsResultTtl;
+
+        @ApiModelProperty(notes = "dns result priority", example = "200")
+        @JsonProperty("dns_result_priority")
+        private Long dnsResultPriority;
     }
 }

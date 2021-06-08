@@ -75,6 +75,8 @@ public class ResultServiceImpl implements ResultService {
     private void updateLocationAndStatus(Test test, TestStatus testStatus) {
         if (Objects.nonNull(test.getLatitude()) && Objects.nonNull(test.getLongitude())) {
             testRepository.updateGeoLocationAndStatus(test.getUid(), test.getLongitude(), test.getLatitude(), testStatus.name());
+        } else {
+            testRepository.updateStatus(test.getUid(), testStatus.name());
         }
     }
 
