@@ -341,7 +341,7 @@ public class QosUtil {
             List<QosTestResultTestDescItem> testTypeDescArray = new ArrayList<>();
             for (QosTestTypeDesc desc : qosTestTypeDescRepository.findAll()) {
                 if (desc.getTest() != null) {
-                    testTypeDescArray.add(new QosTestResultTestDescItem(testDescMap.get(desc.getName()), desc.getTest(), testDescMap.get(desc.getDescription())));
+                    testTypeDescArray.add(new QosTestResultTestDescItem(testDescMap.get(desc.getName()), desc.getTest().name(), testDescMap.get(desc.getDescription())));
                 }
             }
 

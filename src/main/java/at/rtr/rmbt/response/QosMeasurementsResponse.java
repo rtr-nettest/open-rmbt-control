@@ -49,7 +49,7 @@ public class QosMeasurementsResponse extends ErrorResponse {
         private String name;
         @ApiModelProperty(notes = "enum value of one of the type of the QoS test category", example = "WEBSITE")
         @JsonProperty("test_type")
-        private TestType testType;
+        private String testType;
         @ApiModelProperty(notes = "localized description of the test group", example = "The website test downloads a reference web page (mobile Kepler page by ETSI). It is verified, if the page can be transferred and how long the download of the page takes.")
         @JsonProperty("desc")
         private String desc;
