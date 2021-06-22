@@ -187,7 +187,7 @@ public class QosSendTestResultItem {
 
     @ApiModelProperty(notes = "packet loss rate in percentage", example = "100")
     @JsonProperty("udp_result_in_packet_loss_rate")
-    private String udpResultInPacketLossRate;
+    private Integer udpResultInPacketLossRate;
 
     @ApiModelProperty(notes = "total number of expected incomming packets", example = "5")
     @JsonProperty("udp_objective_in_num_packets")
@@ -207,7 +207,7 @@ public class QosSendTestResultItem {
 
     @ApiModelProperty(notes = "packet loss rate in percentage", example = "0")
     @JsonProperty("udp_result_out_packet_loss_rate")
-    private String udpResultOutPacketLossRate;
+    private Integer udpResultOutPacketLossRate;
 
     @ApiModelProperty(notes = "total number of expected outgoing packets", example = "5")
     @JsonProperty("udp_objective_out_num_packets")
@@ -271,7 +271,7 @@ public class QosSendTestResultItem {
 
     @ApiModelProperty(notes = "timeout in nanoseconds", example = "10000000000")
     @JsonProperty("website_objective_timeout")
-    private String websiteObjectiveTimeout;
+    private Long websiteObjectiveTimeout;
 
     @ApiModelProperty(notes = "real duration of the load in nanoseconds", example = "6445962303")
     @JsonProperty("website_result_duration")
@@ -331,7 +331,7 @@ public class QosSendTestResultItem {
 
     @ApiModelProperty(notes = "how many addresses (entries) found", example = "0")
     @JsonProperty("dns_result_entries_found")
-    private String dnsResultEntriesFound;
+    private Integer dnsResultEntriesFound;
 
     @Getter
     @Setter
