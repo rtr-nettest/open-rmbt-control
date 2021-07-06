@@ -94,6 +94,10 @@ public class ResultRequest {
     @JsonProperty(value = "test_num_threads")
     private final Integer testNumThreads;
 
+    @ApiModelProperty(notes = "Number of threads used during the upload")
+    @JsonProperty(value = "num_threads_ul")
+    private final Integer numThreadsUl;
+
     @ApiModelProperty(notes = "Download speed in kbs", example = "7170")
     @JsonProperty(value = "test_speed_download")
     private final Integer downloadSpeed;
