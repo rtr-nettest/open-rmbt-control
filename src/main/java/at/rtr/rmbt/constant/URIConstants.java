@@ -31,4 +31,5 @@ public interface URIConstants {
     String RESULT_UPDATE = "/resultUpdate";
     String QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE = "/qos/O{open_test_uuid}/{lang}";
     String QOS_BY_OPEN_TEST_UUID = "/qos/O{open_test_uuid}";
+    String QOS_RESULT = "/qos";
 }

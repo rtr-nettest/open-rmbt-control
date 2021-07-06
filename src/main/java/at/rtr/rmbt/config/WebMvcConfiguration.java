@@ -11,35 +11,13 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Arrays;
 import java.util.List;
 
-import static at.rtr.rmbt.constant.URIConstants.ADMIN_NEWS;
-import static at.rtr.rmbt.constant.URIConstants.ADMIN_SETTING;
-import static at.rtr.rmbt.constant.URIConstants.ADMIN_SET_IMPLAUSIBLE;
-import static at.rtr.rmbt.constant.URIConstants.ADMIN_SIGNAL;
-import static at.rtr.rmbt.constant.URIConstants.HISTORY;
-import static at.rtr.rmbt.constant.URIConstants.IP;
-import static at.rtr.rmbt.constant.URIConstants.MEASUREMENT_QOS_REQUEST;
-import static at.rtr.rmbt.constant.URIConstants.MEASUREMENT_QOS_RESULT;
-import static at.rtr.rmbt.constant.URIConstants.NEWS_URL;
-import static at.rtr.rmbt.constant.URIConstants.PROVIDERS;
-import static at.rtr.rmbt.constant.URIConstants.QOS_BY_OPEN_TEST_UUID;
-import static at.rtr.rmbt.constant.URIConstants.QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE;
-import static at.rtr.rmbt.constant.URIConstants.REGISTRATION_URL;
-import static at.rtr.rmbt.constant.URIConstants.REQUEST_DATA_COLLECTOR;
-import static at.rtr.rmbt.constant.URIConstants.RESULT_QOS_URL;
-import static at.rtr.rmbt.constant.URIConstants.RESULT_UPDATE;
-import static at.rtr.rmbt.constant.URIConstants.RESULT_URL;
-import static at.rtr.rmbt.constant.URIConstants.SETTINGS_URL;
-import static at.rtr.rmbt.constant.URIConstants.SIGNAL_REQUEST;
-import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
-import static at.rtr.rmbt.constant.URIConstants.SYNC;
-import static at.rtr.rmbt.constant.URIConstants.TEST_RESULT;
-import static at.rtr.rmbt.constant.URIConstants.TEST_RESULT_DETAIL;
-import static at.rtr.rmbt.constant.URIConstants.TEST_SERVER;
-import static at.rtr.rmbt.constant.URIConstants.VERSION;
+import static at.rtr.rmbt.constant.URIConstants.*;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
@@ -50,6 +28,9 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         pageableResolver.setOneIndexedParameters(true);
         argumentResolvers.add(pageableResolver);
     }
+
+    @Value("${origin}")
+    private String origin;
 
     @Bean
     public RestTemplate restTemplate() {
@@ -95,4 +76,20 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                     .ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
         }
     }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        Arrays.asList(SETTINGS_URL, HISTORY, ADMIN_SET_IMPLAUSIBLE, NEWS_URL, MEASUREMENT_QOS_REQUEST, MEASUREMENT_QOS_REQUEST,
+                REGISTRATION_URL, RESULT_URL, RESULT_UPDATE, SYNC, TEST_RESULT_DETAIL, TEST_RESULT)
+                .forEach(url -> {
+                    registry.addMapping(url)
+                            .allowedMethods(HttpMethod.GET.name(), HttpMethod.HEAD.name(), HttpMethod.POST.name(), HttpMethod.OPTIONS.name())
+                            .allowedOrigins(origin);
+
+                });
+
+        Arrays.asList(IP, QOS_RESULT, QOS_RESULT + "/**", VERSION, REQUEST_DATA_COLLECTOR)
+                .forEach(url -> registry.addMapping(url));
+    }
+
 }

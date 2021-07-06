@@ -31,7 +31,7 @@ RMBT_SECRETKEY: RMBT_SECRETKEY
 auth0:
   issuer: https://specure.eu.auth0.com/
   apiAudience: https://nettest.org
-
+origin: https://www.netztest.at
 app:
   rmbt:
     accuracyDetailLimit: 10000
