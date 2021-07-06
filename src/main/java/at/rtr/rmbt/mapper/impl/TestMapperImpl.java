@@ -67,6 +67,7 @@ public class TestMapperImpl implements TestMapper {
         test.setWifiBssid(resultRequest.getWifiBSSID());
         test.setWifiNetworkId(resultRequest.getWifiNetworkId());
         test.setNumberOfThreads(resultRequest.getTestNumThreads());
+        test.setNumberOfThreadsUpload(resultRequest.getNumThreadsUl());
         test.setBytesDownload(resultRequest.getTestBytesDownload());
         test.setBytesUpload(resultRequest.getTestBytesUpload());
         test.setNsecDownload(resultRequest.getDownloadDurationNanos());
