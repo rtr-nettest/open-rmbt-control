@@ -29,8 +29,8 @@ spring:
 RMBT_SECRETKEY: RMBT_SECRETKEY
 
 auth0:
-  issuer: https://specure.eu.auth0.com/
-  apiAudience: https://nettest.org
+  issuer: https://auth.a2332751-f1b8-4d26-8291-dfaef9094f33.netztest.at/
+  apiAudience: https://netztest.at
 origin: https://www.netztest.at
 app:
   rmbt:
