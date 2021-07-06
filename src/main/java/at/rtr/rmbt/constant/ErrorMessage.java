@@ -14,4 +14,5 @@ public interface ErrorMessage {
     String CLIENT_DOES_MATCH_TEST = "Client UUID does not match test";
     String REQUIRED_FIELDS_MISSING = "Required fields missing";
     String INVALID_UUID_TYPE = "Invalid uuid type";
+    String QOS_TEST_RESULT_FOR_TEST_NOT_FOUND = "Qos test result not found for test with uuid %s";
 }

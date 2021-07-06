@@ -1,6 +1,7 @@
 package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.constant.Constants;
+import at.rtr.rmbt.constant.ErrorMessage;
 import at.rtr.rmbt.dto.qos.AbstractResult;
 import at.rtr.rmbt.dto.qos.ResultDesc;
 import at.rtr.rmbt.dto.qos.ResultOptions;
@@ -194,7 +195,7 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
         } catch (IllegalAccessException | JsonProcessingException e) {
             logger.error(e.getMessage(), e);
         } catch (UnsupportedOperationException e) {
-            logger.error(e.getMessage(), e);
+            logger.error(String.format(ErrorMessage.QOS_TEST_RESULT_FOR_TEST_NOT_FOUND, qosTestUuid));
             errorList.addErrorString(messageSource.getMessage("ERROR_REQUEST_QOS_RESULT_DETAIL_NO_UUID", null, locale));
         }
 
@@ -235,7 +236,7 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
         } catch (IllegalAccessException | JsonProcessingException e) {
             logger.error(e.getMessage(), e);
         } catch (UnsupportedOperationException e) {
-            logger.error(e.getMessage(), e);
+            logger.error(String.format(ErrorMessage.QOS_TEST_RESULT_FOR_TEST_NOT_FOUND, openTestUUID));
             errorList.addErrorString(messageSource.getMessage("ERROR_REQUEST_QOS_RESULT_DETAIL_NO_UUID", null, locale));
         }
 
