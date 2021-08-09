@@ -79,14 +79,16 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
             client.setTime(now);
             client.setLastSeen(now);
         }
-        var savedClient = clientService.saveClient(client);
+        var savedClient = Optional.ofNullable(client)
+                .map(clientService::saveClient)
+                .orElse(null);
 
         var setting = SettingResponse.builder()
                 .termAndConditionsResponse(getTermAndConditionResponse(request.getPlatform(), request.getSoftwareVersionName(), settings))
-                .uuid(savedClient.getUuid())
+                .uuid(getUuid(savedClient))
                 .qosTestTypeDescResponse(qosTestTypeDescService.getAll(lang))
                 .urls(getUrlsResponse(settings))
-                .history(getHistoryResponse(savedClient.getUid()))
+                .history(getHistory(savedClient))
                 .servers(getServers(request.getCapabilities()))
                 .serverWSResponseList(testServerService.getServersWs())
                 .serverQosResponseList(testServerService.getServersQos())
@@ -177,6 +179,18 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 });
 
         settingsRepository.saveAll(updateSettings);
+    }
+
+    private UUID getUuid(RtrClient savedClient) {
+        return Optional.ofNullable(savedClient)
+                .map(RtrClient::getUuid).orElse(null);
+    }
+
+    private SettingsHistoryResponse getHistory(RtrClient savedClient) {
+        return Optional.ofNullable(savedClient)
+                .map(RtrClient::getUid)
+                .map(this::getHistoryResponse)
+                .orElse(null);
     }
 
     private void updateSettings(Map<String, Settings> settingsActual, String key, String value, List<Settings> updatedSettings) {
@@ -354,9 +368,9 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
         var devices = testService.getDeviceHistory(clientIds);
         var networks = testService.getGroupNameByClientIds(clientIds);
         return SettingsHistoryResponse.builder()
-            .devices(devices)
-            .networks(networks)
-            .build();
+                .devices(devices)
+                .networks(networks)
+                .build();
     }
 
     private boolean isTermAndConditionAccepted(RtrSettingsRequest rtrSettingsRequest) {

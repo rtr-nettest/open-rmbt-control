@@ -765,7 +765,7 @@ public class TestServiceImpl implements TestService {
         addSettlementType(propertiesList, locale, testLocation.getSettlementType());
         addString(propertiesList, locale, "link_name", testLocation.getLinkName());
         addInteger(propertiesList, locale, "link_distance", testLocation.getLinkDistance());
-        addInteger(propertiesList, locale, "edge_id", testLocation.getEdgeId());
+        addLong(propertiesList, locale, "edge_id", testLocation.getEdgeId());
         addInteger(propertiesList, locale, "link_frc", testLocation.getFrc());
         Optional.ofNullable(testLocation.getLinknet())
                 .ifPresent(linknet -> addLinkNetFields(propertiesList, locale, linknet));
