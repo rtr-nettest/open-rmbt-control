@@ -108,7 +108,7 @@ public interface TestFixtures {
         .dnsResultStatus("dnsResultStatus")
         .dnsObjectiveResolver("dnsObjectiveResolver")
         .dnsObjectiveTimeout(1L)
-        .dnsResultEntriesFound("dnsResultEntriesFound")
+        .dnsResultEntriesFound(3)
         .dnsObjectiveDnsRecord("dnsObjectiveDnsRecord")
         .dnsResultEntries(List.of(new QosSendTestResultItem.DnsResultItem("dnsResultAddress", 1L, 1L)))
         .build();
