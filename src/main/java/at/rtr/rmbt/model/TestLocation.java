@@ -73,7 +73,7 @@ public class TestLocation implements Serializable {
     private Integer frc;
 
     @Column(name = "edge_id")
-    private Integer edgeId;
+    private Long edgeId;
 
     @Column(name = "country_location")
     private String countryLocation;
