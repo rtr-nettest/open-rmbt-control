@@ -40,16 +40,22 @@ public class GeoLocationServiceImpl implements GeoLocationService {
                     minAccuracy = geoLoc.getAccuracy();
                     firstAccuratePosition = geoLoc;
                 }
-                GeoLocation savedGeoLocation = geoLocationRepository.saveAndFlush(geoLoc);
-                if (savedGeoLocation.getGeoLong() != null && savedGeoLocation.getGeoLat() != null)
-                    geoLocationRepository.updateLocation(savedGeoLocation.getId(), savedGeoLocation.getGeoLong(), savedGeoLocation.getGeoLat());
-//                }
+                storeGeoLoc(geoLoc);
+              //                }
             }
         }
 
         if (Objects.nonNull(firstAccuratePosition)) {
             updateTestGeo(test, firstAccuratePosition);
         }
+    }
+
+    @Transactional
+    protected void storeGeoLoc( GeoLocation geoLoc){
+        GeoLocation savedGeoLocation = geoLocationRepository.saveAndFlush(geoLoc);
+        if (savedGeoLocation.getGeoLong() != null && savedGeoLocation.getGeoLat() != null)
+            geoLocationRepository.updateLocation(savedGeoLocation.getId(), savedGeoLocation.getGeoLong(), savedGeoLocation.getGeoLat());
+
     }
 
     @Override
