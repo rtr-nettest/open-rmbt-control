@@ -13,6 +13,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -25,6 +26,7 @@ public class GeoLocationServiceImpl implements GeoLocationService {
     private final GeoLocationRepository geoLocationRepository;
 
     @Override
+    @Transactional
     public void processGeoLocationRequests(Collection<GeoLocationRequest> geoLocations, Test test) {
 
         Double minAccuracy = Double.MAX_VALUE;
