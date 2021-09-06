@@ -126,7 +126,7 @@ public class SignalServiceImpl implements SignalService {
                 .measurementType(signalRegisterRequest.getMeasurementType())
                 .build();
 
-        var savedTest = testRepository.save(test);
+        var savedTest = testRepository.saveAndFlush(test);
 
         return SignalSettingsResponse.builder()
                 .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
@@ -163,7 +163,7 @@ public class SignalServiceImpl implements SignalService {
 
         processRadioInfo(signalResultRequest, updatedTest);
 
-        testRepository.save(updatedTest);
+        testRepository.saveAndFlush(updatedTest);
         if (updatedTest.getLongitude() != null && updatedTest.getLatitude() != null)
             testRepository.updateGeoLocation(updatedTest.getUid(), updatedTest.getLongitude(), updatedTest.getLatitude());
 
@@ -345,7 +345,7 @@ public class SignalServiceImpl implements SignalService {
                 .lastSequenceNumber(-1)
                 .build();
 
-        return testRepository.save(newTest);
+        return testRepository.saveAndFlush(newTest);
     }
 
     private ZonedDateTime getClientTimeFromSignalResultRequest(SignalResultRequest signalResultRequest) {
