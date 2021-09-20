@@ -3,32 +3,21 @@ package at.rtr.rmbt.utils;
 import at.rtr.rmbt.dto.ASInformation;
 import com.google.common.net.InetAddresses;
 import lombok.experimental.UtilityClass;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.postgresql.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.context.MessageSource;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.Name;
-import org.xbill.DNS.PTRRecord;
 import org.xbill.DNS.Record;
-import org.xbill.DNS.ReverseMap;
-import org.xbill.DNS.SimpleResolver;
-import org.xbill.DNS.TXTRecord;
-import org.xbill.DNS.TextParseException;
-import org.xbill.DNS.Type;
+import org.xbill.DNS.*;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.URL;
+import java.net.*;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Locale;
@@ -244,7 +233,7 @@ public class HelperFunctions {
                     .number(jo.optLong("as_number", 0))
                     .build();
 
-        } catch (JSONException | RuntimeException | IOException e) {
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
         return null;
