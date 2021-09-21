@@ -4,6 +4,7 @@ import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.response.DataCollectorResponse;
 import at.rtr.rmbt.response.IpResponse;
 import at.rtr.rmbt.service.RequestDataCollectorService;
+import at.rtr.rmbt.utils.GeoIpHelper;
 import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import com.google.common.net.InetAddresses;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class RequestDataCollectorServiceImpl implements RequestDataCollectorServ
 
         return DataCollectorResponse.builder()
                 .ip(ip)
+                .countryGeoIp(GeoIpHelper.lookupCountry(InetAddresses.forString(ip)))
                 .port(request.getRemotePort())
                 .product(userAgent.get("name").replace("Internet Explorer", "IE"))
                 .version(userAgent.get("version"))
