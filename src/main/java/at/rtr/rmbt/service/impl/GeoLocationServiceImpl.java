@@ -15,6 +15,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -30,6 +32,8 @@ public class GeoLocationServiceImpl implements GeoLocationService {
         Double minAccuracy = Double.MAX_VALUE;
         GeoLocation firstAccuratePosition = null;
 
+        List<GeoLocation> stored = new LinkedList<>();
+
         for (GeoLocationRequest geoDataItem : geoLocations) {
             if (Objects.nonNull(geoDataItem.getTstamp()) && Objects.nonNull(geoDataItem.getGeoLat()) && Objects.nonNull(geoDataItem.getGeoLong())) {
 //                if (geoDataItem.getTimeNs() > -20000000000L) {// todo update to another value from RTR branch
@@ -39,11 +43,16 @@ public class GeoLocationServiceImpl implements GeoLocationService {
                     minAccuracy = geoLoc.getAccuracy();
                     firstAccuratePosition = geoLoc;
                 }
-                GeoLocation savedGeoLocation = geoLocationRepository.save(geoLoc);
-                geoLocationRepository.updateLocation(savedGeoLocation.getId(), savedGeoLocation.getGeoLong(), savedGeoLocation.getGeoLat());
-//                }
+                GeoLocation savedGeoLocation = geoLocationRepository.saveAndFlush(geoLoc);
+                stored.add(savedGeoLocation);
+                //                }
             }
         }
+
+        stored.forEach(savedGeoLocation -> {
+            if (savedGeoLocation.getGeoLong() != null && savedGeoLocation.getGeoLat() != null)
+                geoLocationRepository.updateLocation(savedGeoLocation.getId(), savedGeoLocation.getGeoLong(), savedGeoLocation.getGeoLat());
+        });
 
         if (Objects.nonNull(firstAccuratePosition)) {
             updateTestGeo(test, firstAccuratePosition);

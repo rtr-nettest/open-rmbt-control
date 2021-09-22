@@ -168,7 +168,7 @@ public class SignalServiceImplTest {
         when(signalRegisterRequest.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
         when(providerRepository.getProviderNameByTestId(TestConstants.DEFAULT_UID)).thenReturn(TestConstants.DEFAULT_PROVIDER);
-        when(testRepository.save(any())).thenReturn(savedTest);
+        when(testRepository.saveAndFlush(any())).thenReturn(savedTest);
         when(savedTest.getUid()).thenReturn(TestConstants.DEFAULT_UID);
         when(savedTest.getUuid()).thenReturn(TestConstants.DEFAULT_UUID);
 
@@ -203,7 +203,7 @@ public class SignalServiceImplTest {
         var response = signalService.processSignalResult(signalResultRequest);
 
         verify(test).setLastSequenceNumber(2);
-        verify(testRepository).save(test);
+        verify(testRepository).saveAndFlush(test);
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
@@ -215,7 +215,7 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getSequenceNumber()).thenReturn(0L);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
         when(uuidGenerator.generateUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
-        when(testRepository.save(any())).thenReturn(test);
+        when(testRepository.saveAndFlush(any())).thenReturn(test);
         when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(test.getUuid()).thenReturn(TestConstants.DEFAULT_UUID);
         when(test.getLastSequenceNumber()).thenReturn(-1);
@@ -223,7 +223,7 @@ public class SignalServiceImplTest {
         var response = signalService.processSignalResult(signalResultRequest);
 
         assertEquals(TestConstants.DEFAULT_UUID, response.getTestUUID());
-        verify(testRepository, times(2)).save(testArgumentCaptor.capture());
+        verify(testRepository, times(2)).saveAndFlush(testArgumentCaptor.capture());
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, testArgumentCaptor.getAllValues().get(0).getOpenTestUuid());
     }
@@ -247,7 +247,7 @@ public class SignalServiceImplTest {
         var response = signalService.processSignalResult(signalResultRequest);
 
         verify(test).setLastSequenceNumber(2);
-        verify(testRepository).save(test);
+        verify(testRepository).saveAndFlush(test);
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         verify(radioSignalService).saveRadioSignalRequests(List.of(radioSignalRequest), test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
@@ -288,7 +288,7 @@ public class SignalServiceImplTest {
         var response = signalService.processSignalResult(signalResultRequest);
 
         verify(test).setLastSequenceNumber(2);
-        verify(testRepository).save(test);
+        verify(testRepository).saveAndFlush(test);
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         verify(geoLocationService).processGeoLocationRequests(List.of(geoLocationRequestFirst, geoLocationRequestSecond), test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
@@ -317,7 +317,7 @@ public class SignalServiceImplTest {
         verify(test).setClientIpLocalAnonymized(HelperFunctions.anonymizeIp(defaultIpLocalAddress));
         verify(test).setClientIpLocalType(HelperFunctions.IpType(defaultIpLocalAddress));
         verify(test).setNatType(HelperFunctions.getNatType(defaultIpLocalAddress, defaultIpPublicAddress));
-        verify(testRepository).save(test);
+        verify(testRepository).saveAndFlush(test);
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }

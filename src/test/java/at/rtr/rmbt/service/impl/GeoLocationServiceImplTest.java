@@ -50,8 +50,8 @@ public class GeoLocationServiceImplTest {
     @Test
     public void updateGeoLocation_whenCommonRequest_expectGeoLocationSavedAndTestModified() {
         var requests = List.of(geoLocationRequestFirst, geoLocationRequestSecond);
-        when(geoLocationRepository.save(geoLocationFirst)).thenReturn(geoLocationFirst);
-        when(geoLocationRepository.save(geoLocationSecond)).thenReturn(geoLocationSecond);
+        when(geoLocationRepository.saveAndFlush(geoLocationFirst)).thenReturn(geoLocationFirst);
+        when(geoLocationRepository.saveAndFlush(geoLocationSecond)).thenReturn(geoLocationSecond);
         when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestFirst, test)).thenReturn(geoLocationFirst);
         when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestSecond, test)).thenReturn(geoLocationSecond);
         when(geoLocationFirst.getId()).thenReturn(TestConstants.DEFAULT_UID);
@@ -68,8 +68,8 @@ public class GeoLocationServiceImplTest {
 
         geoLocationService.processGeoLocationRequests(requests, test);
 
-        verify(geoLocationRepository).save(geoLocationFirst);
-        verify(geoLocationRepository).save(geoLocationSecond);
+        verify(geoLocationRepository).saveAndFlush(geoLocationFirst);
+        verify(geoLocationRepository).saveAndFlush(geoLocationSecond);
         verify(test).setGeoLocationUuid(TestConstants.DEFAULT_GEO_LOCATION_UUID);
         verify(test).setGeoProvider(TestConstants.DEFAULT_PROVIDER);
         verify(test).setGeoAccuracy(TestConstants.DEFAULT_ACCURACY_FIRST);
