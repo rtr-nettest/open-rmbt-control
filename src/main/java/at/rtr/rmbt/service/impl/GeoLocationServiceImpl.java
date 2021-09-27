@@ -49,11 +49,6 @@ public class GeoLocationServiceImpl implements GeoLocationService {
             }
         }
 
-        stored.forEach(savedGeoLocation -> {
-            if (savedGeoLocation.getGeoLong() != null && savedGeoLocation.getGeoLat() != null)
-                geoLocationRepository.updateLocation(savedGeoLocation.getId(), savedGeoLocation.getGeoLong(), savedGeoLocation.getGeoLat());
-        });
-
         if (Objects.nonNull(firstAccuratePosition)) {
             updateTestGeo(test, firstAccuratePosition);
         }

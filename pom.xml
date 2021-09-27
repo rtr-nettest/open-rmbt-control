@@ -200,8 +200,19 @@
             <artifactId>woothee-java</artifactId>
             <version>1.11.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>25.2</version>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>osgeo-alt</id>
+            <url>https://repo.osgeo.org/repository/release/</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
