@@ -1,7 +1,6 @@
 package at.rtr.rmbt.mapper.impl;
 
 import at.rtr.rmbt.config.UUIDGenerator;
-import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.mapper.GeoLocationMapper;
 import at.rtr.rmbt.model.GeoLocation;
 import at.rtr.rmbt.model.Test;
@@ -9,16 +8,10 @@ import at.rtr.rmbt.request.GeoLocationRequest;
 import at.rtr.rmbt.utils.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -67,16 +60,8 @@ public class GeoLocationMapperImpl implements GeoLocationMapper {
     }
 
     private Point getLocationPointFromLongitudeAndLatitude(Double longitude, Double latitude) {
-        try {
-            CoordinateReferenceSystem sourceCRS = CRS.parseWKT(Constants.WKT_EPSG_4326);
-            CoordinateReferenceSystem targetCRS = CRS.parseWKT(Constants.WKT_EPSG_900913);
-            MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), Constants.SRID);
-            Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-            return (Point) JTS.transform(point, transform);
-        } catch (TransformException | FactoryException e) {
-            e.printStackTrace();
-        }
-        return null;
+
+        return new GeometryFactory(new PrecisionModel(), 4326)
+                .createPoint(new Coordinate(longitude, latitude));
     }
 }
