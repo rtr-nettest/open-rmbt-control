@@ -368,4 +368,26 @@ public class RtrClientServiceImplTest {
 
         assertEquals(List.of(expectedResponseItem), response.getSync());
     }
+
+    @Test
+    public void listSyncedClientIdsByClient_whenSyncGroupIdIsNull_expectClientUid() {
+        when(rtrClient.getSyncGroupId()).thenReturn(null);
+        when(rtrClient.getUid()).thenReturn(TestConstants.DEFAULT_UID);
+
+        var response = clientService.listSyncedClientIdsByClient(rtrClient);
+
+        assertEquals(List.of(TestConstants.DEFAULT_UID), response);
+    }
+
+    @Test
+    public void listSyncedClientIdsByClient_whenSyncGroupIdNotNull_expectListOfUid() {
+        when(rtrClient.getSyncGroupId()).thenReturn(TestConstants.DEFAULT_SYNC_GROUP_UID);
+        when(rtrClient.getUid()).thenReturn(TestConstants.DEFAULT_UID);
+        when(clientRepository.listSyncedClientsByClientUidAndSyncGroupId(TestConstants.DEFAULT_UID, TestConstants.DEFAULT_SYNC_GROUP_UID))
+                .thenReturn(List.of(TestConstants.DEFAULT_UID, TestConstants.DEFAULT_UID_SECOND));
+
+        var response = clientService.listSyncedClientIdsByClient(rtrClient);
+
+        assertEquals(List.of(TestConstants.DEFAULT_UID, TestConstants.DEFAULT_UID_SECOND), response);
+    }
 }

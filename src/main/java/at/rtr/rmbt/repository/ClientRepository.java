@@ -23,13 +23,8 @@ public interface ClientRepository extends JpaRepository<RtrClient, Long> {
 
     Optional<RtrClient> getRtrClientByUuid(UUID uuid);
 
-    @Query(
-        value = "SELECT cc.* FROM client c " +
-            "INNER JOIN client cc ON c.sync_group_id = cc.sync_group_id " +
-            "WHERE c.uid = :clientUid",
-        nativeQuery = true
-    )
-    List<RtrClient> listSyncedClientsByClientUid(Long clientUid);
+    @Query(value = "SELECT :clientUid UNION SELECT uid FROM client WHERE sync_group_id = :syncGroupId ", nativeQuery = true)
+    List<Long> listSyncedClientsByClientUidAndSyncGroupId(Long clientUid, Integer syncGroupId);
 
     @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE RtrClient c SET c.syncGroupId = :syncGroupId WHERE c.uid = :clientUidBySyncCode OR c.uid = :clientUidByUUID")

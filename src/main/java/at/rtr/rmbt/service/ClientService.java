@@ -15,5 +15,5 @@ public interface ClientService {
 
     SyncResponse sync(SyncRequest syncRequest);
 
-    List<RtrClient> listSyncedClientsByClientUid(Long clientId);
+    List<Long> listSyncedClientIdsByClient(RtrClient client);
 }
