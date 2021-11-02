@@ -60,8 +60,12 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<RtrClient> listSyncedClientsByClientUid(Long clientId) {
-        return clientRepository.listSyncedClientsByClientUid(clientId);
+    public List<Long> listSyncedClientIdsByClient(RtrClient client) {
+        if(Objects.isNull(client.getSyncGroupId())){
+            return List.of(client.getUid());
+        }else {
+            return clientRepository.listSyncedClientsByClientUidAndSyncGroupId(client.getUid(), client.getSyncGroupId());
+        }
     }
 
     private SyncItemResponse getSyncItemResponse(SyncRequest syncRequest, Locale locale) {

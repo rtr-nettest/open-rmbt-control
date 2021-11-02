@@ -7,12 +7,13 @@ import lombok.*;
 import org.hibernate.annotations.*;
 import org.locationtech.jts.geom.Geometry;
 
-import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -173,6 +174,7 @@ public class Test implements Serializable {
     private Integer networkType;
 
     @Column(name = "location")
+    @ColumnTransformer(read = "ST_SetSRID(location, 3857)")
     private Geometry location;
 
     @Column(name = "signal_strength")
@@ -503,5 +505,12 @@ public class Test implements Serializable {
     protected void preInsert() {
         this.timestamp = ZonedDateTime.now();
         this.time = ZonedDateTime.now();
+    }
+
+    @PostLoad
+    protected void postLoad() {
+        if(Objects.nonNull(location)){
+            location.setSRID(900913);
+        }
     }
 }
