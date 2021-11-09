@@ -101,7 +101,7 @@ public class ResultServiceImpl implements ResultService {
         setMaxNetworkType(test);
         checkForDifferentType(test);
 
-        if (test.getNetworkType() <= 0) {
+        if (test.getNetworkType() < 0) {
             throw new IllegalArgumentException(ErrorMessage.ERROR_NETWORK_TYPE);
         }
     }
