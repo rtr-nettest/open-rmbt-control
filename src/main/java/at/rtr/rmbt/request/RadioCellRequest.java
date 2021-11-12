@@ -29,6 +29,9 @@ public class RadioCellRequest {
     @JsonProperty(value = "primary_scrambling_code")
     private final Integer primaryScramblingCode;
 
+    @JsonProperty(value = "primary_data_subscription")
+    private final String primaryDataSubscription;
+
     @JsonProperty(value = "registered")
     private final boolean registered;
 

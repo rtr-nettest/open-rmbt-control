@@ -19,6 +19,7 @@ public class RadioCellMapperImpl implements RadioCellMapper {
             .locationId(rcq.getLocationId())
             .areaCode(rcq.getAreaCode())
             .primaryScramblingCode(rcq.getPrimaryScramblingCode())
+            .primaryDataSubscription(rcq.getPrimaryDataSubscription())
             .technology(rcq.getTechnology())
             .channelNumber(rcq.getChannelNumber())
             .registered(rcq.isRegistered())
