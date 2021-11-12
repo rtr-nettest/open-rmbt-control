@@ -51,6 +51,9 @@ public class RadioCell implements Serializable {
     @Column(name = "primary_scrambling_code")
     private Integer primaryScramblingCode;
 
+    @Column(name = "primary_data_subscription")
+    private String primaryDataSubscription;
+
     @Column(name = "registered")
     private boolean registered;
 
