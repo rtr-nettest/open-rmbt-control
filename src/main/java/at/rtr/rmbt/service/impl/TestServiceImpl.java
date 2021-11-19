@@ -40,6 +40,8 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static at.rtr.rmbt.constant.Constants.OPEN_TEST_UUID_PREFIX;
+
 @Service
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
@@ -475,7 +477,7 @@ public class TestServiceImpl implements TestService {
         return settingsRepository.findAllByLangOrLangIsNullAndKeyIn(locale.getLanguage(), List.of(Config.URL_SHARE_KEY)).stream()
                 .findFirst()
                 .map(Settings::getValue)
-                .map(value -> String.join(StringUtils.EMPTY, value, test.getOpenTestUuid().toString()))
+                .map(value -> String.join(StringUtils.EMPTY, value, OPEN_TEST_UUID_PREFIX, test.getOpenTestUuid().toString()))
                 .orElse(StringUtils.EMPTY);
     }
 
