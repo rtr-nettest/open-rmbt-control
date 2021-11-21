@@ -13,10 +13,10 @@ spring:
     url: jdbc:postgresql://127.0.0.1:5431/rtr
     username: rtr
     password: password
-    tomcat:
-      test-while-idle: true
-      test-on-borrow: true
-      validation-query: SELECT 1
+#    tomcat:
+#      test-while-idle: true
+#      test-on-borrow: true
+#      validation-query: SELECT 1
   jpa:
     hibernate:
       ddl-auto: none
