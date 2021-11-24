@@ -126,25 +126,17 @@ spring:
     poolSize: 20
     minIdle: 1
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_URI}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://${CONTROL_DB_HOST}:${CONTROL_DB_PORT}/${CONTROL_DB_NAME}
+    username: ${CONTROL_DB_USER}
+    password: ${CONTROL_DB_PASSWORD}
 #    tomcat:
 #      test-while-idle: true
 #      test-on-borrow: true
 #      validation-query: SELECT 1
-
-measurement-server:
-  host: ${HOST}
-
-client-tenant:
-  clientTenantMapping:
-    rtr: rtr_dev
-  defaultTenant: rtr
-
-git:
-  branch:${git.branch}
-
 application-version:
-  host: ${HOST}
-  server-url: ${SERVER_URL}
+  host: ${CONTROL_HOST}
+  server-url: ${CONTROL_SERVER_URL}
+
+server:
+  servlet:
+    context-path: ${CONTROL_SERVER_CONTEXT}
