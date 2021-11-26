@@ -1,7 +1,6 @@
 package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.TestConstants;
-import at.rtr.rmbt.TestFixtures;
 import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.enums.ClientType;
@@ -146,7 +145,7 @@ public class RtrSettingsServiceImplTest {
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
         when(qosTestTypeDescService.getAll(TestConstants.DEFAULT_LANGUAGE)).thenReturn(getQosTestTypeDescResponses());
-        when(clientService.listSyncedClientsByClientUid(DEFAULT_UID)).thenReturn(List.of(TestFixtures.client));
+        when(clientService.listSyncedClientIdsByClient(savedRtrClient)).thenReturn(List.of(DEFAULT_UID));
         when(testService.getDeviceHistory(argThat(t -> t.containsAll(uidList)))).thenReturn(historyDevices);
         when(testService.getGroupNameByClientIds(argThat(t -> t.containsAll(uidList)))).thenReturn(historyNetworks);
         when(testServerService.getServers()).thenReturn(getServerResponseList());
@@ -185,7 +184,7 @@ public class RtrSettingsServiceImplTest {
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
         when(qosTestTypeDescService.getAll(TestConstants.DEFAULT_LANGUAGE)).thenReturn(getQosTestTypeDescResponses());
-        when(clientService.listSyncedClientsByClientUid(DEFAULT_UID)).thenReturn(List.of(TestFixtures.client));
+        when(clientService.listSyncedClientIdsByClient(savedRtrClient)).thenReturn(List.of(DEFAULT_UID));
         when(testService.getDeviceHistory(argThat(t -> t.containsAll(uidList)))).thenReturn(historyDevices);
         when(testService.getGroupNameByClientIds(argThat(t -> t.containsAll(uidList)))).thenReturn(historyNetworks);
         when(testServerService.getServers()).thenReturn(getServerResponseList());

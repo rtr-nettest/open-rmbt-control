@@ -13,17 +13,17 @@ spring:
     url: jdbc:postgresql://127.0.0.1:5431/rtr
     username: rtr
     password: password
-    tomcat:
-      test-while-idle: true
-      test-on-borrow: true
-      validation-query: SELECT 1
+#    tomcat:
+#      test-while-idle: true
+#      test-on-borrow: true
+#      validation-query: SELECT 1
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: false
     database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
   flyway:
-    enabled: true
+    enabled: false
   jackson:
     default-property-inclusion: non_null
 RMBT_SECRETKEY: RMBT_SECRETKEY
@@ -99,10 +99,10 @@ spring:
     url: jdbc:postgresql://${DB_URI}:${DB_PORT}/${DB_NAME}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-    tomcat:
-      test-while-idle: true
-      test-on-borrow: true
-      validation-query: SELECT 1
+#    tomcat:
+#      test-while-idle: true
+#      test-on-borrow: true
+#      validation-query: SELECT 1
 
 measurement-server:
   host: api-test.nettest.org
@@ -118,3 +118,26 @@ git:
 application-version:
   host: rtr-api-dev
   server-url: https://rtr-api-dev.nettest.org/RMBTControlServer
+
+---
+spring:
+  profiles: prod
+  datasource:
+    poolSize: 20
+    minIdle: 1
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://${CONTROL_DB_HOST}:${CONTROL_DB_PORT}/${CONTROL_DB_NAME}
+    username: ${CONTROL_DB_USER}
+    password: ${CONTROL_DB_PASSWORD}
+#    tomcat:
+#      test-while-idle: true
+#      test-on-borrow: true
+#      validation-query: SELECT 1
+
+application-version:
+  host: ${CONTROL_HOST}
+  server-url: ${CONTROL_SERVER_URL}
+
+server:
+  servlet:
+    context-path: ${CONTROL_SERVER_CONTEXT}

@@ -1,7 +1,6 @@
 package at.rtr.rmbt.mapper.impl;
 
 import at.rtr.rmbt.config.UUIDGenerator;
-import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.mapper.GeoLocationMapper;
 import at.rtr.rmbt.model.GeoLocation;
 import at.rtr.rmbt.model.Test;
@@ -61,7 +60,8 @@ public class GeoLocationMapperImpl implements GeoLocationMapper {
     }
 
     private Point getLocationPointFromLongitudeAndLatitude(Double longitude, Double latitude) {
-        return new GeometryFactory(new PrecisionModel(), Constants.SRID)
+
+        return new GeometryFactory(new PrecisionModel(), 4326)
                 .createPoint(new Coordinate(longitude, latitude));
     }
 }

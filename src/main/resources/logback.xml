@@ -6,8 +6,8 @@
 
     <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <param name="Encoding" value="UTF-8"/>
-        <remoteHost>logstash</remoteHost>
-        <port>5000</port>
+        <remoteHost>${LOG_HOST}</remoteHost>
+        <port>${LOG_PORT}</port>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{"app_name":"control-service"}</customFields>
         </encoder>

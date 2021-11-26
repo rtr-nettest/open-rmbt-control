@@ -188,7 +188,6 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
 
     private SettingsHistoryResponse getHistory(RtrClient savedClient) {
         return Optional.ofNullable(savedClient)
-                .map(RtrClient::getUid)
                 .map(this::getHistoryResponse)
                 .orElse(null);
     }
@@ -362,9 +361,8 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .build();
     }
 
-    private SettingsHistoryResponse getHistoryResponse(Long clientId) {
-        List<RtrClient> rtrClients = clientService.listSyncedClientsByClientUid(clientId);
-        List<Long> clientIds = rtrClients.stream().map(RtrClient::getUid).collect(Collectors.toList());
+    private SettingsHistoryResponse getHistoryResponse(RtrClient client) {
+        List<Long> clientIds = clientService.listSyncedClientIdsByClient(client);
         var devices = testService.getDeviceHistory(clientIds);
         var networks = testService.getGroupNameByClientIds(clientIds);
         return SettingsHistoryResponse.builder()

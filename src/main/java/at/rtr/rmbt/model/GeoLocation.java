@@ -1,6 +1,7 @@
 package at.rtr.rmbt.model;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnTransformer;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;
@@ -63,5 +64,6 @@ public class GeoLocation implements Serializable {
     private Boolean mockLocation;
 
     @Column(name = "location")
+    @ColumnTransformer(write = "ST_TRANSFORM(ST_SetSRID(?, 4326), 900913)")
     private Geometry location;
 }
