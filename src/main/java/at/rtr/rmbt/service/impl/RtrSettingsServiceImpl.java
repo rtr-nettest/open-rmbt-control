@@ -64,7 +64,9 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
 
         var client = clientService.getClientByUUID(request.getUuid());
         if (Objects.nonNull(client)) {
-            if (client.getTermsAndConditionsAcceptedVersion() < request.getTermsAndConditionsAcceptedVersion()) {
+            if (request.getTermsAndConditionsAcceptedVersion() != null &&
+                    (client.getTermsAndConditionsAcceptedVersion() == null ||
+                            client.getTermsAndConditionsAcceptedVersion() < request.getTermsAndConditionsAcceptedVersion())) {
                 client.setTermsAndConditionsAcceptedVersion(request.getTermsAndConditionsAcceptedVersion());
                 client.setTermsAndConditionsAcceptedTimestamp(now);
             }
