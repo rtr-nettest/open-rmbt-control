@@ -4,8 +4,12 @@ import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.facade.TestSettingsFacade;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.TestSettingsResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +25,12 @@ import java.util.Map;
 @RequestMapping(URIConstants.REGISTRATION_URL)
 public class RegistrationController {
 
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+
+    private static final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
     private TestSettingsFacade testSettingsFacade;
 
     @Autowired
@@ -30,7 +40,11 @@ public class RegistrationController {
 
     @ApiOperation(value = "Update test settings", notes = "Request to update configuration for basic test")
     @PostMapping
-    public TestSettingsResponse updateTestSettings(@RequestBody TestSettingsRequest testSettingsRequest, HttpServletRequest request, @RequestHeader Map<String, String> headers) {
-        return testSettingsFacade.updateTestSettings(testSettingsRequest, request, headers);
+    public TestSettingsResponse updateTestSettings(@RequestBody TestSettingsRequest testSettingsRequest, HttpServletRequest request, @RequestHeader Map<String, String> headers) throws JsonProcessingException {
+        logger.info(objectMapper.writeValueAsString(testSettingsRequest));
+        logger.info(objectMapper.writeValueAsString(headers));
+        TestSettingsResponse testSettingsResponse = testSettingsFacade.updateTestSettings(testSettingsRequest, request, headers);
+        logger.info(objectMapper.writeValueAsString(testSettingsResponse));
+        return testSettingsResponse;
     }
 }
