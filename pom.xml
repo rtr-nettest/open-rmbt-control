@@ -27,6 +27,7 @@
         <apache.commons.version>3.8.1</apache.commons.version>
         <org.testcontainers.version>1.15.1</org.testcontainers.version>
         <auth0-spring-security-api.version>1.4.0</auth0-spring-security-api.version>
+        <log4j2.version>2.15.0</log4j2.version>
     </properties>
 
     <dependencies>
