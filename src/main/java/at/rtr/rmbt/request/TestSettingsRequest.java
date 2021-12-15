@@ -108,7 +108,11 @@ public class TestSettingsRequest {
     private MeasurementType measurementType;
 
     public enum ProtocolVersion {
-        IPV4("ipv4"), IPV6("ipv6");
+        @JsonProperty("ipv4")
+        IPV4("ipv4"),
+
+        @JsonProperty("ipv6")
+        IPV6("ipv6");
 
         private String label;
 
