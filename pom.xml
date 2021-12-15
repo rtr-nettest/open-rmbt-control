@@ -28,7 +28,7 @@
         <org.testcontainers.version>1.15.1</org.testcontainers.version>
         <auth0-spring-security-api.version>1.4.0</auth0-spring-security-api.version>
         <start-class>at.rtr.rmbt.RTRApplication</start-class>
-        <log4j2.version>2.15.0</log4j2.version>
+        <log4j2.version>2.16.0</log4j2.version>
     </properties>
 
     <dependencies>
