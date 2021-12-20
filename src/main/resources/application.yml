@@ -133,6 +133,7 @@ spring:
 #      test-while-idle: true
 #      test-on-borrow: true
 #      validation-query: SELECT 1
+
 application-version:
   host: ${CONTROL_HOST}
   server-url: ${CONTROL_SERVER_URL}
@@ -140,3 +141,5 @@ application-version:
 server:
   servlet:
     context-path: ${CONTROL_SERVER_CONTEXT}
+logging:
+    config: ${LOGGING_CONFIG_FILE:classpath:logback.xml}
