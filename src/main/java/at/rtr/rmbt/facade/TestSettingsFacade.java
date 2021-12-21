@@ -120,8 +120,13 @@ public class TestSettingsFacade {
                 //if no loop mode uuid is set - generate one
                 if (loopModeInfo.getLoopUuid() == null)
                     loopModeSettings.setLoopUuid(UUID.randomUUID());
-                else
-                    loopModeSettings.setLoopUuid(UUID.fromString(loopModeInfo.getLoopUuid()));
+                else {
+                    if (loopModeInfo.getLoopUuid().startsWith("L")) {
+                        loopModeSettings.setLoopUuid(UUID.fromString(loopModeInfo.getLoopUuid().substring(1)));
+                    } else {
+                        loopModeSettings.setLoopUuid(UUID.fromString(loopModeInfo.getLoopUuid()));
+                    }
+                }
 
                 //old clients expect a "text_counter"
                 if (loopModeSettings.getTestCounter() == null)
@@ -218,7 +223,7 @@ public class TestSettingsFacade {
                         if (loopModeSettings != null) {
                             loopModeSettings.setTestUuid(testUuid);
                             loopModeSettings = loopModeSettingsService.save(loopModeSettings);
-                            builder.loopUuid(loopModeSettings.getLoopUuid().toString());
+                            builder.loopUuid("L" + loopModeSettings.getLoopUuid().toString());
                         }
 
                         builder.provider(testService.getRmbtSetProviderFromAs(test.getUid()));
