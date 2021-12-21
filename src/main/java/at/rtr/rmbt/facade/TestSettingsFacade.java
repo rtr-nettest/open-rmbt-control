@@ -218,7 +218,7 @@ public class TestSettingsFacade {
                         if (loopModeSettings != null) {
                             loopModeSettings.setTestUuid(testUuid);
                             loopModeSettings = loopModeSettingsService.save(loopModeSettings);
-                            builder.loopUuid(loopModeSettings.getLoopUuid().toString());
+                            builder.loopUuid("L" + loopModeSettings.getLoopUuid().toString());
                         }
 
                         builder.provider(testService.getRmbtSetProviderFromAs(test.getUid()));
