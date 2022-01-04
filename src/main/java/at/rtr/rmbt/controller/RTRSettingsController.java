@@ -1,6 +1,7 @@
 package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.constant.URIConstants;
+import at.rtr.rmbt.model.RequestLog;
 import at.rtr.rmbt.request.AdminSettingsRequest;
 import at.rtr.rmbt.request.RtrSettingsRequest;
 import at.rtr.rmbt.request.settings.admin.update.AdminUpdateSettingsRequest;
@@ -31,8 +32,7 @@ public class RTRSettingsController {
     @PostMapping(URIConstants.SETTINGS_URL)
     @ApiOperation(value = "Get settings of control server", notes = "Registers device, returns settings of the control server, map server and other settings and device UUID (creates new UUID when it is not sent in request body)")
     public SettingsResponse getSettings(@RequestBody RtrSettingsRequest request,  @RequestHeader Map<String, String> headers) throws JsonProcessingException {
-        logger.info(objectMapper.writeValueAsString(request));
-        logger.info(objectMapper.writeValueAsString(headers));
+        logger.info(objectMapper.writeValueAsString(new RequestLog(headers, request)));
         SettingsResponse settings = rtrSettingsService.getSettings(request);
         logger.info(objectMapper.writeValueAsString(settings));
         return settings;

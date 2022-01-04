@@ -2,6 +2,7 @@ package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.facade.TestSettingsFacade;
+import at.rtr.rmbt.model.RequestLog;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.TestSettingsResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,7 +30,6 @@ public class RegistrationController {
     @Autowired
     private ObjectMapper objectMapper;
 
-
     private static final Logger logger = LoggerFactory.getLogger(RegistrationController.class);
     private TestSettingsFacade testSettingsFacade;
 
@@ -41,8 +41,7 @@ public class RegistrationController {
     @ApiOperation(value = "Update test settings", notes = "Request to update configuration for basic test")
     @PostMapping
     public TestSettingsResponse updateTestSettings(@RequestBody TestSettingsRequest testSettingsRequest, HttpServletRequest request, @RequestHeader Map<String, String> headers) throws JsonProcessingException {
-        logger.info(objectMapper.writeValueAsString(testSettingsRequest));
-        logger.info(objectMapper.writeValueAsString(headers));
+        logger.info(objectMapper.writeValueAsString(new RequestLog(headers, testSettingsRequest)));
         TestSettingsResponse testSettingsResponse = testSettingsFacade.updateTestSettings(testSettingsRequest, request, headers);
         logger.info(objectMapper.writeValueAsString(testSettingsResponse));
         return testSettingsResponse;
