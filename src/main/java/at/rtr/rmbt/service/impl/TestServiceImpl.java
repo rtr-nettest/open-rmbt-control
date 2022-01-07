@@ -178,11 +178,12 @@ public class TestServiceImpl implements TestService {
         }
         if (resultUpdateRequest.isAborted()) {
             test.setStatus(TestStatus.ABORTED);
+            testRepository.save(test);
         } else {
             geoLocationService.updateGeoLocation(test, resultUpdateRequest);
+            testRepository.save(test);
+            testRepository.updateGeoLocation(test.getUid(), test.getLongitude(), test.getLatitude());
         }
-        testRepository.save(test);
-        testRepository.updateGeoLocation(test.getUid(), test.getLongitude(), test.getLatitude());
 
         return ResultUpdateResponse.builder()
                 .build();

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -60,10 +61,18 @@ public class TestController {
     }
 
     @PostMapping(URIConstants.RESULT_UPDATE)
-    @ApiOperation(value = "Gets test history for the client device and synchronized devices")
+    @ApiOperation(value = "Update a test result (e.g. mark as aborted).")
     public ResultUpdateResponse updateTestResult(@RequestBody ResultUpdateRequest resultUpdateRequest, @RequestHeader Map<String, String> headers) throws JsonProcessingException {
         logger.info(objectMapper.writeValueAsString(new RequestLog(headers, resultUpdateRequest)));
         return testService.updateTestResult(resultUpdateRequest);
+    }
+
+    @PostMapping(value = URIConstants.RESULT_UPDATE, consumes = MediaType.TEXT_PLAIN_VALUE)
+    @ApiOperation(value = "Update a test result (e.g. mark as aborted). Needs to support plain/text because of navigator.sendBeacon sending such")
+    public ResultUpdateResponse updateTestResultText(@RequestBody String resultUpdateRequest, @RequestHeader Map<String, String> headers) throws JsonProcessingException {
+
+        ResultUpdateRequest jsonRequest = objectMapper.readValue(resultUpdateRequest, ResultUpdateRequest.class);
+        return this.updateTestResult(jsonRequest, headers);
     }
 
     @PostMapping(URIConstants.ADMIN_SET_IMPLAUSIBLE)
