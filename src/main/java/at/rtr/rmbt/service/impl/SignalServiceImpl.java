@@ -307,7 +307,7 @@ public class SignalServiceImpl implements SignalService {
     private void processRadioInfo(SignalResultRequest signalResultRequest, Test updatedTest) {
         if (Objects.nonNull(signalResultRequest.getRadioInfo())) {
             radioCellService.processRadioCellRequests(signalResultRequest.getRadioInfo().getCells(), updatedTest);
-            radioSignalService.saveRadioSignalRequests(signalResultRequest.getRadioInfo().getSignals(), updatedTest);
+            radioSignalService.saveRadioSignalRequests(signalResultRequest.getRadioInfo(), updatedTest);
         }
     }
 

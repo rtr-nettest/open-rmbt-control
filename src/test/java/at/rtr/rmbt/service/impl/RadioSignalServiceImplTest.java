@@ -3,6 +3,7 @@ package at.rtr.rmbt.service.impl;
 import at.rtr.rmbt.mapper.RadioSignalMapper;
 import at.rtr.rmbt.model.RadioSignal;
 import at.rtr.rmbt.repository.RadioSignalRepository;
+import at.rtr.rmbt.request.RadioInfoRequest;
 import at.rtr.rmbt.request.RadioSignalRequest;
 import at.rtr.rmbt.service.RadioSignalService;
 import org.junit.Before;
@@ -31,6 +32,8 @@ public class RadioSignalServiceImplTest {
     @Mock
     private RadioSignal radioSignal;
     @Mock
+    private RadioInfoRequest radioInfoRequest;
+    @Mock
     private at.rtr.rmbt.model.Test test;
 
     @Before
@@ -43,7 +46,7 @@ public class RadioSignalServiceImplTest {
         var requests = List.of(radioSignalRequest);
         when(radioSignalMapper.radioSignalRequestToRadioSignal(radioSignalRequest, test)).thenReturn(radioSignal);
 
-        radioSignalService.saveRadioSignalRequests(requests, test);
+        radioSignalService.saveRadioSignalRequests(radioInfoRequest, test);
 
         verify(radioSignalRepository).saveAll(List.of(radioSignal));
     }

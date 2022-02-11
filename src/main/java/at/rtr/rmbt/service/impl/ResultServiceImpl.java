@@ -169,7 +169,7 @@ public class ResultServiceImpl implements ResultService {
     private void processRadioInfo(ResultRequest resultRequest, Test test) {
         if (Objects.nonNull(resultRequest.getRadioInfo())) {
             radioCellService.processRadioCellRequests(resultRequest.getRadioInfo().getCells(), test);
-            radioSignalService.saveRadioSignalRequests(resultRequest.getRadioInfo().getSignals(), test);
+            radioSignalService.saveRadioSignalRequests(resultRequest.getRadioInfo(), test);
         }
     }
 
