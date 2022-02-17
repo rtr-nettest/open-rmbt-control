@@ -50,7 +50,7 @@ public class RadioCellServiceImpl implements RadioCellService {
                     if (locationId == null && !locationIdChanged && newRadioCell.getLocationId() != null) {
                         locationId = newRadioCell.getLocationId().intValue();
                     } else {
-                        if (!locationIdChanged && locationId != null &&
+                        if (!locationIdChanged && locationId != null && newRadioCell.getLocationId() != null &&
                                 !locationId.equals(newRadioCell.getLocationId().intValue())) {
                             locationIdChanged = true;
                             locationId = null;
