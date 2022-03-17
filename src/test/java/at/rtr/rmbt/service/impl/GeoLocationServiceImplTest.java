@@ -68,8 +68,7 @@ public class GeoLocationServiceImplTest {
 
         geoLocationService.processGeoLocationRequests(requests, test);
 
-        verify(geoLocationRepository).saveAndFlush(geoLocationFirst);
-        verify(geoLocationRepository).saveAndFlush(geoLocationSecond);
+        verify(geoLocationRepository).saveAll(List.of(geoLocationFirst, geoLocationSecond));
         verify(test).setGeoLocationUuid(TestConstants.DEFAULT_GEO_LOCATION_UUID);
         verify(test).setGeoProvider(TestConstants.DEFAULT_PROVIDER);
         verify(test).setGeoAccuracy(TestConstants.DEFAULT_ACCURACY_FIRST);
