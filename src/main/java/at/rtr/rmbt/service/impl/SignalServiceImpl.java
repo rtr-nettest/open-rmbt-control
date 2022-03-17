@@ -46,6 +46,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -306,8 +307,12 @@ public class SignalServiceImpl implements SignalService {
 
     private void processRadioInfo(SignalResultRequest signalResultRequest, Test updatedTest) {
         if (Objects.nonNull(signalResultRequest.getRadioInfo())) {
-            radioCellService.processRadioCellRequests(signalResultRequest.getRadioInfo().getCells(), updatedTest);
-            radioSignalService.saveRadioSignalRequests(signalResultRequest.getRadioInfo(), updatedTest);
+            if(!CollectionUtils.isEmpty(signalResultRequest.getRadioInfo().getCells())){
+                radioCellService.processRadioCellRequests(signalResultRequest.getRadioInfo().getCells(), updatedTest);
+            }
+            if(!CollectionUtils.isEmpty(signalResultRequest.getRadioInfo().getSignals())){
+                radioSignalService.saveRadioSignalRequests(signalResultRequest.getRadioInfo().getSignals(), updatedTest);
+            }
         }
     }
 

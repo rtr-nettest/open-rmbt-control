@@ -7,30 +7,10 @@ import at.rtr.rmbt.constant.HeaderConstants;
 import at.rtr.rmbt.mapper.GeoLocationMapper;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.mapper.TestMapper;
-import at.rtr.rmbt.model.GeoLocation;
-import at.rtr.rmbt.model.RadioCell;
-import at.rtr.rmbt.model.RadioSignal;
-import at.rtr.rmbt.model.RtrClient;
-import at.rtr.rmbt.model.Signal;
-import at.rtr.rmbt.repository.ClientRepository;
-import at.rtr.rmbt.repository.GeoLocationRepository;
-import at.rtr.rmbt.repository.ProviderRepository;
-import at.rtr.rmbt.repository.RadioSignalRepository;
-import at.rtr.rmbt.repository.SignalRepository;
-import at.rtr.rmbt.repository.TestRepository;
-import at.rtr.rmbt.request.GeoLocationRequest;
-import at.rtr.rmbt.request.RadioCellRequest;
-import at.rtr.rmbt.request.RadioInfoRequest;
-import at.rtr.rmbt.request.RadioSignalRequest;
-import at.rtr.rmbt.request.SignalRegisterRequest;
-import at.rtr.rmbt.request.SignalRequest;
-import at.rtr.rmbt.request.SignalResultRequest;
-import at.rtr.rmbt.response.SignalDetailsResponse;
-import at.rtr.rmbt.response.SignalLocationResponse;
-import at.rtr.rmbt.response.SignalMeasurementResponse;
-import at.rtr.rmbt.response.SignalSettingsResponse;
-import at.rtr.rmbt.response.SignalStrengthResponse;
-import at.rtr.rmbt.response.TestResponse;
+import at.rtr.rmbt.model.*;
+import at.rtr.rmbt.repository.*;
+import at.rtr.rmbt.request.*;
+import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoLocationService;
 import at.rtr.rmbt.service.RadioCellService;
 import at.rtr.rmbt.service.RadioSignalService;
@@ -52,23 +32,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import static at.rtr.rmbt.TestConstants.DEFAULT_NETWORK_ID;
-import static at.rtr.rmbt.TestConstants.DEFAULT_NETWORK_NAME;
-import static at.rtr.rmbt.TestConstants.DEFAULT_TIME_NS;
+import static at.rtr.rmbt.TestConstants.*;
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 public class SignalServiceImplTest {
@@ -208,6 +179,7 @@ public class SignalServiceImplTest {
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
 
+
     @Test
     public void processSignalResult_whenTestNotExist_expectSignalResultResponse() {
         when(signalResultRequest.getClientUUID()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
@@ -249,8 +221,47 @@ public class SignalServiceImplTest {
         verify(test).setLastSequenceNumber(2);
         verify(testRepository).saveAndFlush(test);
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
-        verify(radioSignalService).saveRadioSignalRequests(radioInfoRequest, test);
+        verify(radioSignalService).saveRadioSignalRequests(List.of(radioSignalRequest), test);
+        verify(radioCellService).processRadioCellRequests(List.of(radioCellRequest), test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
+    }
+
+    @Test
+    public void processSignalResult_whenTestExistAndRadioSignalRequestIsNull_expectSignalResultResponse() {
+        when(signalResultRequest.getClientUUID()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(signalResultRequest.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
+        when(signalResultRequest.getSequenceNumber()).thenReturn(2L);
+        when(signalResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(signalResultRequest.getRadioInfo()).thenReturn(radioInfoRequest);
+        when(radioInfoRequest.getCells()).thenReturn(List.of(radioCellRequest));
+        when(radioInfoRequest.getSignals()).thenReturn(null);
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
+                .thenReturn(Optional.of(test));
+        when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
+
+        signalService.processSignalResult(signalResultRequest);
+
+        verifyNoInteractions(radioSignalService);
+        verify(radioCellService).processRadioCellRequests(List.of(radioCellRequest), test);
+    }
+
+    @Test
+    public void processSignalResult_whenTestExistAndRadioCellRequestIsNull_expectSignalResultResponse() {
+        when(signalResultRequest.getClientUUID()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(signalResultRequest.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
+        when(signalResultRequest.getSequenceNumber()).thenReturn(2L);
+        when(signalResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(signalResultRequest.getRadioInfo()).thenReturn(radioInfoRequest);
+        when(radioInfoRequest.getCells()).thenReturn(null);
+        when(radioInfoRequest.getSignals()).thenReturn(List.of(radioSignalRequest));
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
+                .thenReturn(Optional.of(test));
+        when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
+
+        signalService.processSignalResult(signalResultRequest);
+
+        verify(radioSignalService).saveRadioSignalRequests(List.of(radioSignalRequest), test);
+        verifyNoInteractions(radioCellService);
     }
 
     @Test

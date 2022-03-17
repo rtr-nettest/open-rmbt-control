@@ -19,6 +19,7 @@ import at.rtr.rmbt.utils.ValidateUtils;
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
@@ -168,8 +169,12 @@ public class ResultServiceImpl implements ResultService {
 
     private void processRadioInfo(ResultRequest resultRequest, Test test) {
         if (Objects.nonNull(resultRequest.getRadioInfo())) {
-            radioCellService.processRadioCellRequests(resultRequest.getRadioInfo().getCells(), test);
-            radioSignalService.saveRadioSignalRequests(resultRequest.getRadioInfo(), test);
+            if (!CollectionUtils.isEmpty(resultRequest.getRadioInfo().getCells())) {
+                radioCellService.processRadioCellRequests(resultRequest.getRadioInfo().getCells(), test);
+            }
+            if (!CollectionUtils.isEmpty(resultRequest.getRadioInfo().getSignals())) {
+                radioSignalService.saveRadioSignalRequests(resultRequest.getRadioInfo().getSignals(), test);
+            }
         }
     }
 

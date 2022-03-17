@@ -27,14 +27,14 @@ public class GeoLocationServiceImpl implements GeoLocationService {
     private final GeoLocationRepository geoLocationRepository;
 
     @Override
-    public void processGeoLocationRequests(Collection<GeoLocationRequest> geoLocations, Test test) {
+    public void processGeoLocationRequests(Collection<GeoLocationRequest> geoLocationRequests, Test test) {
 
         Double minAccuracy = Double.MAX_VALUE;
         GeoLocation firstAccuratePosition = null;
 
-        List<GeoLocation> stored = new LinkedList<>();
+        List<GeoLocation> geoLocations = new LinkedList<>();
 
-        for (GeoLocationRequest geoDataItem : geoLocations) {
+        for (GeoLocationRequest geoDataItem : geoLocationRequests) {
             if (Objects.nonNull(geoDataItem.getTstamp()) && Objects.nonNull(geoDataItem.getGeoLat()) && Objects.nonNull(geoDataItem.getGeoLong())) {
 //                if (geoDataItem.getTimeNs() > -20000000000L) {// todo update to another value from RTR branch
                 GeoLocation geoLoc = geoLocationMapper.geoLocationRequestToGeoLocation(geoDataItem, test);
@@ -43,11 +43,11 @@ public class GeoLocationServiceImpl implements GeoLocationService {
                     minAccuracy = geoLoc.getAccuracy();
                     firstAccuratePosition = geoLoc;
                 }
-                GeoLocation savedGeoLocation = geoLocationRepository.saveAndFlush(geoLoc);
-                stored.add(savedGeoLocation);
+                geoLocations.add(geoLoc);
                 //                }
             }
         }
+        geoLocationRepository.saveAll(geoLocations);
 
         if (Objects.nonNull(firstAccuratePosition)) {
             updateTestGeo(test, firstAccuratePosition);
