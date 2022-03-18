@@ -221,7 +221,7 @@ public class SignalServiceImplTest {
         verify(test).setLastSequenceNumber(2);
         verify(testRepository).saveAndFlush(test);
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
-        verify(radioSignalService).saveRadioSignalRequests(List.of(radioSignalRequest), test);
+        verify(radioSignalService).saveRadioSignalRequests(radioInfoRequest, test);
         verify(radioCellService).processRadioCellRequests(List.of(radioCellRequest), test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
@@ -260,7 +260,7 @@ public class SignalServiceImplTest {
 
         signalService.processSignalResult(signalResultRequest);
 
-        verify(radioSignalService).saveRadioSignalRequests(List.of(radioSignalRequest), test);
+        verify(radioSignalService).saveRadioSignalRequests(radioInfoRequest, test);
         verifyNoInteractions(radioCellService);
     }
 

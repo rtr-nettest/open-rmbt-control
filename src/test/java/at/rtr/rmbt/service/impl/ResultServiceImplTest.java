@@ -96,7 +96,7 @@ public class ResultServiceImplTest {
         verify(testRepository).save(test);
         verify(testMapper).updateTestWithResultRequest(resultRequest, test);
         verify(radioCellService).processRadioCellRequests(List.of(radioCellRequest), test);
-        verify(radioSignalService).saveRadioSignalRequests(List.of(radioSignalRequest), test);
+        verify(radioSignalService).saveRadioSignalRequests(radioInfoRequest, test);
     }
 
     @Test
@@ -111,7 +111,7 @@ public class ResultServiceImplTest {
         verify(testRepository).save(test);
         verify(testMapper).updateTestWithResultRequest(resultRequest, test);
         verifyNoInteractions(radioCellService);
-        verify(radioSignalService).saveRadioSignalRequests(List.of(radioSignalRequest), test);
+        verify(radioSignalService).saveRadioSignalRequests(radioInfoRequest, test);
     }
 
     @Test

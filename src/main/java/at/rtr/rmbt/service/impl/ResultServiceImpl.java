@@ -173,7 +173,7 @@ public class ResultServiceImpl implements ResultService {
                 radioCellService.processRadioCellRequests(resultRequest.getRadioInfo().getCells(), test);
             }
             if (!CollectionUtils.isEmpty(resultRequest.getRadioInfo().getSignals())) {
-                radioSignalService.saveRadioSignalRequests(resultRequest.getRadioInfo().getSignals(), test);
+                radioSignalService.saveRadioSignalRequests(resultRequest.getRadioInfo(), test);
             }
         }
     }
