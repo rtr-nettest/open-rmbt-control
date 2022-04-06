@@ -1,6 +1,5 @@
 package at.rtr.rmbt.controller;
 
-import at.rtr.rmbt.model.RequestLog;
 import at.rtr.rmbt.request.QosMeasurementsRequest;
 import at.rtr.rmbt.request.QosResultRequest;
 import at.rtr.rmbt.response.ErrorResponse;
@@ -8,19 +7,10 @@ import at.rtr.rmbt.response.MeasurementQosResponse;
 import at.rtr.rmbt.response.QosMeasurementsResponse;
 import at.rtr.rmbt.service.QosMeasurementService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,12 +24,6 @@ import static at.rtr.rmbt.constant.URIConstants.*;
 @RequiredArgsConstructor
 public class QosMeasurementController {
 
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private static final Logger logger = LoggerFactory.getLogger(QosMeasurementController.class);
-
     private final QosMeasurementService qosMeasurementService;
 
     @ApiOperation("Provide parameters for qos measurements.")
@@ -50,15 +34,13 @@ public class QosMeasurementController {
 
     @ApiOperation("Get QoS test results")
     @PostMapping(MEASUREMENT_QOS_RESULT)
-    public QosMeasurementsResponse getQosTestResults(@Validated @RequestBody QosMeasurementsRequest request, @RequestHeader Map<String, String> headers) throws JsonProcessingException {
-        logger.info(objectMapper.writeValueAsString(new RequestLog(headers, request)));
+    public QosMeasurementsResponse getQosTestResults(@Validated @RequestBody QosMeasurementsRequest request) {
         return qosMeasurementService.getQosResult(request.getTestUuid(), request.getLanguage(), request.getCapabilities());
     }
 
     @ApiOperation("Save QoS test results")
     @PostMapping(RESULT_QOS_URL)
-    public ErrorResponse saveQosMeasurementResult(@RequestBody QosResultRequest qosResultRequest, @RequestHeader Map<String, String> headers) throws JsonProcessingException {
-        logger.info(objectMapper.writeValueAsString(new RequestLog(headers, qosResultRequest)));
+    public ErrorResponse saveQosMeasurementResult(@RequestBody QosResultRequest qosResultRequest) {
         return qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
     }
 
@@ -74,8 +56,7 @@ public class QosMeasurementController {
 
     @ApiOperation("Save QoS test results")
     @GetMapping(RESULT_QOS_URL)
-    public ErrorResponse saveQosMeasurementResultGet(@RequestBody QosResultRequest qosResultRequest, @RequestHeader Map<String, String> headers) throws JsonProcessingException {
-        logger.info(objectMapper.writeValueAsString(new RequestLog(headers, qosResultRequest)));
+    public ErrorResponse saveQosMeasurementResultGet(@RequestBody QosResultRequest qosResultRequest) {
         return qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
     }
 }

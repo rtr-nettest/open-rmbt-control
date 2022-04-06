@@ -1,7 +1,6 @@
 package at.rtr.rmbt.controller;
 
 import at.rtr.rmbt.constant.URIConstants;
-import at.rtr.rmbt.model.RequestLog;
 import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.TestService;
@@ -9,8 +8,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,8 +23,6 @@ public class TestController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private static final Logger logger = LoggerFactory.getLogger(TestController.class);
-
     private final TestService testService;
 
     @GetMapping(URIConstants.TEST + URIConstants.BY_TEST_UUID)
@@ -40,30 +35,26 @@ public class TestController {
     @PostMapping(URIConstants.TEST_RESULT_DETAIL)
     @ApiOperation(value = "Get test result detail")
     @ResponseStatus(HttpStatus.OK)
-    public TestResultDetailResponse getTestResultDetailByTestUUID(@RequestBody TestResultDetailRequest testResultDetailRequestl, @RequestHeader Map<String, String> headers) throws JsonProcessingException {
-        logger.info(objectMapper.writeValueAsString(new RequestLog(headers, testResultDetailRequestl)));
+    public TestResultDetailResponse getTestResultDetailByTestUUID(@RequestBody TestResultDetailRequest testResultDetailRequestl) {
         return testService.getTestResultDetailByTestUUID(testResultDetailRequestl);
     }
 
     @PostMapping(URIConstants.TEST_RESULT)
     @ApiOperation(value = "Get test result")
     @ResponseStatus(HttpStatus.OK)
-    public TestResultContainerResponse getTestResultByTestUUID(@RequestBody TestResultRequest testResultRequest, @RequestHeader Map<String, String> headers) throws JsonProcessingException {
-        logger.info(objectMapper.writeValueAsString(new RequestLog(headers, testResultRequest)));
+    public TestResultContainerResponse getTestResultByTestUUID(@RequestBody TestResultRequest testResultRequest) {
         return testService.getTestResult(testResultRequest);
     }
 
     @PostMapping(URIConstants.HISTORY)
     @ApiOperation(value = "Gets test history for the client device and synchronized devices")
-    public HistoryResponse getHistory(@RequestBody HistoryRequest historyRequest, @RequestHeader Map<String, String> headers) throws JsonProcessingException {
-        logger.info(objectMapper.writeValueAsString(new RequestLog(headers, historyRequest)));
+    public HistoryResponse getHistory(@RequestBody HistoryRequest historyRequest) {
         return testService.getHistory(historyRequest);
     }
 
     @PostMapping(URIConstants.RESULT_UPDATE)
     @ApiOperation(value = "Update a test result (e.g. mark as aborted).")
-    public ResultUpdateResponse updateTestResult(@RequestBody ResultUpdateRequest resultUpdateRequest, @RequestHeader Map<String, String> headers) throws JsonProcessingException {
-        logger.info(objectMapper.writeValueAsString(new RequestLog(headers, resultUpdateRequest)));
+    public ResultUpdateResponse updateTestResult(@RequestBody ResultUpdateRequest resultUpdateRequest, @RequestHeader Map<String, String> headers) {
         return testService.updateTestResult(resultUpdateRequest);
     }
 
