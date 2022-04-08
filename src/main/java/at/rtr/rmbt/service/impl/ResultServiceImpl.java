@@ -4,7 +4,6 @@ import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.constant.ErrorMessage;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.EmptyClientVersionException;
-import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.Test;
@@ -15,7 +14,6 @@ import at.rtr.rmbt.request.ResultRequest;
 import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import at.rtr.rmbt.utils.HelperFunctions;
-import at.rtr.rmbt.utils.ValidateUtils;
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -227,12 +225,6 @@ public class ResultServiceImpl implements ResultService {
     private void verifyClientVersion(ResultRequest resultRequest) {
         if (resultRequest.getClientVersion().isEmpty() && resultRequest.getTestStatus().equals("1")) { //try to hadle failed test
             throw new EmptyClientVersionException();
-        }
-
-        ValidateUtils.validateClientVersion(applicationProperties.getVersion(), resultRequest.getClientVersion());
-
-        if (!applicationProperties.getClientNames().contains(resultRequest.getClientName().getLabel())) {
-            throw new NotSupportedClientVersionException();
         }
     }
 }
