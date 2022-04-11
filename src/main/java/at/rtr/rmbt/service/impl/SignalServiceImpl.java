@@ -9,36 +9,17 @@ import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.InvalidSequenceException;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.mapper.TestMapper;
-import at.rtr.rmbt.model.GeoLocation;
-import at.rtr.rmbt.model.RadioCell;
-import at.rtr.rmbt.model.RadioSignal;
-import at.rtr.rmbt.model.RtrClient;
-import at.rtr.rmbt.model.Signal;
-import at.rtr.rmbt.model.Test;
-import at.rtr.rmbt.repository.ClientRepository;
-import at.rtr.rmbt.repository.GeoLocationRepository;
-import at.rtr.rmbt.repository.ProviderRepository;
-import at.rtr.rmbt.repository.RadioSignalRepository;
-import at.rtr.rmbt.repository.SignalRepository;
-import at.rtr.rmbt.repository.TestRepository;
+import at.rtr.rmbt.model.*;
+import at.rtr.rmbt.repository.*;
 import at.rtr.rmbt.request.SignalRegisterRequest;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
-import at.rtr.rmbt.response.SignalDetailsResponse;
-import at.rtr.rmbt.response.SignalLocationResponse;
-import at.rtr.rmbt.response.SignalMeasurementResponse;
-import at.rtr.rmbt.response.SignalResultResponse;
-import at.rtr.rmbt.response.SignalSettingsResponse;
-import at.rtr.rmbt.response.SignalStrengthResponse;
+import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoLocationService;
 import at.rtr.rmbt.service.RadioCellService;
 import at.rtr.rmbt.service.RadioSignalService;
 import at.rtr.rmbt.service.SignalService;
-import at.rtr.rmbt.utils.BandCalculationUtil;
-import at.rtr.rmbt.utils.FormatUtils;
-import at.rtr.rmbt.utils.HeaderExtrudeUtil;
-import at.rtr.rmbt.utils.HelperFunctions;
-import at.rtr.rmbt.utils.TimeUtils;
+import at.rtr.rmbt.utils.*;
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,14 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -140,6 +114,7 @@ public class SignalServiceImpl implements SignalService {
     @Override
     @Transactional
     public SignalResultResponse processSignalResult(SignalResultRequest signalResultRequest) {
+        log.info("SignalResultRequest = " + signalResultRequest);
         UUID testUuid = getTestUUID(signalResultRequest);
 
         Long sequenceNumber = signalResultRequest.getSequenceNumber();
@@ -151,7 +126,7 @@ public class SignalServiceImpl implements SignalService {
                 .orElseGet(() -> getEmptyGeneratedTest(signalResultRequest, client));
         updatedTest.setStatus(TestStatus.SIGNAL);
 
-        if (sequenceNumber <= updatedTest.getLastSequenceNumber()) {
+        if (Objects.isNull(sequenceNumber) || sequenceNumber <= updatedTest.getLastSequenceNumber()) {
             throw new InvalidSequenceException();
         }
         updatedTest.setLastSequenceNumber(sequenceNumber.intValue());
@@ -164,9 +139,9 @@ public class SignalServiceImpl implements SignalService {
 
         processRadioInfo(signalResultRequest, updatedTest);
 
+        log.info("Updated test before save = " + updatedTest);
+        testMapper.updateTestLocation(updatedTest);
         testRepository.saveAndFlush(updatedTest);
-        if (updatedTest.getLongitude() != null && updatedTest.getLatitude() != null)
-            testRepository.updateGeoLocation(updatedTest.getUid(), updatedTest.getLongitude(), updatedTest.getLatitude());
 
         return SignalResultResponse.builder()
                 .testUUID(updatedTest.getUuid())
@@ -285,9 +260,9 @@ public class SignalServiceImpl implements SignalService {
 
     private String getSignalStrength(RadioSignal signal) {
         return Stream.of(FormatUtils.format(Constants.SIGNAL_STRENGTH_DBM_TEMPLATE, signal.getSignalStrength() != null
-                        ? signal.getSignalStrength() : signal.getLteRSRP()),
-                FormatUtils.format(Constants.SIGNAL_STRENGTH_TIMING_ADVANCE_TEMPLATE, signal.getTimingAdvance()),
-                FormatUtils.format(Constants.SIGNAL_STRENGTH_RSRQ_TEMPLATE, signal.getLteRSRQ()))
+                                ? signal.getSignalStrength() : signal.getLteRSRP()),
+                        FormatUtils.format(Constants.SIGNAL_STRENGTH_TIMING_ADVANCE_TEMPLATE, signal.getTimingAdvance()),
+                        FormatUtils.format(Constants.SIGNAL_STRENGTH_RSRQ_TEMPLATE, signal.getLteRSRQ()))
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.joining(Constants.SIGNAL_STRENGTH_DELIMITER));
 
@@ -307,10 +282,10 @@ public class SignalServiceImpl implements SignalService {
 
     private void processRadioInfo(SignalResultRequest signalResultRequest, Test updatedTest) {
         if (Objects.nonNull(signalResultRequest.getRadioInfo())) {
-            if(!CollectionUtils.isEmpty(signalResultRequest.getRadioInfo().getCells())){
+            if (!CollectionUtils.isEmpty(signalResultRequest.getRadioInfo().getCells())) {
                 radioCellService.processRadioCellRequests(signalResultRequest.getRadioInfo().getCells(), updatedTest);
             }
-            if(!CollectionUtils.isEmpty(signalResultRequest.getRadioInfo().getSignals())){
+            if (!CollectionUtils.isEmpty(signalResultRequest.getRadioInfo().getSignals())) {
                 radioSignalService.saveRadioSignalRequests(signalResultRequest.getRadioInfo().getSignals(), updatedTest);
             }
         }

@@ -12,4 +12,6 @@ public interface TestMapper {
     void updateTestWithSignalResultRequest(SignalResultRequest signalResultRequest, Test test);
 
     void updateTestWithResultRequest(ResultRequest resultRequest, Test test);
+
+    Test updateTestLocation(Test test);
 }

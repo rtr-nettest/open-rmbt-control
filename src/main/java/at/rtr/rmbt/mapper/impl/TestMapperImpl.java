@@ -5,7 +5,11 @@ import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.request.ResultRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
 import at.rtr.rmbt.response.TestResponse;
+import at.rtr.rmbt.utils.GeometryUtils;
+import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class TestMapperImpl implements TestMapper {
@@ -93,5 +97,14 @@ public class TestMapperImpl implements TestMapper {
         test.setLastQosStatus(resultRequest.getLastQosStatus());
         test.setTestErrorCause(resultRequest.getTestErrorCause());
         test.setSubmissionRetryCount(resultRequest.getTestSubmissionRetryCount());
+    }
+
+    @Override
+    public Test updateTestLocation(Test test) {
+        if (Objects.nonNull(test.getLongitude()) && Objects.nonNull(test.getLatitude())) {
+            Geometry location = GeometryUtils.getPointFromLongitudeAndLatitude(test.getLongitude(), test.getLatitude());
+            test.setLocation(location);
+        }
+        return test;
     }
 }

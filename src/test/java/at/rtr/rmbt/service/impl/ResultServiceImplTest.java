@@ -93,6 +93,7 @@ public class ResultServiceImplTest {
 
         resultService.processResultRequest(httpServletRequest, resultRequest, headers);
 
+        verify(test).setStatus(any());
         verify(testRepository).save(test);
         verify(testMapper).updateTestWithResultRequest(resultRequest, test);
         verify(radioCellService).processRadioCellRequests(List.of(radioCellRequest), test);
@@ -109,6 +110,7 @@ public class ResultServiceImplTest {
         resultService.processResultRequest(httpServletRequest, resultRequest, headers);
 
         verify(testRepository).save(test);
+        verify(test).setStatus(any());
         verify(testMapper).updateTestWithResultRequest(resultRequest, test);
         verifyNoInteractions(radioCellService);
         verify(radioSignalService).saveRadioSignalRequests(List.of(radioSignalRequest), test);
@@ -123,6 +125,7 @@ public class ResultServiceImplTest {
 
         resultService.processResultRequest(httpServletRequest, resultRequest, headers);
 
+        verify(test).setStatus(any());
         verify(testRepository).save(test);
         verify(testMapper).updateTestWithResultRequest(resultRequest, test);
         verify(radioCellService).processRadioCellRequests(List.of(radioCellRequest), test);
@@ -139,5 +142,6 @@ public class ResultServiceImplTest {
         when(resultRequest.getDownloadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
         when(resultRequest.getUploadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
         when(resultRequest.getPingShortest()).thenReturn(TestConstants.DEFAULT_RESULT_PING_SHORTEST);
+        when(testMapper.updateTestLocation(test)).thenReturn(test);
     }
 }

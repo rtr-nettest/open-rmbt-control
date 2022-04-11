@@ -4,6 +4,7 @@ import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.constant.ErrorMessage;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.EmptyClientVersionException;
+import at.rtr.rmbt.exception.NotSupportedClientVersionException;
 import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.Test;
@@ -67,19 +68,12 @@ public class ResultServiceImpl implements ResultService {
         setNetworkType(test);
         setAndroidPermission(resultRequest, test);
         setSpeedAndPing(resultRequest, test);
-        testRepository.save(test);
-        updateLocationAndStatus(test, getStatus(resultRequest, test));
+        Test updatedTest = testMapper.updateTestLocation(test);
+        updatedTest.setStatus(getStatus(resultRequest));
+        testRepository.save(updatedTest);
     }
 
-    private void updateLocationAndStatus(Test test, TestStatus testStatus) {
-        if (Objects.nonNull(test.getLatitude()) && Objects.nonNull(test.getLongitude())) {
-            testRepository.updateGeoLocationAndStatus(test.getUid(), test.getLongitude(), test.getLatitude(), testStatus.name());
-        } else {
-            testRepository.updateStatus(test.getUid(), testStatus.name());
-        }
-    }
-
-    private TestStatus getStatus(ResultRequest resultRequest, Test test) {
+    private TestStatus getStatus(ResultRequest resultRequest) {
         if (Objects.nonNull(resultRequest.getTestStatus())) {
             switch (resultRequest.getTestStatus()) {
                 case "0":
