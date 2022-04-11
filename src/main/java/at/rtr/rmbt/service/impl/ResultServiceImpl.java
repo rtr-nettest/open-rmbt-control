@@ -220,5 +220,9 @@ public class ResultServiceImpl implements ResultService {
         if (resultRequest.getClientVersion().isEmpty() && resultRequest.getTestStatus().equals("1")) { //try to hadle failed test
             throw new EmptyClientVersionException();
         }
+
+        if (!applicationProperties.getClientNames().contains(resultRequest.getClientName().getLabel())) {
+            throw new NotSupportedClientVersionException();
+        }
     }
 }
