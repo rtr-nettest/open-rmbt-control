@@ -14,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "radio_cell")
+@ToString
 public class RadioCell implements Serializable {
 
     @Id
@@ -31,6 +32,7 @@ public class RadioCell implements Serializable {
             updatable = false
     )
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Test test;
 
     @Column(name = "technology")

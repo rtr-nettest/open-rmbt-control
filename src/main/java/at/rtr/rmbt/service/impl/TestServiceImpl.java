@@ -181,8 +181,8 @@ public class TestServiceImpl implements TestService {
             testRepository.save(test);
         } else {
             geoLocationService.updateGeoLocation(test, resultUpdateRequest);
-            testRepository.save(test);
-            testRepository.updateGeoLocation(test.getUid(), test.getLongitude(), test.getLatitude());
+            Test updatedTest = testMapper.updateTestLocation(test);
+            testRepository.save(updatedTest);
         }
 
         return ResultUpdateResponse.builder()

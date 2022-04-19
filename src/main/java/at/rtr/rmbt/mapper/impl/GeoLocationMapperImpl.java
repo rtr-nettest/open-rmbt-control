@@ -5,13 +5,11 @@ import at.rtr.rmbt.mapper.GeoLocationMapper;
 import at.rtr.rmbt.model.GeoLocation;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.request.GeoLocationRequest;
+import at.rtr.rmbt.utils.GeometryUtils;
 import at.rtr.rmbt.utils.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -60,8 +58,6 @@ public class GeoLocationMapperImpl implements GeoLocationMapper {
     }
 
     private Point getLocationPointFromLongitudeAndLatitude(Double longitude, Double latitude) {
-
-        return new GeometryFactory(new PrecisionModel(), 4326)
-                .createPoint(new Coordinate(longitude, latitude));
+        return GeometryUtils.getPointFromLongitudeAndLatitude(longitude, latitude);
     }
 }

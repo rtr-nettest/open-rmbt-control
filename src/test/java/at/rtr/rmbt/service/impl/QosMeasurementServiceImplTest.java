@@ -208,21 +208,6 @@ public class QosMeasurementServiceImplTest {
     }
 
     @Test
-    public void saveQosMeasurementResult_whenClientVersionIsNotValid_expectNothingSaved() {
-        QosResultRequest qosResultRequest = TestFixtures.qosResultRequest.toBuilder()
-            .clientVersion("abc")
-            .build();
-
-        when(testRepository.findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
-        when(messageSource.getMessage("ERROR_CLIENT_VERSION", null, Locale.ENGLISH)).thenReturn("ERROR_CLIENT_VERSION");
-        ErrorResponse response = qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
-
-        assertEquals(1, response.getError().size());
-        assertTrue(response.getError().contains("ERROR_CLIENT_VERSION"));
-        verify(qosTestResultRepository, never()).save(any());
-    }
-
-    @Test
     public void saveQosMeasurementResult_whenTestTokenInvalid_expectNothingSaved() {
         QosResultRequest qosResultRequest = TestFixtures.qosResultRequest.toBuilder()
             .testToken(DEFAULT_TEST_UUID + "_2")
