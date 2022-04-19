@@ -52,7 +52,7 @@ public class ApiLoggingFilter implements Filter {
                 final StringBuilder logResponse = new StringBuilder("HTTP RESPONSE ")
                         .append(bufferedResponse.getContent());
                 String responseString = logResponse.toString();
-                LOGGER.info(responseString.substring(0, Math.min(responseString.length(), 1000)));
+                LOGGER.info(responseString.substring(0, Math.min(responseString.length(), 10000)));
                 MDC.clear();
             }
         } catch (Throwable a) {
