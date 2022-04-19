@@ -494,6 +494,7 @@ public class TestServiceImplTest {
         when(testRepository.findByUuid(TestConstants.DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(client));
         when(test.getClient()).thenReturn(client);
+        when(testMapper.updateTestLocation(test)).thenReturn(test);
 
         testService.updateTestResult(resultUpdateRequest);
 
@@ -509,6 +510,7 @@ public class TestServiceImplTest {
         when(testRepository.findByUuid(TestConstants.DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(client));
         when(test.getClient()).thenReturn(client);
+        when(testMapper.updateTestLocation(test)).thenReturn(test);
 
         testService.updateTestResult(resultUpdateRequest);
 

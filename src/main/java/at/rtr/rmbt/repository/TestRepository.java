@@ -94,19 +94,4 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
             "  FROM RadioCell r" +
             "  WHERE r.test.openTestUuid = :openTestUUID AND r.active = true AND NOT r.technology = 'WLAN'")
     List<LteFrequencyDto> findLteFrequencyByOpenTestUUID(UUID openTestUUID);
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE test SET status = :status,location = ST_TRANSFORM(ST_SetSRID(ST_Point(:longitude, :latitude), 4326), 900913) WHERE uid = :testUid", nativeQuery = true)
-    void updateGeoLocationAndStatus(Long testUid, Double longitude, Double latitude, String status);
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE test SET location = ST_TRANSFORM(ST_SetSRID(ST_Point(:longitude, :latitude), 4326), 900913) WHERE uid = :testUid", nativeQuery = true)
-    void updateGeoLocation(Long testUid, Double longitude, Double latitude);
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE test SET status = :status WHERE uid = :testUid", nativeQuery = true)
-    void updateStatus(Long testUid, String status);
 }
