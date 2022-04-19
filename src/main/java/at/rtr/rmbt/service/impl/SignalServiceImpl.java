@@ -286,7 +286,7 @@ public class SignalServiceImpl implements SignalService {
                 radioCellService.processRadioCellRequests(signalResultRequest.getRadioInfo().getCells(), updatedTest);
             }
             if (!CollectionUtils.isEmpty(signalResultRequest.getRadioInfo().getSignals())) {
-                radioSignalService.saveRadioSignalRequests(signalResultRequest.getRadioInfo().getSignals(), updatedTest);
+                radioSignalService.saveRadioSignalRequests(signalResultRequest.getRadioInfo(), updatedTest);
             }
         }
     }
