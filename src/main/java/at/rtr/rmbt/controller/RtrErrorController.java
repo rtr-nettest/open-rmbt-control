@@ -16,9 +16,4 @@ public class RtrErrorController implements ErrorController {
     public String handleError(HttpServletRequest request) {
         return "error";
     }
-
-    @Override
-    public String getErrorPath() {
-        return "/error";
-    }
 }

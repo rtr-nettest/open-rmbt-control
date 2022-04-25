@@ -1,7 +1,7 @@
 package at.rtr.rmbt.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,31 +12,31 @@ import java.util.UUID;
 @Getter
 public class HistoryRequest {
 
-    @ApiModelProperty(notes = "Client UUID")
+    @Schema(description = "Client UUID")
     @JsonProperty(value = "uuid")
     private final UUID clientUUID;
 
-    @ApiModelProperty(notes = "2 letters language code or language code with region", example = "en")
+    @Schema(description = "2 letters language code or language code with region", example = "en")
     @JsonProperty(value = "language")
     private final String language;
 
-    @ApiModelProperty(notes = "Result limit")
+    @Schema(description = "Result limit")
     @JsonProperty(value = "result_limit")
     private final Integer resultLimit;
 
-    @ApiModelProperty(notes = "Result offset")
+    @Schema(description = "Result offset")
     @JsonProperty(value = "result_offset")
     private final Integer resultOffset;
 
-    @ApiModelProperty(notes = "Devices")
+    @Schema(description = "Devices")
     @JsonProperty(value = "devices")
     private final List<String> devices;
 
-    @ApiModelProperty(notes = "Networks")
+    @Schema(description = "Networks")
     @JsonProperty(value = "networks")
     private final List<String> networks;
 
-    @ApiModelProperty(notes = "Capabilities")
+    @Schema(description = "Capabilities")
     @JsonProperty(value = "capabilities")
     private final CapabilitiesRequest capabilities;
 }

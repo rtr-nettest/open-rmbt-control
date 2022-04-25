@@ -4,31 +4,24 @@ import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.facade.TestSettingsFacade;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.TestSettingsResponse;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-@Api("Test Settings")
+@Tag(name = "Test Settings")
 @RestController
 @RequestMapping(URIConstants.REGISTRATION_URL)
+@RequiredArgsConstructor
 public class RegistrationController {
 
-    private TestSettingsFacade testSettingsFacade;
+    private final TestSettingsFacade testSettingsFacade;
 
-    @Autowired
-    public RegistrationController(TestSettingsFacade testSettingsFacade) {
-        this.testSettingsFacade = testSettingsFacade;
-    }
-
-    @ApiOperation(value = "Update test settings", notes = "Request to update configuration for basic test")
+    @Operation(summary = "Update test settings", description = "Request to update configuration for basic test")
     @PostMapping
     public TestSettingsResponse updateTestSettings(@RequestBody TestSettingsRequest testSettingsRequest, HttpServletRequest request, @RequestHeader Map<String, String> headers) {
         return testSettingsFacade.updateTestSettings(testSettingsRequest, request, headers);

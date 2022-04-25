@@ -1,7 +1,7 @@
 package at.rtr.rmbt.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,19 +13,19 @@ import lombok.ToString;
 @ToString
 public class SyncItemResponse {
 
-    @ApiModelProperty(notes = "Sync code")
+    @Schema(description = "Sync code")
     @JsonProperty(value = "sync_code")
     private final String syncCode;
 
-    @ApiModelProperty(notes = "Message title")
+    @Schema(description = "Message title")
     @JsonProperty(value = "msg_title")
     private final String msgTitle;
 
-    @ApiModelProperty(notes = "Message text")
+    @Schema(description = "Message text")
     @JsonProperty(value = "msg_text")
     private final String msgText;
 
-    @ApiModelProperty(notes = "True if synchronization successful")
+    @Schema(description = "True if synchronization successful")
     @JsonProperty(value = "success")
     private final boolean success;
 }

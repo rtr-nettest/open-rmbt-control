@@ -2,7 +2,7 @@ package at.rtr.rmbt.request;
 
 import at.rtr.rmbt.enums.TestPlatform;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -39,7 +39,7 @@ public class SignalResultRequest {
     @JsonProperty(value = "client_language")
     private final String clientLanguage;
 
-    @ApiModelProperty(notes = "Time zone of client", example = "Europe/Prague")
+    @Schema(description = "Time zone of client", example = "Europe/Prague")
     @JsonProperty(value = "timezone")
     private final String timezone;
 
