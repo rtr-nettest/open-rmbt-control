@@ -6,9 +6,8 @@ import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.MeasurementQosResponse;
 import at.rtr.rmbt.response.QosMeasurementsResponse;
 import at.rtr.rmbt.service.QosMeasurementService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,26 +18,26 @@ import java.util.UUID;
 
 import static at.rtr.rmbt.constant.URIConstants.*;
 
-@Api("Qos measurement")
+@Tag(name = "Qos measurement")
 @RestController
 @RequiredArgsConstructor
 public class QosMeasurementController {
 
     private final QosMeasurementService qosMeasurementService;
 
-    @ApiOperation("Provide parameters for qos measurements.")
+    @Operation(summary = "Provide parameters for qos measurements.")
     @PostMapping(MEASUREMENT_QOS_REQUEST)
     public MeasurementQosResponse provideMeasurementQosParameters(HttpServletRequest httpServletRequest, @RequestHeader Map<String, String> headers) {
         return qosMeasurementService.getQosParameters(httpServletRequest, headers);
     }
 
-    @ApiOperation("Get QoS test results")
+    @Operation(summary = "Get QoS test results")
     @PostMapping(MEASUREMENT_QOS_RESULT)
     public QosMeasurementsResponse getQosTestResults(@Validated @RequestBody QosMeasurementsRequest request) {
         return qosMeasurementService.getQosResult(request.getTestUuid(), request.getLanguage(), request.getCapabilities());
     }
 
-    @ApiOperation("Save QoS test results")
+    @Operation(summary = "Save QoS test results")
     @PostMapping(RESULT_QOS_URL)
     public ErrorResponse saveQosMeasurementResult(@RequestBody QosResultRequest qosResultRequest) {
         return qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
@@ -54,7 +53,7 @@ public class QosMeasurementController {
         return qosMeasurementService.evaluateQosByOpenTestUUID(openTestUUID, lang);
     }
 
-    @ApiOperation("Save QoS test results")
+    @Operation(summary = "Save QoS test results")
     @GetMapping(RESULT_QOS_URL)
     public ErrorResponse saveQosMeasurementResultGet(@RequestBody QosResultRequest qosResultRequest) {
         return qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
