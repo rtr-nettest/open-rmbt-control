@@ -34,3 +34,9 @@ In `catalina.properties` the desired spring profile can be set:
 ```properties
 spring.profiles.active=prod
 ```
+
+
+Github action
+----
+
+The `WAR build` action produces a WAR file that can be used on a server. This only applies to the `feature/war` branch.
