@@ -1,8 +1,3 @@
-logging:
-  level:
-    org.springframework.orm.jpa: DEBUG
-    org.springframework.transaction: DEBUG
-
 server:
   servlet:
     context-path: /RMBTControlServer
