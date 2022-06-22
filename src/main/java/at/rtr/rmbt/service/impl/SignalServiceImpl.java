@@ -27,10 +27,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -112,7 +112,6 @@ public class SignalServiceImpl implements SignalService {
     }
 
     @Override
-    @Transactional
     public SignalResultResponse processSignalResult(SignalResultRequest signalResultRequest) {
         log.info("SignalResultRequest = " + signalResultRequest);
         UUID testUuid = getTestUUID(signalResultRequest);

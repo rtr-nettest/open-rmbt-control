@@ -1,9 +1,6 @@
 package at.rtr.rmbt.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
@@ -15,6 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "client")
+@ToString
 public class RtrClient {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
