@@ -112,6 +112,7 @@ public class SignalServiceImpl implements SignalService {
     }
 
     @Override
+    @Transactional
     public SignalResultResponse processSignalResult(SignalResultRequest signalResultRequest) {
         log.info("SignalResultRequest = " + signalResultRequest);
         UUID testUuid = getTestUUID(signalResultRequest);

@@ -4,12 +4,10 @@ import at.rtr.rmbt.dto.LteFrequencyDto;
 import at.rtr.rmbt.model.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +43,7 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
 
     Page<Test> findAllByRadioCellIsNotEmptyAndNetworkTypeNotIn(Pageable pageable, List<Integer> networkTypes);
 
-    @Query(value = "SELECT * FROM test WHERE uuid = :testUUID AND (status is null or status in (:testStatuses))", nativeQuery = true)
+    @Query(value = "SELECT * FROM test WHERE uuid = :testUUID AND (status is null or status in (:testStatuses)) for update", nativeQuery = true)
     Optional<Test> findByUuidAndStatusesIn(UUID testUUID, Collection<String> testStatuses);
 
     @Query(value = "SELECT * FROM test WHERE deleted = false AND implausible = false AND uuid = :testUUID AND (status is null or status in (:testStatuses))", nativeQuery = true)
