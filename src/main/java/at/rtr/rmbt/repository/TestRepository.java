@@ -43,8 +43,11 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
 
     Page<Test> findAllByRadioCellIsNotEmptyAndNetworkTypeNotIn(Pageable pageable, List<Integer> networkTypes);
 
-    @Query(value = "SELECT * FROM test WHERE uuid = :testUUID AND (status is null or status in (:testStatuses)) for update", nativeQuery = true)
+    @Query(value = "SELECT * FROM test WHERE uuid = :testUUID AND (status is null or status in (:testStatuses))", nativeQuery = true)
     Optional<Test> findByUuidAndStatusesIn(UUID testUUID, Collection<String> testStatuses);
+
+    @Query(value = "SELECT * FROM test WHERE uuid = :testUUID AND (status is null or status in (:testStatuses)) for update", nativeQuery = true)
+    Optional<Test> findByUuidAndStatusesInLocked(UUID testUUID, Collection<String> testStatuses);
 
     @Query(value = "SELECT * FROM test WHERE deleted = false AND implausible = false AND uuid = :testUUID AND (status is null or status in (:testStatuses))", nativeQuery = true)
     Optional<Test> findByUuidAndStatusesInAndActive(UUID testUUID, Collection<String> testStatuses);
