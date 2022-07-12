@@ -122,7 +122,7 @@ public class SignalServiceImpl implements SignalService {
         RtrClient client = clientRepository.findByUuid(signalResultRequest.getClientUUID())
                 .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, signalResultRequest.getClientUUID())));
 
-        Test updatedTest = testRepository.findByUuidAndStatusesIn(testUuid, Config.SIGNAL_RESULT_STATUSES)
+        Test updatedTest = testRepository.findByUuidAndStatusesInLocked(testUuid, Config.SIGNAL_RESULT_STATUSES)
                 .orElseGet(() -> getEmptyGeneratedTest(signalResultRequest, client));
         updatedTest.setStatus(TestStatus.SIGNAL);
 

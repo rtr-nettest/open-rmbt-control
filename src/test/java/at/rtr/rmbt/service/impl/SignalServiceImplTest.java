@@ -165,7 +165,7 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
         when(signalResultRequest.getSequenceNumber()).thenReturn(2L);
         when(signalResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
+        when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(test.getUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
@@ -209,7 +209,7 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getRadioInfo()).thenReturn(radioInfoRequest);
         when(radioInfoRequest.getCells()).thenReturn(List.of(radioCellRequest));
         when(radioInfoRequest.getSignals()).thenReturn(List.of(radioSignalRequest));
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
+        when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_UUID);
@@ -235,7 +235,7 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getRadioInfo()).thenReturn(radioInfoRequest);
         when(radioInfoRequest.getCells()).thenReturn(List.of(radioCellRequest));
         when(radioInfoRequest.getSignals()).thenReturn(null);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
+        when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
 
@@ -254,7 +254,7 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getRadioInfo()).thenReturn(radioInfoRequest);
         when(radioInfoRequest.getCells()).thenReturn(null);
         when(radioInfoRequest.getSignals()).thenReturn(List.of(radioSignalRequest));
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
+        when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
 
@@ -271,7 +271,7 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getSequenceNumber()).thenReturn(2L);
         when(signalResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(signalResultRequest.getGeoLocations()).thenReturn(List.of(geoLocationRequestFirst, geoLocationRequestSecond));
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
+        when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_UUID);
@@ -312,7 +312,7 @@ public class SignalServiceImplTest {
         when(signalResultRequest.getSequenceNumber()).thenReturn(2L);
         when(signalResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(signalResultRequest.getTestIpLocal()).thenReturn(TestConstants.DEFAULT_IP_V4);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
+        when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(test.getClientPublicIp()).thenReturn(TestConstants.DEFAULT_IP_V4);
