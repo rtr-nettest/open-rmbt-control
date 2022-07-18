@@ -21,6 +21,8 @@ In case the DB connection is not set in the `application.yml`, placeholders can 
 <Parameter name="CONTROL_HOST" value="localhost" override="false"/>
 <Parameter name="CONTROL_SERVER_URL" value="https://server.netztest.at" override="false"/>
 <Parameter name="CONTROL_SERVER_CONTEXT" value="/RMBTControlServer" override="false"/>
+<Parameter name="ALLOWED_ORIGIN" value="https://www.netztest.at" override="false"/>
+
 ```
 
 and referenced in the `application.yml` like

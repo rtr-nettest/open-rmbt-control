@@ -143,3 +143,4 @@ server:
     context-path: ${CONTROL_SERVER_CONTEXT}
 logging:
     config: ${LOGGING_CONFIG_FILE:classpath:logback.xml}
+origin: ${ALLOWED_ORIGIN}
