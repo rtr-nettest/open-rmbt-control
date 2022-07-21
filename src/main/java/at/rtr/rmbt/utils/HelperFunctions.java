@@ -206,6 +206,7 @@ public class HelperFunctions {
         }
     }
 
+    @Deprecated
     public static ASInformation getASInformation(final InetAddress addr) {
         try {
             String ipAsString = addr.getHostAddress();
@@ -382,24 +383,20 @@ public class HelperFunctions {
         Long asNumber;
         String asName;
         String asCountry;
-        var firstServiceTryAsInformation = HelperFunctions.getASInformation(addr);
-        if (Objects.nonNull(firstServiceTryAsInformation)) {
-            return firstServiceTryAsInformation;
+
+        asNumber = HelperFunctions.getASN(addr);
+        if (Objects.isNull(asNumber)) {
+            asName = null;
+            asCountry = null;
         } else {
-            asNumber = HelperFunctions.getASN(addr);
-            if (Objects.isNull(asNumber)) {
-                asName = null;
-                asCountry = null;
-            } else {
-                asName = HelperFunctions.getASName(asNumber);
-                asCountry = HelperFunctions.getAScountry(asNumber);
-            }
-            return ASInformation.builder()
-                    .number(asNumber)
-                    .name(asName)
-                    .country(asCountry)
-                    .build();
+            asName = HelperFunctions.getASName(asNumber);
+            asCountry = HelperFunctions.getAScountry(asNumber);
         }
+        return ASInformation.builder()
+                .number(asNumber)
+                .name(asName)
+                .country(asCountry)
+                .build();
     }
 
     public static String getNatType(final InetAddress localAdr, final InetAddress publicAdr) {
