@@ -4,12 +4,10 @@ import at.rtr.rmbt.dto.LteFrequencyDto;
 import at.rtr.rmbt.model.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +45,9 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
 
     @Query(value = "SELECT * FROM test WHERE uuid = :testUUID AND (status is null or status in (:testStatuses))", nativeQuery = true)
     Optional<Test> findByUuidAndStatusesIn(UUID testUUID, Collection<String> testStatuses);
+
+    @Query(value = "SELECT * FROM test WHERE uuid = :testUUID AND (status is null or status in (:testStatuses)) for update", nativeQuery = true)
+    Optional<Test> findByUuidAndStatusesInLocked(UUID testUUID, Collection<String> testStatuses);
 
     @Query(value = "SELECT * FROM test WHERE deleted = false AND implausible = false AND uuid = :testUUID AND (status is null or status in (:testStatuses))", nativeQuery = true)
     Optional<Test> findByUuidAndStatusesInAndActive(UUID testUUID, Collection<String> testStatuses);
@@ -94,19 +95,4 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
             "  FROM RadioCell r" +
             "  WHERE r.test.openTestUuid = :openTestUUID AND r.active = true AND NOT r.technology = 'WLAN'")
     List<LteFrequencyDto> findLteFrequencyByOpenTestUUID(UUID openTestUUID);
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE test SET status = :status,location = ST_TRANSFORM(ST_SetSRID(ST_Point(:longitude, :latitude), 4326), 900913) WHERE uid = :testUid", nativeQuery = true)
-    void updateGeoLocationAndStatus(Long testUid, Double longitude, Double latitude, String status);
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE test SET location = ST_TRANSFORM(ST_SetSRID(ST_Point(:longitude, :latitude), 4326), 900913) WHERE uid = :testUid", nativeQuery = true)
-    void updateGeoLocation(Long testUid, Double longitude, Double latitude);
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE test SET status = :status WHERE uid = :testUid", nativeQuery = true)
-    void updateStatus(Long testUid, String status);
 }

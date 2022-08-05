@@ -10,7 +10,10 @@ import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.TestSettingsResponse;
 import at.rtr.rmbt.service.*;
-import at.rtr.rmbt.utils.*;
+import at.rtr.rmbt.utils.GeoIpHelper;
+import at.rtr.rmbt.utils.HeaderExtrudeUtil;
+import at.rtr.rmbt.utils.HelperFunctions;
+import at.rtr.rmbt.utils.TimeUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vdurmont.semver4j.SemverException;
@@ -140,8 +143,6 @@ public class TestSettingsFacade {
                     errorResponse.getError().add(getErrorMessageAndRollback("ERROR_DB_GET_CLIENTTYPE", locale));
             }
 
-            ValidateUtils.validateClientVersion(applicationProperties.getVersion(), testSettingsRequest.getTestSetVersion());
-
             if (applicationProperties.getClientNames().contains(testSettingsRequest.getServerType().getLabel()) && clientType != null) {
                 if (!TIMEZONES.contains(testSettingsRequest.getTimezone()))
                     errorResponse.getError().add(getErrorMessage("ERROR_TIMEZONE", locale));
@@ -218,7 +219,7 @@ public class TestSettingsFacade {
                         if (loopModeSettings != null) {
                             loopModeSettings.setTestUuid(testUuid);
                             loopModeSettings = loopModeSettingsService.save(loopModeSettings);
-                            builder.loopUuid(loopModeSettings.getLoopUuid().toString());
+                            builder.loopUuid("L" + loopModeSettings.getLoopUuid().toString());
                         }
 
                         builder.provider(testService.getRmbtSetProviderFromAs(test.getUid()));

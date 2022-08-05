@@ -15,10 +15,10 @@ import at.rtr.rmbt.request.ResultRequest;
 import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import at.rtr.rmbt.utils.HelperFunctions;
-import at.rtr.rmbt.utils.ValidateUtils;
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
@@ -68,19 +68,12 @@ public class ResultServiceImpl implements ResultService {
         setNetworkType(test);
         setAndroidPermission(resultRequest, test);
         setSpeedAndPing(resultRequest, test);
-        testRepository.save(test);
-        updateLocationAndStatus(test, getStatus(resultRequest, test));
+        Test updatedTest = testMapper.updateTestLocation(test);
+        updatedTest.setStatus(getStatus(resultRequest));
+        testRepository.save(updatedTest);
     }
 
-    private void updateLocationAndStatus(Test test, TestStatus testStatus) {
-        if (Objects.nonNull(test.getLatitude()) && Objects.nonNull(test.getLongitude())) {
-            testRepository.updateGeoLocationAndStatus(test.getUid(), test.getLongitude(), test.getLatitude(), testStatus.name());
-        } else {
-            testRepository.updateStatus(test.getUid(), testStatus.name());
-        }
-    }
-
-    private TestStatus getStatus(ResultRequest resultRequest, Test test) {
+    private TestStatus getStatus(ResultRequest resultRequest) {
         if (Objects.nonNull(resultRequest.getTestStatus())) {
             switch (resultRequest.getTestStatus()) {
                 case "0":
@@ -168,8 +161,12 @@ public class ResultServiceImpl implements ResultService {
 
     private void processRadioInfo(ResultRequest resultRequest, Test test) {
         if (Objects.nonNull(resultRequest.getRadioInfo())) {
-            radioCellService.processRadioCellRequests(resultRequest.getRadioInfo().getCells(), test);
-            radioSignalService.saveRadioSignalRequests(resultRequest.getRadioInfo().getSignals(), test);
+            if (!CollectionUtils.isEmpty(resultRequest.getRadioInfo().getCells())) {
+                radioCellService.processRadioCellRequests(resultRequest.getRadioInfo().getCells(), test);
+            }
+            if (!CollectionUtils.isEmpty(resultRequest.getRadioInfo().getSignals())) {
+                radioSignalService.saveRadioSignalRequests(resultRequest.getRadioInfo().getSignals(), test);
+            }
         }
     }
 
@@ -223,8 +220,6 @@ public class ResultServiceImpl implements ResultService {
         if (resultRequest.getClientVersion().isEmpty() && resultRequest.getTestStatus().equals("1")) { //try to hadle failed test
             throw new EmptyClientVersionException();
         }
-
-        ValidateUtils.validateClientVersion(applicationProperties.getVersion(), resultRequest.getClientVersion());
 
         if (!applicationProperties.getClientNames().contains(resultRequest.getClientName().getLabel())) {
             throw new NotSupportedClientVersionException();

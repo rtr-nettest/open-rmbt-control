@@ -1,7 +1,7 @@
 package at.rtr.rmbt.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.util.List;
 @ToString
 public class SyncResponse extends ErrorResponse {
 
-    @ApiModelProperty(notes = "Sync item response")
+    @Schema(description = "Sync item response")
     @JsonProperty(value = "sync")
     private final List<SyncItemResponse> sync;
 }

@@ -19,7 +19,10 @@ import at.rtr.rmbt.response.MeasurementQosResponse;
 import at.rtr.rmbt.response.QosMeasurementsResponse;
 import at.rtr.rmbt.response.QosParamsResponse;
 import at.rtr.rmbt.service.QosMeasurementService;
-import at.rtr.rmbt.utils.*;
+import at.rtr.rmbt.utils.HeaderExtrudeUtil;
+import at.rtr.rmbt.utils.HelperFunctions;
+import at.rtr.rmbt.utils.MessageUtils;
+import at.rtr.rmbt.utils.QosUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -112,7 +115,6 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
 
                 if (token.length > 2 && token[2].length() > 0) { // && hmac.equals(token[2])) (can be different server keys)
                     final Set<String> clientNames = applicationProperties.getClientNames();
-                    ValidateUtils.validateClientVersion(applicationProperties.getVersion(), request.getClientVersion());
                     Test test = testRepository.findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(testUuid)
                         .orElseGet(() -> {
                             if (clientUuid != null)

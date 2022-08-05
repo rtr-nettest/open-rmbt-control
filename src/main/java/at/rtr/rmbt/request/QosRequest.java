@@ -1,7 +1,7 @@
 package at.rtr.rmbt.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,6 +12,6 @@ import lombok.Getter;
 public class QosRequest {
 
     @JsonProperty(value = "supports_info")
-    @ApiModelProperty(notes = "True, if client third state (=INFO) is supported", example = "true")
+    @Schema(description = "True, if client third state (=INFO) is supported", example = "true")
     private final boolean supportsInfo;
 }

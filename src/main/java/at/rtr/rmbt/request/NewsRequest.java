@@ -1,7 +1,7 @@
 package at.rtr.rmbt.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,46 +16,46 @@ import java.time.ZonedDateTime;
 public class NewsRequest {
 
     @NotNull
-    @ApiModelProperty(notes = "News title", example = "en")
+    @Schema(description = "News title", example = "en")
     @JsonProperty("title")
     private final String title;
 
     @NotNull
-    @ApiModelProperty(notes = "News text", example = "en")
+    @Schema(description = "News text", example = "en")
     @JsonProperty("content")
     private final String text;
 
     @NotNull
     @JsonProperty("language")
-    @ApiModelProperty(notes = "2 letters language code or language code with region", example = "en")
+    @Schema(description = "2 letters language code or language code with region", example = "en")
     private final String language;
 
     @JsonProperty("active")
-    @ApiModelProperty(notes = "News activity status", example = "true")
+    @Schema(description = "News activity status", example = "true")
     private final boolean active;
 
     @JsonProperty("force")
-    @ApiModelProperty(notes = "News force status", example = "true")
+    @Schema(description = "News force status", example = "true")
     private final boolean force;
 
     @JsonProperty("android")
     @AssertTrue(message = "Android platform must be selected")
-    @ApiModelProperty(notes = "Client platform", example = "true")
+    @Schema(description = "Client platform", example = "true")
     private final Boolean android;
 
     @JsonProperty("androidMinSoftwareVersion")
-    @ApiModelProperty(notes = "Min software version", example = "1")
+    @Schema(description = "Min software version", example = "1")
     private final Long androidMinSoftwareVersion;
 
     @JsonProperty("androidMaxSoftwareVersion")
-    @ApiModelProperty(notes = "Max software version", example = "1")
+    @Schema(description = "Max software version", example = "1")
     private final Long androidMaxSoftwareVersion;
 
     @JsonProperty("startDate")
-    @ApiModelProperty(notes = "When to start showing news")
+    @Schema(description = "When to start showing news")
     private final ZonedDateTime startDate;
 
     @JsonProperty("endDate")
-    @ApiModelProperty(notes = "When to end showing news")
+    @Schema(description = "When to end showing news")
     private final ZonedDateTime endDate;
 }

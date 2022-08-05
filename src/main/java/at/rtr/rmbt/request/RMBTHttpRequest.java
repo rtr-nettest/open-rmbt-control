@@ -1,7 +1,7 @@
 package at.rtr.rmbt.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,6 +10,6 @@ import lombok.Getter;
 public class RMBTHttpRequest {
 
     @JsonProperty(value = "RMBThttp")
-    @ApiModelProperty(notes = "True, if the client can handle the RMBThttp protocol", example = "true")
+    @Schema(description = "True, if the client can handle the RMBThttp protocol", example = "true")
     private final boolean rmbtHttp;
 }

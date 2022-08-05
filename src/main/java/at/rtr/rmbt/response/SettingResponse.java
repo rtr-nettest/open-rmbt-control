@@ -1,7 +1,7 @@
 package at.rtr.rmbt.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,43 +12,43 @@ import java.util.UUID;
 @Getter
 public class SettingResponse {
 
-    @ApiModelProperty(notes = "Term and conditions settings")
+    @Schema(description = "Term and conditions settings")
     @JsonProperty(value = "terms_and_conditions")
     private final TermAndConditionsResponse termAndConditionsResponse;
 
-    @ApiModelProperty(notes = "Urls settings")
+    @Schema(description = "Urls settings")
     @JsonProperty(value = "urls")
     private final UrlsResponse urls;
 
-    @ApiModelProperty(notes = "QoS test type desctription")
+    @Schema(description = "QoS test type desctription")
     @JsonProperty(value = "qostesttype_desc")
     private final List<QosTestTypeDescResponse> qosTestTypeDescResponse;
 
-    @ApiModelProperty(notes = "Version of control server")
+    @Schema(description = "Version of control server")
     @JsonProperty(value = "versions")
     private final VersionResponse versions;
 
-    @ApiModelProperty(notes = "Servers")
+    @Schema(description = "Servers")
     @JsonProperty(value = "servers")
     private final List<TestServerResponseForSettings> servers;
 
-    @ApiModelProperty(notes = "Servers WS")
+    @Schema(description = "Servers WS")
     @JsonProperty(value = "servers_ws")
     private final List<TestServerResponseForSettings> serverWSResponseList;
 
-    @ApiModelProperty(notes = "Servers QoS")
+    @Schema(description = "Servers QoS")
     @JsonProperty(value = "servers_qos")
     private final List<TestServerResponseForSettings> serverQosResponseList;
 
-    @ApiModelProperty(notes = "Client history")
+    @Schema(description = "Client history")
     @JsonProperty(value = "history")
     private final SettingsHistoryResponse history;
 
-    @ApiModelProperty(notes = "Client UUID")
+    @Schema(description = "Client UUID")
     @JsonProperty(value = "uuid")
     private final UUID uuid;
 
-    @ApiModelProperty(notes = "Map server settings")
+    @Schema(description = "Map server settings")
     @JsonProperty(value = "map_server")
     private final MapServerResponse mapServerResponse;
 }

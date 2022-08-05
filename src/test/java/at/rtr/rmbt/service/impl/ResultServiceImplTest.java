@@ -5,6 +5,9 @@ import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.repository.NetworkTypeRepository;
 import at.rtr.rmbt.repository.TestRepository;
+import at.rtr.rmbt.request.RadioCellRequest;
+import at.rtr.rmbt.request.RadioInfoRequest;
+import at.rtr.rmbt.request.RadioSignalRequest;
 import at.rtr.rmbt.request.ResultRequest;
 import at.rtr.rmbt.service.*;
 import org.junit.Before;
@@ -15,13 +18,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 public class ResultServiceImplTest {
@@ -66,6 +65,12 @@ public class ResultServiceImplTest {
             2000
     );
     private final Map<String, String> headers = new HashMap<>();
+    @Mock
+    private RadioInfoRequest radioInfoRequest;
+    @Mock
+    private RadioSignalRequest radioSignalRequest;
+    @Mock
+    private RadioCellRequest radioCellRequest;
 
     @Before
     public void setUp() {
@@ -76,23 +81,67 @@ public class ResultServiceImplTest {
 
     @Test
     public void processResultRequest_whenCommonRequest_expectTestSaved() {
-        when(resultRequest.getTestToken()).thenReturn(TestConstants.DEFAULT_TEST_TOKEN);
-        when(testRepository.findByUuidOrOpenTestUuid(TestConstants.DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
-        when(resultRequest.getClientVersion()).thenReturn(TestConstants.DEFAULT_CLIENT_VERSION);
-        when(resultRequest.getClientName()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE);
-        when(resultRequest.getDownloadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
-        when(resultRequest.getUploadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
-        when(resultRequest.getPingShortest()).thenReturn(TestConstants.DEFAULT_RESULT_PING_SHORTEST);
+        defaultMock();
         when(resultRequest.getTestIpLocal()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(resultRequest.getTestIpServer()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(resultRequest.getTestStatus()).thenReturn("SUCCESS");
-        when(httpServletRequest.getLocalAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(test.getNetworkType()).thenReturn(TestConstants.DEFAULT_NETWORK_TYPE_ID);
         when(test.getClientPublicIp()).thenReturn(TestConstants.DEFAULT_IP_V4);
+        when(resultRequest.getRadioInfo()).thenReturn(radioInfoRequest);
+        when(radioInfoRequest.getSignals()).thenReturn(List.of(radioSignalRequest));
+        when(radioInfoRequest.getCells()).thenReturn(List.of(radioCellRequest));
+
+        resultService.processResultRequest(httpServletRequest, resultRequest, headers);
+
+        verify(test).setStatus(any());
+        verify(testRepository).save(test);
+        verify(testMapper).updateTestWithResultRequest(resultRequest, test);
+        verify(radioCellService).processRadioCellRequests(List.of(radioCellRequest), test);
+        verify(radioSignalService).saveRadioSignalRequests(List.of(radioSignalRequest), test);
+    }
+
+    @Test
+    public void processResultRequest_whenRadioCellRequestNull_expectTestSaved() {
+        defaultMock();
+        when(resultRequest.getRadioInfo()).thenReturn(radioInfoRequest);
+        when(radioInfoRequest.getSignals()).thenReturn(List.of(radioSignalRequest));
+        when(radioInfoRequest.getCells()).thenReturn(null);
 
         resultService.processResultRequest(httpServletRequest, resultRequest, headers);
 
         verify(testRepository).save(test);
+        verify(test).setStatus(any());
         verify(testMapper).updateTestWithResultRequest(resultRequest, test);
+        verifyNoInteractions(radioCellService);
+        verify(radioSignalService).saveRadioSignalRequests(List.of(radioSignalRequest), test);
+    }
+
+    @Test
+    public void processResultRequest_whenRadioSignalRequestNull_expectTestSaved() {
+        defaultMock();
+        when(resultRequest.getRadioInfo()).thenReturn(radioInfoRequest);
+        when(radioInfoRequest.getSignals()).thenReturn(null);
+        when(radioInfoRequest.getCells()).thenReturn(List.of(radioCellRequest));
+
+        resultService.processResultRequest(httpServletRequest, resultRequest, headers);
+
+        verify(test).setStatus(any());
+        verify(testRepository).save(test);
+        verify(testMapper).updateTestWithResultRequest(resultRequest, test);
+        verify(radioCellService).processRadioCellRequests(List.of(radioCellRequest), test);
+        verifyNoInteractions(radioSignalService);
+    }
+
+
+    private void defaultMock() {
+        when(resultRequest.getTestToken()).thenReturn(TestConstants.DEFAULT_TEST_TOKEN);
+        when(testRepository.findByUuidOrOpenTestUuid(TestConstants.DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
+        when(resultRequest.getClientVersion()).thenReturn(TestConstants.DEFAULT_CLIENT_VERSION);
+        when(resultRequest.getClientName()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_SERVER_TYPE);
+        when(httpServletRequest.getLocalAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
+        when(resultRequest.getDownloadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
+        when(resultRequest.getUploadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_DOWNLOAD_SPEED);
+        when(resultRequest.getPingShortest()).thenReturn(TestConstants.DEFAULT_RESULT_PING_SHORTEST);
+        when(testMapper.updateTestLocation(test)).thenReturn(test);
     }
 }
