@@ -26,22 +26,6 @@ public class TestDatabaseConfig {
             .build();
     }
 
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource);
-        em.setPackagesToScan("at.rtr.rmbt.model", "com.specure.core.model");
-        em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        return em;
-    }
-
-    @Bean
-    public PlatformTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean entityManagerFactory) {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManagerFactory.getObject());
-        return transactionManager;
-    }
-
     @Bean(initMethod = "migrate")
     public Flyway flyway(DataSource dataSource) {
         return Flyway.configure().dataSource(dataSource).load();
