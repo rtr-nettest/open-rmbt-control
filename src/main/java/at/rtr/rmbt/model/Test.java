@@ -505,12 +505,30 @@ public class Test implements Serializable {
     protected void preInsert() {
         this.timestamp = ZonedDateTime.now();
         this.time = ZonedDateTime.now();
+        removeCrLrCharacters();
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        removeCrLrCharacters();
     }
 
     @PostLoad
     protected void postLoad() {
-        if(Objects.nonNull(location)){
+        if (Objects.nonNull(location)) {
             location.setSRID(900913);
+        }
+    }
+
+    private void removeCrLrCharacters() {
+        if(Objects.nonNull(networkOperatorName)){
+            this.networkOperatorName = networkOperatorName.replaceAll("(\\r|\\n)", "");
+        }
+        if(Objects.nonNull(networkSimOperatorName)){
+            this.networkSimOperatorName = networkSimOperatorName.replaceAll("(\\r|\\n)", "");
+        }
+        if(Objects.nonNull(publicIpAsName)){
+            this.publicIpAsName = publicIpAsName.replaceAll("(\\r|\\n)", "");
         }
     }
 }
