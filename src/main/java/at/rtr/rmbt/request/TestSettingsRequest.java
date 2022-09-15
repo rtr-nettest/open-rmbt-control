@@ -19,6 +19,10 @@ public class TestSettingsRequest {
     @JsonProperty("platform")
     private TestPlatform platform;
 
+    @Schema(description = "Battery temperature of the client in °C")
+    @JsonProperty("temperature")
+    private Double temperature;
+
     @Schema(description = "Version code from the build gradle for Android devices", example = "33201")
     @JsonProperty("softwareVersionCode")
     private Integer softwareVersionCode;

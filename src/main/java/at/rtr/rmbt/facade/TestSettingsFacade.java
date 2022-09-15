@@ -294,6 +294,7 @@ public class TestSettingsFacade {
         test.setOpenTestUuid(testOpenUuid);
         test.setClient(client);
         test.setClientName(testSettingsRequest.getServerType());
+        test.setTemperature(testSettingsRequest.getTemperature());
         test.setClientVersion(testSettingsRequest.getTestSetVersion());
         test.setClientSoftwareVersion(testSettingsRequest.getSoftwareVersion());
         test.setClientLanguage(language);

@@ -53,6 +53,9 @@ public class Test implements Serializable {
     @Column(name = "token")
     private String token;
 
+    @Column(name = "temperature")
+    private double temperature;
+
     @OneToOne
     @JoinColumn(name = "server_id")
     private TestServer testServer;
