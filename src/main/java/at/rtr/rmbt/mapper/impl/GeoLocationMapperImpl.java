@@ -58,6 +58,6 @@ public class GeoLocationMapperImpl implements GeoLocationMapper {
     }
 
     private Point getLocationPointFromLongitudeAndLatitude(Double longitude, Double latitude) {
-        return GeometryUtils.getPointFromLongitudeAndLatitude(longitude, latitude);
+        return GeometryUtils.getPointEPSG900913FromLongitudeAndLatitude(longitude, latitude);
     }
 }

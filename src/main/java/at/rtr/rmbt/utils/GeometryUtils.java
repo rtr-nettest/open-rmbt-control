@@ -16,7 +16,7 @@ import org.opengis.referencing.operation.TransformException;
 @UtilityClass
 public class GeometryUtils {
 
-    public Point getPointFromLongitudeAndLatitude(Double longitude, Double latitude) {
+    public Point getPointEPSG900913FromLongitudeAndLatitude(Double longitude, Double latitude) {
         try {
             CoordinateReferenceSystem sourceCRS = CRS.parseWKT(Constants.WKT_EPSG_4326);
             CoordinateReferenceSystem targetCRS = CRS.parseWKT(Constants.WKT_EPSG_900913);
@@ -29,4 +29,10 @@ public class GeometryUtils {
         }
         return null;
     }
+    public Point getPointEPSG4326FromLongitudeAndLatitude(Double longitude, Double latitude) {
+            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), Constants.SRID);
+            Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+            return point;
+    }
+
 }
