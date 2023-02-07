@@ -135,7 +135,7 @@ spring:
 #      validation-query: SELECT 1
 
 application-version:
-  host: ${CONTROL_HOST}
+  host: ${HOST_ID}
   server-url: ${CONTROL_SERVER_URL}
 
 server:
