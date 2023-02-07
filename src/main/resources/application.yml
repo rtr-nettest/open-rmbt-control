@@ -138,9 +138,6 @@ application-version:
   host: ${HOST_ID}
   server-url: ${CONTROL_SERVER_URL}
 
-server:
-  servlet:
-    context-path: ${CONTROL_SERVER_CONTEXT}
 logging:
     config: ${LOGGING_CONFIG_FILE:classpath:logback.xml}
 origin: ${CONTROL_ALLOWED_ORIGIN}
