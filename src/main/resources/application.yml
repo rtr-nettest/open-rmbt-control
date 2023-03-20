@@ -60,6 +60,7 @@ app:
       - RMBTws
       - HW-PROBE
       - RTR-Netztest
+      - RMBTel
       -
 application-version:
   host: rtr-api-dev
