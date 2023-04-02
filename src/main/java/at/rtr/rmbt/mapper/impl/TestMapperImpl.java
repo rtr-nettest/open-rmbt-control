@@ -103,7 +103,11 @@ public class TestMapperImpl implements TestMapper {
     public Test updateTestLocation(Test test) {
         if (Objects.nonNull(test.getLongitude()) && Objects.nonNull(test.getLatitude())) {
             Geometry location = GeometryUtils.getPointEPSG900913FromLongitudeAndLatitude(test.getLongitude(), test.getLatitude());
+            Geometry geom4326 = GeometryUtils.getPointEPSG4326FromLongitudeAndLatitude(test.getLongitude(), test.getLatitude());
+            Geometry geom3857 = GeometryUtils.getPointEPSG3857FromLongitudeAndLatitude(test.getLongitude(), test.getLatitude());
             test.setLocation(location);
+            test.setGeom4326(geom4326);
+            test.setGeom3857(geom3857);
         }
         return test;
     }

@@ -4,7 +4,9 @@ public interface Constants {
     Long NEWS_REQUEST_LAST_NEWS_UID = 0L;
     Long NEWS_REQUEST_SOFTWARE_VERSION_CODE = -1L;
     String UNKNOWN_DEVICE = "Unknown Device";
-    int SRID = 900913;
+    int SRID900913 = 900913;
+    int SRID4326 = 4326;
+    int SRID3857 = 3857;
     Integer WEIGHT = 1;
     Integer PRIORITY = 1;
     String SIGNAL_STRENGTH_DBM_TEMPLATE = "%s dBm";
@@ -46,6 +48,28 @@ public interface Constants {
     boolean DEFAULT_RMBT_HTTP = false;
     Integer DEFAULT_CLASSIFICATION_COUNT = 3;
     String WKT_EPSG_4326 = "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137.0,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.017453292519943295,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]]";
+    String WKT_EPSG_3857 =
+            "PROJCS[\"WGS 84 / Pseudo-Mercator\", \n"
+                    + "  GEOGCS[\"WGS 84\", \n"
+                    + "    DATUM[\"World Geodetic System 1984\", \n"
+                    + "      SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n"
+                    + "      AUTHORITY[\"EPSG\",\"6326\"]], \n"
+                    + "    PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n"
+                    + "    UNIT[\"degree\", 0.017453292519943295], \n"
+                    + "    AXIS[\"Geodetic longitude\", EAST], \n"
+                    + "    AXIS[\"Geodetic latitude\", NORTH], \n"
+                    + "    AUTHORITY[\"EPSG\",\"4326\"]], \n"
+                    + "  PROJECTION[\"Popular Visualisation Pseudo Mercator\", AUTHORITY[\"EPSG\",\"1024\"]], \n"
+                    + "  PARAMETER[\"semi_minor\", 6378137.0], \n"
+                    + "  PARAMETER[\"latitude_of_origin\", 0.0], \n"
+                    + "  PARAMETER[\"central_meridian\", 0.0], \n"
+                    + "  PARAMETER[\"scale_factor\", 1.0], \n"
+                    + "  PARAMETER[\"false_easting\", 0.0], \n"
+                    + "  PARAMETER[\"false_northing\", 0.0], \n"
+                    + "  UNIT[\"m\", 1.0], \n"
+                    + "  AXIS[\"Easting\", EAST], \n"
+                    + "  AXIS[\"Northing\", NORTH], \n"
+                    + "  AUTHORITY[\"EPSG\",\"3857\"]]";
     String WKT_EPSG_900913 = "PROJCS[\"Google Mercator\",\n" +
             "    GEOGCS[\"WGS 84\",DATUM[\"World Geodetic System 1984\",SPHEROID[\"WGS 84\",6378137.0,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.017453292519943295],AXIS[\"Geodetic latitude\",NORTH],\n" +
             "        AXIS[\"Geodetic longitude\",EAST],\n" +

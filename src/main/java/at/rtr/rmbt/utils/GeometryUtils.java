@@ -21,7 +21,7 @@ public class GeometryUtils {
             CoordinateReferenceSystem sourceCRS = CRS.parseWKT(Constants.WKT_EPSG_4326);
             CoordinateReferenceSystem targetCRS = CRS.parseWKT(Constants.WKT_EPSG_900913);
             MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), Constants.SRID);
+            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), Constants.SRID900913);
             Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
             return (Point) JTS.transform(point, transform);
         } catch (TransformException | FactoryException e) {
@@ -30,9 +30,22 @@ public class GeometryUtils {
         return null;
     }
     public Point getPointEPSG4326FromLongitudeAndLatitude(Double longitude, Double latitude) {
-            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), Constants.SRID);
+            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), Constants.SRID4326);
             Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
             return point;
+    }
+    public Point getPointEPSG3857FromLongitudeAndLatitude(Double longitude, Double latitude) {
+        try {
+            CoordinateReferenceSystem sourceCRS = CRS.parseWKT(Constants.WKT_EPSG_4326);
+            CoordinateReferenceSystem targetCRS = CRS.parseWKT(Constants.WKT_EPSG_3857);
+            MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), Constants.SRID3857);
+            Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+            return (Point) JTS.transform(point, transform);
+        } catch (TransformException | FactoryException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

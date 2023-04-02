@@ -28,8 +28,9 @@ public class TestLocation implements Serializable {
     @JoinColumn(name = "geo_location_uuid", referencedColumnName = "geo_location_uuid")
     private GeoLocation geoLocation;
 
-    @Column(name = "location")
-    private Geometry location;
+    // mapping PostgresSQL <> Java
+    @Column(name = "location") // name in PostgreSQL
+    private Geometry location; // name in Java
 
     @Column(name = "geo_long")
     private Double geoLong;

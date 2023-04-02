@@ -180,6 +180,12 @@ public class Test implements Serializable {
     @ColumnTransformer(read = "ST_SetSRID(location, 3857)")
     private Geometry location;
 
+    @Column(name = "geom4326")
+    private Geometry geom4326;
+
+    @Column(name = "geom3857")
+    private Geometry geom3857;
+
     @Column(name = "signal_strength")
     private Integer signalStrength;
 
