@@ -60,6 +60,7 @@ app:
       - RMBTws
       - HW-PROBE
       - RTR-Netztest
+      - RMBTel
       -
 application-version:
   host: rtr-api-dev
@@ -135,12 +136,9 @@ spring:
 #      validation-query: SELECT 1
 
 application-version:
-  host: ${CONTROL_HOST}
+  host: ${HOST_ID}
   server-url: ${CONTROL_SERVER_URL}
 
-server:
-  servlet:
-    context-path: ${CONTROL_SERVER_CONTEXT}
 logging:
     config: ${LOGGING_CONFIG_FILE:classpath:logback.xml}
-origin: ${ALLOWED_ORIGIN}
+origin: ${CONTROL_ALLOWED_ORIGIN}
