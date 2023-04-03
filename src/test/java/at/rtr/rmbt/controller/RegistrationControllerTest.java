@@ -47,6 +47,7 @@ public class RegistrationControllerTest {
     public void updateTestSettings_whenCommonRequest_shouldReturnUpdatedSettings() throws Exception {
         TestSettingsRequest testSettingsRequest = new TestSettingsRequest(
             TestPlatform.ANDROID,
+            14.1,
             1,
             false,
             TestStatus.END,
