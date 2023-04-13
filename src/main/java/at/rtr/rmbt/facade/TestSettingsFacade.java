@@ -169,6 +169,8 @@ public class TestSettingsFacade {
                         serverTypes = List.of(ServerType.RMBThttp, ServerType.RMBT);
                     } else if (ServerType.RMBTws.equals(testSettingsRequest.getServerType())) {
                         serverTypes = List.of(ServerType.RMBThttp, ServerType.RMBTws);
+                    } else if (ServerType.RMBTel.equals(testSettingsRequest.getServerType())) {
+                        serverTypes = List.of(ServerType.RMBThttp);
                     } else if (ServerType.HW_PROBE.equals(testSettingsRequest.getServerType())) {
                         serverTypes = List.of(ServerType.RMBT);
                     } else {
