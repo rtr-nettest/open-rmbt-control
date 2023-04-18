@@ -48,6 +48,7 @@ public class RegistrationControllerTest {
         TestSettingsRequest testSettingsRequest = new TestSettingsRequest(
             TestPlatform.ANDROID,
             14.1,
+            "myTag",
             1,
             false,
             TestStatus.END,

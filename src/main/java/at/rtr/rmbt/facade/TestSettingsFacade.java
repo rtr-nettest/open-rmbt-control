@@ -316,6 +316,7 @@ public class TestSettingsFacade {
         test.setPublicIpAsn(asn);
         test.setPublicIpAsName(asName);
         test.setCountryAsn(asCountry);
+        test.setTag(testSettingsRequest.getTag());
         test.setClientTestCounter(
                 testSettingsRequest.getTestCounter() == null || testSettingsRequest.getTestCounter() == -1 ?
                         null :

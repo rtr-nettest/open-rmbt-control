@@ -23,6 +23,10 @@ public class TestSettingsRequest {
     @JsonProperty("temperature")
     private Double temperature;
 
+    @Schema(description = "Tag for identifying the measurement, e.g. for coverage obligations")
+    @JsonProperty("tag")
+    private String tag;
+
     @Schema(description = "Version code from the build gradle for Android devices", example = "33201")
     @JsonProperty("softwareVersionCode")
     private Integer softwareVersionCode;
