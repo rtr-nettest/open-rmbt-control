@@ -64,4 +64,7 @@ public class RadioCell implements Serializable {
 
     @Column(name = "active")
     private boolean active;
+
+    @Column(name = "cell_state")
+    private String cellState;
 }

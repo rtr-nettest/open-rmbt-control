@@ -6,6 +6,7 @@ import at.rtr.rmbt.model.RadioSignal;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.request.RadioSignalRequest;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,9 +25,9 @@ public class RadioSignalMapperImpl implements RadioSignalMapper {
             .bitErrorRate(radioSignalRequest.getBitErrorRate())
             .wifiLinkSpeed(radioSignalRequest.getWifiLinkSpeed())
             .lteCQI(radioSignalRequest.getLteCQI())
-            .lteRSSNR(radioSignalRequest.getLteRSSNR())
-            .lteRSRP(radioSignalRequest.getLteRSRP())
-            .lteRSRQ(radioSignalRequest.getLteRSRQ())
+            .lteRSSNR(ObjectUtils.firstNonNull(radioSignalRequest.getLteRSSNR(), radioSignalRequest.getNrSsSINR()))
+            .lteRSRP(ObjectUtils.firstNonNull(radioSignalRequest.getLteRSRP(), radioSignalRequest.getNrSsRSRP()))
+            .lteRSRQ(ObjectUtils.firstNonNull(radioSignalRequest.getLteRSRQ(), radioSignalRequest.getNrSsRSRQ()))
             .signalStrength(radioSignalRequest.getSignal())
             .timingAdvance(radioSignalRequest.getTimingAdvance())
             .time(test.getTime().plusNanos(radioSignalRequest.getTimeNs()))
