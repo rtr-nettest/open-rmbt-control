@@ -27,6 +27,10 @@ public class TestSettingsRequest {
     @JsonProperty("tag")
     private String tag;
 
+    @Schema(description = "Is client set to coverage verification mode")
+    @JsonProperty("coverage")
+    private Boolean coverage;
+
     @Schema(description = "Version code from the build gradle for Android devices", example = "33201")
     @JsonProperty("softwareVersionCode")
     private Integer softwareVersionCode;

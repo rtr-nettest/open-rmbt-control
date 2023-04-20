@@ -363,6 +363,9 @@ public class Test implements Serializable {
     @Column(name = "tag")
     private String tag;
 
+    @Column(name = "coverage")
+    private Boolean coverage;
+
     @Column(name = "ping_median")
     private Long pingMedian;
 

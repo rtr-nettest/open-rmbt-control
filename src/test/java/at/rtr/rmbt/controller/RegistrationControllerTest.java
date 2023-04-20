@@ -49,6 +49,7 @@ public class RegistrationControllerTest {
             TestPlatform.ANDROID,
             14.1,
             "myTag",
+            false,
             1,
             false,
             TestStatus.END,
