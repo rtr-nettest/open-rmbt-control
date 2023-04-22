@@ -34,11 +34,11 @@ public class TestServerServiceImpl implements TestServerService {
     }
 
     @Override
-    public TestServer findActiveByServerTypeInAndCountry(List<ServerType> serverTypes, String country) {
+    public TestServer findActiveByServerTypeInAndCountry(List<ServerType> serverTypes, String country, Boolean coverage) {
         List<String> labels = serverTypes.stream()
             .map(ServerType::getLabel)
             .collect(Collectors.toList());
-        return testServerRepository.findActiveByServerTypeInAndCountries(labels, country);
+        return testServerRepository.findActiveByServerTypeInAndCountries(labels, country, coverage);
     }
 
     @Override

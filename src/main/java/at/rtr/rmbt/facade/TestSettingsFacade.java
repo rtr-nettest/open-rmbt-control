@@ -162,6 +162,15 @@ public class TestSettingsFacade {
                     final UUID testUuid = UUID.randomUUID();
                     final UUID testOpenUuid = UUID.randomUUID();
                     final Boolean ipv6;
+                    Boolean coverage = false;
+                    //TODO DZ
+                    // coverage is null when not set (or old clients) or true
+                    // make sure that sql request uses TRUE or FALSE, but not null
+                    if (testSettingsRequest != null && testSettingsRequest.getCoverage() != null && testSettingsRequest.getCoverage() == true) {
+                        coverage = true;
+                    }
+
+
 
                     List<ServerType> serverTypes;
 
@@ -191,7 +200,7 @@ public class TestSettingsFacade {
 
                     String geoIpCountry = GeoIpHelper.lookupCountry(clientAddress);
                     if (testServer == null)
-                        testServer = testServerService.findActiveByServerTypeInAndCountry(serverTypes, StringUtils.isNotBlank(asCountry) ? asCountry : geoIpCountry);
+                        testServer = testServerService.findActiveByServerTypeInAndCountry(serverTypes, StringUtils.isNotBlank(asCountry) ? asCountry : geoIpCountry, coverage);
 
                     if (testServer == null)
                         throw new TestServerNotFoundException();

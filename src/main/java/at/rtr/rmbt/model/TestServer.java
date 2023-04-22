@@ -99,4 +99,7 @@ public class TestServer {
 
     @Column(name = "archived")
     private boolean archived;
+
+    @Column(name = "coverage")
+    private Boolean coverage;
 }

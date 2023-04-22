@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface TestServerService {
     Optional<TestServer> findByUuidAndActive(UUID preferServer, boolean active);
 
-    TestServer findActiveByServerTypeInAndCountry(List<ServerType> serverTypes, String countries);
+    TestServer findActiveByServerTypeInAndCountry(List<ServerType> serverTypes, String countries, Boolean coverage);
 
     List<TestServerResponseForSettings> getServers();
 
