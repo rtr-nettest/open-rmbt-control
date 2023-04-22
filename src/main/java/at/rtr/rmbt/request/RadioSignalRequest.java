@@ -40,6 +40,16 @@ public class RadioSignalRequest {
     @JsonProperty(value = "lte_rssnr")
     private final Integer lteRSSNR;
 
+    @JsonProperty(value = "nr_ss_rsrp")
+    private final Integer nrSsRSRP;
+
+    @JsonProperty(value = "nr_ss_rsrq")
+    private final Integer nrSsRSRQ;
+
+    @JsonProperty(value= "nr_ss_sinr")
+    private final Integer nrSsSINR;
+
+
     @JsonProperty(value = "lte_cqi")
     private final Integer lteCQI;
 

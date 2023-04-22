@@ -24,6 +24,7 @@ public class RadioCellMapperImpl implements RadioCellMapper {
             .channelNumber(rcq.getChannelNumber())
             .registered(rcq.isRegistered())
             .active(rcq.isActive())
+            .cellState(rcq.getCellState())
             .build();
     }
 }

@@ -43,4 +43,7 @@ public class RadioCellRequest {
 
     @JsonProperty(value = "channel_number")
     private final Integer channelNumber;
+
+    @JsonProperty(value = "cell_state")
+    private final String cellState;
 }
