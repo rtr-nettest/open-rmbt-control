@@ -1206,6 +1206,8 @@ CREATE TABLE public.test_location
     edge_id           numeric,
     country_location  character(2),
     dtm_level         integer,
+    atraster100       character varying,
+    atraster250       character varying,
     CONSTRAINT enforce_dims_location2 CHECK ((public.st_ndims(location) = 2)),
     CONSTRAINT enforce_geotype_location2 CHECK ((public.geometrytype(location) = 'POINT'::text)),
     CONSTRAINT enforce_srid_location2 CHECK ((public.st_srid(location) = 900913)),

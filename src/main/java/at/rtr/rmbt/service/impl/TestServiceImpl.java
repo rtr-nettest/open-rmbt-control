@@ -752,6 +752,9 @@ public class TestServiceImpl implements TestService {
         addInteger(propertiesList, locale, "num_threads", test.getNumberOfThreads());
         addInteger(propertiesList, locale, "num_threads_ul", test.getNumberOfThreadsUpload());
         addString(propertiesList, locale, "tag", test.getTag());
+        // only add coverage flag if true
+        if (test.getCoverage() != null)
+            addString(propertiesList,locale,"coverage",test.getCoverage().toString());
     }
 
     private void addSumOfTwoFields(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Long totalBytesDownload, Long totalBytesUpload, String title) {
@@ -770,6 +773,8 @@ public class TestServiceImpl implements TestService {
         addInteger(propertiesList, locale, "link_distance", testLocation.getLinkDistance());
         addLong(propertiesList, locale, "edge_id", testLocation.getEdgeId());
         addInteger(propertiesList, locale, "link_frc", testLocation.getFrc());
+        addString(propertiesList, locale, "atraster100", testLocation.getAtraster100());
+        addString(propertiesList, locale, "atraster250", testLocation.getAtraster250());
         Optional.ofNullable(testLocation.getLinknet())
                 .ifPresent(linknet -> addLinkNetFields(propertiesList, locale, linknet));
         Optional.ofNullable(testLocation.getAdministrativeBoundaries())

@@ -799,6 +799,8 @@ public class TestServiceImplTest {
                 .linknet(linknet)
                 .administrativeBoundaries(administrativeBoundaries)
                 .dtmLevel(TestConstants.DEFAULT_TEST_LOCATION_DTM_LEVEL)
+                .atraster100(TestConstants.DEFAULT_ATRASTER100)
+                .atraster250(TestConstants.DEFAULT_ATRASTER250)
                 .build();
     }
 

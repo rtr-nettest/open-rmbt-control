@@ -81,4 +81,10 @@ public class TestLocation implements Serializable {
 
     @Column(name = "dtm_level")
     private Integer dtmLevel;
+
+    @Column(name = "atraster100")
+    private String atraster100;
+
+    @Column(name = "atraster250")
+    private String atraster250;
 }
