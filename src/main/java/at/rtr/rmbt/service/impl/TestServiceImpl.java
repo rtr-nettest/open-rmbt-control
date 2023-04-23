@@ -755,6 +755,10 @@ public class TestServiceImpl implements TestService {
         // only add coverage flag if true
         if (test.getCoverage() != null)
             addString(propertiesList,locale,"coverage",test.getCoverage().toString());
+        // Add temperature if available and not zero (as some buggy devices report zero instead of null)
+        if (test.getTemperature() != null && test.getTemperature() != 0F) {
+            addDoubleAndUnitString(propertiesList, locale, "temperature", test.getTemperature(), "RESULT_DEGREE_CELSIUS");
+        }
     }
 
     private void addSumOfTwoFields(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Long totalBytesDownload, Long totalBytesUpload, String title) {
