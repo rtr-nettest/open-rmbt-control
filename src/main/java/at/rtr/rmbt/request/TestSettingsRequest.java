@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(description = "Request to obtain configuration for basic test")
+@Schema(description = "Request /testRequest to obtain configuration for basic test")
 public class TestSettingsRequest {
 
     @Schema(description = "Platform of the client")
@@ -71,10 +71,11 @@ public class TestSettingsRequest {
     @JsonProperty("protocol_version")
     private ProtocolVersion protocolVersion;
 
+    @Schema(description = "Client location object incl lat und long")
     @JsonProperty("location")
     private Location location;
 
-    @Schema(example = "1571665024591")
+    @Schema(description = "Client time in Unix Epoch (UTC) e.g. Fri Apr 28 2023 08:18:53 GMT+0000", example = "1682669933367")
     @JsonProperty("time")
     private Long time;
 
@@ -82,15 +83,15 @@ public class TestSettingsRequest {
     @JsonProperty("timezone")
     private String timezone;
 
-    @Schema(description = "Type of the server")
+    @Schema(description = "Type of the server", example = "RMBT")
     @JsonProperty("client")
     private ServerType serverType;
 
-    @Schema(description = "Version of the used test set", example = "3.0")
+    @Schema(description = "Version of the used test set", example = "0.3")
     @JsonProperty("version")
     private String testSetVersion;
 
-    @Schema(description = "Type of the client")
+    @Schema(description = "Type of the client", example = "MOBILE")
     @JsonProperty("type")
     private ClientType clientType;
 
