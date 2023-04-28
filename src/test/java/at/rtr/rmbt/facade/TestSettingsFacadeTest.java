@@ -11,6 +11,8 @@ import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.TestSettingsResponse;
 import at.rtr.rmbt.service.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.assertj.core.util.Sets;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,7 +77,11 @@ public class TestSettingsFacadeTest {
             .androidPermissionStatus(null)
             .measurementType(MeasurementType.DEDICATED)
             .coverage(true)
-            .build();
+            .product("dreamltexxx")
+            .osVersion("9(G950FXXU5DSFB)")
+            .model("SM-G950F")
+            .apiLevel("28")
+.build();
 
     @Mock
     private at.rtr.rmbt.model.Test test;

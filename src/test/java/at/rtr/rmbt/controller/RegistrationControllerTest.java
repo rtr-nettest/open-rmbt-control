@@ -7,6 +7,8 @@ import at.rtr.rmbt.facade.TestSettingsFacade;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.TestSettingsResponse;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +53,10 @@ public class RegistrationControllerTest {
             "myTag",
             false,
             1,
+            "dramltexxx",
+            "9(G950FXXU5DSFB)",
+            "SM-G950F",
+            "28",
             false,
             TestStatus.END,
             1,
