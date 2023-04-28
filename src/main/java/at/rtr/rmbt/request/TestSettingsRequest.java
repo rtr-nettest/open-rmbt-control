@@ -35,6 +35,22 @@ public class TestSettingsRequest {
     @JsonProperty("softwareVersionCode")
     private Integer softwareVersionCode;
 
+    @Schema(description = "Obtained by android.os.Build.PRODUCT", example = "dreamltexxx")
+    @JsonProperty("product")
+    private String product;
+
+    @Schema(description = "Obtained by android.os.Build.VERSION.RELEASE + \"(\" + android.os.Build.VERSION.INCREMENTAL + \")\"", example = "9(G950FXXU5DSFB)")
+    @JsonProperty("os_version")
+    private String osVersion;
+
+    @Schema(description = "Obtained by android.os.Build.MODEL", example = "SM-G950F")
+    @JsonProperty("model")
+    private String model;
+
+    @Schema(description = "Api level of the device String.valueOf(android.os.Build.VERSION.SDK_INT)", example = "28")
+    @JsonProperty("api_level")
+    private String apiLevel;
+
     @Schema(description = "Is NDT test going to be executed")
     @JsonProperty("ndt")
     private Boolean ndt;
