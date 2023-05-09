@@ -115,12 +115,8 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
 
                 if (token.length > 2 && token[2].length() > 0) { // && hmac.equals(token[2])) (can be different server keys)
                     final Set<String> clientNames = applicationProperties.getClientNames();
-                    Test test = testRepository.findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(testUuid)
-                        .orElseGet(() -> {
-                            if (clientUuid != null)
-                                return testRepository.findByOpenTestUuidAndClientUuidAndImplausibleIsFalseAndDeletedIsFalse(testUuid, clientUuid).orElse(null);
-                            return null;
-                        });
+                    Test test = testRepository.findByTokenAndImplausibleIsFalseAndDeletedIsFalse(request.getTestToken())
+                        .orElse(null);
                     if (test != null) {
                         if (clientNames.contains(request.getClientName())) { //save qos test results:
                             List<QosSendTestResultItem> qosResult = request.getQosResults();

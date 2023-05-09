@@ -234,7 +234,7 @@ public interface TestConstants {
     SpeedDirection DEFAULT_SPEED_DIRECTION_FIRST = SpeedDirection.UPLOAD;
     SpeedDirection DEFAULT_SPEED_DIRECTION_SECOND = SpeedDirection.UPLOAD;
     SpeedDirection DEFAULT_SPEED_DIRECTION_THIRD = SpeedDirection.DOWNLOAD;
-    String DEFAULT_TEST_TOKEN = String.join("_", DEFAULT_TEST_UUID.toString(), DEFAULT_TEXT);
+    String DEFAULT_TEST_TOKEN = String.join("_",  DEFAULT_TEST_UUID.toString(), "13412341234", DEFAULT_TEXT);
     String DEFAULT_CLIENT_VERSION = "0.1";
     Integer DEFAULT_RESULT_DOWNLOAD_SPEED = 2122000;
     Integer DEFAULT_RESULT_UPLOAD_SPEED = 1020032;

@@ -91,6 +91,8 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
 
     Optional<Test> findByOpenTestUuidAndClientUuidAndImplausibleIsFalseAndDeletedIsFalse(UUID uuid, UUID clientId);
 
+    Optional<Test> findByTokenAndImplausibleIsFalseAndDeletedIsFalse(String token);
+
     @Query(value = "SELECT DISTINCT new at.rtr.rmbt.dto.LteFrequencyDto(r.channelNumber, r.technology) " +
             "  FROM RadioCell r" +
             "  WHERE r.test.openTestUuid = :openTestUUID AND r.active = true AND NOT r.technology = 'WLAN'")

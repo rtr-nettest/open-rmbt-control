@@ -135,7 +135,7 @@ public class QosMeasurementServiceImplTest {
         qosTestResult.setTestUid(test.getUid());
         qosTestResult.setQosTestObjective(qosTestObjective);
 
-        when(testRepository.findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
+        when(testRepository.findByTokenAndImplausibleIsFalseAndDeletedIsFalse(DEFAULT_TEST_TOKEN)).thenReturn(Optional.of(test));
         when(qosTestObjectiveRepository.findById(qosSendTestResultItem.getQosTestUid())).thenReturn(Optional.of(qosTestObjective));
         when(qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid())).thenReturn(List.of(qosTestResult));
 
@@ -164,6 +164,7 @@ public class QosMeasurementServiceImplTest {
 
         when(testRepository.findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(DEFAULT_TEST_UUID)).thenReturn(Optional.empty());
         when(testRepository.findByOpenTestUuidAndClientUuidAndImplausibleIsFalseAndDeletedIsFalse(DEFAULT_TEST_UUID, iosClientUuid)).thenReturn(Optional.of(test));
+        when(testRepository.findByTokenAndImplausibleIsFalseAndDeletedIsFalse(DEFAULT_TEST_TOKEN)).thenReturn(Optional.of(test));
         when(qosTestObjectiveRepository.findById(qosSendTestResultItem.getQosTestUid())).thenReturn(Optional.of(qosTestObjective));
         when(qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid())).thenReturn(List.of(qosTestResult));
 
@@ -187,6 +188,7 @@ public class QosMeasurementServiceImplTest {
 
         when(testRepository.findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(DEFAULT_TEST_UUID)).thenReturn(Optional.empty());
         when(testRepository.findByOpenTestUuidAndClientUuidAndImplausibleIsFalseAndDeletedIsFalse(DEFAULT_TEST_UUID, DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(test));
+        when(testRepository.findByTokenAndImplausibleIsFalseAndDeletedIsFalse(DEFAULT_TEST_TOKEN)).thenReturn(Optional.of(test));
         when(qosTestObjectiveRepository.findById(qosSendTestResultItem.getQosTestUid())).thenReturn(Optional.of(qosTestObjective));
         when(qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid())).thenReturn(List.of(qosTestResult));
 

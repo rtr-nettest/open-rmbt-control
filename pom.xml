@@ -226,6 +226,11 @@
             <artifactId>gt-main</artifactId>
             <version>25.2</version>
         </dependency>
+        <dependency>
+            <groupId>net.bull.javamelody</groupId>
+            <artifactId>javamelody-spring-boot-starter</artifactId>
+            <version>1.94.0</version>
+        </dependency>
     </dependencies>
 
     <repositories>

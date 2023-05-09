@@ -114,7 +114,7 @@ public interface TestFixtures {
         .build();
 
     QosResultRequest qosResultRequest = QosResultRequest.builder()
-        .testToken(DEFAULT_TEST_TOKEN+"_QOS")
+        .testToken(DEFAULT_TEST_TOKEN)
         .clientLanguage(LANGUAGE_EN)
         .clientVersion(DEFAULT_CLIENT_VERSION)
         .clientName(DEFAULT_CLIENT_NAME)
