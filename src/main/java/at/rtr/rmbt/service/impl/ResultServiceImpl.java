@@ -52,6 +52,12 @@ public class ResultServiceImpl implements ResultService {
 
         Test test = testRepository.findByUuidOrOpenTestUuid(requestUUID)
                 .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.TEST_NOT_FOUND, requestUUID)));
+
+        //verify test status
+        if (test.getStatus() != TestStatus.STARTED) {
+            throw new RuntimeException(ErrorMessage.INVALID_TEST_STATUS);
+        }
+
         verifyClientVersion(resultRequest);
         processPingData(resultRequest, test);
         testMapper.updateTestWithResultRequest(resultRequest, test);

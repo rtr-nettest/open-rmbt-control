@@ -1,6 +1,7 @@
 package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.TestConstants;
+import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.repository.NetworkTypeRepository;
@@ -100,6 +101,23 @@ public class ResultServiceImplTest {
         verify(radioSignalService).saveRadioSignalRequests(radioInfoRequest, test);
     }
 
+    @Test(expected = RuntimeException.class)
+    public void processResultRequest_whenCommonRequest_expectReject() {
+        defaultMock();
+        when(resultRequest.getTestIpLocal()).thenReturn(TestConstants.DEFAULT_IP_V4);
+        when(resultRequest.getTestIpServer()).thenReturn(TestConstants.DEFAULT_IP_V4);
+        when(resultRequest.getTestStatus()).thenReturn("SUCCESS");
+        when(test.getNetworkType()).thenReturn(TestConstants.DEFAULT_NETWORK_TYPE_ID);
+        when(test.getClientPublicIp()).thenReturn(TestConstants.DEFAULT_IP_V4);
+        when(test.getStatus()).thenReturn(TestStatus.FINISHED);
+        when(resultRequest.getRadioInfo()).thenReturn(radioInfoRequest);
+        when(radioInfoRequest.getSignals()).thenReturn(List.of(radioSignalRequest));
+        when(radioInfoRequest.getCells()).thenReturn(List.of(radioCellRequest));
+
+        resultService.processResultRequest(httpServletRequest, resultRequest, headers);
+
+    }
+
     @Test
     public void processResultRequest_whenRadioCellRequestNull_expectTestSaved() {
         defaultMock();
@@ -134,6 +152,7 @@ public class ResultServiceImplTest {
 
 
     private void defaultMock() {
+        when(test.getStatus()).thenReturn(TestStatus.STARTED);
         when(resultRequest.getTestToken()).thenReturn(TestConstants.DEFAULT_TEST_TOKEN);
         when(testRepository.findByUuidOrOpenTestUuid(TestConstants.DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
         when(resultRequest.getClientVersion()).thenReturn(TestConstants.DEFAULT_CLIENT_VERSION);
