@@ -203,7 +203,7 @@ public class TestSettingsFacadeTest {
 
     private void mockStubToTestEncryption() {
         when(clientTypeService.findByClientType(ClientType.DESKTOP)).thenReturn(Optional.of(clientType));
-        when(testServerService.findActiveByServerTypeInAndCountry(any(), eq(testServer.getCountry()),testSettingsRequest.getCoverage())).thenReturn(testServer);
+        when(testServerService.findActiveByServerTypeInAndCountry(any(), eq(testServer.getCountry()),any())).thenReturn(testServer);
         when(testServerService.findByUuidAndActive(DEFAULT_UUID, true)).thenReturn(Optional.of(testServer));
         when(testService.save(any())).thenReturn(test);
         when(clientService.getClientByUUID(any())).thenReturn(client);
@@ -255,7 +255,7 @@ public class TestSettingsFacadeTest {
             }
         });
         when(clientTypeService.findByClientType(ClientType.DESKTOP)).thenReturn(Optional.of(clientType));
-        when(testServerService.findActiveByServerTypeInAndCountry(any(), eq(testServer.getCountry()),testSettingsRequest.getCoverage())).thenReturn(testServer);
+        when(testServerService.findActiveByServerTypeInAndCountry(any(), eq(testServer.getCountry()),any())).thenReturn(testServer);
         when(testServerService.findByUuidAndActive(DEFAULT_UUID, true)).thenReturn(Optional.of(testServer));
         when(testService.save(any())).thenAnswer(a -> {
             at.rtr.rmbt.model.Test argument = a.getArgument(0);
