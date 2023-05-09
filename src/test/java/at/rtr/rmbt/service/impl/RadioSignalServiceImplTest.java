@@ -43,7 +43,7 @@ public class RadioSignalServiceImplTest {
 
     @Test
     public void processRadioSignalRequests_whenCommonData_expectRadioSignalSaved() {
-        var requests = List.of(radioSignalRequest);
+        when(radioInfoRequest.getSignals()).thenReturn(List.of(radioSignalRequest));
         when(radioSignalMapper.radioSignalRequestToRadioSignal(radioSignalRequest, test)).thenReturn(radioSignal);
 
         radioSignalService.saveRadioSignalRequests(radioInfoRequest, test);
