@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 public class TestServiceImplTest {
-    private final static int GEO_FIELDS_COUNT = 24;
+    private final static int GEO_FIELDS_COUNT = 26;
     private final static int DEFAULT_TEST_FIELDS_COUNT = 38;
     private final static int NDT_TEST_FIELDS_COUNT = 7;
     private final static int BAND_TEST_FIELDS_COUNT = 4;
@@ -510,6 +510,7 @@ public class TestServiceImplTest {
         when(testRepository.findByUuid(TestConstants.DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(client));
         when(test.getClient()).thenReturn(client);
+        when(test.getStatus()).thenReturn(TestStatus.STARTED);
         when(testMapper.updateTestLocation(test)).thenReturn(test);
 
         testService.updateTestResult(resultUpdateRequest);
@@ -517,6 +518,20 @@ public class TestServiceImplTest {
         verify(test).setStatus(TestStatus.ABORTED);
         verifyNoInteractions(geoLocationService);
         verify(testRepository).save(test);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void updateTestResult_whenFinishedTestIsAborted_expectError() {
+        when(resultUpdateRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(resultUpdateRequest.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(resultUpdateRequest.isAborted()).thenReturn(true);
+        when(testRepository.findByUuid(TestConstants.DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
+        when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(client));
+        when(test.getClient()).thenReturn(client);
+        when(test.getStatus()).thenReturn(TestStatus.FINISHED);
+        when(testMapper.updateTestLocation(test)).thenReturn(test);
+
+        testService.updateTestResult(resultUpdateRequest);
     }
 
     @Test(expected = TestNotFoundException.class)
@@ -917,6 +932,8 @@ public class TestServiceImplTest {
                 getTestResultDetailContainerResponse("key_link_distance", TestConstants.DEFAULT_TEST_LOCATION_LINK_DISTANCE.toString()),
                 getTestResultDetailContainerResponse("key_edge_id", TestConstants.DEFAULT_TEST_LOCATION_EDGE_ID.toString()),
                 getTestResultDetailContainerResponse("key_link_frc", TestConstants.DEFAULT_TEST_LOCATION_FRC.toString()),
+                getTestResultDetailContainerResponse("key_atraster100", TestConstants.DEFAULT_ATRASTER100.toString()),
+                getTestResultDetailContainerResponse("key_atraster250", TestConstants.DEFAULT_ATRASTER250.toString()),
                 getTestResultDetailContainerResponse("key_link_id", TestConstants.DEFAULT_LINKNET_LINK_ID.toString()),
                 getTestResultDetailContainerResponse("key_link_name1", TestConstants.DEFAULT_LINKNET_NAME1),
                 getTestResultDetailContainerResponse("key_link_name2", TestConstants.DEFAULT_LINKNET_NAME2),

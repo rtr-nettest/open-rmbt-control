@@ -15,4 +15,5 @@ public interface ErrorMessage {
     String REQUIRED_FIELDS_MISSING = "Required fields missing";
     String INVALID_UUID_TYPE = "Invalid uuid type";
     String QOS_TEST_RESULT_FOR_TEST_NOT_FOUND = "Qos test result not found for test with uuid %s";
+    String INVALID_TEST_STATUS = "Invalid status of test to be updated";
 }

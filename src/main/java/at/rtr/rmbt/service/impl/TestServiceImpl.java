@@ -177,6 +177,10 @@ public class TestServiceImpl implements TestService {
             throw new IllegalArgumentException(ErrorMessage.CLIENT_DOES_MATCH_TEST);
         }
         if (resultUpdateRequest.isAborted()) {
+            //only update if test is currently in status "started"
+            if (test.getStatus() != TestStatus.STARTED) {
+                throw new IllegalArgumentException(ErrorMessage.INVALID_TEST_STATUS);
+            }
             test.setStatus(TestStatus.ABORTED);
             testRepository.save(test);
         } else {
