@@ -135,6 +135,10 @@ public class TestSettingsRequest {
     @JsonProperty("measurement_type_flag")
     private MeasurementType measurementType;
 
+    @JsonProperty("referrer")
+    @Schema(description = "Referrer of embedding website in case of iframe measurement")
+    private String referrer;
+
     public enum ProtocolVersion {
         @JsonProperty("ipv4")
         IPV4("ipv4"),

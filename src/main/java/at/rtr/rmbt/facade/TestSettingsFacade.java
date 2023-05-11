@@ -17,6 +17,7 @@ import at.rtr.rmbt.utils.TimeUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.vdurmont.semver4j.SemverException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.apache.commons.lang3.StringUtils;
@@ -333,6 +334,9 @@ public class TestSettingsFacade {
         test.setCountryAsn(asCountry);
         test.setTag(testSettingsRequest.getTag());
         test.setCoverage(testSettingsRequest.getCoverage());
+        if (!Strings.isNullOrEmpty(testSettingsRequest.getReferrer())) {
+            test.setReferrer(testSettingsRequest.getReferrer().substring(0, Math.min(testSettingsRequest.getReferrer().length(), 2040)));
+        }
         test.setClientTestCounter(
                 testSettingsRequest.getTestCounter() == null || testSettingsRequest.getTestCounter() == -1 ?
                         null :

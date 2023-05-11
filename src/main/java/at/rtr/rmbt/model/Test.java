@@ -487,6 +487,9 @@ public class Test implements Serializable {
     @Column(name = "submission_retry_count")
     private Integer submissionRetryCount;
 
+    @Column(name = "referrer")
+    private String referrer;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "uuid",

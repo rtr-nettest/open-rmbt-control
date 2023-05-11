@@ -82,7 +82,8 @@ public class RegistrationControllerTest {
                 true
             ),
             Collections.emptyList(),
-            MeasurementType.DEDICATED
+            MeasurementType.DEDICATED,
+            null
         );
 
         TestSettingsResponse testSettingsResponse = new TestSettingsResponse(
