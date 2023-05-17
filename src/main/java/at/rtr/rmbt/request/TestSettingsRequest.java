@@ -1,6 +1,7 @@
 package at.rtr.rmbt.request;
 
 import at.rtr.rmbt.enums.*;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,6 +18,7 @@ public class TestSettingsRequest {
 
     @Schema(description = "Platform of the client")
     @JsonProperty("platform")
+    @JsonAlias("plattform")
     private TestPlatform platform;
 
     @Schema(description = "Battery temperature of the client in °C")

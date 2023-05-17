@@ -233,6 +233,7 @@ public class TestSettingsFacade {
                     if (errorResponse.getError().isEmpty()) {
                         Test test = getTest(testSettingsRequest, clientIpAddress, asn, asName, asCountry, clientAddress, language, timeZoneId, client, testUuid, testOpenUuid, numberOfThreads, testServer, geoIpCountry);
 
+
                         test = testService.save(test);
 
                         if (loopModeSettings != null) {
@@ -333,6 +334,7 @@ public class TestSettingsFacade {
         test.setPublicIpAsName(asName);
         test.setCountryAsn(asCountry);
         test.setTag(testSettingsRequest.getTag());
+        test.setPlatform(testSettingsRequest.getPlatform());
         test.setCoverage(testSettingsRequest.getCoverage());
         if (!Strings.isNullOrEmpty(testSettingsRequest.getReferrer())) {
             test.setReferrer(testSettingsRequest.getReferrer().substring(0, Math.min(testSettingsRequest.getReferrer().length(), 2040)));
