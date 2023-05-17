@@ -41,6 +41,7 @@ import static org.mockito.Mockito.*;
 public class QosMeasurementServiceImplTest {
     private static final at.rtr.rmbt.model.Test test = at.rtr.rmbt.model.Test.builder()
         .uid(DEFAULT_UID)
+        .token(DEFAULT_TEST_TOKEN)
         .client(client)
         .build();
     private static final HashSet<DnsResult.DnsEntry> dnsEntries = new HashSet<>();
@@ -136,6 +137,7 @@ public class QosMeasurementServiceImplTest {
         qosTestResult.setQosTestObjective(qosTestObjective);
 
         when(testRepository.findByTokenAndImplausibleIsFalseAndDeletedIsFalse(DEFAULT_TEST_TOKEN)).thenReturn(Optional.of(test));
+        when(testRepository.findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(DEFAULT_TEST_UUID)).thenReturn(Optional.of(test));
         when(qosTestObjectiveRepository.findById(qosSendTestResultItem.getQosTestUid())).thenReturn(Optional.of(qosTestObjective));
         when(qosTestResultRepository.findByTestUidAndImplausibleIsFalseAndDeletedIsFalse(test.getUid())).thenReturn(List.of(qosTestResult));
 

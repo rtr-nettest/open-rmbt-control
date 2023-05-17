@@ -26,6 +26,7 @@ import at.rtr.rmbt.utils.QosUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.common.net.InetAddresses;
 import com.vdurmont.semver4j.SemverException;
 import lombok.RequiredArgsConstructor;
@@ -115,8 +116,17 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
 
                 if (token.length > 2 && token[2].length() > 0) { // && hmac.equals(token[2])) (can be different server keys)
                     final Set<String> clientNames = applicationProperties.getClientNames();
-                    Test test = testRepository.findByTokenAndImplausibleIsFalseAndDeletedIsFalse(request.getTestToken())
-                        .orElse(null);
+                    Test test = testRepository.findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(testUuid)
+                            .orElseGet(() -> {
+                                if (clientUuid != null)
+                                    return testRepository.findByOpenTestUuidAndClientUuidAndImplausibleIsFalseAndDeletedIsFalse(testUuid, clientUuid).orElse(null);
+                                return null;
+                            });
+                    //check matching token
+                    if (test != null &&
+                            !Strings.nullToEmpty(test.getToken()).equals(request.getTestToken())) {
+                        test = null;
+                    }
                     if (test != null) {
                         if (clientNames.contains(request.getClientName())) { //save qos test results:
                             List<QosSendTestResultItem> qosResult = request.getQosResults();
