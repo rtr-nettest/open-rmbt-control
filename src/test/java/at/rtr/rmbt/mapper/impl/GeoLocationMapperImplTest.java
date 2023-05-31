@@ -63,7 +63,8 @@ public class GeoLocationMapperImplTest {
         assertEquals(TestConstants.DEFAULT_ZONED_DATE_TIME, response.getTime());
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getOpenTestUUID());
         assertEquals(TestConstants.DEFAULT_GEO_LOCATION_UUID, response.getGeoLocationUUID());
-        assertEquals(TestConstants.DEFAULT_LOCATION, response.getLocation());
+        assertEquals(TestConstants.DEFAULT_LATITUDE_900913, response.getLocation().getCoordinate().getX(), 0.0000001);
+        assertEquals(TestConstants.DEFAULT_LONGITUDE_900913, response.getLocation().getCoordinate().getY(), 0.0000001);
         assertEquals(test, response.getTest());
     }
 
@@ -81,7 +82,8 @@ public class GeoLocationMapperImplTest {
         assertEquals(NumberUtils.LONG_ZERO, response.getTimeNs());
         assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getOpenTestUUID());
         assertEquals(TestConstants.DEFAULT_GEO_LOCATION_UUID, response.getGeoLocationUUID());
-        assertEquals(TestConstants.DEFAULT_LOCATION, response.getLocation());
+        assertEquals(TestConstants.DEFAULT_LATITUDE_900913, response.getLocation().getCoordinate().getX(), 0.0000001);
+        assertEquals(TestConstants.DEFAULT_LONGITUDE_900913, response.getLocation().getCoordinate().getY(), 0.0000001);
         assertEquals(test, response.getTest());
     }
 }
