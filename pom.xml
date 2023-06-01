@@ -297,6 +297,7 @@
                         <dirtyQualifier>dirty</dirtyQualifier>
                     </strategy>
                     <generateTemporaryFile>false</generateTemporaryFile>
+                    <deleteTemporaryFile>true</deleteTemporaryFile>
                 </configuration>
             </plugin>
         </plugins>
