@@ -296,7 +296,7 @@
                     <strategy hint="git">
                         <dirtyQualifier>dirty</dirtyQualifier>
                     </strategy>
-                    <generateTemporaryFile>true</generateTemporaryFile>
+                    <generateTemporaryFile>false</generateTemporaryFile>
                 </configuration>
             </plugin>
         </plugins>
