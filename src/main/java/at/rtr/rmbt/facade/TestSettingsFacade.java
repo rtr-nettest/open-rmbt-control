@@ -203,7 +203,7 @@ public class TestSettingsFacade {
 
                     String geoIpCountry = GeoIpHelper.lookupCountry(clientAddress);
                     if (testServer == null)
-                        testServer = testServerService.findActiveByServerTypeInAndCountry(serverTypes, StringUtils.isNotBlank(asCountry) ? asCountry : geoIpCountry, coverage);
+                        testServer = testServerService.findActiveByServerTypeInAndCountry(serverTypes, StringUtils.isNotBlank(geoIpCountry) ? geoIpCountry : Strings.nullToEmpty(asCountry), coverage);
 
                     if (testServer == null)
                         throw new TestServerNotFoundException();
