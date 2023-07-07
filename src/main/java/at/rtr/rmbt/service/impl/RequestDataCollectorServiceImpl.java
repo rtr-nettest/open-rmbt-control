@@ -9,7 +9,7 @@ import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import com.google.common.net.InetAddresses;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Map;

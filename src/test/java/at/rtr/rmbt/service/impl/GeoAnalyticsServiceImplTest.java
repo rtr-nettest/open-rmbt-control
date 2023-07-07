@@ -7,10 +7,9 @@ import at.rtr.rmbt.service.GeoAnalyticsService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.testcontainers.shaded.org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;

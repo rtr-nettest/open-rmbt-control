@@ -4,7 +4,7 @@ import at.rtr.rmbt.enums.NewsStatus;
 import lombok.*;
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.UUID;

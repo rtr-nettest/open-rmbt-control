@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -38,7 +38,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     @Configuration
-    public static class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    public static class WebSecurityConfig {
 
         private static final String[] clients = new String[]{"client:specure", "client:rtr"};
 
@@ -47,34 +47,36 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         @Value("${auth0.issuer}")
         private String issuer;
 
-        @Override
-        protected void configure(HttpSecurity httpSecurity) throws Exception {
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
             httpSecurity.cors();
-            JwtWebSecurityConfigurer.forRS256(audience, issuer)
-                    .configure(httpSecurity)
-                    .authorizeRequests()
-                    .antMatchers(IP, REQUEST_DATA_COLLECTOR, TEST_RESULT_DETAIL, MEASUREMENT_QOS_REQUEST, SIGNAL_REQUEST,
-                            SIGNAL_RESULT, NEWS_URL, REGISTRATION_URL, RESULT_QOS_URL, RESULT_URL, SETTINGS_URL,
+            httpSecurity.authorizeHttpRequests((authorize -> {
+                authorize.requestMatchers(IP, REQUEST_DATA_COLLECTOR, TEST_RESULT_DETAIL, MEASUREMENT_QOS_REQUEST, SIGNAL_REQUEST,
+                              SIGNAL_RESULT, NEWS_URL, REGISTRATION_URL, RESULT_QOS_URL, RESULT_URL, SETTINGS_URL,
                             PROVIDERS, TEST_RESULT, HISTORY, SYNC, MEASUREMENT_QOS_RESULT, VERSION, RESULT_UPDATE,
-                            QOS_BY_OPEN_TEST_UUID, QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, ADMIN_SET_IMPLAUSIBLE).permitAll()
-                    .antMatchers(ADMIN_SIGNAL).hasAuthority("read:reports/signal")
-                    .antMatchers(ADMIN_SIGNAL).hasAnyAuthority(clients)
-                    .antMatchers(ADMIN_NEWS).hasAuthority("read:config/news")
-                    .antMatchers(ADMIN_NEWS).hasAnyAuthority(clients)
-                    .antMatchers(HttpMethod.GET, TEST_SERVER).hasAuthority("read:servers")
-                    .antMatchers(HttpMethod.POST, TEST_SERVER).hasAuthority("write:servers")
-                    .antMatchers(TEST_SERVER).hasAnyAuthority(clients)
-                    .antMatchers(ADMIN_SETTING).hasAuthority("write:settings")
-                    .antMatchers(ADMIN_SETTING).hasAnyAuthority(clients)
-                    .anyRequest().authenticated();
+                                                  QOS_BY_OPEN_TEST_UUID, QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, ADMIN_SET_IMPLAUSIBLE)
+                        .permitAll();
+                authorize.requestMatchers(ADMIN_SIGNAL).hasAuthority("read:reports/signal");
+                authorize.requestMatchers(ADMIN_SIGNAL).hasAnyAuthority(clients);
+                authorize.requestMatchers(ADMIN_NEWS).hasAuthority("read:config/news");
+                authorize.requestMatchers(ADMIN_NEWS).hasAnyAuthority(clients);
+                authorize.requestMatchers(HttpMethod.GET, TEST_SERVER).hasAuthority("read:servers");
+                authorize.requestMatchers(HttpMethod.POST, TEST_SERVER).hasAuthority("write:servers");
+                authorize.requestMatchers(TEST_SERVER).hasAnyAuthority(clients);
+                authorize.requestMatchers(ADMIN_SETTING).hasAuthority("write:settings");
+                authorize.requestMatchers(ADMIN_SETTING).hasAnyAuthority(clients);
+                authorize.anyRequest().authenticated();
+            }));
+
+            return httpSecurity.build();
         }
 
-        @Override
-        public void configure(WebSecurity web) throws Exception {
-            // ignoring security for swagger APIs
-            web.ignoring().antMatchers("/v3/api-docs", "/swagger-ui/**", "/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/health").and()
-                    .ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
+        @Bean
+        public WebSecurityCustomizer webSecurityCustomizer() {
+            return (web) -> web.ignoring().requestMatchers("/v3/api-docs", "/swagger-ui/**", "/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/health").and()
+                    .ignoring().requestMatchers(HttpMethod.OPTIONS, "/**");
         }
+
     }
 
     @Override

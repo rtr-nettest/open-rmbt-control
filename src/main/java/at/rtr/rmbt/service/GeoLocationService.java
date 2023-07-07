@@ -4,7 +4,7 @@ import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.request.GeoLocationRequest;
 import at.rtr.rmbt.request.ResultUpdateRequest;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.util.Collection;
 
 public interface GeoLocationService {

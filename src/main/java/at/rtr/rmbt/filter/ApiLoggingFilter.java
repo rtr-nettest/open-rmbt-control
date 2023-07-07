@@ -5,11 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import javax.servlet.*;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -307,7 +307,7 @@ public class ApiLoggingFilter implements Filter {
             return original.encodeRedirectURL(url);
         }
 
-        @SuppressWarnings("deprecation")
+     /*   @SuppressWarnings("deprecation")
         @Override
         public String encodeUrl(String url) {
             return original.encodeUrl(url);
@@ -317,7 +317,7 @@ public class ApiLoggingFilter implements Filter {
         @Override
         public String encodeRedirectUrl(String url) {
             return original.encodeRedirectUrl(url);
-        }
+        }*/
 
         @Override
         public void sendError(int sc, String msg) throws IOException {
@@ -370,10 +370,10 @@ public class ApiLoggingFilter implements Filter {
         }
 
         @SuppressWarnings("deprecation")
-        @Override
+      /*  @Override
         public void setStatus(int sc, String sm) {
             original.setStatus(sc, sm);
-        }
+        }*/
 
         @Override
         public String getHeader(String arg0) {

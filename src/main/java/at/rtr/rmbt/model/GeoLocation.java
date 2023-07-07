@@ -4,7 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnTransformer;
 import org.locationtech.jts.geom.Geometry;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.UUID;

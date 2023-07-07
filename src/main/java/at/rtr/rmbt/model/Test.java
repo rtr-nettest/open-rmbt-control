@@ -5,11 +5,12 @@ import at.rtr.rmbt.enums.*;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.*;
 import org.hibernate.annotations.*;
+import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Geometry;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -24,9 +25,6 @@ import java.util.UUID;
 @ToString
 @Entity
 @Table(name = "test")
-@TypeDefs({
-        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
-})
 public class Test implements Serializable {
     @Id
     @Column(name = "uid")
@@ -400,7 +398,7 @@ public class Test implements Serializable {
     private Integer gkzObsolete;
 
     @Column(name = "android_permissions", columnDefinition = "jsonb")
-    @Type(type = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<AndroidPermission> androidPermissions;
 
     @Column(name = "dual_sim_detection_method")

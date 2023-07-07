@@ -3,11 +3,10 @@ package at.rtr.rmbt.model;
 import at.rtr.rmbt.enums.TestType;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.*;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+import org.hibernate.annotations.JdbcTypeCode;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -16,9 +15,6 @@ import javax.persistence.*;
 @ToString
 @Entity
 @Table(name = "qos_test_objective")
-@TypeDefs({
-    @TypeDef(name = "json", typeClass = JsonStringType.class)
-})
 public class QosTestObjective {
 
     @Id
@@ -33,11 +29,11 @@ public class QosTestObjective {
     private Integer testClassId;
 
     @Column(name = "param", columnDefinition = "json")
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     private QosParams param;
 
     @Column(name = "results", columnDefinition = "json")
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String results;
 
     @Column(name = "concurrency_group")

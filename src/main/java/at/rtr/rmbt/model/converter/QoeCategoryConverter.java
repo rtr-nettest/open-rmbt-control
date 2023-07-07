@@ -2,8 +2,8 @@ package at.rtr.rmbt.model.converter;
 
 import at.rtr.rmbt.enums.QoeCategory;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class QoeCategoryConverter implements AttributeConverter<QoeCategory, String> {

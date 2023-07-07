@@ -4,7 +4,7 @@ import at.rtr.rmbt.enums.ServerType;
 import lombok.*;
 import org.locationtech.jts.geom.Geometry;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;

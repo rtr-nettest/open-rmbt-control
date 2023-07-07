@@ -5,7 +5,7 @@ import at.rtr.rmbt.enums.NetworkGroupName;
 import at.rtr.rmbt.enums.NetworkGroupType;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter

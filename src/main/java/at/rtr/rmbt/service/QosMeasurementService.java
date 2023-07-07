@@ -6,7 +6,7 @@ import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.MeasurementQosResponse;
 import at.rtr.rmbt.response.QosMeasurementsResponse;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.UUID;
 

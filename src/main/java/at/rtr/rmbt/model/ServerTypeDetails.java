@@ -3,7 +3,7 @@ package at.rtr.rmbt.model;
 import at.rtr.rmbt.enums.ServerType;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter

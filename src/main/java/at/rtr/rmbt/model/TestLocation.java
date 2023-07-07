@@ -3,7 +3,7 @@ package at.rtr.rmbt.model;
 import lombok.*;
 import org.locationtech.jts.geom.Geometry;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 

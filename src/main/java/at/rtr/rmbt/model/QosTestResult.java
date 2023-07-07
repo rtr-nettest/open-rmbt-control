@@ -3,11 +3,11 @@ package at.rtr.rmbt.model;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.*;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+import org.hibernate.annotations.JdbcTypeCode;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import org.hibernate.type.SqlTypes;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,10 +18,6 @@ import java.util.Map;
 @ToString
 @Entity
 @Table(name = "qos_test_result")
-@TypeDefs({
-    @TypeDef(name = "json", typeClass = JsonStringType.class),
-    @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
-})
 public class QosTestResult {
     @Id
     @Column(name = "uid")
@@ -48,7 +44,7 @@ public class QosTestResult {
     @Column(name = "deleted")
     private boolean deleted;
 
-    @Type(type = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "result", columnDefinition = "json")
     private String result;
 

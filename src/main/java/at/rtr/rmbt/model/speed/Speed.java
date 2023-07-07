@@ -2,12 +2,15 @@ package at.rtr.rmbt.model.speed;
 
 import at.rtr.rmbt.enums.SpeedDirection;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import org.hibernate.type.SqlTypes;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -24,7 +27,7 @@ public class Speed implements Serializable {
     private UUID openTestUuid;
 
     @Column(name = "items", columnDefinition = "jsonb")
-    @Type(type = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private Map<SpeedDirection, Map<Long, List<SpeedItem>>> items = new HashMap<>();
 
     public void addSpeedItem(SpeedItem speedItem, SpeedDirection speedDirection, Long thread) {

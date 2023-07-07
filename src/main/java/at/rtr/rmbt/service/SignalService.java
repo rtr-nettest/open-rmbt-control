@@ -11,7 +11,7 @@ import at.rtr.rmbt.response.SignalSettingsResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;

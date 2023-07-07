@@ -3,7 +3,7 @@ package at.rtr.rmbt.service;
 import at.rtr.rmbt.response.DataCollectorResponse;
 import at.rtr.rmbt.response.IpResponse;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 public interface RequestDataCollectorService {
