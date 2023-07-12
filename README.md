@@ -59,10 +59,10 @@ for basic setup instructions.
 
 ### Install components
 
-* Apache Tomcat 9 or higher
+* Apache Tomcat 10 or higher
 * nginx; configure nginx to forward requests to localhost:8080
 * letsencrypt; create certificate
-* openjdk-11-jre (do not use a higher version)
+* openjdk-17-jre
 * [Maxmind GeoLite2 database](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data)
 
 ### Build the RMBTControlServer.war archive
