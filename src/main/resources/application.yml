@@ -21,7 +21,7 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: false
-    database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: false
   jackson:
@@ -92,7 +92,8 @@ jira:
 
 ---
 spring:
-  profiles: dev
+  activate:
+    on-profile: dev
   datasource:
     poolSize: 20
     minIdle: 1
@@ -122,7 +123,8 @@ application-version:
 
 ---
 spring:
-  profiles: prod
+  activate:
+    on-profile: prod
   datasource:
     poolSize: 20
     minIdle: 1
