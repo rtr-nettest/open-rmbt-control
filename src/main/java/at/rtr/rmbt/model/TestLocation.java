@@ -21,8 +21,9 @@ public class TestLocation implements Serializable {
     @Column(name = "uid")
     private Long uid;
 
-    @Column(name = "open_test_uuid")
-    private UUID openTestUUID;
+    @OneToOne
+    @JoinColumn( referencedColumnName = "open_test_uuid", name="open_test_uuid")
+    private Test test;
 
     @OneToOne
     @JoinColumn(name = "geo_location_uuid", referencedColumnName = "geo_location_uuid")

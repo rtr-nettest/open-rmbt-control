@@ -502,7 +502,7 @@ public class Test implements Serializable {
     @OneToOne(mappedBy = "test")
     private TestNdt testNdt;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "test")
     @JoinColumn(
             name = "open_test_uuid",
             referencedColumnName = "open_test_uuid",
