@@ -14,10 +14,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TestRepository extends PagingAndSortingRepository<Test, Long>, CustomRepository<Test, Long> {
-    @Procedure("rmbt_set_provider_from_as")
+    @Query(value = "SELECT rmbt_set_provider_from_as(:testUid)", nativeQuery = true)
     String getRmbtSetProviderFromAs(Long testUid);
 
-    @Procedure("rmbt_get_next_test_slot")
+    @Query(value = "SELECT rmbt_get_next_test_slot(:testUid)", nativeQuery = true)
     Integer getRmbtNextTestSlot(Long testUid);
 
     @Query(value = "SELECT DISTINCT group_name" +
