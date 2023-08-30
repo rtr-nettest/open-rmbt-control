@@ -23,7 +23,7 @@ public abstract class GeoIpHelper
                 return null;
             }
             // A File object pointing to your GeoIP2 or GeoLite2 database
-            File database = new File("/usr/share/GeoIP/GeoLite2-Country.mmdb");
+            File database = new File("/var/lib/GeoIP/GeoLite2-Country.mmdb");
             try
             {
                 lookupService = new DatabaseReader.Builder(database).build();
