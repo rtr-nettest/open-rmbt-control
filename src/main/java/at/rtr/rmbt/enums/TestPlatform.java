@@ -8,7 +8,11 @@ import java.util.Objects;
 @Getter
 public enum TestPlatform {
     ANDROID("Android"),
-    IOS("iOS");
+    IOS("iOS"),
+
+    WINDOWS("WINDOWS_NT"),
+    DARWIN("DARWIN"),
+    LINUX("LINUX");
 
     private String label;
 
