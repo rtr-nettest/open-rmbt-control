@@ -1,6 +1,7 @@
 package at.rtr.rmbt.request;
 
 import at.rtr.rmbt.enums.ClientType;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -30,6 +31,7 @@ public class RtrSettingsRequest {
 
     @Schema(description = "Platform of device", example = "Android")
     @JsonProperty(value = "plattform")
+    @JsonAlias(value = "platform")
     private final String platform;
 
     @Schema(description = "Obtained by android.os.Build.VERSION.RELEASE + \"(\" + android.os.Build.VERSION.INCREMENTAL + \")\"", example = "9(G950FXXU5DSFB)")
