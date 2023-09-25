@@ -84,7 +84,7 @@ spring.profiles.active=prod
 This activates the production spring profile.
 
 ##### Configure context.xml
-Edit `/etc/tomcat9/context.xml`, add to `<Context>`:
+Edit `/etc/tomcat10/context.xml`, add to `<Context>`:
 
 ```xml
 <!-- Control/Statistic - Identification used in /version endpoint -->
@@ -104,7 +104,7 @@ Edit `/etc/tomcat9/context.xml`, add to `<Context>`:
 <Parameter name="CONTROL_SERVER_URL" value="https://control.example.com/RMBTControlServer" override="false"/>
 
 <!-- Control: logback -->
-<Parameter name="LOGGING_CONFIG_FILE" value="/etc/tomcat9/logback-control.xml" override="false"/>
+<Parameter name="LOGGING_CONFIG_FILE" value="/etc/tomcat10/logback-control.xml" override="false"/>
 ```
 
 Substitute parts with `[]` and URLs with `example.com`. [host_id] is a short string
@@ -113,9 +113,9 @@ Make sure the file `context.xml` is owned by`tomcat`.
 
 ##### Configure Logstash
 
-Logstash is configured in `etc/tomcat9/logback-control.xml`.
+Logstash is configured in `etc/tomcat10/logback-control.xml`.
 The basic logging configuration is to send log to `console`. In newer Debian installations systemd is
-configured to redirect that output to systemd log. Older systems send log to `/var/log/tomcat9/catalina.out`.
+configured to redirect that output to systemd log. Older systems send log to `/var/log/tomcat10/catalina.out`.
 
 The following configuration sends log to `console`:
 
@@ -157,6 +157,6 @@ Alternatively, log can be sent to Logstash on a remote ELK instance
     </root>
 </configuration>
 ```
-Again, make sure the file `etc/tomcat9/logback-control.xml` is owned by`tomcat`.
+Again, make sure the file `etc/tomcat10/logback-control.xml` is owned by`tomcat`.
 
 
