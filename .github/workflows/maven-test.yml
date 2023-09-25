@@ -5,7 +5,7 @@ name: Server test
 
 on:
   push:
-    branches: [ feature/war ]
+    branches: [ feature/war, master ]
 jobs:
   build:
 
