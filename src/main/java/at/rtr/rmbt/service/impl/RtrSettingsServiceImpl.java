@@ -296,6 +296,11 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
             tcUrl = settings.get("tc_url_ios");
             tcVersion = LongUtils.parseLong(settings.get("tc_version_ios"));
         }
+        else if (Objects.nonNull(platform) && (platform.equalsIgnoreCase("linux") ||
+                platform.equalsIgnoreCase("darwin") || platform.equalsIgnoreCase("windows_nt"))) {
+            tcUrl = settings.get("tc_url_desktop");
+            tcVersion = LongUtils.parseLong(settings.get("tc_version_desktop"));
+        }
         if (Objects.isNull(tcVersion)) {
             tcVersion = LongUtils.parseLong(settings.get("tc_version"));
         }
