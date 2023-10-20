@@ -70,6 +70,8 @@ public interface Config {
         "tc_version_ios",
         "tc_version",
         "tc_url",
+        "tc_version_desktop",
+        "tc_url_desktop",
         "url_open_data_prefix",
         "url_share",
         "url_statistics",
