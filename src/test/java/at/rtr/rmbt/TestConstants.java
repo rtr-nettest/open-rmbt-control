@@ -301,8 +301,8 @@ public interface TestConstants {
     String DEFAULT_NETWORK_TYPE_WLAN_VALUE = "WLAN";
     Integer DEFAULT_ROAMING_TYPE_ID = 2;
     String DEFAULT_ROAMING_TYPE_VALUE = "International";
-    String DEFAULT_TEST_RESULT_DETAIL_SPEED_DOWNLOAD_VALUE = "2,100 Mbps";
-    String DEFAULT_TEST_RESULT_DETAIL_SPEED_UPLOAD_VALUE = "1,000 Mbps";
+    String DEFAULT_TEST_RESULT_DETAIL_SPEED_DOWNLOAD_VALUE = "2,122 Mbps";
+    String DEFAULT_TEST_RESULT_DETAIL_SPEED_UPLOAD_VALUE = "1,020 Mbps";
     String DEFAULT_TEST_RESULT_DETAIL_PING_MEDIAN_VALUE = "58 ms";
     String DEFAULT_TEST_RESULT_DETAIL_WIFI_LINK_SPEED = "100 Mbps";
     String DEFAULT_TEST_RESULT_DETAIL_TOTAL_BYTES = "0.56 MB";
@@ -367,8 +367,8 @@ public interface TestConstants {
     String DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT = "RTR-NetTest result - Jan 19, 1970, 5:39:24 PM";
     String DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_TRUE_SIGNAL_STRENGTH_NOT_NULL = "My Result:\n" +
             "Date/time: Jan 19, 1970, 5:39:24 PM\n" +
-            "Download: 2,100 Mbps\n" +
-            "Upload: 1,000 Mbps\n" +
+            "Download: 2,122 Mbps\n" +
+            "Upload: 1,020 Mbps\n" +
             "Ping: 58 ms\n" +
             "Signal strength: -111 dBm\n" +
             "Network type: Dual SIM\n" +
@@ -378,8 +378,8 @@ public interface TestConstants {
             "\n";
     String DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL = "My Result:\n" +
             "Date/time: Jan 19, 1970, 5:39:24 PM\n" +
-            "Download: 2,100 Mbps\n" +
-            "Upload: 1,000 Mbps\n" +
+            "Download: 2,122 Mbps\n" +
+            "Upload: 1,020 Mbps\n" +
             "Ping: 58 ms\n" +
             "Signal strength (RSRP): -5 dBm\n" +
             "Network type: UNKNOWN\n" +
@@ -404,8 +404,8 @@ public interface TestConstants {
     Double DEFAULT_QUALITY = 1d;
     Integer DEFAULT_RESULT_LIMIT = 1;
     Integer DEFAULT_RESULT_OFFSET = 2;
-    String DEFAULT_FORMATTED_SPEED_UPLOAD = "1,000";
-    String DEFAULT_FORMATTED_SPEED_DOWNLOAD = "2,100";
+    String DEFAULT_FORMATTED_SPEED_UPLOAD = "1,020";
+    String DEFAULT_FORMATTED_SPEED_DOWNLOAD = "2,122";
     String DEFAULT_FORMATTED_PING = "58";
     String DEFAULT_FORMATTED_PING_SHORTEST = "58";
     String DEFAULT_HISTORY_RESPONSE_ITEM_LOOP_UUID = "L2458713e-9362-11eb-a8b3-0242ac130003";

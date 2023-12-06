@@ -538,15 +538,13 @@ public class TestServiceImpl implements TestService {
 
     private String getUploadString(Test test, Locale locale) {
         return Optional.ofNullable(test.getUploadSpeed())
-                .map(x -> x / Constants.BYTES_UNIT_CONVERSION_MULTIPLICATOR)
-                .map(downloadSpeed -> FormatUtils.formatValueAndUnit(downloadSpeed, getStringFromBundle("RESULT_UPLOAD_UNIT", locale), locale))
+                .map(uploadSpeed -> FormatUtils.formatSpeedValueAndUnit(uploadSpeed, getStringFromBundle("RESULT_UPLOAD_UNIT", locale), locale))
                 .orElse(StringUtils.EMPTY);
     }
 
     private String getDownloadString(Test test, Locale locale) {
         return Optional.ofNullable(test.getDownloadSpeed())
-                .map(x -> x / Constants.BYTES_UNIT_CONVERSION_MULTIPLICATOR)
-                .map(downloadSpeed -> FormatUtils.formatValueAndUnit(downloadSpeed, getStringFromBundle("RESULT_DOWNLOAD_UNIT", locale), locale))
+                .map(downloadSpeed -> FormatUtils.formatSpeedValueAndUnit(downloadSpeed, getStringFromBundle("RESULT_DOWNLOAD_UNIT", locale), locale))
                 .orElse(StringUtils.EMPTY);
     }
 
