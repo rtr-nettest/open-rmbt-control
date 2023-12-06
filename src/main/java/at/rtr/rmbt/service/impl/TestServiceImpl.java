@@ -701,11 +701,9 @@ public class TestServiceImpl implements TestService {
                     .ifPresentOrElse(mobileProviderShortName -> addNetworkOperator(propertiesList, locale, test, mobileProviderShortName), () -> addString(propertiesList, locale, "network_operator_name", test.getNetworkOperatorName()));
         }
         Optional.ofNullable(test.getDownloadSpeed())
-                .map(x -> x / Constants.BYTES_UNIT_CONVERSION_MULTIPLICATOR)
-                .ifPresent(downloadSpeed -> addDoubleAndUnitString(propertiesList, locale, "speed_download", downloadSpeed, "RESULT_DOWNLOAD_UNIT"));
+                .ifPresent(downloadSpeed -> addSpeedAndUnitString(propertiesList, locale, "speed_download", downloadSpeed, "RESULT_DOWNLOAD_UNIT"));
         Optional.ofNullable(test.getUploadSpeed())
-                .map(x -> x / Constants.BYTES_UNIT_CONVERSION_MULTIPLICATOR)
-                .ifPresent(uploadSpeed -> addDoubleAndUnitString(propertiesList, locale, "speed_upload", uploadSpeed, "RESULT_UPLOAD_UNIT"));
+                .ifPresent(uploadSpeed -> addSpeedAndUnitString(propertiesList, locale, "speed_upload", uploadSpeed, "RESULT_UPLOAD_UNIT"));
         Optional.ofNullable(test.getPingMedian())
                 .map(this::getPingMsFromPingMedian)
                 .ifPresent(pingMedian -> addDoubleAndUnitString(propertiesList, locale, "ping_median", pingMedian, "RESULT_PING_UNIT"));
@@ -930,6 +928,13 @@ public class TestServiceImpl implements TestService {
         String unit = getStringFromBundle(unitKey, locale);
         if (Objects.nonNull(value)) {
             addString(propertiesList, locale, title, FormatUtils.formatValueAndUnit(value, unit, locale));
+        }
+    }
+
+    private void addSpeedAndUnitString(List<TestResultDetailContainerResponse> propertiesList, Locale locale, String title, Integer value, String unitKey) {
+        String unit = getStringFromBundle(unitKey, locale);
+        if (Objects.nonNull(value)) {
+            addString(propertiesList, locale, title, FormatUtils.formatSpeedValueAndUnit(value, unit, locale));
         }
     }
 

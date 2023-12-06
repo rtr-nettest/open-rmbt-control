@@ -40,6 +40,11 @@ public class FormatUtils {
         return String.format(Constants.VALUE_AND_UNIT_TEMPLATE, format.format(new BigDecimal(value, mathContext)), unitValue);
     }
 
+    public static String formatSpeedValueAndUnit(Integer speedMbps, String unitValue, Locale locale) {
+        Format format = NumberFormat.getNumberInstance(locale);
+        return String.format(Constants.VALUE_AND_UNIT_TEMPLATE, formatSpeed(speedMbps), unitValue);
+    }
+
     public static String formatValueAndUnit(Long value, String unitValue) {
         return String.format(Constants.VALUE_AND_UNIT_TEMPLATE, value, unitValue);
     }
@@ -48,11 +53,18 @@ public class FormatUtils {
         return String.format(Constants.VALUE_AND_UNIT_TEMPLATE, value, unitValue);
     }
 
-    public static String formatSpeed(Integer speed) {
-        return Optional.ofNullable(speed)
+    public static String formatSpeed(Integer speedKbps) {
+        return Optional.ofNullable(speedKbps)
                 .map(s -> ObjectUtils.defaultIfNull(s, NumberUtils.INTEGER_ZERO))
                 .map(x -> x / Constants.BYTES_UNIT_CONVERSION_MULTIPLICATOR)
-                .map(x -> new BigDecimal(x, mathContext))
+                .map(x -> {
+                    if (x < 100) { //don't round over 100 mbps
+                        return new BigDecimal(x, mathContext);
+                    } else {
+                        return Math.round(x);
+
+                    }
+                })
                 .map(numberFormat::format)
                 .orElse(StringUtils.EMPTY);
     }
