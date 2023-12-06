@@ -29,7 +29,7 @@ public enum TestPlatform {
             return valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) { // if value not found by name - try find by label
             for (TestPlatform testPlatform : values()) {
-                if (testPlatform.label.equals(value))
+                if (testPlatform.label.toUpperCase().equals(value.toUpperCase()))
                     return testPlatform;
             }
         }
