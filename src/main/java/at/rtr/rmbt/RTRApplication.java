@@ -1,5 +1,6 @@
 package at.rtr.rmbt;
 
+import at.rtr.rmbt.filter.DeadlockFilter;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.repository.impl.CustomRepositoryImpl;
 import org.springframework.boot.SpringApplication;
@@ -22,6 +23,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public class RTRApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
+        Thread.setDefaultUncaughtExceptionHandler(new DeadlockFilter());
         SpringApplication.run(RTRApplication.class, args);
     }
 
