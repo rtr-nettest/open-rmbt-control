@@ -203,10 +203,10 @@ public class Test implements Serializable {
     @Column(name = "public_ip_asn")
     private Long publicIpAsn;
 
-    @Column(name = "speed_upload_log")
+    @Column(name = "speed_upload_log", updatable = false)
     private Double speedUploadLog;
 
-    @Column(name = "speed_download_log")
+    @Column(name = "speed_download_log", updatable = false)
     private Double speedDownloadLog;
 
     @Column(name = "total_bytes_download")
@@ -234,7 +234,7 @@ public class Test implements Serializable {
     @Column(name = "network_is_roaming")
     private Boolean networkIsRoaming;
 
-    @Column(name = "ping_shortest_log")
+    @Column(name = "ping_shortest_log", updatable = false)
     private Double pingShortestLog;
 
     @Column(name = "run_ndt")
@@ -364,10 +364,10 @@ public class Test implements Serializable {
     @Column(name = "coverage")
     private Boolean coverage;
 
-    @Column(name = "ping_median")
+    @Column(name = "ping_median", updatable = false) //set by trigger
     private Long pingMedian;
 
-    @Column(name = "ping_median_log")
+    @Column(name = "ping_median_log", updatable = false)
     private Double pingMedianLog;
 
     @Column(name = "source_ip_anonymized")
