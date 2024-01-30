@@ -278,7 +278,7 @@ public class Test implements Serializable {
     @Column(name = "roaming_type")
     private Integer roamingType;
 
-    @Column(name = "open_test_uuid")
+    @Column(name = "open_test_uuid", updatable = false)
     private UUID openTestUuid;
 
     @Column(name = "country_asn")
