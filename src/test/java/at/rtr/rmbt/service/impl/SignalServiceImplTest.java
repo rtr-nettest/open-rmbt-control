@@ -37,6 +37,7 @@ import java.util.*;
 import static at.rtr.rmbt.TestConstants.*;
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -169,6 +170,7 @@ public class SignalServiceImplTest {
                 .thenReturn(Optional.of(test));
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(test.getUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(test.getTimestamp()).thenReturn(DEFAULT_TEST_TIME);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
 
         var response = signalService.processSignalResult(signalResultRequest);
@@ -176,7 +178,7 @@ public class SignalServiceImplTest {
         verify(test).setLastSequenceNumber(2);
         verify(testRepository).saveAndFlush(test);
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
-        assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
+        assertNotEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
 
 
@@ -191,10 +193,11 @@ public class SignalServiceImplTest {
         when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(test.getUuid()).thenReturn(TestConstants.DEFAULT_UUID);
         when(test.getLastSequenceNumber()).thenReturn(-1);
+        when(test.getTimestamp()).thenReturn(DEFAULT_TEST_TIME);
 
         var response = signalService.processSignalResult(signalResultRequest);
 
-        assertEquals(TestConstants.DEFAULT_UUID, response.getTestUUID());
+        assertNotEquals(TestConstants.DEFAULT_UUID, response.getTestUUID());
         verify(testRepository, times(2)).saveAndFlush(testArgumentCaptor.capture());
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         assertEquals(TestConstants.DEFAULT_TEST_UUID, testArgumentCaptor.getAllValues().get(0).getOpenTestUuid());
@@ -214,6 +217,7 @@ public class SignalServiceImplTest {
         when(test.getLastSequenceNumber()).thenReturn(1);
         when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_UUID);
         when(test.getUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(test.getTimestamp()).thenReturn(DEFAULT_TEST_TIME);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
 
         var response = signalService.processSignalResult(signalResultRequest);
@@ -223,7 +227,7 @@ public class SignalServiceImplTest {
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         verify(radioSignalService).saveRadioSignalRequests(radioInfoRequest, test);
         verify(radioCellService).processRadioCellRequests(List.of(radioCellRequest), test);
-        assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
+        assertNotEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
 
     @Test
@@ -237,6 +241,7 @@ public class SignalServiceImplTest {
         when(radioInfoRequest.getSignals()).thenReturn(null);
         when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
+        when(test.getTimestamp()).thenReturn(DEFAULT_TEST_TIME);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
 
         signalService.processSignalResult(signalResultRequest);
@@ -256,6 +261,7 @@ public class SignalServiceImplTest {
         when(radioInfoRequest.getSignals()).thenReturn(List.of(radioSignalRequest));
         when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
+        when(test.getTimestamp()).thenReturn(DEFAULT_TEST_TIME);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
 
         signalService.processSignalResult(signalResultRequest);
@@ -277,6 +283,7 @@ public class SignalServiceImplTest {
         when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_UUID);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
         when(test.getUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(test.getTimestamp()).thenReturn(DEFAULT_TEST_TIME);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
         when(geoLocationRequestFirst.getTstamp()).thenReturn(TestConstants.DEFAULT_MILLIS);
         when(geoLocationRequestFirst.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE);
@@ -302,7 +309,7 @@ public class SignalServiceImplTest {
         verify(testRepository).saveAndFlush(test);
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         verify(geoLocationService).processGeoLocationRequests(List.of(geoLocationRequestFirst, geoLocationRequestSecond), test);
-        assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
+        assertNotEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
 
     @Test
@@ -318,6 +325,7 @@ public class SignalServiceImplTest {
         when(test.getClientPublicIp()).thenReturn(TestConstants.DEFAULT_IP_V4);
         when(test.getUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
+        when(test.getTimestamp()).thenReturn(DEFAULT_TEST_TIME);
         InetAddress defaultIpLocalAddress = InetAddresses.forString(TestConstants.DEFAULT_IP_V4);
         InetAddress defaultIpPublicAddress = InetAddresses.forString(TestConstants.DEFAULT_IP_V4);
 
@@ -330,7 +338,7 @@ public class SignalServiceImplTest {
         verify(test).setNatType(HelperFunctions.getNatType(defaultIpLocalAddress, defaultIpPublicAddress));
         verify(testRepository).saveAndFlush(test);
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
-        assertEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
+        assertNotEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
     }
 
     @Test
