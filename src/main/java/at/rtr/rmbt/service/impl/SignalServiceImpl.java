@@ -32,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -143,8 +144,15 @@ public class SignalServiceImpl implements SignalService {
         testMapper.updateTestLocation(updatedTest);
         testRepository.saveAndFlush(updatedTest);
 
+        UUID uuidToReturn = updatedTest.getUuid();
+        if (updatedTest.getTimestamp().plusMinutes(Constants.SIGNAL_CHANGE_UUID_AFTER_MIN)
+                .compareTo(Instant.now().atZone(updatedTest.getTimestamp().getZone())) > 0) {
+            log.info("updating signal uuid after " + Constants.SIGNAL_CHANGE_UUID_AFTER_MIN + " minutes");
+            uuidToReturn = UUID.randomUUID();
+        }
+
         return SignalResultResponse.builder()
-                .testUUID(updatedTest.getUuid())
+                .testUUID(uuidToReturn)
                 .build();
     }
 

@@ -85,4 +85,6 @@ public interface Constants {
             "    AXIS[\"Easting\",EAST],\n" +
             "    AXIS[\"Northing\",NORTH],\n" +
             "    AUTHORITY[\"EPSG\",\"900913\"]]";
+
+    static final int SIGNAL_CHANGE_UUID_AFTER_MIN = 10;
 }
