@@ -21,5 +21,5 @@ public class CellLocationRequest {
     private final Integer areaCode;
 
     @JsonProperty(value = "location_id")
-    private final Integer locationId;
+    private final Long locationId;
 }
