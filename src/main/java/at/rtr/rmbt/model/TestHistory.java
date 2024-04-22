@@ -20,6 +20,9 @@ public class TestHistory {
     @Column(name = "uuid")
     private UUID uuid;
 
+    @Column(name = "open_test_uuid")
+    private UUID openTestUuid;
+
     @Column(name = "time")
     private Date time;
 

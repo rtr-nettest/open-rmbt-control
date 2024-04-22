@@ -21,6 +21,7 @@ public class TestHistoryMapperImpl implements TestHistoryMapper {
     public HistoryItemResponse testHistoryToHistoryItemResponse(TestHistory testHistory, Integer classificationCount, Locale locale) {
         HistoryItemResponse.HistoryItemResponseBuilder historyItemResponseBuilder = HistoryItemResponse.builder()
                 .testUUID(testHistory.getUuid())
+                .openTestUuid(testHistory.getOpenTestUuid() != null ? "O" + testHistory.getOpenTestUuid() : null)
                 .time(testHistory.getTime().getTime())
                 .timezone(testHistory.getTimezone())
                 .timeString(TimeUtils.getTimeString(testHistory.getTime(), TimeZone.getTimeZone(testHistory.getTimezone()), locale))
