@@ -20,6 +20,10 @@ public class HistoryItemResponse {
     @JsonProperty(value = "test_uuid")
     private final UUID testUUID;
 
+    @Schema(description = "Open Test UUID")
+    @JsonProperty(value = "open_test_uuid")
+    private final String openTestUuid;
+
     @Schema(description = "Time of the test in millis")
     @JsonProperty(value = "time")
     private final Long time;
