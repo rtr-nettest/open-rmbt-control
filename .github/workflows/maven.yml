@@ -5,7 +5,7 @@ name: WAR build
 
 on:
   push:
-    branches: [ feature/war, feature/jakarta-upgrade, master ]
+    branches: [ feature/war, feature/jakarta-upgrade, master, feature/*, dev ]
 jobs:
   build:
 
