@@ -34,6 +34,6 @@ public class UrlsResponse {
     @JsonProperty(value = "statistics")
     private final String statistics;
 
-    @JsonProperty(value = "url_app_cloud")
-    private final String urlAppCloud;
+    @JsonProperty(value = "url_statistic_server")
+    private final String urlStatisticServer;
 }

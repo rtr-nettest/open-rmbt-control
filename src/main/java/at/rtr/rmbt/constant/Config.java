@@ -30,7 +30,7 @@ public interface Config {
     String URL_IPV4_CHECK_KEY = "url_ipv4_check";
     String URL_IPV6_CHECK_KEY = "url_ipv6_check";
     String URL_MAP_SERVER_KEY = "url_map_server";
-    String URL_APP_CLOUD_KEY = "url_app_cloud";
+    String URL_STATISTIC_SERVER_KEY = "url_statistic_server";
     String SYSTEM_UUID_KEY = "system_UUID";
     String GEO_PROVIDER_MANUAL = "manual";
     String GEO_PROVIDER_GEOCODER = "geocoder";
@@ -84,7 +84,7 @@ public interface Config {
         "host_map_server",
         "ssl_map_server",
         "port_map_server",
-        "url_app_cloud"
+        "url_statistic_server"
     );
     List<ServerType> SERVER_TEST_SERVER_TYPES = List.of(ServerType.RMBT);
     List<ServerType> SERVER_HTTP_TEST_SERVER_TYPES = List.of(ServerType.RMBT, ServerType.RMBThttp);

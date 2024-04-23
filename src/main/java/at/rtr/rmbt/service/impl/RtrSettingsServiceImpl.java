@@ -352,7 +352,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .urlIPV4Check(settings.get(Config.URL_IPV4_CHECK_KEY))
                 .urlIPV6Check(settings.get(Config.URL_IPV6_CHECK_KEY))
                 .urlMapServer(settings.get(Config.URL_MAP_SERVER_KEY))
-                .urlAppCloud(settings.get(Config.URL_APP_CLOUD_KEY))
+                .urlStatisticServer(settings.get(Config.URL_STATISTIC_SERVER_KEY))
                 .build();
     }
 
