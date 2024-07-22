@@ -12,6 +12,7 @@ public interface TestHistoryRepository {
             Integer resultOffset,
             List<String> devices,
             List<String> networks,
-            RtrClient client
+            RtrClient client,
+            boolean includeFailedTests
     );
 }

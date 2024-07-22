@@ -36,6 +36,10 @@ public class HistoryRequest {
     @JsonProperty(value = "networks")
     private final List<String> networks;
 
+    @Schema(description = "Include also failed tests")
+    @JsonProperty(value="include_failed_tests", defaultValue = "false")
+    private final boolean includeFailedTests;
+
     @Schema(description = "Capabilities")
     @JsonProperty(value = "capabilities")
     private final CapabilitiesRequest capabilities;

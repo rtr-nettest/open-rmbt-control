@@ -272,7 +272,7 @@ public class TestServiceImplTest {
         when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
         when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
         when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)).thenReturn(Optional.of(test));
         when(test.getDualSim()).thenReturn(Boolean.TRUE);
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
@@ -283,6 +283,7 @@ public class TestServiceImplTest {
         when(test.getPingMedian()).thenReturn(TestConstants.DEFAULT_TEST_PING_MEDIAN);
         when(test.getSignalStrength()).thenReturn(TestConstants.DEFAULT_SIGNAL_STRENGTH_FIRST);
         when(test.getLteRsrp()).thenReturn(null);
+        when(test.getStatus()).thenReturn(TestConstants.DEFAULT_STATUS_FINISHED);
 
         var result = testService.getTestResult(testResultRequest);
         assertEquals(1, result.getTestResultResponses().size());
@@ -301,7 +302,7 @@ public class TestServiceImplTest {
         when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
         when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
         when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)).thenReturn(Optional.of(test));
         when(test.getDualSim()).thenReturn(Boolean.FALSE);
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
@@ -314,6 +315,7 @@ public class TestServiceImplTest {
         when(test.getLteRsrp()).thenReturn(TestConstants.DEFAULT_LTE_RSRP_FIRST);
         when(test.getNetworkOperatorName()).thenReturn(TestConstants.DEFAULT_TELEPHONY_NETWORK_OPERATOR_NAME);
         when(test.getRoamingType()).thenReturn(TestConstants.DEFAULT_ROAMING_TYPE_ID);
+        when(test.getStatus()).thenReturn(TestConstants.DEFAULT_STATUS_FINISHED);
 
         var result = testService.getTestResult(testResultRequest);
         assertEquals(1, result.getTestResultResponses().size());
@@ -332,7 +334,7 @@ public class TestServiceImplTest {
         when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
         when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
         when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)).thenReturn(Optional.of(test));
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
         when(test.getDualSim()).thenReturn(Boolean.TRUE);
@@ -340,6 +342,7 @@ public class TestServiceImplTest {
         when(test.getSimCount()).thenReturn(null);
         when(test.getWifiSsid()).thenReturn(TestConstants.DEFAULT_WIFI_SSID);
         when(test.getProvider()).thenReturn(getProvider());
+        when(test.getStatus()).thenReturn(TestConstants.DEFAULT_STATUS_FINISHED);
 
         var result = testService.getTestResult(testResultRequest);
 
@@ -363,12 +366,13 @@ public class TestServiceImplTest {
         when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
         when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
         when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)).thenReturn(Optional.of(test));
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
         when(test.getDualSim()).thenReturn(Boolean.FALSE);
         when(test.getNetworkOperatorName()).thenReturn(TestConstants.DEFAULT_TELEPHONY_NETWORK_OPERATOR_NAME);
         when(test.getRoamingType()).thenReturn(TestConstants.DEFAULT_ROAMING_TYPE_ID);
+        when(test.getStatus()).thenReturn(TestConstants.DEFAULT_STATUS_FINISHED);
 
         var result = testService.getTestResult(testResultRequest);
 
@@ -389,7 +393,7 @@ public class TestServiceImplTest {
         when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
         when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
         when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)).thenReturn(Optional.of(test));
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
         when(test.getPingMedian()).thenReturn(TestConstants.DEFAULT_TEST_PING_MEDIAN);
@@ -397,6 +401,7 @@ public class TestServiceImplTest {
         when(test.getUploadSpeed()).thenReturn(TestConstants.DEFAULT_RESULT_UPLOAD_SPEED);
         when(qoeClassificationService.getQoeClassificationThreshold()).thenReturn(List.of(qoeClassificationThresholds));
         when(qoeClassificationThresholds.getQoeCategory()).thenReturn(TestConstants.DEFAULT_QOE_CATEGORY);
+        when(test.getStatus()).thenReturn(TestConstants.DEFAULT_STATUS_FINISHED);
 
         var result = testService.getTestResult(testResultRequest);
 
@@ -416,8 +421,9 @@ public class TestServiceImplTest {
         when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
         when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
         when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)).thenReturn(Optional.of(test));
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
+        when(test.getStatus()).thenReturn(TestConstants.DEFAULT_STATUS_FINISHED);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
 
         var result = testService.getTestResult(testResultRequest);
@@ -474,9 +480,10 @@ public class TestServiceImplTest {
                         TestConstants.DEFAULT_RESULT_OFFSET,
                         List.of(TestConstants.DEFAULT_DEVICE),
                         List.of(TestConstants.DEFAULT_NETWORK_NAME),
-                        client))
+                        client,
+                        false))
                 .thenReturn(List.of(testHistory));
-        when(testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, TestConstants.DEFAULT_CLASSIFICATION_COUNT, Locale.ENGLISH)).thenReturn(historyItemResponse);
+        when(testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, TestConstants.DEFAULT_CLASSIFICATION_COUNT, Locale.ENGLISH, false)).thenReturn(historyItemResponse);
 
         var response = testService.getHistory(historyRequest);
         assertEquals(List.of(historyItemResponse), response.getHistory());

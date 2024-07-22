@@ -61,4 +61,7 @@ public class TestHistory {
 
     @Column(name = "model")
     private String model;
+
+    @Column(name = "status")
+    private String status;
 }

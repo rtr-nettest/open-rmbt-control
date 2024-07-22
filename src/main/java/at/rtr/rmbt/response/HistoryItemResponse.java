@@ -92,4 +92,8 @@ public class HistoryItemResponse {
     @Schema(description = "Signal classification of test")
     @JsonProperty(value = "signal_classification")
     private final Integer signalClassification;
+
+    @JsonProperty(value = "status")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private final String status;
 }
