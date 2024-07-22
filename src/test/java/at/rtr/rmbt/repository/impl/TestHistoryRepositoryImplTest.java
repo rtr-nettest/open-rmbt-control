@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -44,11 +45,11 @@ public class TestHistoryRepositoryImplTest {
                 TestConstants.DEFAULT_RESULT_LIMIT,
                 TestConstants.DEFAULT_RESULT_OFFSET,
                 List.of(TestConstants.DEFAULT_DEVICE),
-                List.of(TestConstants.DEFAULT_NETWORK_NAME),
+                List.of(TestConstants.DEFAULT_NETWORK_NAME + "\') OR ('1'='1 "),
                 client
         );
 
-        verify(jdbcTemplate).query(queryArgumentCaptor.capture(), any(BeanPropertyRowMapper.class));
+        verify(jdbcTemplate).query(queryArgumentCaptor.capture(), any(ArgumentPreparedStatementSetter.class), any(BeanPropertyRowMapper.class));
         assertEquals(TestConstants.DEFAULT_TEST_HISTORY_FINAL_QUERY, queryArgumentCaptor.getValue());
     }
 
