@@ -61,4 +61,7 @@ public class TestResultResponse {
 
     @JsonProperty(value = "qoe_classification")
     private final List<QoeClassificationResponse> qoeClassificationResponses;
+
+    @JsonProperty(value = "status")
+    private final String status;
 }

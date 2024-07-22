@@ -94,5 +94,6 @@ public interface Config {
     List<String> SIGNAL_RESULT_STATUSES = List.of(TestStatus.SIGNAL_STARTED.toString(), TestStatus.SIGNAL.toString());
     List<String> TEST_RESULT_DETAIL_STATUSES = List.of(TestStatus.FINISHED.toString());
     List<String> TEST_RESULT_STATUSES = List.of(TestStatus.FINISHED.toString());
+    List<String> TEST_RESULT_STATUSES_INCLUDE_ERROR = List.of(TestStatus.FINISHED.toString(), TestStatus.ERROR.toString());
     Integer SIGNIFICANT_PLACES = 2;
 }

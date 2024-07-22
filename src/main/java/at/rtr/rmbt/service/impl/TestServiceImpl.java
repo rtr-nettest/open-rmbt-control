@@ -128,7 +128,7 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public TestResultContainerResponse getTestResult(TestResultRequest testResultRequest) {
-        Test test = testRepository.findByUuidAndStatusesIn(testResultRequest.getTestUUID(), Config.TEST_RESULT_STATUSES)
+        Test test = testRepository.findByUuidAndStatusesIn(testResultRequest.getTestUUID(), Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)
                 .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.TEST_NOT_FOUND, testResultRequest.getTestUUID())));
         Locale locale = MessageUtils.getLocaleFormLanguage(testResultRequest.getLanguage(), applicationProperties.getLanguage());
         String timeString = TimeUtils.getTimeStringFromTest(test, locale);
@@ -142,6 +142,7 @@ public class TestServiceImpl implements TestService {
                 .shareSubject(MessageFormat.format(getStringFromBundle("RESULT_SHARE_SUBJECT", locale), timeString))
                 .shareText(getShareText(test, timeString, locale))
                 .timeString(timeString)
+                .status(test.getStatus().name().toLowerCase())
                 .qoeClassificationResponses(getQoeClassificationResponse(test));
         setGeoLocationFields(testResultResponseBuilder, test, locale);
         setNetFields(testResultResponseBuilder, test, locale);
