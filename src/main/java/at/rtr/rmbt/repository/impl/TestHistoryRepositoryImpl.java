@@ -21,23 +21,32 @@ public class TestHistoryRepositoryImpl implements TestHistoryRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final static String GET_TEST_HISTORY = "SELECT DISTINCT"
-            + " t.uuid, t.open_test_uuid, time, timezone, speed_upload, speed_download, ping_median, lte_rsrp, signal_strength, dual_sim, sim_count, network_type, nt.group_name network_type_group_name, l.loop_uuid loop_uuid,"
+            + " t.status, t.uuid, t.open_test_uuid, time, timezone, speed_upload, speed_download, ping_median, lte_rsrp, signal_strength, dual_sim, sim_count, network_type, nt.group_name network_type_group_name, l.loop_uuid loop_uuid,"
             + " COALESCE(adm.fullname, t.model) model"
             + " FROM test t"
             + " LEFT JOIN device_map adm ON adm.codename=t.model"
             + " LEFT JOIN network_type nt ON t.network_type=nt.uid"
             + " LEFT JOIN test_loopmode l ON (l.test_uuid = t.uuid)"
-            + " WHERE t.deleted = false AND t.implausible = false AND t.status = 'FINISHED'"
-            + " %s %s %s" + " ORDER BY time DESC" + " %s";
+            + " WHERE t.deleted = false AND t.implausible = false "
+            + " %s %s %s %s" + " ORDER BY time DESC" + " %s";
 
     @Override
-    public List<TestHistory> getTestHistoryByDevicesAndNetworksAndClient(Integer resultLimit, Integer resultOffset, List<String> devices, List<String> networks, RtrClient client) {
+    public List<TestHistory> getTestHistoryByDevicesAndNetworksAndClient(Integer resultLimit, Integer resultOffset, List<String> devices, List<String> networks, RtrClient client, boolean includeFailedTests) {
         ArrayList<Object> args = new ArrayList<>();
+        String testStatusRequest = " AND t.status IN (%s)";
+        args.add("FINISHED");
+        if (includeFailedTests) {
+            args.add("ERROR");
+            testStatusRequest = String.format(testStatusRequest, "?, ?");
+        }
+        else {
+            testStatusRequest = String.format(testStatusRequest, "?");
+        }
         String limitRequest = getLimitRequest(resultLimit, resultOffset);
         String devicesRequest = getDevicesRequest(devices, args);
         String networksRequest = getNetworksRequest(networks, args);
         String clientSyncRequest = getClientSyncRequest(client, args);
-        String finalQuery = String.format(GET_TEST_HISTORY, clientSyncRequest, devicesRequest, networksRequest, limitRequest);
+        String finalQuery = String.format(GET_TEST_HISTORY, testStatusRequest, clientSyncRequest, devicesRequest, networksRequest, limitRequest);
         return jdbcTemplate.query(finalQuery, new ArgumentPreparedStatementSetter(args.toArray()), new BeanPropertyRowMapper<>(TestHistory.class));
     }
 

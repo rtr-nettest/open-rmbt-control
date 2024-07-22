@@ -45,8 +45,9 @@ public class TestHistoryRepositoryImplTest {
                 TestConstants.DEFAULT_RESULT_LIMIT,
                 TestConstants.DEFAULT_RESULT_OFFSET,
                 List.of(TestConstants.DEFAULT_DEVICE),
-                List.of(TestConstants.DEFAULT_NETWORK_NAME + "\') OR ('1'='1 "),
-                client
+                List.of(TestConstants.DEFAULT_NETWORK_NAME),
+                client,
+                false
         );
 
         verify(jdbcTemplate).query(queryArgumentCaptor.capture(), any(ArgumentPreparedStatementSetter.class), any(BeanPropertyRowMapper.class));
@@ -62,10 +63,11 @@ public class TestHistoryRepositoryImplTest {
                 TestConstants.DEFAULT_RESULT_OFFSET,
                 List.of(TestConstants.DEFAULT_DEVICE),
                 List.of(TestConstants.DEFAULT_NETWORK_NAME),
-                client
+                client,
+                false
         );
 
-        verify(jdbcTemplate).query(queryArgumentCaptor.capture(), any(BeanPropertyRowMapper.class));
+        verify(jdbcTemplate).query(queryArgumentCaptor.capture(), any(ArgumentPreparedStatementSetter.class), any(BeanPropertyRowMapper.class));
         assertEquals(TestConstants.DEFAULT_TEST_HISTORY_FINAL_QUERY_CLIENT_SYNCED, queryArgumentCaptor.getValue());
     }
 }

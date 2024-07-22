@@ -474,9 +474,10 @@ public class TestServiceImplTest {
                         TestConstants.DEFAULT_RESULT_OFFSET,
                         List.of(TestConstants.DEFAULT_DEVICE),
                         List.of(TestConstants.DEFAULT_NETWORK_NAME),
-                        client))
+                        client,
+                        false))
                 .thenReturn(List.of(testHistory));
-        when(testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, TestConstants.DEFAULT_CLASSIFICATION_COUNT, Locale.ENGLISH)).thenReturn(historyItemResponse);
+        when(testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, TestConstants.DEFAULT_CLASSIFICATION_COUNT, Locale.ENGLISH, false)).thenReturn(historyItemResponse);
 
         var response = testService.getHistory(historyRequest);
         assertEquals(List.of(historyItemResponse), response.getHistory());

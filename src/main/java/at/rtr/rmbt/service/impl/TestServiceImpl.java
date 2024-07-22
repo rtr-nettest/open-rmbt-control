@@ -159,8 +159,8 @@ public class TestServiceImpl implements TestService {
                 .map(CapabilitiesRequest::getClassification)
                 .map(ClassificationRequest::getCount)
                 .orElse(0);
-        List<HistoryItemResponse> historyItemResponses = testHistoryRepository.getTestHistoryByDevicesAndNetworksAndClient(historyRequest.getResultLimit(), historyRequest.getResultOffset(), historyRequest.getDevices(), historyRequest.getNetworks(), client).stream()
-                .map(testHistory -> testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, count, locale))
+        List<HistoryItemResponse> historyItemResponses = testHistoryRepository.getTestHistoryByDevicesAndNetworksAndClient(historyRequest.getResultLimit(), historyRequest.getResultOffset(), historyRequest.getDevices(), historyRequest.getNetworks(), client, historyRequest.isIncludeFailedTests()).stream()
+                .map(testHistory -> testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, count, locale, historyRequest.isIncludeFailedTests()))
                 .collect(Collectors.toList());
         return HistoryResponse.builder()
                 .history(historyItemResponses)

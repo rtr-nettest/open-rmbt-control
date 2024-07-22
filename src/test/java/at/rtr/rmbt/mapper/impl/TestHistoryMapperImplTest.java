@@ -60,7 +60,7 @@ public class TestHistoryMapperImplTest {
                 .signalStrength(TestConstants.DEFAULT_SIGNAL_STRENGTH_FIRST)
                 .signalClassification(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_STRENGTH_CLASSIFICATION)
                 .build();
-        var response = testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, TestConstants.DEFAULT_CLASSIFICATION_COUNT, Locale.ENGLISH);
+        var response = testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, TestConstants.DEFAULT_CLASSIFICATION_COUNT, Locale.ENGLISH, false);
 
         assertEquals(expectedHistoryItemResponse, response);
     }
@@ -72,7 +72,7 @@ public class TestHistoryMapperImplTest {
                 .lteRSRP(TestConstants.DEFAULT_LTE_RSRP_FIRST)
                 .signalClassification(TestConstants.DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_CLASSIFICATION)
                 .build();
-        var response = testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, TestConstants.DEFAULT_CLASSIFICATION_COUNT, Locale.ENGLISH);
+        var response = testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, TestConstants.DEFAULT_CLASSIFICATION_COUNT, Locale.ENGLISH, false);
 
         assertEquals(expectedHistoryItemResponse, response);
     }
