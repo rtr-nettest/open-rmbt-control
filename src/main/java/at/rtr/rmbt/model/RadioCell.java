@@ -48,7 +48,7 @@ public class RadioCell implements Serializable {
     private Long locationId;
 
     @Column(name = "area_code")
-    private Integer areaCode;
+    private Long areaCode;
 
     @Column(name = "primary_scrambling_code")
     private Integer primaryScramblingCode;

@@ -28,9 +28,9 @@ public class RadioCellServiceImpl implements RadioCellService {
         Integer radioBand = null;
         boolean channelChanged = false;
         Integer channelNumber = null;
-        Integer locationId = null;
+        Long locationId = null;
         boolean areaCodeChanged = false;
-        Integer areaCode = null;
+        Long areaCode = null;
         boolean locationIdChanged = false;
 
         List<RadioCell> newRadioCells = new ArrayList<>();
@@ -48,10 +48,10 @@ public class RadioCellServiceImpl implements RadioCellService {
                 if (newRadioCell.getTechnology() != NetworkGroupName.WLAN) {
 
                     if (locationId == null && !locationIdChanged && newRadioCell.getLocationId() != null) {
-                        locationId = newRadioCell.getLocationId().intValue();
+                        locationId = newRadioCell.getLocationId();
                     } else {
                         if (!locationIdChanged && locationId != null && newRadioCell.getLocationId() != null &&
-                                !locationId.equals(newRadioCell.getLocationId().intValue())) {
+                                !locationId.equals(newRadioCell.getLocationId())) {
                             locationIdChanged = true;
                             locationId = null;
                         }

@@ -442,10 +442,10 @@ public class Test implements Serializable {
     private Integer landCoverObsolete;
 
     @Column(name = "cell_location_id")
-    private Integer cellLocationId;
+    private Long cellLocationId;
 
     @Column(name = "cell_area_code")
-    private Integer cellAreaCode;
+    private Long cellAreaCode;
 
     @Column(name = "link_distance_obsolete")
     private Integer linkDistanceObsolete;

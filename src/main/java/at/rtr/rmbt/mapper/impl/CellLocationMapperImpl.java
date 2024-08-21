@@ -16,7 +16,7 @@ public class CellLocationMapperImpl implements CellLocationMapper {
                 .test(test)
                 .openTestUUID(test.getOpenTestUuid())
                 .areaCode(cellLocationRequest.getAreaCode())
-                .locationId(cellLocationRequest.getLocationId() == null ? null : cellLocationRequest.getLocationId().intValue())
+                .locationId(cellLocationRequest.getLocationId())
                 .primaryScramblingCode(cellLocationRequest.getPrimaryScramblingCode())
                 .time(TimeUtils.getZonedDateTimeFromMillisAndTimezone(cellLocationRequest.getTime(), test.getTimezone()))
                 .timeNs(cellLocationRequest.getTimeNs())

@@ -87,7 +87,7 @@ public class RadioCellServiceImplTest {
 
         verify(radioCellRepository).saveAll(List.of(radioCellFirst, radioCellSecond));
         verify(test).setRadioBand(TestConstants.DEFAULT_BAND);
-        verify(test).setCellLocationId(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST.intValue());
+        verify(test).setCellLocationId(TestConstants.DEFAULT_GEO_LOCATION_UID_FIRST);
         verify(test).setCellAreaCode(TestConstants.DEFAULT_AREA_CODE_FIRST);
         verify(test).setChannelNumber(TestConstants.DEFAULT_CHANNEL_NUMBER_FIRST);
     }

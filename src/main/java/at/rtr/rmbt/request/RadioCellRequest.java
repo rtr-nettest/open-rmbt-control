@@ -15,7 +15,7 @@ public class RadioCellRequest {
     private final boolean active;
 
     @JsonProperty(value = "area_code")
-    private final Integer areaCode;
+    private final Long areaCode;
 
     @JsonProperty(value = "location_id")
     private final Long locationId;

@@ -31,7 +31,7 @@ public class CellLocationMapperImplTest {
         when(test.getOpenTestUuid()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
         when(cellLocationRequest.getAreaCode()).thenReturn(TestConstants.DEFAULT_AREA_CODE_FIRST);
-        when(cellLocationRequest.getLocationId()).thenReturn(TestConstants.DEFAULT_LOCATION_ID.longValue());
+        when(cellLocationRequest.getLocationId()).thenReturn(TestConstants.DEFAULT_LOCATION_ID);
         when(cellLocationRequest.getPrimaryScramblingCode()).thenReturn(TestConstants.DEFAULT_PRIMARY_SCRAMBLING_CODE);
         when(cellLocationRequest.getTimeNs()).thenReturn(TestConstants.DEFAULT_TIME_NS);
         when(cellLocationRequest.getTime()).thenReturn(TestConstants.DEFAULT_TIME_INSTANT);

@@ -22,7 +22,7 @@ public class SignalStrengthResponse {
     private final String signalStrength;
 
     @JsonProperty(value = "ci")
-    private final Integer ci;
+    private final Long ci;
 
     @JsonProperty(value = "tac")
     private final Long tac;

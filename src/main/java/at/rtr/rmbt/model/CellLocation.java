@@ -28,10 +28,10 @@ public class CellLocation {
     private UUID openTestUUID;
 
     @Column(name = "location_id")
-    private Integer locationId;
+    private Long locationId;
 
     @Column(name = "area_code")
-    private Integer areaCode;
+    private Long areaCode;
 
     @Column(name = "primary_scrambling_code")
     private Integer primaryScramblingCode;

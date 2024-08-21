@@ -153,10 +153,10 @@ public interface TestConstants {
     String DEFAULT_MCC_MNC = "1-05";
     String DEFAULT_COUNTRY_AT = "AT";
     String DEFAULT_COUNTRY_NO = "NO";
-    Integer DEFAULT_LOCATION_ID = 4;
+    Long DEFAULT_LOCATION_ID = 4L;
     Long DEFAULT_LOCATION_ID_LONG = 4L;
-    Integer DEFAULT_AREA_CODE_FIRST = 3;
-    Integer DEFAULT_AREA_CODE_SECOND = 65;
+    Long DEFAULT_AREA_CODE_FIRST = 3L;
+    Long DEFAULT_AREA_CODE_SECOND = 65L;
     Integer DEFAULT_PRIMARY_SCRAMBLING_CODE = 2147483647;
     NetworkGroupName DEFAULT_TECHNOLOGY_FIRST = NetworkGroupName.G2;
     NetworkGroupName DEFAULT_TECHNOLOGY_SECOND = NetworkGroupName.G3;
