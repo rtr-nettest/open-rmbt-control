@@ -58,7 +58,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
             authorize.requestMatchers(IP, REQUEST_DATA_COLLECTOR, TEST_RESULT_DETAIL, MEASUREMENT_QOS_REQUEST, SIGNAL_REQUEST,
                             SIGNAL_RESULT, NEWS_URL, REGISTRATION_URL, RESULT_QOS_URL, RESULT_URL, SETTINGS_URL,
                             PROVIDERS, TEST_RESULT, HISTORY, SYNC, MEASUREMENT_QOS_RESULT, VERSION, RESULT_UPDATE,
-                            QOS_BY_OPEN_TEST_UUID, QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, ADMIN_SET_IMPLAUSIBLE)
+                            QOS_BY_OPEN_TEST_UUID, QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, ADMIN_SET_IMPLAUSIBLE,
+                            "/swagger-ui/**", "/v3/api-docs/**")
                     .permitAll();
             authorize.requestMatchers(ADMIN_SIGNAL).hasAuthority("read:reports/signal");
             authorize.requestMatchers(ADMIN_SIGNAL).hasAnyAuthority(clients);
