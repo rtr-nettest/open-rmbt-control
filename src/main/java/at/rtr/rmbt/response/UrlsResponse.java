@@ -36,4 +36,10 @@ public class UrlsResponse {
 
     @JsonProperty(value = "url_statistic_server")
     private final String urlStatisticServer;
+
+    @JsonProperty(value = "url_web_server_server")
+    private final String urlWebStatisticServer;
+
+    @JsonProperty(value = "url_web_open_data_server")
+    private final String urlWebOpenDataServer;
 }

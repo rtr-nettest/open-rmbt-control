@@ -17,6 +17,7 @@ import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.response.settings.admin.update.*;
 import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.LongUtils;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
@@ -353,6 +354,8 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .urlIPV6Check(settings.get(Config.URL_IPV6_CHECK_KEY))
                 .urlMapServer(settings.get(Config.URL_MAP_SERVER_KEY))
                 .urlStatisticServer(settings.get(Config.URL_STATISTIC_SERVER_KEY))
+                .urlWebStatisticServer(settings.get(Config.URL_WEB_STATISTIC_SERVER_KEY))
+                .urlWebOpenDataServer(settings.get(Config.URL_WEB_OPEN_DATA_SERVER_KEY))
                 .build();
     }
 

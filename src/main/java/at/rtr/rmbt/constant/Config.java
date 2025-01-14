@@ -2,6 +2,7 @@ package at.rtr.rmbt.constant;
 
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -31,6 +32,8 @@ public interface Config {
     String URL_IPV6_CHECK_KEY = "url_ipv6_check";
     String URL_MAP_SERVER_KEY = "url_map_server";
     String URL_STATISTIC_SERVER_KEY = "url_statistic_server";
+    String URL_WEB_STATISTIC_SERVER_KEY = "url_web_statistic_server";
+    String URL_WEB_OPEN_DATA_SERVER_KEY = "url_web_open_data_server";
     String SYSTEM_UUID_KEY = "system_UUID";
     String GEO_PROVIDER_MANUAL = "manual";
     String GEO_PROVIDER_GEOCODER = "geocoder";
@@ -84,7 +87,10 @@ public interface Config {
         "host_map_server",
         "ssl_map_server",
         "port_map_server",
-        "url_statistic_server"
+        "url_statistic_server",
+        "url_web_statistic_server",
+        "url_web_open_data_server"
+
     );
     List<ServerType> SERVER_TEST_SERVER_TYPES = List.of(ServerType.RMBT);
     List<ServerType> SERVER_HTTP_TEST_SERVER_TYPES = List.of(ServerType.RMBT, ServerType.RMBThttp);
