@@ -33,8 +33,8 @@ System requirements for the Control Server
 -------------------
 
 * single (virtual) server with sufficient RAM and CPU performance
-* Fast disk (NVME) for data base
-* Base system Debian 11 or newer (or similar)
+* Fast disk (NVME) for database
+* Base system Debian 12 or newer
 * At least a single static public IPv4 address (IPv6 support recommended)
 
   *NOTE: other Linux distributions can also be used, but commands and package names may be different*
@@ -60,7 +60,7 @@ for basic setup instructions.
 ### Install components
 
 * Apache Tomcat 10 or higher
-* nginx; configure nginx to forward requests to localhost:8080
+* nginx; configure nginx as reverse-proxy to forward requests to this host on port 8080
 * letsencrypt; create certificate
 * openjdk-17-jre
 * [Maxmind GeoLite2 database](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data)
@@ -71,12 +71,12 @@ for basic setup instructions.
 
 ### Alternative: Get WAR using Github action
 
-The `WAR build` action produces a WAR file that can be used on a server. This only applies to the `feature/war` branch.
+The `WAR build` action produces a WAR file that can be used on a server. This only applies to the `master` branch.
 
 ### Configure Tomcat
 
 ##### Configure catalina.properties
-Edit `/etc/tomcat9/catalina.properties`, add the end add:
+Edit `/etc/tomcat9/catalina.properties`, at the end of the file add:
 
 ```properties
 spring.profiles.active=prod
