@@ -34,6 +34,7 @@ public interface Config {
     String URL_STATISTIC_SERVER_KEY = "url_statistic_server";
     String URL_WEB_STATISTIC_SERVER_KEY = "url_web_statistic_server";
     String URL_WEB_OPEN_DATA_SERVER_KEY = "url_web_open_data_server";
+    String URL_WEB_RECENT_SERVER_KEY = "url_web_recent_server";
     String SYSTEM_UUID_KEY = "system_UUID";
     String GEO_PROVIDER_MANUAL = "manual";
     String GEO_PROVIDER_GEOCODER = "geocoder";
@@ -89,7 +90,8 @@ public interface Config {
         "port_map_server",
         "url_statistic_server",
         "url_web_statistic_server",
-        "url_web_open_data_server"
+        "url_web_open_data_server",
+        "url_web_recent_server"
 
     );
     List<ServerType> SERVER_TEST_SERVER_TYPES = List.of(ServerType.RMBT);

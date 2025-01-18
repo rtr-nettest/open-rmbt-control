@@ -42,4 +42,7 @@ public class UrlsResponse {
 
     @JsonProperty(value = "url_web_open_data_server")
     private final String urlWebOpenDataServer;
+
+    @JsonProperty(value = "url_web_recent_server")
+    private final String urlWebRecentServer;
 }

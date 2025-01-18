@@ -356,6 +356,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .urlStatisticServer(settings.get(Config.URL_STATISTIC_SERVER_KEY))
                 .urlWebStatisticServer(settings.get(Config.URL_WEB_STATISTIC_SERVER_KEY))
                 .urlWebOpenDataServer(settings.get(Config.URL_WEB_OPEN_DATA_SERVER_KEY))
+                .urlWebRecentServer(settings.get(Config.URL_WEB_RECENT_SERVER_KEY))
                 .build();
     }
 
