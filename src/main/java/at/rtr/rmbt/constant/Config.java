@@ -2,7 +2,7 @@ package at.rtr.rmbt.constant;
 
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestStatus;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 import java.util.List;
 
