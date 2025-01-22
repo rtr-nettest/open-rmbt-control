@@ -28,4 +28,4 @@ jobs:
         with:
           name: controlserver-war
           path: target/RMBTControlServer-*.war
-          retention-days: 365
+          retention-days: 90
