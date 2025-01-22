@@ -27,5 +27,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: controlserver-war
-          path: target/rtr-*.war
+          path: target/RMBTControlServer-*.war
           retention-days: 365
