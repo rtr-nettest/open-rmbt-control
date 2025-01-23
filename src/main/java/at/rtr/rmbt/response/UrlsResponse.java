@@ -45,4 +45,10 @@ public class UrlsResponse {
 
     @JsonProperty(value = "url_web_recent_server")
     private final String urlWebRecentServer;
+
+    @JsonProperty(value = "url_web_basemap_tiles")
+    private final String urlWebBasemapServer;
+
+    @JsonProperty(value = "url_web_osm_tiles")
+    private final String urlWebOSMServer;
 }
