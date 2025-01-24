@@ -70,4 +70,10 @@ public class TestResultResponse {
 
     @JsonProperty(value = "hostname")
     private final String publicIpRdns;
+
+    @JsonProperty(value = "wifi_bssid")
+    private final String wifiBssid;
+
+    @JsonProperty(value = "wifi_ssid")
+    private final String wifiSsid;
 }

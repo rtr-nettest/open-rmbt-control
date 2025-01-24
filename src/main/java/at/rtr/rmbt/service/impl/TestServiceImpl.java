@@ -145,7 +145,9 @@ public class TestServiceImpl implements TestService {
                 .status(test.getStatus().name().toLowerCase())
                 .qoeClassificationResponses(getQoeClassificationResponse(test))
                 .clientPublicIp(test.getClientPublicIp())
-                .publicIpRdns(test.getPublicIpRdns());
+                .publicIpRdns(test.getPublicIpRdns())
+                .wifiBssid(test.getWifiBssid())
+                .wifiSsid(test.getWifiSsid());
         setGeoLocationFields(testResultResponseBuilder, test, locale);
         setNetFields(testResultResponseBuilder, test, locale);
         return TestResultContainerResponse.builder()
