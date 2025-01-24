@@ -41,6 +41,7 @@ public class TestController {
         return testService.getTestResultDetailByTestUUID(testResultDetailRequestl);
     }
 
+    // this is the starting point for processing of the "/testresult" request by the Spring framework
     @PostMapping(URIConstants.TEST_RESULT)
     @Operation(summary = "Get test result")
     @ResponseStatus(HttpStatus.OK)

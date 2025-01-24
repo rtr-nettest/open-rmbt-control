@@ -143,7 +143,8 @@ public class TestServiceImpl implements TestService {
                 .shareText(getShareText(test, timeString, locale))
                 .timeString(timeString)
                 .status(test.getStatus().name().toLowerCase())
-                .qoeClassificationResponses(getQoeClassificationResponse(test));
+                .qoeClassificationResponses(getQoeClassificationResponse(test))
+                .clientPublicIp(test.getClientPublicIp());
         setGeoLocationFields(testResultResponseBuilder, test, locale);
         setNetFields(testResultResponseBuilder, test, locale);
         return TestResultContainerResponse.builder()

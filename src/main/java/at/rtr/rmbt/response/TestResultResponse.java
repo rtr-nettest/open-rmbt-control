@@ -64,4 +64,7 @@ public class TestResultResponse {
 
     @JsonProperty(value = "status")
     private final String status;
+
+    @JsonProperty(value = "external_ip")
+    private final String clientPublicIp;
 }
