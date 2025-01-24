@@ -144,7 +144,8 @@ public class TestServiceImpl implements TestService {
                 .timeString(timeString)
                 .status(test.getStatus().name().toLowerCase())
                 .qoeClassificationResponses(getQoeClassificationResponse(test))
-                .clientPublicIp(test.getClientPublicIp());
+                .clientPublicIp(test.getClientPublicIp())
+                .publicIpRdns(test.getPublicIpRdns());
         setGeoLocationFields(testResultResponseBuilder, test, locale);
         setNetFields(testResultResponseBuilder, test, locale);
         return TestResultContainerResponse.builder()
