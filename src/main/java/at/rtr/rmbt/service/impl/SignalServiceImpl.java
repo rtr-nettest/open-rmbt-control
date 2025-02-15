@@ -109,6 +109,7 @@ public class SignalServiceImpl implements SignalService {
                 .clientRemoteIp(ip)
                 .resultUrl(getResultUrl(httpServletRequest))
                 .testUUID(savedTest.getUuid())
+                .pingToken(getPingToken(clientIpString))
                 .build();
     }
 
@@ -353,5 +354,10 @@ public class SignalServiceImpl implements SignalService {
     private String getDefaultResultUrl(HttpServletRequest req) {
         return String.format("%s://%s:%s%s", req.getScheme(), req.getServerName(), req.getServerPort(), req.getRequestURI())
                 .replace("Request", "Result");
+    }
+
+    private String getPingToken(String clientIpString) {
+        // dummy, just return argument - TODO
+        return clientIpString;
     }
 }
