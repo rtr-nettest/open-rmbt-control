@@ -3,7 +3,6 @@ package at.rtr.rmbt.utils;
 import at.rtr.rmbt.dto.ASInformation;
 import com.google.common.net.InetAddresses;
 import lombok.experimental.UtilityClass;
-import org.geotools.util.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -19,10 +18,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.security.GeneralSecurityException;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.TimeZone;
+import java.util.*;
+
 
 @UtilityClass
 public class HelperFunctions {
@@ -158,13 +155,28 @@ public class HelperFunctions {
             final Mac mac = Mac.getInstance("HmacSHA1");
             mac.init(signingKey);
             final byte[] rawHmac = mac.doFinal(data.getBytes());
-            return Base64.encodeBytes(rawHmac);
+            return Base64.getEncoder().encodeToString(rawHmac);
         } catch (final GeneralSecurityException e) {
 
-            logger.error("Unexpected error while creating hash: " + e.getMessage());
+            logger.error("Unexpected error while creating hash: {}", e.getMessage());
             return "";
         }
     }
+
+    public static String calculateSha256HMAC(final byte[] secret, final String data) {
+        try {
+            final SecretKeySpec signingKey = new SecretKeySpec(secret, "HmacSHA256");
+            final Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(signingKey);
+            final byte[] rawHmac = mac.doFinal(data.getBytes());
+            return Base64.getEncoder().encodeToString(rawHmac);
+        } catch (final GeneralSecurityException e) {
+
+            logger.error("Unexpected error while creating sha256-hash: {}", e.getMessage());
+            return "";
+        }
+    }
+
 
     public static String reverseDNSLookup(final InetAddress adr) {
         try {
@@ -287,7 +299,7 @@ public class HelperFunctions {
                             final String result = strings.get(0);
                             final String[] parts = result.split(" ?\\| ?");
                             if (parts != null && parts.length >= 1)
-                                return new Long(parts[0].split(" ")[0]);
+                                return Long.parseLong(parts[0].split(" ")[0]);
                         }
                     }
         } catch (final Exception e) {
