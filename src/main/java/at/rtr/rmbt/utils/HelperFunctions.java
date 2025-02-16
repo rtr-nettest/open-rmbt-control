@@ -163,17 +163,18 @@ public class HelperFunctions {
         }
     }
 
-    public static String calculateSha256HMAC(final byte[] secret, final String data) {
+    public byte[] calculateSha256HMAC(final byte[] secret, final byte[] data) {
         try {
             final SecretKeySpec signingKey = new SecretKeySpec(secret, "HmacSHA256");
             final Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(signingKey);
-            final byte[] rawHmac = mac.doFinal(data.getBytes());
-            return Base64.getEncoder().encodeToString(rawHmac);
+            return mac.doFinal(data);
         } catch (final GeneralSecurityException e) {
 
             logger.error("Unexpected error while creating sha256-hash: {}", e.getMessage());
-            return "";
+            // return dummy in case of an error (ugly)
+            int size = 16;
+            return new byte[size];
         }
     }
 
