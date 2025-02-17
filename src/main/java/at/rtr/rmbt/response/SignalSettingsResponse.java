@@ -25,4 +25,13 @@ public class SignalSettingsResponse {
 
     @JsonProperty(value = "test_uuid")
     private final UUID testUUID;
+
+    @JsonProperty(value = "ping_token")
+    private final String pingToken;
+
+    @JsonProperty(value = "ping_host")
+    private final String pingHost;
+
+    @JsonProperty(value = "ping_port")
+    private final String pingPort;
 }

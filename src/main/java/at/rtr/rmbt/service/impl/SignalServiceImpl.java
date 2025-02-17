@@ -31,9 +31,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -104,11 +112,22 @@ public class SignalServiceImpl implements SignalService {
 
         var savedTest = testRepository.saveAndFlush(test);
 
+        // TODO: for debugging a dummy secret is hardcoded
+        // Later a specific test server needs to be defined (host, port)
+        final String sharedSecret = "topsecret";
+
+        // TODO: Hard coded URLs, later to be defined by pingServer table
+        final String hostname = "udp.netztest.at";
+        final String port = String.valueOf(444);
+
         return SignalSettingsResponse.builder()
                 .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
                 .clientRemoteIp(ip)
                 .resultUrl(getResultUrl(httpServletRequest))
                 .testUUID(savedTest.getUuid())
+                .pingToken(generatePingToken(sharedSecret, clientAddress))
+                .pingHost(hostname)
+                .pingPort(port)
                 .build();
     }
 
@@ -353,5 +372,94 @@ public class SignalServiceImpl implements SignalService {
     private String getDefaultResultUrl(HttpServletRequest req) {
         return String.format("%s://%s:%s%s", req.getScheme(), req.getServerName(), req.getServerPort(), req.getRequestURI())
                 .replace("Request", "Result");
+    }
+
+    // Utility: Hex encoding for debug prints
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
+    // Utility: Take first N bytes of a byte array
+    private static byte[] firstNBytes(byte[] input, int n) {
+        byte[] out = new byte[n];
+        System.arraycopy(input, 0, out, 0, n);
+        return out;
+    }
+
+    private static String generatePingToken(String sharedSecret, InetAddress ip) {
+        // Reference code:
+        // src/main/java/at/rtr/rmbt/facade/TestSettingsFacade.java
+
+        byte[] ipBytes;
+
+        if (ip instanceof Inet4Address) {
+            // Convert IPv4 to IPv4-mapped IPv6 (128-bit)
+            byte[] ipv4Bytes = ip.getAddress();
+            ipBytes = new byte[16];
+            Arrays.fill(ipBytes, 0, 10, (byte) 0);
+            ipBytes[10] = (byte) 0xff;
+            ipBytes[11] = (byte) 0xff;
+            System.arraycopy(ipv4Bytes, 0, ipBytes, 12, 4);
+        } else if (ip instanceof Inet6Address) {
+            ipBytes = ip.getAddress();
+        } else {
+            throw new IllegalArgumentException("Invalid IP address type");
+        }
+
+        // process current time
+        // Compute 32-bit current time (just like Python: int(time.time()) & 0xFFFFFFFF)
+        long nowSeconds = Instant.now().getEpochSecond() & 0xFFFFFFFFL;
+        int currentTime32 = (int) nowSeconds; // 32-bit truncated
+        // 4-byte array (big-endian) for the "struct.pack('>I', current_time)"
+        ByteBuffer timeBuffer = ByteBuffer.allocate(4);
+        timeBuffer.order(ByteOrder.BIG_ENDIAN);
+        timeBuffer.putInt(currentTime32);
+
+        // 8-byte array (big-endian) for the HMAC calculations
+        // Python uses current_time as a 32-bit number, then extends to 8 bytes in big-endian
+        long extendedTime = currentTime32 & 0xFFFFFFFFL; // ensure no sign extension
+        ByteBuffer timeBuffer8 = ByteBuffer.allocate(8);
+        timeBuffer8.order(ByteOrder.BIG_ENDIAN);
+        timeBuffer8.putLong(extendedTime);
+        final byte[] timeBytes = Arrays.copyOfRange(timeBuffer8.array(), 4, 8);
+
+        // Print current time for debugging (similar to Python)
+        // TODO: Use correct logging, not print (or remove code)
+        LocalDateTime dateTime = LocalDateTime.ofEpochSecond(nowSeconds, 0, ZoneOffset.UTC);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        System.out.println("Current time: " + dateTime.format(formatter));
+        System.out.println("time hex: " + bytesToHex(timeBytes));
+
+        // HMAC-SHA256 with seed as key (take first 8 bytes of digest)
+        // in src/main/java/at/rtr/rmbt/facade/TestSettingsFacade.java
+        // the secret is taken from the testserver as
+        // testServer.getKey().getBytes()
+
+        // First hmac - general check (seed, time) with length 8 bytes
+        final byte[] packetHashTime = HelperFunctions.calculateSha256HMAC(sharedSecret.getBytes(), timeBytes);
+        final byte[] packetHashTime8 = firstNBytes(packetHashTime, 8);
+
+        // Second hmac - check for source IP
+        final byte[] packetHashIp = HelperFunctions.calculateSha256HMAC(sharedSecret.getBytes(), ipBytes);
+        final byte[] packetHashIp4 = firstNBytes(packetHashIp, 4);
+
+        // Construct final token
+        ByteBuffer dataBuffer = ByteBuffer.allocate(16);
+        dataBuffer.put(timeBytes);  // 4 bytes
+        dataBuffer.put(packetHashTime8); // 8 bytes
+        dataBuffer.put(packetHashIp4); // 4 bytes
+        byte[] token = dataBuffer.array();
+
+        // Print results
+        System.out.println("Original token (in hex): " + bytesToHex(token));
+        String b64Token = Base64.getEncoder().encodeToString(token);
+        System.out.println("Token (Base64): " + b64Token);
+
+        return b64Token;
+
     }
 }
