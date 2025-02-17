@@ -10,9 +10,9 @@ spring:
     poolSize: 20
     minIdle: 1
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1:5431/rtr
-    username: rtr
-    password: password
+    url: jdbc:postgresql://${CONTROL_DB_HOST:127.0.0.1}:${CONTROL_DB_PORT:5431}/${CONTROL_DB_NAME:rmbt}
+    username: ${CONTROL_DB_USER:rmbt}
+    password: ${CONTROL_DB_PASSWORD}
 #    tomcat:
 #      test-while-idle: true
 #      test-on-borrow: true
@@ -29,8 +29,8 @@ spring:
 RMBT_SECRETKEY: RMBT_SECRETKEY
 
 auth0:
-  issuer: https://auth.a2332751-f1b8-4d26-8291-dfaef9094f33.netztest.at/
-  apiAudience: https://netztest.at
+  issuer: https://auth.a2332751-f1b8-4d26-8291.example.com
+  apiAudience: https://example.com
 origin: https://www.netztest.at
 app:
   rmbt:
@@ -84,11 +84,11 @@ measurement-server:
   defaultProviderId: 6
 
 jira:
-  requestTypeId: 49
-  serviceDeskId: 6
-  url: https://specure.atlassian.net
-  username: batalin.a@dbbest.com
-  password: SuperSecurePassword
+  requestTypeId: 0
+  serviceDeskId: 60
+  url: https://example.com
+  username: root@example.com
+  password: invalid
 
 ---
 spring:
@@ -98,16 +98,16 @@ spring:
     poolSize: 20
     minIdle: 1
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_URI}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://${CONTROL_DB_HOST:127.0.0.1}:${CONTROL_DB_PORT:5431}/${CONTROL_DB_NAME:rmbt}
+    username: ${CONTROL_DB_USER:rmbt}
+    password: ${CONTROL_DB_PASSWORD}
 #    tomcat:
 #      test-while-idle: true
 #      test-on-borrow: true
 #      validation-query: SELECT 1
 
 measurement-server:
-  host: api-test.nettest.org
+  host: api-dev
 
 client-tenant:
   clientTenantMapping:
@@ -129,8 +129,9 @@ spring:
     poolSize: 20
     minIdle: 1
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${CONTROL_DB_HOST}:${CONTROL_DB_PORT}/${CONTROL_DB_NAME}
-    username: ${CONTROL_DB_USER}
+    url: jdbc:postgresql://${CONTROL_DB_HOST:127.0.0.1}:${CONTROL_DB_PORT:5431}/${CONTROL_DB_NAME:rmbt}
+    username: ${CONTROL_DB_USER:rmbt}
+#   Put the password into the environment, e.g. CONTROL_DB_PASSWORD=mypasswd
     password: ${CONTROL_DB_PASSWORD}
 #    tomcat:
 #      test-while-idle: true
@@ -138,9 +139,9 @@ spring:
 #      validation-query: SELECT 1
 
 application-version:
-  host: ${HOST_ID}
-  server-url: ${CONTROL_SERVER_URL}
+  host: ${HOST_ID:rtr-api-prod}
+  server-url: ${CONTROL_SERVER_URL:http://127.0.0.1:8080/RMBTControlServer}
 
 logging:
-    config: ${LOGGING_CONFIG_FILE:classpath:logback.xml}
-origin: ${CONTROL_ALLOWED_ORIGIN}
+    config: ${LOGGING_CONFIG_FILE:classpath:logback-local.xml}
+origin: ${CONTROL_ALLOWED_ORIGIN:http://127.0.0.1}
