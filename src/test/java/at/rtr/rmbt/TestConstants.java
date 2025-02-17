@@ -12,6 +12,7 @@ import org.locationtech.jts.geom.Point;
 import java.sql.Timestamp;
 import java.time.*;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 public interface TestConstants {
@@ -68,10 +69,8 @@ public interface TestConstants {
     Long DEFAULT_MAP_SERVER_PORT = 443L;
     String DEFAULT_MAP_SERVER_HOST = "DEFAULT MAP SERVER HOST";
     boolean DEFAULT_FLAG_TRUE = true;
-    String DEFAULT_IP_HEADER = "DEFAULT IP HEADER";
     String DEFAULT_CLIENT_NAME = "RMBT";
     String DEFAULT_TEXT = "DEFAULT TEXT";
-    OffsetDateTime DEFAULT_OFFSET_DATE_TIME_TIMESTAMP = OffsetDateTime.of(LocalDateTime.of(2021, 1, 20, 7, 32), ZoneOffset.ofHoursMinutes(4, 0));
     String DEFAULT_TC_URL_ANDROID_VALUE = "DEFAULT_TC_URL_ANDROID_VALUE";
     String DEFAULT_TC_NDT_URL_ANDROID_VALUE = "DEFAULT_TC_NDT_URL_ANDROID_VALUE";
     String DEFAULT_TC_VERSION_ANDROID_VALUE = Long.valueOf(5).toString();
@@ -82,8 +81,7 @@ public interface TestConstants {
     String DEFAULT_TC_URL_VALUE = "DEFAULT_TC_URL_VALUE";
     String DEFAULT_ANDROID_PLATFORM = "ANDROID";
     String DEFAULT_IOS_PLATFORM = "IOS";
-    String DEFAULT_CLIENT_TYPE_NAME = "DEFAULT_CLIENT_TYPE_NAME";
-    String DEFAULT_NEWS_TITLE_DE = "DEFAULT_NEWS_TITLE_DE";
+     String DEFAULT_NEWS_TITLE_DE = "DEFAULT_NEWS_TITLE_DE";
     String DEFAULT_NEWS_TEXT_DE = "DEFAULT_NEWS_TEXT_DE";
     String DEFAULT_NEWS_TITLE_EN = "DEFAULT_NEWS_TITLE_EN";
     String DEFAULT_NEWS_TEXT_EN = "DEFAULT_NEWS_TEXT_EN";
@@ -162,8 +160,8 @@ public interface TestConstants {
     NetworkGroupName DEFAULT_TECHNOLOGY_SECOND = NetworkGroupName.G3;
     Integer DEFAULT_CHANNEL_NUMBER_FIRST = 45;
     Integer DEFAULT_CHANNEL_NUMBER_SECOND = 1000;
-    Double DEFAULT_FREQUENCY = BandCalculationUtil.getBandFromArfcn(DEFAULT_CHANNEL_NUMBER_FIRST).getFrequencyDL();
-    Integer DEFAULT_BAND = BandCalculationUtil.getBandFromArfcn(DEFAULT_CHANNEL_NUMBER_FIRST).getBand();
+    Double DEFAULT_FREQUENCY = Objects.requireNonNull(BandCalculationUtil.getBandFromArfcn(DEFAULT_CHANNEL_NUMBER_FIRST)).getFrequencyDL();
+    Integer DEFAULT_BAND = Objects.requireNonNull(BandCalculationUtil.getBandFromArfcn(DEFAULT_CHANNEL_NUMBER_FIRST)).getBand();
     Double DEFAULT_SIGNAL_STRENGTH_TIME = TimeUtils.getDiffInSecondsFromTwoZonedDateTime(DEFAULT_TEST_TIME, DEFAULT_SIGNAL_TIME);
     Integer DEFAULT_NETWORK_TYPE_ID = 15;
     Integer DEFAULT_NETWORK_TYPE_WLAN_ID = 99;
@@ -183,8 +181,7 @@ public interface TestConstants {
     Integer DEFAULT_GSM_BIT_ERROR_RATE = 10;
     Long DEFAULT_PING_VALUE = 1111L;
     Long DEFAULT_PING_VALUE_SERVER = 2222L;
-    Long DEFAULT_SIGNAL_ADVANCE = 20L;
-    Integer DEFAULT_TIMING_ADVANCE = 32;
+     Integer DEFAULT_TIMING_ADVANCE = 32;
     String DEFAULT_SIGNAL_STRENGTH_RESPONSE = String.join(Constants.SIGNAL_STRENGTH_DELIMITER,
             FormatUtils.format(Constants.SIGNAL_STRENGTH_DBM_TEMPLATE, DEFAULT_SIGNAL_STRENGTH_FIRST),
             FormatUtils.format(Constants.SIGNAL_STRENGTH_TIMING_ADVANCE_TEMPLATE, DEFAULT_TIMING_ADVANCE),
@@ -248,7 +245,6 @@ public interface TestConstants {
     Integer DEFAULT_TELEPHONY_DATA_STATE = 22;
     String DEFAULT_TELEPHONY_NETWORK_COUNTRY = "DEFAULT_TELEPHONY_NETWORK_COUNTRY";
     String DEFAULT_TELEPHONY_NETWORK_OPERATOR_NAME = "DEFAULT_TELEPHONY_NETWORK_OPERATOR_NAME";
-    String DEFAULT_TELEPHONY_NETWORK_OPERATOR = "DEFAULT_TELEPHONY_NETWORK_OPERATOR";
     String DEFAULT_TELEPHONY_NETWORK_SIM_COUNTRY = "DEFAULT_TELEPHONY_NETWORK_SIM_COUNTRY";
     String DEFAULT_TELEPHONY_NETWORK_SIM_OPERATOR_NAME = "DEFAULT_TELEPHONY_NETWORK_SIM_OPERATOR_NAME";
     String DEFAULT_TEST_NETWORK_SIM_OPERATOR = "DEFAULT_TEST_NETWORK_SIM_OPERATOR";
@@ -280,7 +276,6 @@ public interface TestConstants {
     String DEFAULT_TEST_PUBLIC_IP_AS_NAME = "DEFAULT_TEST_PUBLIC_IP_AS_NAME";
     String DEFAULT_TEST_PUBLIC_IP_RDNS = "DEFAULT_TEST_PUBLIC_IP_RDNS";
     String DEFAULT_TEST_PROVIDER_NAME = "DEFAULT_TEST_PROVIDER_NAME";
-    String DEFAULT_TEST_MOBILE_PROVIDER_NAME = "DEFAULT_TEST_MOBILE_PROVIDER_NAME";
     String DEFAULT_TEST_CLIENT_IP_LOCAL_TYPE = "DEFAULT_TEST_CLIENT_IP_LOCAL_TYPE";
     String DEFAULT_TEST_NAT_TYPE = "DEFAULT_TEST_NAT_TYPE";
     Integer DEFAULT_TEST_DURATION = 1000;
@@ -339,7 +334,6 @@ public interface TestConstants {
     String DEFAULT_ATRASTER100 = "100mN28087E47942";
     // apporx Wien Stephansdom
     String DEFAULT_ATRASTER250 = "250mN280875E479400";
-    String DEFAULT_COVERAGE = "true";
     Long DEFAULT_LINKNET_LINK_ID = 17L;
     String DEFAULT_LINKNET_NAME1 = "DEFAULT_LINKNET_NAME1";
     String DEFAULT_LINKNET_NAME2 = "DEFAULT_LINKNET_NAME2";
@@ -366,28 +360,32 @@ public interface TestConstants {
     String DEFAULT_USER_AGENT_OS = "Windows 10";
     Integer DEFAULT_CLASSIFICATION_COUNT = 2;
     String DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT = "RTR-NetTest result - Jan 19, 1970, 5:39:24 PM";
-    String DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_TRUE_SIGNAL_STRENGTH_NOT_NULL = "My Result:\n" +
-            "Date/time: Jan 19, 1970, 5:39:24 PM\n" +
-            "Download: 2,122 Mbps\n" +
-            "Upload: 1,020 Mbps\n" +
-            "Ping: 58 ms\n" +
-            "Signal strength: -111 dBm\n" +
-            "Network type: Dual SIM\n" +
-            "Platform: \n" +
-            "Model: \n" +
-            "\n" +
-            "\n";
-    String DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL = "My Result:\n" +
-            "Date/time: Jan 19, 1970, 5:39:24 PM\n" +
-            "Download: 2,122 Mbps\n" +
-            "Upload: 1,020 Mbps\n" +
-            "Ping: 58 ms\n" +
-            "Signal strength (RSRP): -5 dBm\n" +
-            "Network type: UNKNOWN\n" +
-            "Platform: \n" +
-            "Model: \n" +
-            "\n" +
-            "\n";
+    String DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_TRUE_SIGNAL_STRENGTH_NOT_NULL = """
+            My Result:
+            Date/time: Jan 19, 1970, 5:39:24 PM
+            Download: 2,122 Mbps
+            Upload: 1,020 Mbps
+            Ping: 58 ms
+            Signal strength: -111 dBm
+            Network type: Dual SIM
+            Platform:\s
+            Model:\s
+            
+            
+            """;
+    String DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL = """
+            My Result:
+            Date/time: Jan 19, 1970, 5:39:24 PM
+            Download: 2,122 Mbps
+            Upload: 1,020 Mbps
+            Ping: 58 ms
+            Signal strength (RSRP): -5 dBm
+            Network type: UNKNOWN
+            Platform:\s
+            Model:\s
+            
+            
+            """;
     Integer DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_CLASSIFICATION = 2;
     Integer DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_STRENGTH_CLASSIFICATION = 1;
     String DEFAULT_TEST_RESULT_MEASUREMENT_RESPONSE_SIGNAL_STRENGTH_TITLE = "Signal";
@@ -442,7 +440,6 @@ public interface TestConstants {
     Integer DEFAULT_AFFECTED_ROWS = 1;
 
     interface Database {
-        long CLIENT_TYPE_DESKTOP_UID = 1L;
         long CLIENT_TYPE_MOBILE_UID = 2L;
         UUID TEST1_UUID = UUID.fromString("48ddf306-3f55-4e28-a657-22dd7790921d");
         UUID CLIENT1_UUID = UUID.fromString("13d8667a-ddbc-40c9-95c9-93933087ec30");
