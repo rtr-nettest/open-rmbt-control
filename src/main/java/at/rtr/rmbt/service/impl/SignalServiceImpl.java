@@ -422,10 +422,10 @@ public class SignalServiceImpl implements SignalService {
         // 8-byte array (big-endian) for the HMAC calculations
         // Python uses current_time as a 32-bit number, then extends to 8 bytes in big-endian
         long extendedTime = currentTime32 & 0xFFFFFFFFL; // ensure no sign extension
-        ByteBuffer timeBuffer4 = ByteBuffer.allocate(4);
-        timeBuffer4.order(ByteOrder.BIG_ENDIAN);
-        timeBuffer4.putLong(extendedTime);
-        byte[] timeBytes = timeBuffer4.array();
+        ByteBuffer timeBuffer8 = ByteBuffer.allocate(8);
+        timeBuffer8.order(ByteOrder.BIG_ENDIAN);
+        timeBuffer8.putLong(extendedTime);
+        final byte[] timeBytes = Arrays.copyOfRange(timeBuffer8.array(), 4, 8);
 
         // Print current time for debugging (similar to Python)
         // TODO: Use correct logging, not print (or remove code)
@@ -445,7 +445,7 @@ public class SignalServiceImpl implements SignalService {
 
         // Second hmac - check for source IP
         final byte[] packetHashIp = HelperFunctions.calculateSha256HMAC(sharedSecret.getBytes(), ipBytes);
-        final byte[] packetHashIp4 = firstNBytes(packetHashIp, 8);
+        final byte[] packetHashIp4 = firstNBytes(packetHashIp, 4);
 
         // Construct final token
         ByteBuffer dataBuffer = ByteBuffer.allocate(16);
