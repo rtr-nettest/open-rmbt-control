@@ -35,6 +35,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
@@ -390,7 +391,7 @@ public class SignalServiceImpl implements SignalService {
         return out;
     }
 
-    private static String generatePingToken(String sharedSecret, InetAddress ip) {
+    private static String generatePingToken(String sharedSecret, InetAddress ip)  {
         // Reference code:
         // src/main/java/at/rtr/rmbt/facade/TestSettingsFacade.java
 
@@ -425,7 +426,8 @@ public class SignalServiceImpl implements SignalService {
         ByteBuffer timeBuffer8 = ByteBuffer.allocate(8);
         timeBuffer8.order(ByteOrder.BIG_ENDIAN);
         timeBuffer8.putLong(extendedTime);
-        final byte[] timeBytes = Arrays.copyOfRange(timeBuffer8.array(), 4, 8);
+        byte[] timeBytes = Arrays.copyOfRange(timeBuffer8.array(), 4, 8);
+        // byte[] timeBytes = Arrays.copyOfRange(timeBuffer8.array(), 1, 8);
 
         // Print current time for debugging (similar to Python)
         // TODO: Use correct logging, not print (or remove code)
@@ -442,9 +444,10 @@ public class SignalServiceImpl implements SignalService {
         // First hmac - general check (seed, time) with length 8 bytes
         final byte[] packetHashTime = HelperFunctions.calculateSha256HMAC(sharedSecret.getBytes(), timeBytes);
         final byte[] packetHashTime8 = firstNBytes(packetHashTime, 8);
+        System.out.println("hmac (in hex): " + bytesToHex(packetHashTime8));
 
         // Second hmac - check for source IP
-        final byte[] packetHashIp = HelperFunctions.calculateSha256HMAC(sharedSecret.getBytes(), ipBytes);
+        final byte[] packetHashIp = HelperFunctions.calculateSha256HMAC(sharedSecret.getBytes(), timeBytes, ipBytes);
         final byte[] packetHashIp4 = firstNBytes(packetHashIp, 4);
 
         // Construct final token
