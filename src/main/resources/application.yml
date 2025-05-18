@@ -145,3 +145,7 @@ application-version:
 logging:
     config: ${LOGGING_CONFIG_FILE:classpath:logback-local.xml}
 origin: ${CONTROL_ALLOWED_ORIGIN:http://127.0.0.1}
+
+server:
+  address: 0.0.0.0
+  port: 8080  # Optional: specify the port if different from the default 8080
