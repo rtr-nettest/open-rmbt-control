@@ -11,6 +11,7 @@ import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.repository.*;
+import at.rtr.rmbt.request.CoverageResultRequest;
 import at.rtr.rmbt.request.SignalRegisterRequest;
 import at.rtr.rmbt.request.SignalRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
@@ -35,7 +36,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
@@ -175,6 +175,53 @@ public class SignalServiceImpl implements SignalService {
                 .testUUID(uuidToReturn)
                 .build();
     }
+
+
+    @Override
+    @Transactional
+    public CoverageResultResponse processCoverageResult(CoverageResultRequest coverageResultRequest) {
+        log.info("CoverageResultRequest = " + coverageResultRequest);
+        UUID testUuid = getTestUUID(coverageResultRequest);
+
+        Long sequenceNumber = coverageResultRequest.getSequenceNumber();
+
+        RtrClient client = clientRepository.findByUuid(coverageResultRequest.getClientUUID())
+                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, coverageResultRequest.getClientUUID())));
+
+//        Test updatedTest = testRepository.findByUuidAndStatusesInLocked(testUuid, Config.SIGNAL_RESULT_STATUSES)
+//                .orElseGet(() -> getEmptyGeneratedTest(coverageResultRequest, client));
+//        updatedTest.setStatus(TestStatus.SIGNAL);
+//
+//        if (Objects.isNull(sequenceNumber) || sequenceNumber <= updatedTest.getLastSequenceNumber()) {
+//            throw new InvalidSequenceException();
+//        }
+//        updatedTest.setLastSequenceNumber(sequenceNumber.intValue());
+//
+//        testMapper.updateTestWithSignalResultRequest(coverageResultRequest, updatedTest);
+//
+//        updateIpAddress(coverageResultRequest, updatedTest);
+//
+//        processGeoLocation(coverageResultRequest, updatedTest);
+//
+//        processRadioInfo(coverageResultRequest, updatedTest);
+
+//        log.info("Updated test before save = " + updatedTest);
+//        testMapper.updateTestLocation(updatedTest);
+//        testRepository.saveAndFlush(updatedTest);
+//
+//        UUID uuidToReturn = updatedTest.getUuid();
+//        if (updatedTest.getTimestamp().plusMinutes(Constants.SIGNAL_CHANGE_UUID_AFTER_MIN)
+//                .compareTo(Instant.now().atZone(updatedTest.getTimestamp().getZone())) < 0) {
+//            log.info("updating signal uuid after " + Constants.SIGNAL_CHANGE_UUID_AFTER_MIN + " minutes");
+//            uuidToReturn = UUID.randomUUID();
+//        }
+
+
+        return CoverageResultResponse.builder()
+                //.testUUID(uuidToReturn)
+                .build();
+    }
+
 
     @Override
     public SignalDetailsResponse getSignalStrength(UUID testUUID) {
@@ -342,6 +389,17 @@ public class SignalServiceImpl implements SignalService {
         }
     }
 
+    private UUID getTestUUID(CoverageResultRequest coverageResultRequest) {
+        if (Objects.nonNull(coverageResultRequest.getTestUUID())) {
+            return coverageResultRequest.getTestUUID();
+        } else {
+            if (coverageResultRequest.getSequenceNumber() != 0) {
+                throw new InvalidSequenceException();
+            }
+            return uuidGenerator.generateUUID();
+        }
+    }
+
     private Test getEmptyGeneratedTest(SignalResultRequest signalResultRequest, RtrClient client) {
         Test newTest = Test.builder()
                 .uuid(uuidGenerator.generateUUID())
@@ -366,6 +424,7 @@ public class SignalServiceImpl implements SignalService {
 
     private String getResultUrl(HttpServletRequest req) {
         return Optional.ofNullable(req.getHeader(URL))
+                // TODO - here ok, but needs to be different for new coverage functionality
                 .map(url -> String.join(URL, SIGNAL_RESULT))
                 .orElse(getDefaultResultUrl(req));
     }

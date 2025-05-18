@@ -4,10 +4,8 @@ package at.rtr.rmbt.controller;
 import at.rtr.rmbt.constant.URIConstants;
 import at.rtr.rmbt.request.SignalRegisterRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
-import at.rtr.rmbt.response.SignalDetailsResponse;
-import at.rtr.rmbt.response.SignalMeasurementResponse;
-import at.rtr.rmbt.response.SignalResultResponse;
-import at.rtr.rmbt.response.SignalSettingsResponse;
+import at.rtr.rmbt.request.CoverageResultRequest;
+import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.SignalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -59,5 +57,12 @@ public class SignalController {
     @ResponseStatus(HttpStatus.OK)
     public SignalDetailsResponse getSignalStrength(@PathVariable UUID testUUID) {
         return signalService.getSignalStrength(testUUID);
+    }
+
+    @PostMapping(URIConstants.COVERAGE_RESULT)
+    @Operation(summary = "Process coverage result")
+    @ResponseStatus(HttpStatus.OK)
+    public CoverageResultResponse processCoverageResult(@RequestBody CoverageResultRequest coverageResultRequest) {
+        return signalService.processCoverageResult(coverageResultRequest);
     }
 }
