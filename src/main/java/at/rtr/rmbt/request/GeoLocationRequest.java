@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 public class GeoLocationRequest {
 
-    @Schema(description = "Accurecy", example = "13.014")
+    @Schema(description = "Accuracy", example = "13.014")
     @JsonProperty(value = "accuracy")
     private final Double accuracy;
 
@@ -33,7 +33,7 @@ public class GeoLocationRequest {
     @JsonProperty(value = "geo_long")
     private final Double geoLong;
 
-    @Schema(description = "Mock locatoin", example = "false")
+    @Schema(description = "Mock location", example = "false")
     @JsonProperty(value = "mock_location")
     private final Boolean mockLocation;
 
