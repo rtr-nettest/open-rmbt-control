@@ -1,10 +1,7 @@
 package at.rtr.rmbt.service;
 
 import at.rtr.rmbt.model.Test;
-import at.rtr.rmbt.request.CoverageResultRequest;
-import at.rtr.rmbt.request.SignalRegisterRequest;
-import at.rtr.rmbt.request.SignalRequest;
-import at.rtr.rmbt.request.SignalResultRequest;
+import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +24,8 @@ public interface SignalService {
     SignalDetailsResponse getSignalStrength(UUID testUUID);
 
     void processSignalRequests(Collection<SignalRequest> signalRequests, Test test);
+
+   CoverageSettingsResponse registerSignal(CoverageRegisterRequest coverageRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers);
 
     CoverageResultResponse processCoverageResult(CoverageResultRequest coverageResultRequest);
 }

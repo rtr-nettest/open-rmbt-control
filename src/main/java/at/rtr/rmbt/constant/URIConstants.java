@@ -12,6 +12,7 @@ public interface URIConstants {
     String ADMIN_SET_IMPLAUSIBLE = "/admin/setImplausible";
     String SIGNAL_REQUEST = "/signalRequest";
     String SIGNAL_RESULT = "/signalResult";
+    String COVERAGE_REQUEST = "/coverageRequest";
     // temporary endpoint name to match existing prototype client
     // String COVERAGE_RESULT = "/coverageResult";
     String COVERAGE_RESULT = "/coverage";

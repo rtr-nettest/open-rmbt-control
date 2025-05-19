@@ -11,10 +11,7 @@ import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.repository.*;
-import at.rtr.rmbt.request.CoverageResultRequest;
-import at.rtr.rmbt.request.SignalRegisterRequest;
-import at.rtr.rmbt.request.SignalRequest;
-import at.rtr.rmbt.request.SignalResultRequest;
+import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoLocationService;
 import at.rtr.rmbt.service.RadioCellService;
@@ -135,6 +132,75 @@ public class SignalServiceImpl implements SignalService {
         }
 
         return SignalSettingsResponse.builder()
+                .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
+                .clientRemoteIp(ip)
+                .resultUrl(getResultUrl(httpServletRequest))
+                .testUUID(savedTest.getUuid())
+                .pingToken(generatePingToken(sharedSecret, clientAddress))
+                .pingHost(hostname)
+                .pingPort(port)
+                .ipVersion(protocolVersion)
+                .build();
+    }
+
+    @Override
+    public CoverageSettingsResponse registerSignal(CoverageRegisterRequest coverageRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers) {
+        var ip = HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers);
+
+        var uuid = uuidGenerator.generateUUID();
+        var openTestUUID = uuidGenerator.generateUUID();
+
+        var client = clientRepository.findByUuid(coverageRegisterRequest.getUuid())
+                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, coverageRegisterRequest.getUuid())));
+
+        var clientAddress = InetAddresses.forString(ip);
+        var clientIpString = InetAddresses.toAddrString(clientAddress);
+
+        var asInformation = HelperFunctions.getASInformationForSignalRequest(clientAddress);
+
+        var test = Test.builder()
+                .uuid(uuid)
+                .openTestUuid(openTestUUID)
+                .client(client)
+                .clientPublicIp(clientIpString)
+                .clientPublicIpAnonymized(HelperFunctions.anonymizeIp(clientAddress))
+                .timezone(coverageRegisterRequest.getTimezone())
+                .clientTime(getClientTimeFromSignalRequest(coverageRegisterRequest))
+                .time(getClientTimeFromSignalRequest(coverageRegisterRequest))
+                .publicIpAsn(asInformation.getNumber())
+                .publicIpAsName(asInformation.getName())
+                .countryAsn(asInformation.getCountry())
+                .publicIpRdns(HelperFunctions.getReverseDNS(clientAddress))
+                .status(TestStatus.SIGNAL_STARTED)
+                .lastSequenceNumber(-1)
+                .useSsl(false)//TODO hardcode because of database constraint
+                .measurementType(coverageRegisterRequest.getMeasurementType())
+                .build();
+
+        var savedTest = testRepository.saveAndFlush(test);
+
+        // TODO: for debugging a dummy secret is hardcoded
+        // Later a specific test server needs to be defined (host, port)
+        final String sharedSecret = "topsecret";
+
+        // TODO: Hard coded URLs, later to be defined by pingServer table
+        final String hostname_v4 = "udpv4.netztest.at";
+        final String hostname_v6 = "udpv6.netztest.at";
+        final String port = String.valueOf(444);
+
+        String hostname;
+        final boolean isV4Client = inetAddressIsv4(clientAddress);
+        // Integer equal to IP protocol version
+        final int protocolVersion = isV4Client ? 4 : 6;
+
+        if (isV4Client) {
+            hostname= hostname_v4;
+        }
+        else {
+            hostname = hostname_v6;
+        }
+
+        return CoverageSettingsResponse.builder()
                 .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
                 .clientRemoteIp(ip)
                 .resultUrl(getResultUrl(httpServletRequest))
@@ -436,6 +502,10 @@ public class SignalServiceImpl implements SignalService {
     }
 
     private ZonedDateTime getClientTimeFromSignalRequest(SignalRegisterRequest signalRegisterRequest) {
+        return TimeUtils.getZonedDateTimeFromMillisAndTimezone(signalRegisterRequest.getTime(), signalRegisterRequest.getTimezone());
+    }
+
+    private ZonedDateTime getClientTimeFromSignalRequest(CoverageRegisterRequest signalRegisterRequest) {
         return TimeUtils.getZonedDateTimeFromMillisAndTimezone(signalRegisterRequest.getTime(), signalRegisterRequest.getTimezone());
     }
 

@@ -2,6 +2,7 @@ package at.rtr.rmbt.controller;
 
 
 import at.rtr.rmbt.constant.URIConstants;
+import at.rtr.rmbt.request.CoverageRegisterRequest;
 import at.rtr.rmbt.request.SignalRegisterRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
 import at.rtr.rmbt.request.CoverageResultRequest;
@@ -36,6 +37,15 @@ public class SignalController {
                                                  @RequestHeader Map<String, String> headers,
                                                  @RequestBody SignalRegisterRequest signalRegisterRequest) {
         return signalService.registerSignal(signalRegisterRequest, httpServletRequest, headers);
+    }
+
+    @PostMapping(URIConstants.COVERAGE_REQUEST)
+    @Operation(summary = "Register coverage", description = "Request to obtain configuration for coverage monitoring")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CoverageSettingsResponse registerSignal(HttpServletRequest httpServletRequest,
+                                                 @RequestHeader Map<String, String> headers,
+                                                 @RequestBody CoverageRegisterRequest coverageRegisterRequest) {
+        return signalService.registerSignal(coverageRegisterRequest, httpServletRequest, headers);
     }
 
     @GetMapping(URIConstants.ADMIN_SIGNAL)

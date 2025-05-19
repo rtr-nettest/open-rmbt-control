@@ -64,7 +64,7 @@ public class SignalControllerTest {
     public void registerSignal_whenCommonData_expectRegisterSignalCalled() throws Exception {
         var request = getRegisterSignalRequest();
         var response = getRegisterSignalResponse();
-        when(signalService.registerSignal(any(), any(), any())).thenReturn(response);
+        when(signalService.registerSignal((SignalRegisterRequest) any(), any(), any())).thenReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.post(SIGNAL_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
