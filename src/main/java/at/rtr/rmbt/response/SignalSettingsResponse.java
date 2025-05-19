@@ -34,4 +34,7 @@ public class SignalSettingsResponse {
 
     @JsonProperty(value = "ping_port")
     private final String pingPort;
+
+    @JsonProperty(value = "ip_version")
+    private final Integer ipVersion;
 }

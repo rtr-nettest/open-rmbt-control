@@ -118,8 +118,21 @@ public class SignalServiceImpl implements SignalService {
         final String sharedSecret = "topsecret";
 
         // TODO: Hard coded URLs, later to be defined by pingServer table
-        final String hostname = "udp.netztest.at";
+        final String hostname_v4 = "udpv4.netztest.at";
+        final String hostname_v6 = "udpv6.netztest.at";
         final String port = String.valueOf(444);
+
+        String hostname;
+        final boolean isV4Client = inetAddressIsv4(clientAddress);
+        // Integer equal to IP protocol version
+        final int protocolVersion = isV4Client ? 4 : 6;
+
+        if (isV4Client) {
+            hostname= hostname_v4;
+        }
+        else {
+            hostname = hostname_v6;
+        }
 
         return SignalSettingsResponse.builder()
                 .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
@@ -129,6 +142,7 @@ public class SignalServiceImpl implements SignalService {
                 .pingToken(generatePingToken(sharedSecret, clientAddress))
                 .pingHost(hostname)
                 .pingPort(port)
+                .ipVersion(protocolVersion)
                 .build();
     }
 
@@ -453,7 +467,16 @@ public class SignalServiceImpl implements SignalService {
         return out;
     }
 
-    private static String generatePingToken(String sharedSecret, InetAddress ip)  {
+    // Utility to distinguish between IPv4 and IPv6 addresses
+    private static boolean inetAddressIsv4(InetAddress ip) {
+
+        if (ip instanceof Inet4Address) {
+            return true;
+        }
+        return false;
+    }
+
+        private static String generatePingToken(String sharedSecret, InetAddress ip)  {
         // Reference code:
         // src/main/java/at/rtr/rmbt/facade/TestSettingsFacade.java
 
