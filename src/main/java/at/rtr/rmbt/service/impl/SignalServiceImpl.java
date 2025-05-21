@@ -75,7 +75,7 @@ public class SignalServiceImpl implements SignalService {
     }
 
     @Override
-    public SignalSettingsResponse registerSignal(SignalRegisterRequest signalRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers) {
+    public SignalSettingsResponse processSignalRequest(SignalRegisterRequest signalRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers) {
         var ip = HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers);
 
         var uuid = uuidGenerator.generateUUID();
@@ -144,7 +144,7 @@ public class SignalServiceImpl implements SignalService {
     }
 
     @Override
-    public CoverageSettingsResponse registerSignal(CoverageRegisterRequest coverageRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers) {
+    public CoverageSettingsResponse processCoverageRequest(CoverageRegisterRequest coverageRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers) {
         var ip = HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers);
 
         var uuid = uuidGenerator.generateUUID();
