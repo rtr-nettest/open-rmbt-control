@@ -13,9 +13,7 @@ public interface URIConstants {
     String SIGNAL_REQUEST = "/signalRequest";
     String SIGNAL_RESULT = "/signalResult";
     String COVERAGE_REQUEST = "/coverageRequest";
-    // temporary endpoint name to match existing prototype client
-    // String COVERAGE_RESULT = "/coverageResult";
-    String COVERAGE_RESULT = "/coverage";
+    String COVERAGE_RESULT = "/coverageResult";
     String ADMIN_SIGNAL = "/reports/signal";
     String TEST_SERVER = "/measurementServer";
     String TEST = "/test";
