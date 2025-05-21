@@ -23,10 +23,6 @@ public class CoverageSettingsResponse {
     @JsonProperty(value = "test_uuid")
     private final UUID testUUID;
 
-    // To debug iOS client
-    @JsonProperty(value = "uuid")
-    private final UUID UUID;
-
     @JsonProperty(value = "ping_token")
     private final String pingToken;
 

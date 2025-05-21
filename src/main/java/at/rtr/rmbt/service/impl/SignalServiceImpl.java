@@ -203,9 +203,7 @@ public class SignalServiceImpl implements SignalService {
         return CoverageSettingsResponse.builder()
                 .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
                 .clientRemoteIp(ip)
-                // To debug iOS client
                 .testUUID(savedTest.getUuid())
-                .UUID(savedTest.getUuid())
                 .pingToken(generatePingToken(sharedSecret, clientAddress))
                 .pingHost(hostname)
                 .pingPort(port)
