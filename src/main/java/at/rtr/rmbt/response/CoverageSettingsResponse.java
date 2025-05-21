@@ -14,9 +14,6 @@ import java.util.UUID;
 @ToString
 public class CoverageSettingsResponse {
 
-    @JsonProperty(value = "result_url")
-    private final String resultUrl;
-
     @JsonProperty(value = "client_remote_ip")
     private final String clientRemoteIp;
 

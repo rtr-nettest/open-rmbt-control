@@ -134,7 +134,7 @@ public class SignalServiceImpl implements SignalService {
         return SignalSettingsResponse.builder()
                 .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
                 .clientRemoteIp(ip)
-                .resultUrl(getResultUrl(httpServletRequest))
+                .resultUrl(getSignalResultUrl(httpServletRequest))
                 .testUUID(savedTest.getUuid())
                 .pingToken(generatePingToken(sharedSecret, clientAddress))
                 .pingHost(hostname)
@@ -203,7 +203,6 @@ public class SignalServiceImpl implements SignalService {
         return CoverageSettingsResponse.builder()
                 .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
                 .clientRemoteIp(ip)
-                .resultUrl(getResultUrl(httpServletRequest))
                 .testUUID(savedTest.getUuid())
                 .pingToken(generatePingToken(sharedSecret, clientAddress))
                 .pingHost(hostname)
@@ -509,9 +508,8 @@ public class SignalServiceImpl implements SignalService {
         return TimeUtils.getZonedDateTimeFromMillisAndTimezone(signalRegisterRequest.getTime(), signalRegisterRequest.getTimezone());
     }
 
-    private String getResultUrl(HttpServletRequest req) {
+    private String getSignalResultUrl(HttpServletRequest req) {
         return Optional.ofNullable(req.getHeader(URL))
-                // TODO - here ok, but needs to be different for new coverage functionality
                 .map(url -> String.join(URL, SIGNAL_RESULT))
                 .orElse(getDefaultResultUrl(req));
     }
