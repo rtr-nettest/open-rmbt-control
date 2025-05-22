@@ -4,6 +4,8 @@ import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.constant.ErrorMessage;
+import at.rtr.rmbt.enums.ServerType;
+import at.rtr.rmbt.enums.TestPlatform;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.InvalidSequenceException;
@@ -173,8 +175,16 @@ public class SignalServiceImpl implements SignalService {
                 .publicIpRdns(HelperFunctions.getReverseDNS(clientAddress))
                 .status(TestStatus.SIGNAL_STARTED)
                 .lastSequenceNumber(-1)
-                .useSsl(false)//TODO hardcode because of database constraint
+                .useSsl(false) // hardcode because of database constraint
                 .measurementType(coverageRegisterRequest.getMeasurementType())
+                .clientLanguage(coverageRegisterRequest.getClientLanguage())
+                .softwareRevision(coverageRegisterRequest.getSoftwareRevision())
+                .model(coverageRegisterRequest.getModel())
+                .osVersion(coverageRegisterRequest.getOsVersion())
+                .clientName(ServerType.valueOf(coverageRegisterRequest.getClient_name()))
+                .clientSoftwareVersion(coverageRegisterRequest.getClientSoftwareVersion())
+                .device(coverageRegisterRequest.getDevice())
+                .platform(TestPlatform.valueOf(coverageRegisterRequest.getPlatform()))
                 .build();
 
         var savedTest = testRepository.saveAndFlush(test);
