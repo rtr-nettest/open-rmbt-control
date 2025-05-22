@@ -184,7 +184,7 @@ public class SignalServiceImpl implements SignalService {
                 .clientName(ServerType.valueOf(coverageRegisterRequest.getClient_name()))
                 .clientSoftwareVersion(coverageRegisterRequest.getClientSoftwareVersion())
                 .device(coverageRegisterRequest.getDevice())
-                .platform(TestPlatform.valueOf(coverageRegisterRequest.getPlatform()))
+                .platform(TestPlatform.valueOf(coverageRegisterRequest.getPlatform().toUpperCase()))
                 .build();
 
         var savedTest = testRepository.saveAndFlush(test);
