@@ -150,8 +150,8 @@ public class SignalServiceImpl implements SignalService {
         var uuid = uuidGenerator.generateUUID();
         var openTestUUID = uuidGenerator.generateUUID();
 
-        var client = clientRepository.findByUuid(coverageRegisterRequest.getUuid())
-                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, coverageRegisterRequest.getUuid())));
+        var client = clientRepository.findByUuid(coverageRegisterRequest.getClientUuid())
+                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, coverageRegisterRequest.getClientUuid())));
 
         var clientAddress = InetAddresses.forString(ip);
         var clientIpString = InetAddresses.toAddrString(clientAddress);
