@@ -34,10 +34,6 @@ public class CoverageRegisterRequest {
     @JsonProperty(value = "os_version")
     private final String osVersion;
 
-    @Schema(description = "Type of measurement", example = "dedicated")
-    @JsonProperty(value = "measurement_type_flag")
-    private final String measurementTypeFlag;
-
     @Schema(description = "Name of the client", example = "RMBT")
     @JsonProperty(value = "client_name")
     private final String client_name;
