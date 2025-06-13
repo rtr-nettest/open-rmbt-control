@@ -19,7 +19,7 @@ public interface Constants {
     String VERSION_TEMPLATE = "%s_%s";
     String SIGNAL_STRENGTH_DELIMITER = ", ";
     Integer MIN_SPEED = 0;
-    Integer MAX_SPEED = 10000000;
+    Integer MAX_SPEED = 800000000;
     Long MIN_PING = 0L;
     Long MAX_PING = 60000000000L;
     String VALUE_AND_UNIT_TEMPLATE = "%s %s";
