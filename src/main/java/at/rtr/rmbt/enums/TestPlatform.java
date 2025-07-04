@@ -13,7 +13,7 @@ import static com.vladmihalcea.hibernate.type.util.LogUtils.LOGGER;
 public enum TestPlatform {
     ANDROID("Android"),
     IOS("iOS"),
-    // CLI("CLI"),
+    CLI("CLI"),
     WINDOWS("WINDOWS_NT"),
     DARWIN("DARWIN"),
     LINUX("LINUX");

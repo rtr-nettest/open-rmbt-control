@@ -2,6 +2,7 @@ package at.rtr.rmbt.mapper.impl;
 
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.Test;
+import at.rtr.rmbt.request.CoverageResultRequest;
 import at.rtr.rmbt.request.ResultRequest;
 import at.rtr.rmbt.request.SignalResultRequest;
 import at.rtr.rmbt.response.TestResponse;
@@ -111,4 +112,30 @@ public class TestMapperImpl implements TestMapper {
         }
         return test;
     }
+
+    @Override
+    public void updateTestWithCoverageResultRequest(CoverageResultRequest coverageResultRequest, Test test) {
+        test.setClientVersion(coverageResultRequest.getClientVersion());
+        test.setClientLanguage(coverageResultRequest.getClientLanguage());
+        test.setPlatform(coverageResultRequest.getPlatform());
+        test.setOsVersion(coverageResultRequest.getOsVersion());
+        test.setApiLevel(coverageResultRequest.getApiLevel());
+        test.setDevice(coverageResultRequest.getDevice());
+        test.setModel(coverageResultRequest.getModel());
+        test.setProduct(coverageResultRequest.getProduct());
+        test.setPhoneType(coverageResultRequest.getTelephonyPhoneType());
+        test.setDataState(coverageResultRequest.getTelephonyDataState());
+        test.setNetworkCountry(coverageResultRequest.getTelephonyNetworkCountry());
+        test.setNetworkOperatorName(coverageResultRequest.getTelephonyNetworkOperatorName());
+        test.setNetworkSimCountry(coverageResultRequest.getTelephonyNetworkSimCountry());
+        test.setNetworkSimOperatorName(coverageResultRequest.getTelephonyNetworkSimOperatorName());
+        test.setWifiSsid(coverageResultRequest.getWifiSSID());
+        test.setWifiBssid(coverageResultRequest.getWifiBSSID());
+        test.setWifiNetworkId(coverageResultRequest.getWifiNetworkId());
+        test.setClientSoftwareVersion(coverageResultRequest.getClientSoftwareVersion());
+        test.setNetworkType(coverageResultRequest.getNetworkType());
+        test.setNetworkIsRoaming(coverageResultRequest.getTelephonyNetworkIsRoaming());
+        test.setTestErrorCause(coverageResultRequest.getTestErrorCause());
+
+}
 }

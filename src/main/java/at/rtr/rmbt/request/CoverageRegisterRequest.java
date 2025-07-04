@@ -62,4 +62,23 @@ public class CoverageRegisterRequest {
     @Schema(description = "Measurement type", example = "dedicated")
     @JsonProperty(value = "measurement_type_flag")
     private final MeasurementType measurementType;
+
+    @Schema(description = "Signal information support by the client", example = "true")
+    @JsonProperty(value = "signal")
+    private final Boolean signal;
+
+    @JsonProperty(value = "capabilities")
+    private final CapabilitiesRequest capabilities;
+
+    @Schema(description = "Version code from the build gradle for Android devices", example = "33201")
+    @JsonProperty("softwareVersionCode")
+    private Integer softwareVersionCode;
+
+    @Schema(description = "Just another historic version", example = "0.3")
+    @JsonProperty(value = "version")
+    private final String version;
+
+
+
+
 }

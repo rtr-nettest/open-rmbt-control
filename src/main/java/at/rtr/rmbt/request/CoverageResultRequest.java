@@ -1,6 +1,7 @@
 package at.rtr.rmbt.request;
 
 import at.rtr.rmbt.enums.TestPlatform;
+import at.rtr.rmbt.model.Fences;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -140,4 +141,7 @@ public class CoverageResultRequest {
 
     @JsonProperty(value = "test_ip_local")
     private final String testIpLocal;
+
+    @JsonProperty(value = "fences")
+    private final List<FencesRequest> fences;
 }

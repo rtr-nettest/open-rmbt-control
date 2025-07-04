@@ -1,13 +1,11 @@
 package at.rtr.rmbt.utils;
 
 import at.rtr.rmbt.constant.Constants;
+import at.rtr.rmbt.model.GeoLocation;
 import lombok.experimental.UtilityClass;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.*;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;

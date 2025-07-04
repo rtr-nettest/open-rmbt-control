@@ -488,6 +488,9 @@ public class Test implements Serializable {
     @Column(name = "referrer")
     private String referrer;
 
+    @Column(name = "fences_count") // int4
+    private Long fencesCount;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "uuid",

@@ -15,10 +15,7 @@ import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.repository.*;
 import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
-import at.rtr.rmbt.service.GeoLocationService;
-import at.rtr.rmbt.service.RadioCellService;
-import at.rtr.rmbt.service.RadioSignalService;
-import at.rtr.rmbt.service.SignalService;
+import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.*;
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +65,7 @@ public class SignalServiceImpl implements SignalService {
     private final RadioCellService radioCellService;
     private final RadioSignalService radioSignalService;
     private final SignalRepository signalRepository;
+    private final FencesService fencesService;
 
 
     @Override
@@ -160,6 +158,12 @@ public class SignalServiceImpl implements SignalService {
 
         var asInformation = HelperFunctions.getASInformationForSignalRequest(clientAddress);
 
+        TestStatus regStatus = TestStatus.COVERAGE_STARTED;
+        Boolean supportSignal = coverageRegisterRequest.getSignal();
+        if (Boolean.TRUE.equals(supportSignal)) {
+            regStatus = TestStatus.SIGNAL_STARTED;
+        }
+
         var test = Test.builder()
                 .uuid(uuid)
                 .openTestUuid(openTestUUID)
@@ -173,7 +177,7 @@ public class SignalServiceImpl implements SignalService {
                 .publicIpAsName(asInformation.getName())
                 .countryAsn(asInformation.getCountry())
                 .publicIpRdns(HelperFunctions.getReverseDNS(clientAddress))
-                .status(TestStatus.SIGNAL_STARTED)
+                .status(regStatus)
                 .lastSequenceNumber(-1)
                 .useSsl(false) // hardcode because of database constraint
                 .measurementType(coverageRegisterRequest.getMeasurementType())
@@ -186,6 +190,7 @@ public class SignalServiceImpl implements SignalService {
                 .device(coverageRegisterRequest.getDevice())
                 .platform(TestPlatform.valueOf(coverageRegisterRequest.getPlatform().toUpperCase()))
                 .build();
+                // version (0.3), softwareVersionCode (11), type (MOBILE), name (RMBT), client (RMBT)
 
         var savedTest = testRepository.saveAndFlush(test);
 
@@ -243,11 +248,11 @@ public class SignalServiceImpl implements SignalService {
 
         testMapper.updateTestWithSignalResultRequest(signalResultRequest, updatedTest);
 
-        updateIpAddress(signalResultRequest, updatedTest);
+        updateIpAddress(signalResultRequest.getTestIpLocal(), updatedTest);
 
-        processGeoLocation(signalResultRequest, updatedTest);
+        processGeoLocation(signalResultRequest.getGeoLocations(), updatedTest);
 
-        processRadioInfo(signalResultRequest, updatedTest);
+        processRadioInfo(signalResultRequest.getRadioInfo(), updatedTest);
 
         log.info("Updated test before save = " + updatedTest);
         testMapper.updateTestLocation(updatedTest);
@@ -272,46 +277,42 @@ public class SignalServiceImpl implements SignalService {
         log.info("CoverageResultRequest = " + coverageResultRequest);
         UUID testUuid = getTestUUID(coverageResultRequest);
 
-        Long sequenceNumber = coverageResultRequest.getSequenceNumber();
 
         RtrClient client = clientRepository.findByUuid(coverageResultRequest.getClientUUID())
                 .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, coverageResultRequest.getClientUUID())));
 
 
-        // TODO (the following is from the SignalResultResponse)
+        Test updatedTest = testRepository.findByUuidAndStatusesInLocked(testUuid, Config.COVERAGE_RESULT_STATUSES)
+                .orElseGet(() -> getEmptyGeneratedTest(coverageResultRequest, client));
+        updatedTest.setStatus(TestStatus.COVERAGE);
 
-//        Test updatedTest = testRepository.findByUuidAndStatusesInLocked(testUuid, Config.SIGNAL_RESULT_STATUSES)
-//                .orElseGet(() -> getEmptyGeneratedTest(coverageResultRequest, client));
-//        updatedTest.setStatus(TestStatus.SIGNAL);
-//
-//        if (Objects.isNull(sequenceNumber) || sequenceNumber <= updatedTest.getLastSequenceNumber()) {
-//            throw new InvalidSequenceException();
-//        }
-//        updatedTest.setLastSequenceNumber(sequenceNumber.intValue());
-//
-//        testMapper.updateTestWithSignalResultRequest(coverageResultRequest, updatedTest);
-//
-//        updateIpAddress(coverageResultRequest, updatedTest);
-//
-//        processGeoLocation(coverageResultRequest, updatedTest);
-//
-//        processRadioInfo(coverageResultRequest, updatedTest);
 
-//        log.info("Updated test before save = " + updatedTest);
-//        testMapper.updateTestLocation(updatedTest);
-//        testRepository.saveAndFlush(updatedTest);
-//
-//        UUID uuidToReturn = updatedTest.getUuid();
-//        if (updatedTest.getTimestamp().plusMinutes(Constants.SIGNAL_CHANGE_UUID_AFTER_MIN)
-//                .compareTo(Instant.now().atZone(updatedTest.getTimestamp().getZone())) < 0) {
-//            log.info("updating signal uuid after " + Constants.SIGNAL_CHANGE_UUID_AFTER_MIN + " minutes");
-//            uuidToReturn = UUID.randomUUID();
-//        }
+        testMapper.updateTestWithCoverageResultRequest(coverageResultRequest, updatedTest);
 
+        updateIpAddress(coverageResultRequest.getTestIpLocal(), updatedTest);
+
+
+        log.info("Updated test before save = " + updatedTest);
+        testMapper.updateTestLocation(updatedTest);
+        testRepository.saveAndFlush(updatedTest);
+
+        // TODO
+        processFences(coverageResultRequest.getFences(), updatedTest);
+
+        //TODO: UUID is no longer changed by backend
+        UUID uuidToReturn = updatedTest.getUuid();
+
+        if (updatedTest.getTimestamp().plusMinutes(Constants.SIGNAL_CHANGE_UUID_AFTER_MIN)
+                .compareTo(Instant.now().atZone(updatedTest.getTimestamp().getZone())) < 0) {
+            log.info("updating signal uuid after " + Constants.SIGNAL_CHANGE_UUID_AFTER_MIN + " minutes");
+            uuidToReturn = UUID.randomUUID();
+        }
 
         return CoverageResultResponse.builder()
-                //.testUUID(uuidToReturn)
+                // TODO no uuid as result
+                .testUUID(uuidToReturn)
                 .build();
+
     }
 
 
@@ -419,9 +420,15 @@ public class SignalServiceImpl implements SignalService {
         signalRepository.saveAll(newSignals);
     }
 
-    private void processGeoLocation(SignalResultRequest signalResultRequest, Test updatedTest) {
-        if (Objects.nonNull(signalResultRequest.getGeoLocations())) {
-            geoLocationService.processGeoLocationRequests(signalResultRequest.getGeoLocations(), updatedTest);
+    private void processGeoLocation(List<GeoLocationRequest>  geoLocations, Test updatedTest) {
+        if (Objects.nonNull(geoLocations)) {
+            geoLocationService.processGeoLocationRequests(geoLocations, updatedTest);
+        }
+    }
+
+    private void processFences(List<FencesRequest>  fences, Test updatedTest) {
+        if (Objects.nonNull(fences)) {
+            fencesService.processFencesRequests(fences, updatedTest);
         }
     }
 
@@ -447,20 +454,20 @@ public class SignalServiceImpl implements SignalService {
                 .orElse(null);
     }
 
-    private void processRadioInfo(SignalResultRequest signalResultRequest, Test updatedTest) {
-        if (Objects.nonNull(signalResultRequest.getRadioInfo())) {
-            if (!CollectionUtils.isEmpty(signalResultRequest.getRadioInfo().getCells())) {
-                radioCellService.processRadioCellRequests(signalResultRequest.getRadioInfo().getCells(), updatedTest);
+    private void processRadioInfo(RadioInfoRequest radioInfo, Test updatedTest) {
+        if (Objects.nonNull(radioInfo)) {
+            if (!CollectionUtils.isEmpty(radioInfo.getCells())) {
+                radioCellService.processRadioCellRequests(radioInfo.getCells(), updatedTest);
             }
-            if (!CollectionUtils.isEmpty(signalResultRequest.getRadioInfo().getSignals())) {
-                radioSignalService.saveRadioSignalRequests(signalResultRequest.getRadioInfo(), updatedTest);
+            if (!CollectionUtils.isEmpty(radioInfo.getSignals())) {
+                radioSignalService.saveRadioSignalRequests(radioInfo, updatedTest);
             }
         }
     }
 
-    private void updateIpAddress(SignalResultRequest signalResultRequest, Test updatedTest) {
-        if (Objects.nonNull(signalResultRequest.getTestIpLocal())) {
-            InetAddress ipLocalAddress = InetAddresses.forString(signalResultRequest.getTestIpLocal());
+    private void updateIpAddress(String ipLocal, Test updatedTest) {
+        if (Objects.nonNull(ipLocal)) {
+            InetAddress ipLocalAddress = InetAddresses.forString(ipLocal);
             updatedTest.setClientIpLocal(InetAddresses.toAddrString(ipLocalAddress));
             updatedTest.setClientIpLocalAnonymized(HelperFunctions.anonymizeIp(ipLocalAddress));
             updatedTest.setClientIpLocalType(HelperFunctions.IpType(ipLocalAddress));
@@ -506,9 +513,32 @@ public class SignalServiceImpl implements SignalService {
         return testRepository.saveAndFlush(newTest);
     }
 
+    private Test getEmptyGeneratedTest(CoverageResultRequest coverageResultRequest, RtrClient client) {
+        Test newTest = Test.builder()
+                .uuid(uuidGenerator.generateUUID())
+                .openTestUuid(uuidGenerator.generateUUID())
+                .time(getClientTimeFromCoverageResultRequest(coverageResultRequest))
+                .timezone(coverageResultRequest.getTimezone())
+                .client(client)
+                .useSsl(false)
+                .lastSequenceNumber(-1)
+                .build();
+
+        return testRepository.saveAndFlush(newTest);
+    }
+
     private ZonedDateTime getClientTimeFromSignalResultRequest(SignalResultRequest signalResultRequest) {
         return TimeUtils.getZonedDateTimeFromMillisAndTimezone(Math.round(signalResultRequest.getTimeNanos() / 1e6), signalResultRequest.getTimezone());
     }
+
+    private ZonedDateTime getClientTimeFromCoverageResultRequest(CoverageResultRequest coverageResultRequest) {
+        if (coverageResultRequest.getTimezone() == null)
+            return null;
+        else {
+            return TimeUtils.getZonedDateTimeFromMillisAndTimezone(Math.round(coverageResultRequest.getTimeNanos() / 1e6), coverageResultRequest.getTimezone());
+        }
+    }
+
 
     private ZonedDateTime getClientTimeFromSignalRequest(SignalRegisterRequest signalRegisterRequest) {
         return TimeUtils.getZonedDateTimeFromMillisAndTimezone(signalRegisterRequest.getTime(), signalRegisterRequest.getTimezone());
