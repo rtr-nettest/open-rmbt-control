@@ -7,5 +7,5 @@ import java.util.Locale;
 
 public interface TestHistoryMapper {
 
-    HistoryItemResponse testHistoryToHistoryItemResponse(TestHistory testHistory, Integer classificationCount, Locale locale, boolean includeFailedTests);
+    HistoryItemResponse testHistoryToHistoryItemResponse(TestHistory testHistory, Integer classificationCount, Locale locale, boolean includeFailedTests, boolean includeCoverageFences);
 }

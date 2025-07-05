@@ -40,6 +40,10 @@ public class HistoryRequest {
     @JsonProperty(value="include_failed_tests", defaultValue = "false")
     private final boolean includeFailedTests;
 
+    @Schema(description = "Include also coverage tests")
+    @JsonProperty(value="include_coverage_fences", defaultValue = "false")
+    private final boolean includeCoverageFences;
+
     @Schema(description = "Capabilities")
     @JsonProperty(value = "capabilities")
     private final CapabilitiesRequest capabilities;

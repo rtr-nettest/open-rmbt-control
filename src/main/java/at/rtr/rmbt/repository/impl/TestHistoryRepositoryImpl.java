@@ -1,6 +1,7 @@
 package at.rtr.rmbt.repository.impl;
 
 import at.rtr.rmbt.constant.Constants;
+import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.model.TestHistory;
 import at.rtr.rmbt.repository.TestHistoryRepository;
@@ -21,7 +22,7 @@ public class TestHistoryRepositoryImpl implements TestHistoryRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final static String GET_TEST_HISTORY = "SELECT DISTINCT"
-            + " t.status, t.uuid, t.open_test_uuid, time, timezone, speed_upload, speed_download, ping_median, lte_rsrp, signal_strength, dual_sim, sim_count, network_type, nt.group_name network_type_group_name, l.loop_uuid loop_uuid,"
+            + " t.fences_count, t.status, t.uuid, t.open_test_uuid, time, timezone, speed_upload, speed_download, ping_median, lte_rsrp, signal_strength, dual_sim, sim_count, network_type, nt.group_name network_type_group_name, l.loop_uuid loop_uuid,"
             + " COALESCE(adm.fullname, t.model) model"
             + " FROM test t"
             + " LEFT JOIN device_map adm ON adm.codename=t.model"
@@ -31,22 +32,43 @@ public class TestHistoryRepositoryImpl implements TestHistoryRepository {
             + " %s %s %s %s" + " ORDER BY time DESC" + " %s";
 
     @Override
-    public List<TestHistory> getTestHistoryByDevicesAndNetworksAndClient(Integer resultLimit, Integer resultOffset, List<String> devices, List<String> networks, RtrClient client, boolean includeFailedTests) {
+    public List<TestHistory> getTestHistoryByDevicesAndNetworksAndClient(Integer resultLimit, Integer resultOffset, List<String> devices, List<String> networks, RtrClient client, boolean includeFailedTests, boolean includeCoverageFences) {
+        //
         ArrayList<Object> args = new ArrayList<>();
         String testStatusRequest = " AND t.status IN (%s)";
+        int inCount = 1;
         args.add("FINISHED");
         if (includeFailedTests) {
-            args.add("ERROR");
-            testStatusRequest = String.format(testStatusRequest, "?, ?");
+            inCount += 2;
+            // ERROR and STARTED are error codes (started means that the measurement never completed)
+            args.add(TestStatus.ERROR.toString());
+            args.add(TestStatus.STARTED.toString());
         }
-        else {
+        else if (includeCoverageFences) {
+            inCount += 1;
+            args.add(TestStatus.COVERAGE.toString());
+        }
+
+        // set the number of placeholders accordingly
+        if (inCount == 1)
             testStatusRequest = String.format(testStatusRequest, "?");
-        }
+         else if (inCount == 2)
+            testStatusRequest = String.format(testStatusRequest, "?, ?");
+        else if (inCount == 3)
+            testStatusRequest = String.format(testStatusRequest, "?, ?, ?");
+        else if (inCount == 4)
+            testStatusRequest = String.format(testStatusRequest, "?, ?, ?, ?");
+
         String limitRequest = getLimitRequest(resultLimit, resultOffset);
         String devicesRequest = getDevicesRequest(devices, args);
         String networksRequest = getNetworksRequest(networks, args);
         String clientSyncRequest = getClientSyncRequest(client, args);
-        String finalQuery = String.format(GET_TEST_HISTORY, testStatusRequest, clientSyncRequest, devicesRequest, networksRequest, limitRequest);
+        String finalQuery = String.format(GET_TEST_HISTORY,
+                testStatusRequest,
+                devicesRequest,
+                networksRequest,
+                clientSyncRequest,
+                limitRequest);
         return jdbcTemplate.query(finalQuery, new ArgumentPreparedStatementSetter(args.toArray()), new BeanPropertyRowMapper<>(TestHistory.class));
     }
 
@@ -86,7 +108,9 @@ public class TestHistoryRepositoryImpl implements TestHistoryRepository {
                 }
             }
             if (joiner.length() > 0) {
-                return " AND (COALESCE(adm.fullname, t.model) IN (" + joiner.toString() + ")" + (checkUnknown ? " OR model IS NULL OR model = ''" : "") + ")";
+                return " AND (COALESCE(adm.fullname, t.model) IN ("
+                        + joiner.toString() + ")"
+                        + (checkUnknown ? " OR model IS NULL OR model = ''" : "") + ")";
             }
         }
         return StringUtils.EMPTY;

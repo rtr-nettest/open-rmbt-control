@@ -64,7 +64,7 @@ public class CoverageRegisterRequest {
     private final MeasurementType measurementType;
 
     @Schema(description = "Signal information support by the client", example = "true")
-    @JsonProperty(value = "signal")
+    @JsonProperty(value = "signal", defaultValue = "false")
     private final Boolean signal;
 
     @JsonProperty(value = "capabilities")

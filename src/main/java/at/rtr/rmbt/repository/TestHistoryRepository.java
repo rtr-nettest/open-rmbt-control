@@ -13,6 +13,7 @@ public interface TestHistoryRepository {
             List<String> devices,
             List<String> networks,
             RtrClient client,
-            boolean includeFailedTests
+            boolean includeFailedTests,
+            boolean includeCoverageFences
     );
 }
