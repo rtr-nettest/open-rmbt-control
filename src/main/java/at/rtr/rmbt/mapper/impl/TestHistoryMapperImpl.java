@@ -42,9 +42,12 @@ public class TestHistoryMapperImpl implements TestHistoryMapper {
             historyItemResponseBuilder.status(testHistory.getStatus().toLowerCase());
         }
         if (includeCoverageFences) {
-            historyItemResponseBuilder.isCoverageFences(true);
-            // add fences count
-            historyItemResponseBuilder.fences_count(testHistory.getFencesCount());
+            Long fencesCount = testHistory.getFencesCount();
+            if (fencesCount != null && fencesCount > 0) {
+                historyItemResponseBuilder.isCoverageFences(true);
+                historyItemResponseBuilder.fences_count(fencesCount);
+            }
+
         }
         setSignalFields(testHistory, historyItemResponseBuilder, classificationCount);
         return historyItemResponseBuilder.build();
