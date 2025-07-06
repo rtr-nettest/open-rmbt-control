@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.io.*;
+
 
 public interface TestServerRepository extends JpaRepository<TestServer, Long> {
     Optional<TestServer> findByUuidAndActive(UUID uuid, Boolean active);
@@ -20,8 +20,8 @@ public interface TestServerRepository extends JpaRepository<TestServer, Long> {
         value = "SELECT * FROM test_server ts " +
             "WHERE ts.active " +
             "AND (((ts.coverage = TRUE) AND (CAST(CAST(:coverage AS CHARACTER VARYING) AS BOOLEAN) = TRUE))" +
-            "OR (ts.uid in (select tst.test_server_uid from test_server_types tst where tst.server_type in (:serverTypes)) " +
-            "AND ( CAST(:country AS TEXT) = ANY(ts.countries) OR 'any' = ANY(ts.countries)))) " + // need to cast string
+            "OR ts.server_type in (:serverTypes) " +
+            "AND ( CAST(:country AS TEXT) = ANY(ts.countries) OR 'any' = ANY(ts.countries))) " + // need to cast string
             "ORDER BY 'any' != ANY (ts.countries) DESC, " + // because null value is converted to varbinary by hibernate
             "ts.priority, " +                               //  which causes an error
             "RANDOM() * ts.weight DESC " +
