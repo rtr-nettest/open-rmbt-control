@@ -62,56 +62,21 @@ public class TestServerServiceImpl implements TestServerService {
     }
 
     @Override
-    public void createTestServer(TestServerRequest testServerRequest) {
-        Optional.of(testServerRequest)
-                .map(testServerMapper::testServerRequestToTestServer)
-                .ifPresent(testServerRepository::save);
+    public List<TestServerResponseForSettings> getServersUdp() {
+        return getServers(SERVER_UDP_TEST_SERVER_TYPES);
     }
 
     @Override
-    public List<TestServerResponse> getAllTestServer() {
-        List<TestServer> testServers = testServerRepository.findAll();
-        Set<Long> testServersId = testServers.stream()
-                .map(TestServer::getUid)
-                .collect(Collectors.toSet());
+    public String getHello() {
+        return "nothing";
 
-        Map<Long, Timestamp> lastTest = testRepository.findLastTestByServerIdIn(testServersId).stream()
-                .collect(Collectors.toMap(test -> test.getTestServer().getUid(), test -> Timestamp.valueOf(test.getTime().toLocalDateTime())));
-
-        Map<Long, Timestamp> lastSuccessfulTest = testRepository.findLastSuccessTestByServerIdInAndStatusIn(testServersId, List.of(TestStatus.FINISHED.toString())).stream()
-                .collect(Collectors.toMap(test -> test.getTestServer().getUid(), test -> Timestamp.valueOf(test.getTime().toLocalDateTime())));
-
-        return testServers.stream()
-                .map(x -> {
-                    var lastTestTimestamp = lastTest.get(x.getUid());
-                    var lastSuccessfulTestTimestamp = lastSuccessfulTest.get(x.getUid());
-                    var lastMeasurementSuccess = Objects.nonNull(lastSuccessfulTestTimestamp);
-                    return testServerMapper.testServerToTestServerResponse(x, lastTestTimestamp, lastSuccessfulTestTimestamp, lastMeasurementSuccess);
-                })
-                .collect(Collectors.toList());
     }
 
-    @Override
-    public void updateTestServer(Long id, TestServerRequest testServerRequest) {
-        var formerTestServer = getTestServerById(id);
-        var updatedTestServer = testServerMapper.testServerRequestToTestServer(testServerRequest);
-        updatedTestServer.setUid(id);
-        updatedTestServer.setUuid(formerTestServer.getUuid());
-        testServerRepository.save(updatedTestServer);
-    }
 
-    @Override
-    public void deleteTestServer(Long id) {
-        var testServer = getTestServerById(id);
-        testServer.setArchived(true);
-        testServer.setActive(false);
-        testServerRepository.save(testServer);
-    }
 
-    private TestServer getTestServerById(Long id) {
-        return testServerRepository.findById(id)
-                .orElseThrow(TestServerNotFoundException::new);
-    }
+
+
+
 
     private List<TestServerResponseForSettings> getServers(List<ServerType> serverTypes) {
         return testServerRepository.findDistinctByActiveTrueAndSelectableTrueAndServerTypesIn(serverTypes).stream()

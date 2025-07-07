@@ -11,11 +11,7 @@ import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.repository.*;
 import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
-import at.rtr.rmbt.service.GeoLocationService;
-import at.rtr.rmbt.service.RadioCellService;
-import at.rtr.rmbt.service.RadioSignalService;
-import at.rtr.rmbt.service.SignalService;
-import at.rtr.rmbt.service.FencesService;
+import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.HelperFunctions;
 import com.google.common.net.InetAddresses;
 import org.junit.Before;
@@ -72,6 +68,8 @@ public class SignalServiceImplTest {
     private RadioSignalService radioSignalService;
     @MockBean
     private FencesService fencesService;
+    @MockBean
+    private TestServerService testServerService;
     @MockBean
     private TestMapper testMapper;
     @MockBean
@@ -132,7 +130,7 @@ public class SignalServiceImplTest {
     public void setUp() {
         signalService = new SignalServiceImpl(testRepository, providerRepository,
                 uuidGenerator, clientRepository, signalMapper, radioSignalRepository, geoLocationRepository, testMapper, geoLocationService,
-                radioCellService, radioSignalService, signalRepository, fencesService);
+                radioCellService, radioSignalService, signalRepository, fencesService, testServerService);
     }
 
     @Test

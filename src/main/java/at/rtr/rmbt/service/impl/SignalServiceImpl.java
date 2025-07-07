@@ -66,6 +66,7 @@ public class SignalServiceImpl implements SignalService {
     private final RadioSignalService radioSignalService;
     private final SignalRepository signalRepository;
     private final FencesService fencesService;
+    private final TestServerService testServerService;
 
 
     @Override
@@ -110,36 +111,11 @@ public class SignalServiceImpl implements SignalService {
 
         var savedTest = testRepository.saveAndFlush(test);
 
-        // TODO: for debugging a dummy secret is hardcoded
-        // Later a specific test server needs to be defined (host, port)
-        final String sharedSecret = "topsecret";
-
-        // TODO: Hard coded URLs, later to be defined by pingServer table
-        final String hostname_v4 = "udpv4.netztest.at";
-        final String hostname_v6 = "udpv6.netztest.at";
-        final String port = String.valueOf(444);
-
-        String hostname;
-        final boolean isV4Client = inetAddressIsv4(clientAddress);
-        // Integer equal to IP protocol version
-        final int protocolVersion = isV4Client ? 4 : 6;
-
-        if (isV4Client) {
-            hostname= hostname_v4;
-        }
-        else {
-            hostname = hostname_v6;
-        }
-
         return SignalSettingsResponse.builder()
                 .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
                 .clientRemoteIp(ip)
                 .resultUrl(getSignalResultUrl(httpServletRequest))
                 .testUUID(savedTest.getUuid())
-                .pingToken(generatePingToken(sharedSecret, clientAddress))
-                .pingHost(hostname)
-                .pingPort(port)
-                .ipVersion(protocolVersion)
                 .build();
     }
 
@@ -202,6 +178,11 @@ public class SignalServiceImpl implements SignalService {
         final String hostname_v4 = "udpv4.netztest.at";
         final String hostname_v6 = "udpv6.netztest.at";
         final String port = String.valueOf(444);
+
+        // TODO Add code that takes the server settings from test_server HERE
+        //final List<TestServerResponseForSettings> serverUdpResponseList = testServerService.getServersUdp();
+
+
 
         String hostname;
         final boolean isV4Client = inetAddressIsv4(clientAddress);
@@ -296,7 +277,6 @@ public class SignalServiceImpl implements SignalService {
         testMapper.updateTestLocation(updatedTest);
         testRepository.saveAndFlush(updatedTest);
 
-        // TODO
         processFences(coverageResultRequest.getFences(), updatedTest);
 
         //TODO: UUID is no longer changed by backend

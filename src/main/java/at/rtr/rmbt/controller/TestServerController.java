@@ -23,30 +23,6 @@ public class TestServerController {
 
     private final TestServerService testServerService;
 
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create new measurement server.")
-    @PostMapping
-    public void createTestServer(@Validated @RequestBody TestServerRequest testServerRequest) {
-        testServerService.createTestServer(testServerRequest);
-    }
 
-    @Operation(summary = "Get all measurement server.")
-    @GetMapping
-    public List<TestServerResponse> getAllTestServers() {
-        return testServerService.getAllTestServer();
-    }
 
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Update existing measurement server")
-    @PutMapping(BY_ID)
-    public void updateTestServer(@PathVariable Long id, @Validated @RequestBody TestServerRequest testServerRequest) {
-        testServerService.updateTestServer(id, testServerRequest);
-    }
-
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping(value = BY_ID)
-    @Operation(summary = "Delete existing measurement server by id")
-    public void deleteTestServerById(@PathVariable Long id) {
-        testServerService.deleteTestServer(id);
-    }
 }

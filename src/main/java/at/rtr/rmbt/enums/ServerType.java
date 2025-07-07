@@ -5,7 +5,8 @@ import lombok.Getter;
 
 @Getter
 public enum ServerType {
-    RMBT("RMBT"), RMBTws("RMBTws"), HW_PROBE("HW-PROBE"), RMBThttp("RMBThttp"), QoS("QoS"), RMBTel("RMBTel");
+    RMBT("RMBT"), RMBTws("RMBTws"), HW_PROBE("HW-PROBE"), RMBThttp("RMBThttp"), QoS("QoS"),
+    RMBTel("RMBTel"),RMBTudp("RMBTudp");
 
     private String label;
 

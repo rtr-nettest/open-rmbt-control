@@ -23,11 +23,8 @@ public interface TestServerService {
 
     List<TestServerResponseForSettings> getServersQos();
 
-    void createTestServer(TestServerRequest testServerRequest);
+    List<TestServerResponseForSettings> getServersUdp();
 
-    List<TestServerResponse> getAllTestServer();
+    String getHello();
 
-    void updateTestServer(Long id, TestServerRequest testServerRequest);
-
-    void deleteTestServer(Long id);
 }
