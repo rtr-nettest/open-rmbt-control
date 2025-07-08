@@ -39,10 +39,11 @@ public class TestHistoryRepositoryImpl implements TestHistoryRepository {
         int inCount = 1;
         args.add("FINISHED");
         if (includeFailedTests) {
-            inCount += 2;
-            // ERROR and STARTED are error codes (started means that the measurement never completed)
+            inCount += 3;
+            // ERROR, STARTED and ABORTED are error codes (STARTED means that the measurement never completed)
             args.add(TestStatus.ERROR.toString());
             args.add(TestStatus.STARTED.toString());
+            args.add(TestStatus.ABORTED.toString());
         }
         else if (includeCoverageFences) {
             inCount += 1;
@@ -58,6 +59,8 @@ public class TestHistoryRepositoryImpl implements TestHistoryRepository {
             testStatusRequest = String.format(testStatusRequest, "?, ?, ?");
         else if (inCount == 4)
             testStatusRequest = String.format(testStatusRequest, "?, ?, ?, ?");
+        else if (inCount == 5)
+            testStatusRequest = String.format(testStatusRequest, "?, ?, ?, ?, ?");
 
         String limitRequest = getLimitRequest(resultLimit, resultOffset);
         String devicesRequest = getDevicesRequest(devices, args);
