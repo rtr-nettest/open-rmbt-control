@@ -100,12 +100,17 @@ public interface Config {
     List<ServerType> SERVER_TEST_SERVER_TYPES = List.of(ServerType.RMBT);
     List<ServerType> SERVER_HTTP_TEST_SERVER_TYPES = List.of(ServerType.RMBT, ServerType.RMBThttp);
     List<ServerType> SERVER_WS_TEST_SERVER_TYPES = List.of(ServerType.RMBTws, ServerType.RMBThttp);
-    List<ServerType> SERVER_EL_TEST_SERVER_TYPES = List.of(ServerType.RMBThttp);
     List<ServerType> SERVER_QOS_TEST_SERVER_TYPES = List.of(ServerType.QoS);
     List<ServerType> SERVER_UDP_TEST_SERVER_TYPES = List.of(ServerType.RMBTudp);
     List<String> SIGNAL_RESULT_STATUSES = List.of(TestStatus.SIGNAL_STARTED.toString(), TestStatus.SIGNAL.toString());
     List<String> COVERAGE_RESULT_STATUSES = List.of(TestStatus.COVERAGE_STARTED.toString(), TestStatus.COVERAGE.toString());
-    List<String> TEST_RESULT_DETAIL_STATUSES = List.of(TestStatus.FINISHED.toString(), TestStatus.ERROR.toString());
+    // List of states which contain a vailid result for /testresultdetail
+    List<String> TEST_RESULT_DETAIL_STATUSES = List.of(TestStatus.FINISHED.toString(),
+            TestStatus.STARTED.toString(),
+            TestStatus.ERROR.toString(),
+            TestStatus.ABORTED.toString(),
+            TestStatus.COVERAGE.toString(),
+            TestStatus.SIGNAL.toString());
     List<String> TEST_RESULT_STATUSES = List.of(TestStatus.FINISHED.toString());
     List<String> TEST_RESULT_STATUSES_INCLUDE_ERROR = List.of(TestStatus.FINISHED.toString(), TestStatus.ERROR.toString());
     Integer SIGNIFICANT_PLACES = 2;

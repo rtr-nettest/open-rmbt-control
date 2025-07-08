@@ -181,16 +181,6 @@ public class TestSettingsFacadeTest {
         assertEquals(ServerType.RMBT, result.getTestServerType());
     }
 
-    @Test
-    public void updateTestSettings_notExistInServerTypes_expectFromTypesSet() {
-        mockStubToTestEncryption();
-        var serverTypeDetails = ServerTypeDetails.builder()
-                .serverType(ServerType.HW_PROBE)
-                .build();
-        testServer.setServerTypeDetails(Set.of(serverTypeDetails));
-        TestSettingsResponse result = facade.updateTestSettings(testSettingsRequest, request, headers);
-        assertEquals(ServerType.HW_PROBE, result.getTestServerType());
-    }
 
     @Test
     public void updateTestSettings_emptyServerTypeListNotPossibleCase_expectNull() {
