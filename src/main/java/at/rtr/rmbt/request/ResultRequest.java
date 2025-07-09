@@ -1,9 +1,6 @@
 package at.rtr.rmbt.request;
 
-import at.rtr.rmbt.enums.ClientStatus;
-import at.rtr.rmbt.enums.QosStatus;
-import at.rtr.rmbt.enums.ServerType;
-import at.rtr.rmbt.enums.TestPlatform;
+import at.rtr.rmbt.enums.*;
 import at.rtr.rmbt.model.AndroidPermission;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -291,7 +288,7 @@ public class ResultRequest {
     @JsonProperty(value = "test_submission_retry_count")
     private final Integer testSubmissionRetryCount;
 
-    @Schema(description = "Reason of the test finishing, provided as int value", example = "0")
+    @Schema(description = "Status at test end as int; 0 (SUCCESS), 1 (ERROR), 2 (ABORTED)", example = "0")
     @JsonProperty(value = "test_status")
     private final String testStatus;
 
