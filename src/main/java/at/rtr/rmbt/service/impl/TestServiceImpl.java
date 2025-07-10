@@ -202,6 +202,14 @@ public class TestServiceImpl implements TestService {
             }
             test.setStatus(TestStatus.ABORTED);
             testRepository.save(test);
+        }
+        else if (resultUpdateRequest.isFailed()) {
+                //only update if test is currently in status "started"
+                if (test.getStatus() != TestStatus.STARTED) {
+                    throw new IllegalArgumentException(ErrorMessage.INVALID_TEST_STATUS);
+                }
+                test.setStatus(TestStatus.ERROR);
+                testRepository.save(test);
         } else {
             geoLocationService.updateGeoLocation(test, resultUpdateRequest);
             Test updatedTest = testMapper.updateTestLocation(test);
