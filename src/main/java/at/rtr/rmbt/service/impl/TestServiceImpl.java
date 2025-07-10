@@ -278,6 +278,8 @@ public class TestServiceImpl implements TestService {
             addNetItemResponse(locale, netItemResponses, getStringFromBundle("RESULT_DUAL_SIM", locale), "RESULT_NETWORK_TYPE");
             networkInfoResponseBuilder.networkTypeLabel(getStringFromBundle("RESULT_DUAL_SIM", locale));
         }
+        if (test.getNetworkType() == null)
+            return;
         if (test.getNetworkType() == 98 || test.getNetworkType() == 99) // mobile wifi or browser
         {
             Optional.ofNullable(test.getProvider())
