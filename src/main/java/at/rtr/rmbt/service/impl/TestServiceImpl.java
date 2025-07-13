@@ -720,6 +720,8 @@ public class TestServiceImpl implements TestService {
                     .map(HelperFunctions::getNetworkTypeName)
                     .ifPresent(networkType -> addString(propertiesList, locale, "network_type", networkType));
             addString(propertiesList, locale, "network_sim_operator_name", test.getNetworkSimOperatorName());
+            if (dualSim)
+                addString(propertiesList,locale,"dual_sim","true");
             addString(propertiesList,
                     locale,
                     "network_sim_operator",
