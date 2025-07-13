@@ -9,10 +9,13 @@ import java.util.Optional;
 public class MeasurementUtils {
 
     public boolean isUseSignal(Integer simCount, boolean dualSim) {
-        if (dualSim && Objects.nonNull(simCount)) {
-            return true;
-        }
-        return !dualSim;
+        // always return true, no matter if dualSim/simCount
+        return true;
+        // historic code that restricts signal on dualSim:
+//        if (dualSim && Objects.nonNull(simCount)) {
+//            return true;
+//        }
+//        return !dualSim;
     }
 
     public boolean isDualSim(Integer networkType, Boolean dualSim) {

@@ -265,6 +265,9 @@ public class TestServiceImplTest {
         assertEquals(getBandTestResultDetailResponse(), result);
     }
 
+/*
+
+This test tests for DualSim differentiation, but not DualSim shall be treated equaly
     @Test
     public void getTestResult_whenSignalStrengthNotNullAndUseSignalTrueAndDualSimTrue_expectTestResultContainerResponse() {
         when(testResultRequest.getLanguage()).thenReturn(TestConstants.LANGUAGE_EN);
@@ -294,6 +297,8 @@ public class TestServiceImplTest {
         assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_TRUE_SIGNAL_STRENGTH_NOT_NULL, testResultResponse.getShareText());
         assertEquals(getMeasurementIfSignalStrengthNotNull(), testResultResponse.getMeasurement());
     }
+
+ */
 
     @Test
     public void getTestResult_whenLteRSRPNotNullAndUseSignalTrueAndDualSimFalse_expectTestResultContainerResponse() {

@@ -476,7 +476,8 @@ public class TestServiceImpl implements TestService {
         String mobileNetworkString = getMobileNetworkString(test, locale);
         String urlShareString = getUrlShareString(test, locale);
 
-        if (dualSim) {
+        // was dualSim
+        if (!useSignal) {
             return MessageFormat.format(getStringFromBundle("RESULT_SHARE_TEXT", locale),
                     timeString,
                     downloadString,
@@ -707,7 +708,11 @@ public class TestServiceImpl implements TestService {
     }
 
     private void addTestFields(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Test test) {
-        if (!MeasurementUtils.isDualSim(test.getNetworkType(), test.getDualSim())) {
+        boolean dualSim = MeasurementUtils.isDualSim(test.getNetworkType(), test.getDualSim());
+        boolean useSignal = MeasurementUtils.isUseSignal(test.getSimCount(), dualSim);
+
+        // was !dualSim
+        if (useSignal) {
             addIntegerAndUnitString(propertiesList, locale, "signal_strength", test.getSignalStrength(), "RESULT_SIGNAL_UNIT");
             addIntegerAndUnitString(propertiesList, locale, "signal_rsrp", test.getLteRsrp(), "RESULT_SIGNAL_UNIT");
             addIntegerAndUnitString(propertiesList, locale, "signal_rsrq", test.getLteRsrq(), "RESULT_DB_UNIT");
