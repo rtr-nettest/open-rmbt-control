@@ -58,7 +58,7 @@ public class ResultServiceImpl implements ResultService {
             throw new RuntimeException(ErrorMessage.INVALID_TEST_STATUS);
         }
 
-        verifyClientVersion(resultRequest);
+        verifyTestStatus(resultRequest);
         processPingData(resultRequest, test);
         testMapper.updateTestWithResultRequest(resultRequest, test);
         test.setNetworkOperator(getOperator(resultRequest.getTelephonyNetworkOperator()));
@@ -222,13 +222,10 @@ public class ResultServiceImpl implements ResultService {
                 .orElse(null);
     }
 
-    private void verifyClientVersion(ResultRequest resultRequest) {
-        if (resultRequest.getClientVersion().isEmpty() && resultRequest.getTestStatus().equals("1")) { //try to hadle failed test
+    // This code originally checked TestStatus and Clientname/Clientversion
+    private void verifyTestStatus(ResultRequest resultRequest) {
+        if (resultRequest.getTestStatus().equals("1")) {
             throw new EmptyClientVersionException();
-        }
-
-        if (!applicationProperties.getClientNames().contains(resultRequest.getClientName().getLabel())) {
-            throw new NotSupportedClientVersionException();
         }
     }
 }
