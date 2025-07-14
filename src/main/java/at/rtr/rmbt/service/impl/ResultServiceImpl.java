@@ -224,7 +224,7 @@ public class ResultServiceImpl implements ResultService {
 
     // This code originally checked TestStatus and Clientname/Clientversion
     private void verifyTestStatus(ResultRequest resultRequest) {
-        if (resultRequest.getTestStatus().equals("1")) {
+        if (resultRequest.getTestStatus() != null && resultRequest.getTestStatus().equals("1")) {
             throw new EmptyClientVersionException();
         }
     }
