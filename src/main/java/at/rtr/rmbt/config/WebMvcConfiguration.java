@@ -34,8 +34,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         argumentResolvers.add(pageableResolver);
     }
 
-    @Value("${origin}")
-    private String origin;
+    @Value("#{'${origin}'.split(',')}")
+    private String[] origin;
 
     @Bean
     public RestTemplate restTemplate() {
