@@ -61,7 +61,6 @@ app:
       - HW-PROBE
       - RTR-Netztest
       - RMBTel
-      -
 application-version:
   host: rtr-api-dev
   server-url: http://localhost:80/RMBTControlServer

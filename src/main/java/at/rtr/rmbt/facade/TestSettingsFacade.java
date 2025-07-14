@@ -151,7 +151,7 @@ public class TestSettingsFacade {
                     errorResponse.getError().add(getErrorMessageAndRollback("ERROR_DB_GET_CLIENTTYPE", locale));
             }
 
-            if (applicationProperties.getClientNames().contains(testSettingsRequest.getServerType().getLabel()) && clientType != null) {
+            if (clientType != null) {
                 if (!TIMEZONES.contains(testSettingsRequest.getTimezone()))
                     errorResponse.getError().add(getErrorMessage("ERROR_TIMEZONE", locale));
 
