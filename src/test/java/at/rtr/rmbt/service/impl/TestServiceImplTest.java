@@ -307,7 +307,7 @@ This test tests for DualSim differentiation, but not DualSim shall be treated eq
         when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
         when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
         when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)).thenReturn(Optional.of(test));
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
         when(test.getDualSim()).thenReturn(Boolean.FALSE);
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
@@ -339,7 +339,7 @@ This test tests for DualSim differentiation, but not DualSim shall be treated eq
         when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
         when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
         when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)).thenReturn(Optional.of(test));
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
         when(test.getDualSim()).thenReturn(Boolean.TRUE);
@@ -371,7 +371,7 @@ This test tests for DualSim differentiation, but not DualSim shall be treated eq
         when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
         when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
         when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)).thenReturn(Optional.of(test));
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
         when(test.getDualSim()).thenReturn(Boolean.FALSE);
@@ -398,7 +398,7 @@ This test tests for DualSim differentiation, but not DualSim shall be treated eq
         when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
         when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
         when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)).thenReturn(Optional.of(test));
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
         when(test.getPingMedian()).thenReturn(TestConstants.DEFAULT_TEST_PING_MEDIAN);
@@ -426,7 +426,7 @@ This test tests for DualSim differentiation, but not DualSim shall be treated eq
         when(testResultRequest.getCapabilitiesRequest()).thenReturn(capabilitiesRequest);
         when(capabilitiesRequest.getClassification()).thenReturn(classificationRequest);
         when(classificationRequest.getCount()).thenReturn(TestConstants.DEFAULT_CLASSIFICATION_COUNT);
-        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)).thenReturn(Optional.of(test));
+        when(testRepository.findByUuidAndStatusesIn(TestConstants.DEFAULT_TEST_UUID, Config.TEST_RESULT_STATUSES)).thenReturn(Optional.of(test));
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
         when(test.getStatus()).thenReturn(TestConstants.DEFAULT_STATUS_FINISHED);
         when(test.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
