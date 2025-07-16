@@ -138,7 +138,9 @@ public class TestServiceImpl implements TestService {
                 .measurementResult(getMeasurementResult(test, testResultRequest.getCapabilitiesRequest()))
                 .measurement(getMeasurements(test, locale, testResultRequest.getCapabilitiesRequest()))
                 .openTestUUID(String.format(Constants.TEST_RESULT_DETAIL_OPEN_TEST_UUID_TEMPLATE, test.getOpenTestUuid()))
-                .openUUID(String.format(Constants.TEST_RESULT_DETAIL_OPEN_UUID_TEMPLATE, test.getOpenUuid()))
+                .openUUID(test.getOpenUuid() != null
+                        ? String.format(Constants.TEST_RESULT_DETAIL_OPEN_UUID_TEMPLATE, test.getOpenUuid())
+                        : null)
                 .shareSubject(MessageFormat.format(getStringFromBundle("RESULT_SHARE_SUBJECT", locale), timeString))
                 .shareText(getShareText(test, timeString, locale))
                 .timeString(timeString)
