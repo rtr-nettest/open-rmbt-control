@@ -128,7 +128,7 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public TestResultContainerResponse getTestResult(TestResultRequest testResultRequest) {
-        Test test = testRepository.findByUuidAndStatusesIn(testResultRequest.getTestUUID(), Config.TEST_RESULT_STATUSES_INCLUDE_ERROR)
+        Test test = testRepository.findByUuidAndStatusesIn(testResultRequest.getTestUUID(), Config.TEST_RESULT_STATUSES)
                 .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.TEST_NOT_FOUND, testResultRequest.getTestUUID())));
         Locale locale = MessageUtils.getLocaleFormLanguage(testResultRequest.getLanguage(), applicationProperties.getLanguage());
         String timeString = TimeUtils.getTimeStringFromTest(test, locale);

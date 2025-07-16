@@ -111,7 +111,6 @@ public interface Config {
             TestStatus.ABORTED.toString(),
             TestStatus.COVERAGE.toString(),
             TestStatus.SIGNAL.toString());
-    List<String> TEST_RESULT_STATUSES = List.of(TestStatus.FINISHED.toString());
-    List<String> TEST_RESULT_STATUSES_INCLUDE_ERROR = List.of(TestStatus.FINISHED.toString(), TestStatus.ERROR.toString());
+    List<String> TEST_RESULT_STATUSES = TEST_RESULT_DETAIL_STATUSES;
     Integer SIGNIFICANT_PLACES = 2;
 }
