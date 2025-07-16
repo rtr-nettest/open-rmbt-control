@@ -163,7 +163,7 @@ public class TestSettingsFacade {
 
                 if (client != null) {
                     final UUID testUuid = UUID.randomUUID();
-                    final UUID testOpenUuid = UUID.randomUUID();
+                    final UUID openTestUuid = UUID.randomUUID();
                     final Boolean ipv6;
                     Boolean coverage = false;
                     //TODO DZ
@@ -227,7 +227,7 @@ public class TestSettingsFacade {
 
 
                     if (errorResponse.getError().isEmpty()) {
-                        Test test = getTest(testSettingsRequest, clientIpAddress, asn, asName, asCountry, clientAddress, language, timeZoneId, client, testUuid, testOpenUuid, numberOfThreads, testServer, geoIpCountry);
+                        Test test = getTest(testSettingsRequest, clientIpAddress, asn, asName, asCountry, clientAddress, language, timeZoneId, client, testUuid, openTestUuid, numberOfThreads, testServer, geoIpCountry);
 
 
                         test = testService.save(test);
@@ -245,7 +245,7 @@ public class TestSettingsFacade {
                         if (testSlot < 0) {
                             errorResponse.getError().add(getErrorMessageAndRollback("ERROR_DB_STORE_GENERAL", locale));
                         } else {
-                            final String data = testOpenUuid + "_" + testSlot;
+                            final String data = openTestUuid + "_" + testSlot;
                             final String hmac = HelperFunctions.calculateHMAC(testServer.getKey().getBytes(), data);
 
                             if (StringUtils.isBlank(hmac))
@@ -259,7 +259,7 @@ public class TestSettingsFacade {
                             int waitTime = testSlot - (int) (System.currentTimeMillis() / 1000);
                             builder.testToken(token)
                                     .testUuid(testUuid.toString())
-                                    .openTestUuid("O" + testOpenUuid)
+                                    .openTestUuid("O" + openTestUuid)
                                     .testId(test.getUid())
                                     .testWait(Math.max(waitTime, 0));
                         }
@@ -296,13 +296,13 @@ public class TestSettingsFacade {
                 testServer.getServerTypeDetails().stream().findFirst().orElseThrow(TestServerNotFoundException::new);
     }
 
-    private Test getTest(TestSettingsRequest testSettingsRequest, String clientIpdAddress, Long asn, String asName, String asCountry, InetAddress clientAddress, String language, String timeZoneId, RtrClient client, UUID testUuid, UUID testOpenUuid, Integer numberOfThreads, TestServer testServer, String geoIpCountry) {
+    private Test getTest(TestSettingsRequest testSettingsRequest, String clientIpdAddress, Long asn, String asName, String asCountry, InetAddress clientAddress, String language, String timeZoneId, RtrClient client, UUID testUuid, UUID openTestUuid, Integer numberOfThreads, TestServer testServer, String geoIpCountry) {
         ServerTypeDetails serverTypeDetails = getServerTypeDetails(testSettingsRequest, testServer);
 
         Test test = new Test();
 
         test.setUuid(testUuid);
-        test.setOpenTestUuid(testOpenUuid);
+        test.setOpenTestUuid(openTestUuid);
         test.setClient(client);
         test.setClientName(testSettingsRequest.getServerType());
         test.setTemperature(testSettingsRequest.getTemperature());
