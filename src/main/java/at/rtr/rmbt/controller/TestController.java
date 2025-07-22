@@ -35,7 +35,12 @@ public class TestController {
     }
 
     @PostMapping(URIConstants.TEST_RESULT_DETAIL)
-    @Operation(summary = "Get test result detail")
+    @Deprecated
+    @Operation(
+            summary = "Get test result details",
+            description = "This endpoint is deprecated. Use the endpoint '/testresult' and Open Data instead.",
+            deprecated = true
+    )
     @ResponseStatus(HttpStatus.OK)
     public TestResultDetailResponse getTestResultDetailByTestUUID(@RequestBody TestResultDetailRequest testResultDetailRequestl) {
         return testService.getTestResultDetailByTestUUID(testResultDetailRequestl);
