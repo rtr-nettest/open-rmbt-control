@@ -27,6 +27,23 @@ public class GeometryUtils {
         }
         return null;
     }
+    /**
+     * Returns a Point object in EPSG:4326 coordinate reference system from given longitude and latitude.
+     *
+     * <p>
+     * Longitude (x) is the east-west position in degrees.
+     * Latitude (y) is the north-south position in degrees.
+     * </p>
+     *
+     * <p>Example usage:</p>
+     * <pre>{@code
+     * Point point = getPointEPSG4326FromLongitudeAndLatitude(15.401262012505189, 46.99121587668888);
+     * }</pre>
+     *
+     * @param longitude the east-west position in degrees
+     * @param latitude the north-south position in degrees
+     * @return a Point object representing the specified longitude and latitude
+     */
     public Point getPointEPSG4326FromLongitudeAndLatitude(Double longitude, Double latitude) {
             GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), Constants.SRID4326);
             Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
