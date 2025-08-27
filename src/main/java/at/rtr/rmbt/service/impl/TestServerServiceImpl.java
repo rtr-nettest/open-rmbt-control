@@ -66,17 +66,6 @@ public class TestServerServiceImpl implements TestServerService {
         return getServers(SERVER_UDP_TEST_SERVER_TYPES);
     }
 
-    @Override
-    public String getHello() {
-        return "nothing";
-
-    }
-
-
-
-
-
-
 
     private List<TestServerResponseForSettings> getServers(List<ServerType> serverTypes) {
         return testServerRepository.findDistinctByActiveTrueAndSelectableTrueAndServerTypesIn(serverTypes).stream()

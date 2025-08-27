@@ -34,4 +34,11 @@ public class CoverageSettingsResponse {
 
     @JsonProperty(value = "ip_version")
     private final Integer ipVersion;
+
+    @JsonProperty(value = "max_coverage_session_seconds")
+    private final Long maxCoverageSessionSeconds;
+
+    @JsonProperty(value = "max_coverage_measurement_seconds")
+    private final Long maxCoverageMeasurementSeconds;
+
 }

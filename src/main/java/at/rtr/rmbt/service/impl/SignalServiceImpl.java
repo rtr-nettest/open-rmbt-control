@@ -67,6 +67,7 @@ public class SignalServiceImpl implements SignalService {
     private final SignalRepository signalRepository;
     private final FencesService fencesService;
     private final TestServerService testServerService;
+    private final SettingsRepository settingsRepository;
 
 
     @Override
@@ -170,18 +171,59 @@ public class SignalServiceImpl implements SignalService {
 
         var savedTest = testRepository.saveAndFlush(test);
 
-        // TODO: for debugging a dummy secret is hardcoded
-        // Later a specific test server needs to be defined (host, port)
-        final String sharedSecret = "topsecret";
+        // get maxCoverageMeasurement time from settings (this is the max time for a single measurement)
 
-        // TODO: Hard coded URLs, later to be defined by pingServer table
-        final String hostname_v4 = "udpv4.netztest.at";
-        final String hostname_v6 = "udpv6.netztest.at";
-        final String port = String.valueOf(444);
+        Optional<Settings> maxCoverageMeasurementSecondsSetting =
+                settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
+                        "max_coverage_measurement_seconds", "max_coverage_measurement_seconds", null);
 
-        // TODO Add code that takes the server settings from test_server HERE
-        //final List<TestServerResponseForSettings> serverUdpResponseList = testServerService.getServersUdp();
+        // define default, fallback if no setting
+        long maxCoverageMeasurementSeconds = 14400000L;
+        if (maxCoverageMeasurementSecondsSetting.isPresent()) {
+            maxCoverageMeasurementSeconds =
+                    Long.parseLong(maxCoverageMeasurementSecondsSetting.get().getValue());
+        }
+        // log.info("UDP-maxCoverageMeasurementSecondsSetting = " + maxCoverageMeasurementSeconds);
 
+        // get maxCoverageSession time from settings (this is the max time for the whole session)
+
+        Optional<Settings> maxCoverageSessionSecondsSetting =
+                settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
+                        "max_coverage_session_seconds", "max_coverage_session_seconds", null);
+
+        // define default, fallback if no setting
+        long maxCoverageSessionSeconds = 14400000L;
+        if (maxCoverageSessionSecondsSetting.isPresent()) {
+            maxCoverageSessionSeconds =
+                    Long.parseLong(maxCoverageSessionSecondsSetting.get().getValue());
+        }
+        // log.info("UDP-maxCoverageSessionSecondsSetting = " + maxCoverageSessionSeconds);
+
+        // get geoIP country, used for selecting the UDP server
+
+        String countryIp = GeoIpHelper.lookupCountry(clientAddress);
+        log.info("UDP-Country = " + countryIp);
+
+        // get test server by geoIp
+
+        TestServer rmbtUdpServer = testServerService.findActiveByServerTypeInAndCountry(List.of(ServerType.RMBTudp), countryIp, null);
+        // log.info("UDP-Serverlist = " + rmbtUdpServer);
+
+        // get shared secret (used for computation of token)
+        final String sharedSecret = rmbtUdpServer.getKey();
+        final String hostname_v4 = rmbtUdpServer.getWebAddressIpV4();
+        final String hostname_v6 = rmbtUdpServer.getWebAddressIpV6();
+
+        // define port, fallback to default (444) if not defined
+        String port;
+        if (rmbtUdpServer.getPort() != null) {
+            port = rmbtUdpServer.getPort().toString();
+        }
+        else {
+            port = "444";
+        }
+
+        // log.info("UDP-rmbtServer = " + sharedSecret + " " + hostname_v4 + " " + hostname_v6 + " " + port);
 
 
         String hostname;
@@ -204,6 +246,8 @@ public class SignalServiceImpl implements SignalService {
                 .pingHost(hostname)
                 .pingPort(port)
                 .ipVersion(protocolVersion)
+                .maxCoverageMeasurementSeconds(maxCoverageMeasurementSeconds)
+                .maxCoverageSessionSeconds(maxCoverageSessionSeconds)
                 .build();
     }
 
@@ -603,11 +647,10 @@ public class SignalServiceImpl implements SignalService {
         // byte[] timeBytes = Arrays.copyOfRange(timeBuffer8.array(), 1, 8);
 
         // Print current time for debugging (similar to Python)
-        // TODO: Use correct logging, not print (or remove code)
         LocalDateTime dateTime = LocalDateTime.ofEpochSecond(nowSeconds, 0, ZoneOffset.UTC);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        System.out.println("Current time: " + dateTime.format(formatter));
-        System.out.println("time hex: " + bytesToHex(timeBytes));
+        // System.out.println("Current time: " + dateTime.format(formatter));
+        // System.out.println("time hex: " + bytesToHex(timeBytes));
 
         // HMAC-SHA256 with seed as key (take first 8 bytes of digest)
         // in src/main/java/at/rtr/rmbt/facade/TestSettingsFacade.java
@@ -617,7 +660,7 @@ public class SignalServiceImpl implements SignalService {
         // First hmac - general check (seed, time) with length 8 bytes
         final byte[] packetHashTime = HelperFunctions.calculateSha256HMAC(sharedSecret.getBytes(), timeBytes);
         final byte[] packetHashTime8 = firstNBytes(packetHashTime, 8);
-        System.out.println("hmac (in hex): " + bytesToHex(packetHashTime8));
+        // System.out.println("hmac (in hex): " + bytesToHex(packetHashTime8));
 
         // Second hmac - check for source IP
         final byte[] packetHashIp = HelperFunctions.calculateSha256HMAC(sharedSecret.getBytes(), timeBytes, ipBytes);

@@ -25,6 +25,4 @@ public interface TestServerService {
 
     List<TestServerResponseForSettings> getServersUdp();
 
-    String getHello();
-
 }
