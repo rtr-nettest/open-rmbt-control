@@ -74,7 +74,7 @@ public class TestSettingsResponse {
     private String testToken;
 
     @JsonProperty("test_numpings")
-    @Schema(description = "Number of pings executed during the test", example = "10")
+    @Schema(description = "Minimum number of pings to be executed during the test", example = "10")
     private String testNumberOfPings;
 
     @JsonProperty("test_id")

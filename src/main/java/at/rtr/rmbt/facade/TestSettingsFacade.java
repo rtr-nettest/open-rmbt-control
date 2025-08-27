@@ -15,12 +15,10 @@ import at.rtr.rmbt.utils.GeoIpHelper;
 import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import at.rtr.rmbt.utils.HelperFunctions;
 import at.rtr.rmbt.utils.TimeUtils;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.vdurmont.semver4j.SemverException;
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,6 +194,8 @@ public class TestSettingsFacade {
 
                     Integer duration = getDuration();
 
+                    Integer minNumberOfPings = getMinNumberOfPings();
+
                     TestServer testServer = null;
 
                     if (testSettingsRequest.isUserServerSelection()) {
@@ -219,7 +219,7 @@ public class TestSettingsFacade {
                             .testServerType(serverTypeDetails.getServerType())
                             .testDuration(String.valueOf(duration))
                             .testNumberOfThreads(String.valueOf(numberOfThreads))
-                            .testNumberOfPings(String.valueOf(applicationProperties.getPings()))
+                            .testNumberOfPings(String.valueOf(minNumberOfPings))
                             .clientRemoteIp(clientIpAddress);
 
                     String resultUrl = applicationServerUrl;
@@ -329,7 +329,7 @@ public class TestSettingsFacade {
         test.setUseSsl(serverTypeDetails.isEncrypted());
         test.setTimezone(timeZoneId);
         test.setClientTime(TimeUtils.getZonedDateTimeFromMillisAndTimezone(testSettingsRequest.getTime(), timeZoneId));
-        test.setDuration(applicationProperties.getDuration());
+        test.setDuration(getDuration());
         test.setNumberOfThreadsRequested(numberOfThreads);
         test.setStatus(TestStatus.STARTED);
         test.setSoftwareRevision(testSettingsRequest.getSoftwareRevision());
@@ -433,7 +433,7 @@ public class TestSettingsFacade {
     private Integer getDuration() {
 
         int duration;
-        // get default number of threads from settings
+        // get default duration from settings
         Optional<Settings> durationSetting =
                 settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
                         "rmbt_duration_seconds", "rmbt_duration_seconds", null);
@@ -444,6 +444,22 @@ public class TestSettingsFacade {
             duration = Integer.parseInt(durationSetting.get().getValue());
         }
         return duration;
+    }
+
+    private Integer getMinNumberOfPings() {
+
+        int minNumberOfPings;
+        // get default minimum number of pings from settings
+        Optional<Settings> minNumberOfPingsSetting =
+                settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
+                        "rmbt_min_pings", "rmbt_min_pings", null);
+
+        // set default, fallback if no setting
+        minNumberOfPings = 10;
+        if (minNumberOfPingsSetting.isPresent()) {
+            minNumberOfPings = Integer.parseInt(minNumberOfPingsSetting.get().getValue());
+        }
+        return minNumberOfPings;
     }
 
     private String getLanguageIfSupportedOrDefault(String language) {
