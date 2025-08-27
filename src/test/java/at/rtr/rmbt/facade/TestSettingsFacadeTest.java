@@ -8,6 +8,7 @@ import at.rtr.rmbt.model.LoopModeSettings;
 import at.rtr.rmbt.model.RtrClient;
 import at.rtr.rmbt.model.ServerTypeDetails;
 import at.rtr.rmbt.model.TestServer;
+import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.TestSettingsResponse;
 import at.rtr.rmbt.service.*;
@@ -98,6 +99,7 @@ public class TestSettingsFacadeTest {
     private final MessageSource messageSource = mock(MessageSource.class);
     private final RollBackService rollBackService = mock(RollBackService.class);
 
+    private SettingsRepository settingsRepository;
     private final TestSettingsFacade facade = new TestSettingsFacade(
             loopModeSettingsService,
             clientTypeService,
@@ -107,7 +109,8 @@ public class TestSettingsFacadeTest {
             applicationProperties,
             messageSource,
             TestUtils.mapper,
-            rollBackService
+            rollBackService,
+            settingsRepository
     );
 
     private MockHttpServletRequest request;

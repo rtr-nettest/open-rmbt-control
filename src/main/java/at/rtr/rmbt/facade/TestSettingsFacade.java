@@ -6,6 +6,7 @@ import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.TestServerNotFoundException;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
+import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.TestSettingsResponse;
@@ -64,6 +65,9 @@ public class TestSettingsFacade {
 
     private final RollBackService rollBackService;
 
+    private final SettingsRepository settingsRepository;
+
+
     @Value("${application-version.server-url}")
     private String applicationServerUrl;
 
@@ -71,7 +75,7 @@ public class TestSettingsFacade {
     public TestSettingsFacade(LoopModeSettingsService loopModeSettingsService, ClientTypeService clientTypeService,
                               ClientService clientService, TestServerService testServerService, TestService testService,
                               ApplicationProperties applicationProperties, MessageSource messageSource, ObjectMapper objectMapper,
-                              RollBackService rollBackService) {
+                              RollBackService rollBackService, SettingsRepository settingsRepository) {
         this.loopModeSettingsService = loopModeSettingsService;
         this.clientTypeService = clientTypeService;
         this.clientService = clientService;
@@ -81,6 +85,7 @@ public class TestSettingsFacade {
         this.messageSource = messageSource;
         this.objectMapper = objectMapper;
         this.rollBackService = rollBackService;
+        this.settingsRepository = settingsRepository;
     }
 
     @Transactional
@@ -404,8 +409,22 @@ public class TestSettingsFacade {
     }
 
     private Integer getNumberOfThreadsOrDefault(Integer numberOfThreads) {
-        //allow clients to explicitly request a certain num_threads
-        return numberOfThreads != null && numberOfThreads > 0 ? numberOfThreads : applicationProperties.getThreads();
+        // allow clients to explicitly request a certain num_threads
+        // but include sanity check (max 10, not more)
+        if (numberOfThreads != null && numberOfThreads > 0 && numberOfThreads < 10)
+            return numberOfThreads;
+
+        // get default number of threads from settings
+        Optional<Settings> numberOfThreadsSetting =
+                settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
+                        "rmbt_num_threads", "rmbt_num_threads", null);
+
+        // set default, fallback if no setting
+        numberOfThreads = 3;
+        if (numberOfThreadsSetting.isPresent()) {
+            numberOfThreads = Integer.parseInt(numberOfThreadsSetting.get().getValue());
+        }
+        return numberOfThreads;
     }
 
     private String getLanguageIfSupportedOrDefault(String language) {
