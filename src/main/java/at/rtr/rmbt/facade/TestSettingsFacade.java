@@ -193,6 +193,9 @@ public class TestSettingsFacade {
                     ipv6 = isIpV6(testSettingsRequest.getProtocolVersion(), clientAddress, errorResponse, locale);
 
                     Integer numberOfThreads = getNumberOfThreadsOrDefault(testSettingsRequest.getNumberOfThreads());
+
+                    Integer duration = getDuration();
+
                     TestServer testServer = null;
 
                     if (testSettingsRequest.isUserServerSelection()) {
@@ -214,7 +217,7 @@ public class TestSettingsFacade {
                             .testServerName(testServer.getName() + " (" + testServer.getCity() + ")")
                             .testServerEncryption(serverTypeDetails.isEncrypted())
                             .testServerType(serverTypeDetails.getServerType())
-                            .testDuration(String.valueOf(applicationProperties.getDuration()))
+                            .testDuration(String.valueOf(duration))
                             .testNumberOfThreads(String.valueOf(numberOfThreads))
                             .testNumberOfPings(String.valueOf(applicationProperties.getPings()))
                             .clientRemoteIp(clientIpAddress);
@@ -425,6 +428,22 @@ public class TestSettingsFacade {
             numberOfThreads = Integer.parseInt(numberOfThreadsSetting.get().getValue());
         }
         return numberOfThreads;
+    }
+
+    private Integer getDuration() {
+
+        int duration;
+        // get default number of threads from settings
+        Optional<Settings> durationSetting =
+                settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
+                        "rmbt_duration_seconds", "rmbt_duration_seconds", null);
+
+        // set default, fallback if no setting
+        duration = 7;
+        if (durationSetting.isPresent()) {
+            duration = Integer.parseInt(durationSetting.get().getValue());
+        }
+        return duration;
     }
 
     private String getLanguageIfSupportedOrDefault(String language) {
