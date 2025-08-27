@@ -333,10 +333,7 @@ public class SignalServiceImpl implements SignalService {
         }
 
         return CoverageResultResponse.builder()
-                // TODO no uuid as result
-                .testUUID(uuidToReturn)
-                .build();
-
+                 .build();
     }
 
 

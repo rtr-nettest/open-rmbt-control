@@ -10,6 +10,4 @@ import java.util.UUID;
 @Getter
 public class CoverageResultResponse {
 
-    @JsonProperty(value = "test_uuid")
-    private final UUID testUUID;
 }
