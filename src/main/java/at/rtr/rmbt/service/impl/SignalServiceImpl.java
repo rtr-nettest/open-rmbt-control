@@ -323,15 +323,6 @@ public class SignalServiceImpl implements SignalService {
 
         processFences(coverageResultRequest.getFences(), updatedTest);
 
-        //TODO: UUID is no longer changed by backend
-        UUID uuidToReturn = updatedTest.getUuid();
-
-        if (updatedTest.getTimestamp().plusMinutes(Constants.SIGNAL_CHANGE_UUID_AFTER_MIN)
-                .compareTo(Instant.now().atZone(updatedTest.getTimestamp().getZone())) < 0) {
-            log.info("updating signal uuid after " + Constants.SIGNAL_CHANGE_UUID_AFTER_MIN + " minutes");
-            uuidToReturn = UUID.randomUUID();
-        }
-
         return CoverageResultResponse.builder()
                  .build();
     }
