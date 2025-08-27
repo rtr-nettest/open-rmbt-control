@@ -36,9 +36,6 @@ app:
   rmbt:
     accuracyDetailLimit: 10000
     accuracyButtonLimit: 2000
-    duration: 7
-    pings: 10
-    threads: 3
     version: 0.1.0 || 0.3.0 || ^1.0.0
     language:
       supportedLanguages:
