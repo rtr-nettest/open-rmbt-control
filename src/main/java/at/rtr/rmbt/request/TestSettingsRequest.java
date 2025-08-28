@@ -73,7 +73,7 @@ public class TestSettingsRequest {
     @JsonProperty("softwareVersion")
     private String softwareVersion;
 
-    @Schema(description = "Whether user have an option to select measurement server by himself")
+    @Schema(description = "Whether client selected measurement server")
     @JsonProperty("user_server_selection")
     private boolean userServerSelection;
 
@@ -81,7 +81,7 @@ public class TestSettingsRequest {
     @JsonProperty("prefer_server")
     private String preferredServer;
 
-    @Schema(description = "Define number of threads used by client. Send -1 or leave empty to use defaults value")
+    @Schema(description = "Define number of threads used by client. Leave empty to use defaults value")
     @JsonProperty("num_threads")
     private Integer numberOfThreads;
 
@@ -93,7 +93,7 @@ public class TestSettingsRequest {
     @JsonProperty("location")
     private Location location;
 
-    @Schema(description = "Client time in Unix Epoch (UTC) e.g. Fri Apr 28 2023 08:18:53 GMT+0000", example = "1682669933367")
+    @Schema(description = "Client time in ms n Unix Epoch (UTC) e.g. Fri Apr 28 2023 08:18:53 GMT+0000", example = "1682669933367")
     @JsonProperty("time")
     private Long time;
 
