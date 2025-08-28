@@ -268,7 +268,6 @@ public class TestSettingsFacade {
                             builder.testToken(token)
                                     .testUuid(testUuid.toString())
                                     .openTestUuid("O" + openTestUuid)
-                                    .testId(test.getUid())
                                     .testWait(Math.max(waitTime, 0));
                         }
 

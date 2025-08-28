@@ -77,10 +77,6 @@ public class TestSettingsResponse {
     @Schema(description = "Minimum number of pings to be executed during the test", example = "10")
     private String testNumberOfPings;
 
-    @JsonProperty("test_id")
-    @Schema(description = "Id of the test", example = "8772493")
-    private Long testId;
-
     @JsonProperty("loop_uuid")
     @Schema(description = "Generated loop_uuid if it is loop measurement", example = "53d69299-0206-4732-a623-6b0c2fec306d")
     private String loopUuid;

@@ -102,7 +102,6 @@ public class RegistrationControllerTest {
             true,
             "test_token",
             "5",
-            1L,
             "a165c0a4-cc23-4e39-a1b3-8a111a32e755",
             "provider",
             new ErrorResponse(),
