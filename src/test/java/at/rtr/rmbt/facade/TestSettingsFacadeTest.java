@@ -4,10 +4,8 @@ import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.config.RollBackService;
 import at.rtr.rmbt.constant.HeaderConstants;
 import at.rtr.rmbt.enums.*;
-import at.rtr.rmbt.model.LoopModeSettings;
-import at.rtr.rmbt.model.RtrClient;
-import at.rtr.rmbt.model.ServerTypeDetails;
-import at.rtr.rmbt.model.TestServer;
+import at.rtr.rmbt.enums.ClientType;
+import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.TestSettingsResponse;
@@ -212,7 +210,7 @@ public class TestSettingsFacadeTest {
         assertEquals(request.getLocalAddr(), testResult.getClientPublicIp());
         assertEquals(testServer.getUid(), testResult.getTestServer().getUid());
         assertEquals(testServer.getPortSsl(), testResult.getServerPort());
-        //assertEquals(applicationProperties.getDuration(), testResult.getDuration());
+        assertEquals(DEFAULT_DURATION_SECONDS, testResult.getDuration());
         assertEquals(testSettingsRequest.getNumberOfThreads(), testResult.getNumberOfThreadsRequested());
         assertEquals(TestStatus.STARTED, testResult.getStatus());
         assertEquals(testSettingsRequest.getNdt(), testResult.getRunNdt());
@@ -255,6 +253,11 @@ public class TestSettingsFacadeTest {
 
             return argument.toBuilder().uid(23L).build();
         });
+        Settings minPing = new Settings(1L,"rmbt_min_pings",null,DEFAULT_MIN_PINGS.toString());
+        when(settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang("rmbt_min_pings", "rmbt_min_pings", null)).thenReturn(Optional.of(minPing));
+
+        Settings duration = new Settings(2L,"rmbt_duration_seconds",null,DEFAULT_DURATION_SECONDS.toString());
+        when(settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang("rmbt_duration_seconds", "rmbt_duration_seconds", null)).thenReturn(Optional.of(duration));
     }
 
     private void verifyUpdateTestSettings(ArgumentCaptor<at.rtr.rmbt.model.Test> testArgumentCaptor, TestSettingsResponse result) {
@@ -274,9 +277,9 @@ public class TestSettingsFacadeTest {
         assertEquals(result.getTestUuid(), secondTestResult.getUuid().toString());
         assertEquals(result.getTestId(), secondTestResult.getUid());
         assertEquals(result.getTestServerPort(), testServer.getPortSsl());
-        // assertEquals(result.getTestDuration(), applicationProperties.getDuration().toString());
+        assertEquals(result.getTestDuration(), DEFAULT_DURATION_SECONDS.toString());
         assertEquals(result.getTestNumberOfThreads(), secondTestResult.getNumberOfThreadsRequested().toString());
-        // assertEquals(result.getTestNumberOfPings(), applicationProperties.getPings().toString());
+        assertEquals(result.getTestNumberOfPings(), DEFAULT_MIN_PINGS.toString());
         assertEquals(result.getClientRemoteIp(), request.getLocalAddr());
     }
 

@@ -439,6 +439,8 @@ public interface TestConstants {
     String DEFAULT_T_UUID_FIELD = "t.uuid";
     String DEFAULT_U_UUID_FIELD = "c.uuid";
     Integer DEFAULT_AFFECTED_ROWS = 1;
+    Integer DEFAULT_MIN_PINGS = 10;
+    Integer DEFAULT_DURATION_SECONDS = 7;
 
     interface Database {
         long CLIENT_TYPE_MOBILE_UID = 2L;
