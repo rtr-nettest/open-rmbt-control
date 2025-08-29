@@ -298,7 +298,7 @@ public class HelperFunctions {
                 postfix = Name.fromConstantString("origin.asn.cymru.com");
 
             final Name name = getReverseIPName(adr, postfix);
-            System.out.println("lookup: " + name);
+            // System.out.println("lookup: " + name);
 
             final Lookup lookup = new Lookup(name, Type.TXT);
             SimpleResolver resolver = new SimpleResolver();
@@ -355,7 +355,7 @@ public class HelperFunctions {
         try {
             final Name postfix = Name.fromConstantString("asn.cymru.com.");
             final Name name = new Name(String.format("AS%d", asn), postfix);
-            System.out.println("lookup: " + name);
+            // System.out.println("lookup: " + name);
 
             final Lookup lookup = new Lookup(name, Type.TXT);
             lookup.setResolver(new SimpleResolver());
@@ -384,7 +384,7 @@ public class HelperFunctions {
         try {
             final Name postfix = Name.fromConstantString("asn.cymru.com.");
             final Name name = new Name(String.format("AS%d", asn), postfix);
-            System.out.println("lookup: " + name);
+            // System.out.println("lookup: " + name);
 
             final Lookup lookup = new Lookup(name, Type.TXT);
             lookup.setResolver(new SimpleResolver());
