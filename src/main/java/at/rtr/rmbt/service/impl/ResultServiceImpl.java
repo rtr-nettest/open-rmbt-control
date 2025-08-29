@@ -9,6 +9,7 @@ import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.properties.ApplicationProperties;
+import at.rtr.rmbt.repository.LoopModeSettingsRepository;
 import at.rtr.rmbt.repository.NetworkTypeRepository;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.ResultRequest;
@@ -19,7 +20,7 @@ import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
+import lombok.extern.slf4j.Slf4j;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.util.Map;
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ResultServiceImpl implements ResultService {
 
     private final TestRepository testRepository;
@@ -43,6 +45,7 @@ public class ResultServiceImpl implements ResultService {
     private final SpeedService speedService;
     private final ApplicationProperties applicationProperties;
     private final TestMapper testMapper;
+    private final LoopModeSettingsRepository loopModeSettingsRepository;
 
     private final static Pattern MCC_MNC_PATTERN = Pattern.compile("\\d{3}-\\d+");
 
@@ -74,9 +77,38 @@ public class ResultServiceImpl implements ResultService {
         setNetworkType(test);
         setAndroidPermission(resultRequest, test);
         setSpeedAndPing(resultRequest, test);
+        processCertMode(resultRequest, test);
         Test updatedTest = testMapper.updateTestLocation(test);
         updatedTest.setStatus(getStatus(resultRequest));
         testRepository.save(updatedTest);
+    }
+
+    private void processCertMode(ResultRequest resultRequest, Test test) {
+        if (Objects.nonNull(resultRequest.getCertMode()) &&
+                resultRequest.getCertMode() &&
+                Objects.nonNull(test.getLoopModeSettings())) {
+
+            log.info("UserCertMode is true for test result uuid: {}", test.getUuid());
+            test.getLoopModeSettings().setCertMode(resultRequest.getCertMode());
+            loopModeSettingsRepository.save(test.getLoopModeSettings());
+/* CTU only code, see https://github.com/CTUCZ/nettest-rmbt-control/
+            if("DESKTOP".equals(resultRequest.getType())) {
+                log.info("Test result is from DESKTOP, saving user address...");
+                log.info("Log xWgs: {}, yWgs: {}", resultRequest.getUserAddressXWgs(), resultRequest.getUserAddressYWgs());
+                if(!certAddressRepository.existsById(test.getLoopModeSettings().getLoopUuid())) {
+                    certAddressRepository.save(
+                            TestCertAddress.builder()
+                                    .loopUuid(test.getLoopModeSettings().getLoopUuid())
+                                    .address(resultRequest.getUserAddress())
+                                    .amCode(resultRequest.getUserAddressAmCode())
+                                    .xWgs(resultRequest.getUserAddressXWgs())
+                                    .yWgs(resultRequest.getUserAddressYWgs())
+                                    .build()
+                    );
+                }
+            }
+ */
+        }
     }
 
     private TestStatus getStatus(ResultRequest resultRequest) {

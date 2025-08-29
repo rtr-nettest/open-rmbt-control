@@ -491,6 +491,11 @@ public class Test implements Serializable {
     @Column(name = "fences_count") // int4
     private Long fencesCount;
 
+    // not stored in database (thus @Transient)
+    @Transient
+    @Column(name = "cert_mode")
+    private Boolean certMode;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "uuid",

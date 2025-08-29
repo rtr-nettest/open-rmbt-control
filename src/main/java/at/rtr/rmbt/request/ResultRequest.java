@@ -206,13 +206,16 @@ public class ResultRequest {
     @JsonProperty(value = "user_server_selection")
     private final Boolean userServerSelection;
 
+    // Not used
     @Schema(description = "User loop mode", example = "true")
     @JsonProperty(value = "user_loop_mode")
     private final boolean loopModeEnabled;
 
-    @Schema(description = "User cert mode", example = "true")
-    @JsonProperty(value = "user_cert_mode")
-    private final Boolean userCertMode;
+    @Schema(description = "Cert mode", example = "true")
+    // CTU Alias
+    @JsonAlias(value = "user_cer_mode")
+    @JsonProperty(value = "cert_mode")
+    private final Boolean certMode;
 
     @Schema(description = "mcc-mnc of the operator network, mobile networks only", example = "231-06")
     @JsonProperty(value = "telephony_network_operator")

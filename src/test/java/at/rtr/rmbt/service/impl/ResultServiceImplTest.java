@@ -4,6 +4,7 @@ import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.properties.ApplicationProperties;
+import at.rtr.rmbt.repository.LoopModeSettingsRepository;
 import at.rtr.rmbt.repository.NetworkTypeRepository;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.RadioCellRequest;
@@ -72,12 +73,14 @@ public class ResultServiceImplTest {
     private RadioSignalRequest radioSignalRequest;
     @Mock
     private RadioCellRequest radioCellRequest;
+    @Mock
+    private LoopModeSettingsRepository loopModeSettings;
 
     @Before
     public void setUp() {
         resultService = new ResultServiceImpl(testRepository, geoLocationService, radioCellService,
                 radioSignalService, cellLocationService, signalService, networkTypeRepository,
-                pingService, speedService, applicationProperties, testMapper);
+                pingService, speedService, applicationProperties, testMapper,loopModeSettings);
     }
 
     @Test

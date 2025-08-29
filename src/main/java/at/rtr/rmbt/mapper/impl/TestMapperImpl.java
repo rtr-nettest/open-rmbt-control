@@ -98,6 +98,7 @@ public class TestMapperImpl implements TestMapper {
         test.setLastQosStatus(resultRequest.getLastQosStatus());
         test.setTestErrorCause(resultRequest.getTestErrorCause());
         test.setSubmissionRetryCount(resultRequest.getTestSubmissionRetryCount());
+        test.setCertMode(resultRequest.getCertMode());
     }
 
     @Override
