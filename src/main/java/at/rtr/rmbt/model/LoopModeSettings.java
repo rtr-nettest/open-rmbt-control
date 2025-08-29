@@ -41,4 +41,7 @@ public class LoopModeSettings implements Serializable {
 
     @Column(name = "loop_uuid")
     private UUID loopUuid;
+
+    @Column(name = "cert_mode")
+    private Boolean certMode;
 }

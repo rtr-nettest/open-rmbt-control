@@ -121,6 +121,7 @@ public class TestSettingsRequest {
     @JsonProperty("language")
     private String language;
 
+    // not used
     @Schema(description = "Set to true if loop mode is on")
     @JsonProperty("user_loop_mode")
     private boolean userLoopMode;
@@ -258,6 +259,10 @@ public class TestSettingsRequest {
         @Schema(description = "Loop UUID of the test series with first test will be generated, so first test will be null there in request and new will be generated", example = "37e57f4e-25df-4bcf-9151-9f6eff311279")
         @JsonProperty("loop_uuid")
         private String loopUuid;
+
+        @Schema(description = "Flag indicating that the measurement is a certified measurement ", example = "True")
+        @JsonProperty("user_cert_mode")
+        private Boolean userCertMode;
     }
 
     @Getter

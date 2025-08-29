@@ -106,4 +106,9 @@ public class HistoryItemResponse {
     @JsonProperty(value = "fencesCount", defaultValue = "NULL")
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private final Long fences_count;
+
+    @Schema(description = "Identification of certified measurement (only available when supported by client)")
+    @JsonProperty(value = "cert_mode", defaultValue = "NULL")
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private final Boolean certMode;
 }

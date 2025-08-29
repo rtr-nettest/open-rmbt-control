@@ -47,6 +47,7 @@ public class TestSettingsFacadeTest {
             3,
             4,
             -1,
+            null,
             null
     );
 

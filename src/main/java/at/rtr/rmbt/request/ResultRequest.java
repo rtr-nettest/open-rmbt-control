@@ -208,6 +208,10 @@ public class ResultRequest {
     @JsonProperty(value = "user_loop_mode")
     private final boolean loopModeEnabled;
 
+    @Schema(description = "User cert mode", example = "true")
+    @JsonProperty(value = "user_cert_mode")
+    private final Boolean userCertMode;
+
     @Schema(description = "mcc-mnc of the operator network, mobile networks only", example = "231-06")
     @JsonProperty(value = "telephony_network_operator")
     private final String telephonyNetworkOperator;

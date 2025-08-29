@@ -75,7 +75,7 @@ public class RegistrationControllerTest {
             "41ab60bd-becf-45c8-abbc-0e85b59d65ca",
             "en",
             true,
-            new TestSettingsRequest.LoopModeInfo(1L, "f46b1165-2451-4989-a2f5-5eb7b598aa48", "c94e7c39-8774-4210-8be9-2411c5da9ff7", 30, 2, 10000, 1, -1, "a165c0a4-cc23-4e39-a1b3-8a111a32e755"),
+            new TestSettingsRequest.LoopModeInfo(1L, "f46b1165-2451-4989-a2f5-5eb7b598aa48", "c94e7c39-8774-4210-8be9-2411c5da9ff7", 30, 2, 10000, 1, -1, "a165c0a4-cc23-4e39-a1b3-8a111a32e755",null),
             new TestSettingsRequest.Capabilities(
                 new TestSettingsRequest.Capabilities.ClassificationCapabilities(1),
                 new TestSettingsRequest.Capabilities.QosCapabilities(true),

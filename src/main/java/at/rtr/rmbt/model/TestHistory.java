@@ -67,4 +67,7 @@ public class TestHistory {
 
     @Column(name = "fences_count")
     private Long fencesCount;
+
+    @Column(name = "cert_mode")
+    private Boolean certMode;
 }

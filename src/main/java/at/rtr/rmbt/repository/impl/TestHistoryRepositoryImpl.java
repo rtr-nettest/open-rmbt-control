@@ -21,18 +21,24 @@ import java.util.*;
 public class TestHistoryRepositoryImpl implements TestHistoryRepository {
 
     private final JdbcTemplate jdbcTemplate;
+
+    //l.cert_mode cert_mode,
     private final static String GET_TEST_HISTORY = "SELECT DISTINCT"
-            + " t.fences_count, t.status, t.uuid, t.open_test_uuid, time, timezone, speed_upload, speed_download, ping_median, lte_rsrp, signal_strength, dual_sim, sim_count, network_type, nt.group_name network_type_group_name, l.loop_uuid loop_uuid,"
+            + " t.fences_count, t.status, t.uuid, t.open_test_uuid, time, timezone, speed_upload, speed_download,"
+            + " ping_median, lte_rsrp, signal_strength, dual_sim, sim_count, network_type,"
+            + " nt.group_name network_type_group_name, l.loop_uuid loop_uuid, l.cert_mode cert_mode,"
             + " COALESCE(adm.fullname, t.model) model"
             + " FROM test t"
             + " LEFT JOIN device_map adm ON adm.codename=t.model"
             + " LEFT JOIN network_type nt ON t.network_type=nt.uid"
             + " LEFT JOIN test_loopmode l ON (l.test_uuid = t.uuid)"
-            + " WHERE t.deleted = false AND t.implausible = false "
+               + " WHERE t.deleted = false AND t.implausible = false "
             + " %s %s %s %s" + " ORDER BY time DESC" + " %s";
 
     @Override
-    public List<TestHistory> getTestHistoryByDevicesAndNetworksAndClient(Integer resultLimit, Integer resultOffset, List<String> devices, List<String> networks, RtrClient client, boolean includeFailedTests, boolean includeCoverageFences) {
+    public  List<TestHistory> getTestHistoryByDevicesAndNetworksAndClient(Integer resultLimit, Integer resultOffset,
+            List<String> devices, List<String> networks, RtrClient client, boolean includeFailedTests,
+            boolean includeCoverageFences) {
         //
         ArrayList<Object> args = new ArrayList<>();
         String testStatusRequest = " AND t.status IN (%s)";
