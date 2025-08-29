@@ -1,6 +1,7 @@
 package at.rtr.rmbt.request;
 
 import at.rtr.rmbt.constant.Constants;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -19,7 +20,8 @@ public class NewsParametersRequest {
     private final Long lastNewsUid;
 
     @Schema(description = "Platform of device", example = "Android")
-    @JsonProperty(value = "plattform")
+    @JsonAlias(value = "plattform")
+    @JsonProperty(value = "platform")
     private final String platform;
 
     @Schema(description = "Version code from build gradle for Android devices", example = "33201")

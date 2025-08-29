@@ -30,8 +30,8 @@ public class RtrSettingsRequest {
     private final String language;
 
     @Schema(description = "Platform of device", example = "Android")
-    @JsonProperty(value = "plattform")
-    @JsonAlias(value = "platform")
+    @JsonAlias(value = "plattform")
+    @JsonProperty(value = "platform")
     private final String platform;
 
     @Schema(description = "Obtained by android.os.Build.VERSION.RELEASE + \"(\" + android.os.Build.VERSION.INCREMENTAL + \")\"", example = "9(G950FXXU5DSFB)")
