@@ -407,6 +407,7 @@ public class TestSettingsFacade {
         loopModeSettings.setMaxMovement(loopModeInfo.getMaxMovement());
         loopModeSettings.setMaxTests(loopModeInfo.getMaxTests());
         loopModeSettings.setTestCounter(loopModeInfo.getTestCounter());
+        loopModeSettings.setCertMode((loopModeInfo.getCertMode()));
         return loopModeSettings;
     }
 

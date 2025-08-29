@@ -2,6 +2,7 @@ package at.rtr.rmbt.request;
 
 import at.rtr.rmbt.enums.*;
 import at.rtr.rmbt.model.AndroidPermission;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -17,7 +18,8 @@ import java.util.List;
 public class ResultRequest {
 
     @Schema(description = "Platform of device", example = "Android")
-    @JsonProperty(value = "plattform")
+    @JsonAlias(value = "plattform")
+    @JsonProperty(value = "platform")
     private final TestPlatform platform;
 
     @Schema(description = "Client uuid")

@@ -261,8 +261,9 @@ public class TestSettingsRequest {
         private String loopUuid;
 
         @Schema(description = "Flag indicating that the measurement is a certified measurement ", example = "True")
-        @JsonProperty("user_cert_mode")
-        private Boolean userCertMode;
+        @JsonAlias("user_cert_mode")
+        @JsonProperty("cert_mode")
+        private Boolean certMode;
     }
 
     @Getter
