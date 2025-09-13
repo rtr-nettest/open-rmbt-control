@@ -1,5 +1,6 @@
 package at.rtr.rmbt.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.locationtech.jts.geom.Geometry;
@@ -28,6 +29,9 @@ public class Fences {
 
     @Column(name = "technology_id") // int4
     private Long technologyId;
+
+    @JsonProperty("avg_ping_ms") // float8
+    private Double avgPingMs;
 
     @Column(name = "technology") // varchar
     private String technology;

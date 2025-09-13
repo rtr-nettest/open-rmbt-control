@@ -37,7 +37,7 @@ public class FencesRequest {
 
     @Schema(description = "Average ping in ms", example = "15")
     @JsonProperty(value = "avg_ping_ms")
-    private final Long avgPingMs;
+    private final Double avgPingMs;
 
     // from iOS prototype, to be removed
     @Schema(description = "Absolute client time in us", example = "1750762114081328")
