@@ -484,8 +484,12 @@ public class SignalServiceImpl implements SignalService {
             updatedTest.setClientIpLocalAnonymized(HelperFunctions.anonymizeIp(ipLocalAddress));
             updatedTest.setClientIpLocalType(HelperFunctions.IpType(ipLocalAddress));
 
-            InetAddress ipPublicAddress = InetAddresses.forString(updatedTest.getClientPublicIp());
-            updatedTest.setNatType(HelperFunctions.getNatType(ipLocalAddress, ipPublicAddress));
+            // clientPublicIp might be null, avoid NullPointerException
+            String clientPublicIp = updatedTest.getClientPublicIp();
+            if (clientPublicIp != null) {
+                InetAddress ipPublicAddress = InetAddresses.forString(clientPublicIp);
+                updatedTest.setNatType(HelperFunctions.getNatType(ipLocalAddress, ipPublicAddress));
+            }
         }
     }
 
