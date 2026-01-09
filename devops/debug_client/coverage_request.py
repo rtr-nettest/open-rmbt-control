@@ -33,7 +33,7 @@ def send_coverage_request():
         "timezone": "Europe/Prague",
         "time": 1571665024591,
         "measurement_type_flag": "dedicated",
-        "signal": True,
+        "signal": False,
         "capabilities": {
             "RMBThttp": True,
             "classification": {

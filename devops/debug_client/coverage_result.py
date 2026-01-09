@@ -30,7 +30,7 @@ def send_coverage_request():
         "timezone": "Europe/Prague",
         "time": int(time.time() * 1000),  # Current time in milliseconds
         "measurement_type_flag": "dedicated",
-        "signal": True,
+        "signal": False,
         "capabilities": {
             "RMBThttp": True,
             "classification": {
@@ -326,7 +326,7 @@ if __name__ == "__main__":
     # Step 2: Send coverage result (only if first request was successful)
     if test_uuid and base_url:
         # Optional: Add a small delay between requests
-        time.sleep(1)
+        time.sleep(.1)
         send_coverage_result(base_url, test_uuid)
     else:
         print("\n✗ Skipping coverage result: First request was not successful")
