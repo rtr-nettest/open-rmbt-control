@@ -13,8 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.HashMap;
 
 import static at.rtr.rmbt.constant.ErrorMessage.ERROR_CLIENT_VERSION;
 import static at.rtr.rmbt.constant.ErrorMessage.ERROR_DB_GET_CLIENTTYPE;
@@ -78,5 +82,30 @@ public class RtrAdvice {
     public ErrorResponse handleSyncException(SyncException ex) {
         return new ErrorResponse(ex.getMessage());
     }
+    // Catches JSON parsing errors (e.g., invalid format for time_ns)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ErrorResponse handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        // This will log the exact parameter that caused parsing to fail
+        Throwable rootCause = ex.getMostSpecificCause();
+        log.error("Failed to parse JSON request. Problem with parameter in request body. Root cause: ", rootCause);
+
+        // Return a clean error message to client
+        return new ErrorResponse("Invalid request format: " + rootCause.getMessage());
+    }
+
+    // Catches @Valid validation errors (if you add @Valid to controller)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ErrorResponse handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage())
+        );
+        log.error("Request validation failed for fields: {}", errors);
+        // Return first error or all errors
+        return new ErrorResponse("Validation failed: " + errors.values().iterator().next());
+    }
+
 }
 
