@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,8 +36,8 @@ public class SignalController {
     @Operation(summary = "Register signal", description = "Request to obtain configuration for signal monitoring")
     @ResponseStatus(HttpStatus.CREATED)
     public SignalSettingsResponse processSignalRequest(HttpServletRequest httpServletRequest,
-                                                 @RequestHeader Map<String, String> headers,
-                                                 @RequestBody SignalRegisterRequest signalRegisterRequest) {
+                                                       @RequestHeader Map<String, String> headers,
+                                                       @RequestBody SignalRegisterRequest signalRegisterRequest) {
         return signalService.processSignalRequest(signalRegisterRequest, httpServletRequest, headers);
     }
 
@@ -43,8 +45,8 @@ public class SignalController {
     @Operation(summary = "Register coverage", description = "Request to obtain configuration for coverage monitoring")
     @ResponseStatus(HttpStatus.CREATED)
     public CoverageSettingsResponse processCoverageRequest(HttpServletRequest httpServletRequest,
-                                                 @RequestHeader Map<String, String> headers,
-                                                 @RequestBody CoverageRegisterRequest coverageRegisterRequest) {
+                                                           @RequestHeader Map<String, String> headers,
+                                                           @RequestBody CoverageRegisterRequest coverageRegisterRequest) {
         return signalService.processCoverageRequest(coverageRegisterRequest, httpServletRequest, headers);
     }
 
@@ -72,7 +74,11 @@ public class SignalController {
     @PostMapping(URIConstants.COVERAGE_RESULT)
     @Operation(summary = "Process coverage result")
     @ResponseStatus(HttpStatus.OK)
-    public CoverageResultResponse processCoverageResult(@RequestBody CoverageResultRequest coverageResultRequest) {
-        return signalService.processCoverageResult(coverageResultRequest);
+    public Map<String, Object> processCoverageResult(@RequestBody CoverageResultRequest coverageResultRequest) {
+        signalService.processCoverageResult(coverageResultRequest);
+        return Collections.emptyMap(); // Returns "{}" as JSON
     }
+
+
+
 }

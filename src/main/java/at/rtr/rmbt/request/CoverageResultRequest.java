@@ -1,7 +1,6 @@
 package at.rtr.rmbt.request;
 
 import at.rtr.rmbt.enums.TestPlatform;
-import at.rtr.rmbt.model.Fences;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -29,9 +28,6 @@ public class CoverageResultRequest {
     @NotNull
     @Min(0)
     private final Long sequenceNumber;
-
-    @JsonProperty(value = "time_ns")
-    private final Long timeNanos;
 
     @JsonProperty(value = "client_uuid")
     private final UUID clientUUID;

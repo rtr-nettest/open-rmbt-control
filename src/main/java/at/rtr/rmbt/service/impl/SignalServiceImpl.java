@@ -35,10 +35,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -533,7 +530,6 @@ public class SignalServiceImpl implements SignalService {
         Test newTest = Test.builder()
                 .uuid(uuidGenerator.generateUUID())
                 .openTestUuid(uuidGenerator.generateUUID())
-                .time(getClientTimeFromCoverageResultRequest(coverageResultRequest))
                 .timezone(coverageResultRequest.getTimezone())
                 .client(client)
                 .useSsl(false)
@@ -545,14 +541,6 @@ public class SignalServiceImpl implements SignalService {
 
     private ZonedDateTime getClientTimeFromSignalResultRequest(SignalResultRequest signalResultRequest) {
         return TimeUtils.getZonedDateTimeFromMillisAndTimezone(Math.round(signalResultRequest.getTimeNanos() / 1e6), signalResultRequest.getTimezone());
-    }
-
-    private ZonedDateTime getClientTimeFromCoverageResultRequest(CoverageResultRequest coverageResultRequest) {
-        if (coverageResultRequest.getTimezone() == null)
-            return null;
-        else {
-            return TimeUtils.getZonedDateTimeFromMillisAndTimezone(Math.round(coverageResultRequest.getTimeNanos() / 1e6), coverageResultRequest.getTimezone());
-        }
     }
 
 
@@ -594,10 +582,7 @@ public class SignalServiceImpl implements SignalService {
     // Utility to distinguish between IPv4 and IPv6 addresses
     private static boolean inetAddressIsv4(InetAddress ip) {
 
-        if (ip instanceof Inet4Address) {
-            return true;
-        }
-        return false;
+        return ip instanceof Inet4Address;
     }
 
         private static String generatePingToken(String sharedSecret, InetAddress ip)  {
@@ -639,8 +624,8 @@ public class SignalServiceImpl implements SignalService {
         // byte[] timeBytes = Arrays.copyOfRange(timeBuffer8.array(), 1, 8);
 
         // Print current time for debugging (similar to Python)
-        LocalDateTime dateTime = LocalDateTime.ofEpochSecond(nowSeconds, 0, ZoneOffset.UTC);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        // LocalDateTime dateTime = LocalDateTime.ofEpochSecond(nowSeconds, 0, ZoneOffset.UTC);
+        // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         // System.out.println("Current time: " + dateTime.format(formatter));
         // System.out.println("time hex: " + bytesToHex(timeBytes));
 
