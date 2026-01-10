@@ -488,7 +488,8 @@ public class Test implements Serializable {
     @Column(name = "referrer")
     private String referrer;
 
-    @Column(name = "fences_count") // int4
+    @Comment("Count of coverage fence records, int4")
+    @Column(name = "fences_count")
     private Long fencesCount;
 
     // not stored in database (thus @Transient)

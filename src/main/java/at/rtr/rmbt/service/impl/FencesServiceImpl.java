@@ -27,7 +27,9 @@ public class FencesServiceImpl implements FencesService {
 
         List<Fences> newFences = new ArrayList<>();
 
-        test.setFencesCount(1L);
+        // initialize fences counter with zero
+        test.setFencesCount(0L);
+        // count fences
         for (FencesRequest fence : fences) {
             // increase fences count with each fence
             Fences newFence = fencesMapper.fencesRequestToFences(fence, test);
