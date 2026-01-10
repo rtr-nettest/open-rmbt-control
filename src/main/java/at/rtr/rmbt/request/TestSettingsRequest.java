@@ -149,7 +149,7 @@ public class TestSettingsRequest {
         @JsonProperty("ipv6")
         IPV6("ipv6");
 
-        private String label;
+        final private String label;
 
         ProtocolVersion(String label) {
             this.label = label;
@@ -243,7 +243,7 @@ public class TestSettingsRequest {
         @JsonProperty("max_movement")
         private Integer maxMovement;
 
-        @Schema(description = "How many tets should be executed")
+        @Schema(description = "How many tests should be executed")
         @JsonProperty("max_tests")
         private Integer maxTests;
 

@@ -66,6 +66,7 @@ public class SignalServiceImpl implements SignalService {
     private final FencesService fencesService;
     private final TestServerService testServerService;
     private final SettingsRepository settingsRepository;
+    private final LoopModeSettingsService loopModeSettingsService;
 
 
     @Override
@@ -125,6 +126,7 @@ public class SignalServiceImpl implements SignalService {
         var uuid = uuidGenerator.generateUUID();
         var openTestUUID = uuidGenerator.generateUUID();
 
+        // Check if client exists
         var client = clientRepository.findByUuid(coverageRegisterRequest.getClientUuid())
                 .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, coverageRegisterRequest.getClientUuid())));
 
@@ -132,6 +134,32 @@ public class SignalServiceImpl implements SignalService {
         var clientIpString = InetAddresses.toAddrString(clientAddress);
 
         var asInformation = HelperFunctions.getASInformationForSignalRequest(clientAddress);
+
+
+        // check if client submitted a loopUuid
+        var loopUuid = coverageRegisterRequest.getLoopUuid();
+        int loopTestCounter;
+
+        if (loopUuid == null) {
+            loopUuid = uuidGenerator.generateUUID();
+            loopTestCounter = 1;
+        }
+        else {
+            // check if loop uuid exists and if it belongs to the client
+            if (!loopModeSettingsService.existsByLoopUuidAndClientUuid(loopUuid, client.getUuid())) {
+                throw new TestNotFoundException(
+                        String.format(ErrorMessage.TEST_WITH_LOOP_UUID_NOT_FOUND, loopUuid)
+                );
+            }
+            // get latest counter
+            loopTestCounter = loopModeSettingsService.findMaxTestCounterByLoopUuid(loopUuid).orElse(0);
+            // increase counter by one
+            loopTestCounter = loopTestCounter + 1;
+        }
+
+        // create new loop record
+        LoopModeSettings loopModeSettings = toLoopModeSettings(loopUuid, uuid, client.getUuid(), loopTestCounter);
+
 
         TestStatus regStatus = TestStatus.COVERAGE_STARTED;
         Boolean supportSignal = coverageRegisterRequest.getSignal();
@@ -168,6 +196,7 @@ public class SignalServiceImpl implements SignalService {
                 // version (0.3), softwareVersionCode (11), type (MOBILE), name (RMBT), client (RMBT)
 
         var savedTest = testRepository.saveAndFlush(test);
+        loopModeSettingsService.save(loopModeSettings);
 
         // get maxCoverageMeasurement time from settings (this is the max time for a single measurement)
 
@@ -246,8 +275,24 @@ public class SignalServiceImpl implements SignalService {
                 .ipVersion(protocolVersion)
                 .maxCoverageMeasurementSeconds(maxCoverageMeasurementSeconds)
                 .maxCoverageSessionSeconds(maxCoverageSessionSeconds)
+                .loopUUID(loopUuid)
+                .loopTestCounter(loopTestCounter)
                 .build();
     }
+
+    private LoopModeSettings toLoopModeSettings(UUID loopUUID,UUID testUUID, UUID clientUUID, int testCounter) {
+        var loopModeSettings = new LoopModeSettings();
+        loopModeSettings.setLoopUuid(loopUUID);
+        loopModeSettings.setClientUuid(clientUUID);
+        loopModeSettings.setTestUuid(testUUID);
+        loopModeSettings.setTestCounter(testCounter);
+        loopModeSettings.setMaxDelay(null);
+        loopModeSettings.setMaxMovement(null);
+        loopModeSettings.setMaxTests(null);
+        loopModeSettings.setCertMode(null);
+        return loopModeSettings;
+    }
+
 
     @Override
     @Transactional

@@ -20,6 +20,7 @@ def send_coverage_request():
     request_body = {
         "client_uuid": "2bda4efd-3007-4c51-a471-cc9db358e7c0",
         "client_language": "en",
+        "loop_uuid": "71efe229-b858-4a1d-8f92-47b6698f882e",
         "softwareRevision": "master-632-8bc288a",
         "model": "iPhone17,1",
         "os_version": "18.5",
@@ -322,6 +323,8 @@ if __name__ == "__main__":
 
     # Step 1: Send coverage request
     test_uuid, base_url = send_coverage_request()
+    # test_uuid = "bd94df94-b629-4af5-bce1-362c64ded9a2"
+    # base_url = "http://[::1]:8080/RMBTControlServer"
 
     # Step 2: Send coverage result (only if first request was successful)
     if test_uuid and base_url:

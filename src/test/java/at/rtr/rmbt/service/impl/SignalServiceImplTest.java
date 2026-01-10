@@ -76,8 +76,9 @@ public class SignalServiceImplTest {
     private SignalRepository signalRepository;
     @MockBean
     private SettingsRepository settingsRepository;
-
-    @Mock
+    @MockBean
+    private LoopModeSettingsService loopModeSettingsService;
+    @MockBean
     private SignalRegisterRequest signalRegisterRequest;
     @Mock
     private HttpServletRequest httpServletRequest;
@@ -132,7 +133,7 @@ public class SignalServiceImplTest {
     public void setUp() {
         signalService = new SignalServiceImpl(testRepository, providerRepository,
                 uuidGenerator, clientRepository, signalMapper, radioSignalRepository, geoLocationRepository, testMapper, geoLocationService,
-                radioCellService, radioSignalService, signalRepository, fencesService, testServerService,settingsRepository);
+                radioCellService, radioSignalService, signalRepository, fencesService, testServerService,settingsRepository,loopModeSettingsService);
     }
 
     @Test

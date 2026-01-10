@@ -18,6 +18,10 @@ public class CoverageRegisterRequest {
     @JsonProperty(value = "client_uuid")
     private final UUID clientUuid;
 
+    @Schema(description = "Loop UUID, defines measurement sequence", example = "bd94df94-b629-4af5-bce1-362c64ded9a2")
+    @JsonProperty(value = "loop_uuid")
+    private final UUID loopUuid;
+
     @Schema(description = "Language of client", example = "de")
     @JsonProperty(value = "client_language")
     private final String clientLanguage;
