@@ -9,6 +9,7 @@ import at.rtr.rmbt.enums.TestPlatform;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.exception.ClientNotFoundException;
 import at.rtr.rmbt.exception.InvalidSequenceException;
+import at.rtr.rmbt.exception.TestNotFoundException;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.*;
@@ -299,13 +300,13 @@ public class SignalServiceImpl implements SignalService {
         log.info("CoverageResultRequest = " + coverageResultRequest);
         UUID testUuid = getTestUUID(coverageResultRequest);
 
-
-        RtrClient client = clientRepository.findByUuid(coverageResultRequest.getClientUUID())
+        // Check if client uuid exists
+        clientRepository.findByUuid(coverageResultRequest.getClientUUID())
                 .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, coverageResultRequest.getClientUUID())));
 
-
+        // Try to find test in correct started state or throw exception
         Test updatedTest = testRepository.findByUuidAndStatusesInLocked(testUuid, Config.COVERAGE_RESULT_STATUSES)
-                .orElseGet(() -> getEmptyGeneratedTest(coverageResultRequest, client));
+                .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.STARTED_TEST_NOT_FOUND, testUuid)));
         updatedTest.setStatus(TestStatus.COVERAGE);
 
 
@@ -526,18 +527,6 @@ public class SignalServiceImpl implements SignalService {
         return testRepository.saveAndFlush(newTest);
     }
 
-    private Test getEmptyGeneratedTest(CoverageResultRequest coverageResultRequest, RtrClient client) {
-        Test newTest = Test.builder()
-                .uuid(uuidGenerator.generateUUID())
-                .openTestUuid(uuidGenerator.generateUUID())
-                .timezone(coverageResultRequest.getTimezone())
-                .client(client)
-                .useSsl(false)
-                .lastSequenceNumber(-1)
-                .build();
-
-        return testRepository.saveAndFlush(newTest);
-    }
 
     private ZonedDateTime getClientTimeFromSignalResultRequest(SignalResultRequest signalResultRequest) {
         return TimeUtils.getZonedDateTimeFromMillisAndTimezone(Math.round(signalResultRequest.getTimeNanos() / 1e6), signalResultRequest.getTimezone());

@@ -103,7 +103,8 @@ public interface Config {
     List<ServerType> SERVER_QOS_TEST_SERVER_TYPES = List.of(ServerType.QoS);
     List<ServerType> SERVER_UDP_TEST_SERVER_TYPES = List.of(ServerType.RMBTudp);
     List<String> SIGNAL_RESULT_STATUSES = List.of(TestStatus.SIGNAL_STARTED.toString(), TestStatus.SIGNAL.toString());
-    List<String> COVERAGE_RESULT_STATUSES = List.of(TestStatus.COVERAGE_STARTED.toString(), TestStatus.COVERAGE.toString());
+    // List of valid states before coverageResult
+    List<String> COVERAGE_RESULT_STATUSES = List.of(TestStatus.COVERAGE_STARTED.toString(), TestStatus.SIGNAL_STARTED.toString());
     // List of states which contain a vailid result for /testresultdetail
     List<String> TEST_RESULT_DETAIL_STATUSES = List.of(TestStatus.FINISHED.toString(),
             TestStatus.STARTED.toString(),
