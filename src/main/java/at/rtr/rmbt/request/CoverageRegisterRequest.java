@@ -1,7 +1,6 @@
 package at.rtr.rmbt.request;
 
 import at.rtr.rmbt.enums.MeasurementType;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -63,7 +62,7 @@ public class CoverageRegisterRequest {
     @JsonProperty(value = "measurement_type_flag")
     private final MeasurementType measurementType;
 
-    @Schema(description = "Signal information support by the client", example = "true")
+    @Schema(description = "Signal information support by the client", example = "false")
     @JsonProperty(value = "signal", defaultValue = "false")
     private final Boolean signal;
 
