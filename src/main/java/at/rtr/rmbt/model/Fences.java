@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.locationtech.jts.geom.Geometry;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Builder
@@ -53,6 +54,10 @@ public class Fences {
     @Schema(description = "Radius of fence in meter", example = "25.4")
     @Column(name = "radius") // float8
     private Double radius;
+
+    @Schema(description = "Timestamp of fence", example = "2026-01-11 15:48:25.321 +0100")
+    @Column(name = "fence_time") // timestamptz
+    private ZonedDateTime fenceTime;
 
     @Schema(description = "point geometry with 4326 projection", example = "POINT (16.3738 48.2082)")
     @Column(name = "geom4326") // name in PostgreSQL
