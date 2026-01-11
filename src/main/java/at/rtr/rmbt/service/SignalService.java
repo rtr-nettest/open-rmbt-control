@@ -7,11 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
+@Service
 public interface SignalService {
 
     Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable);
@@ -26,5 +28,5 @@ public interface SignalService {
 
     CoverageSettingsResponse processCoverageRequest(CoverageRegisterRequest coverageRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers);
 
-    CoverageResultResponse processCoverageResult(CoverageResultRequest coverageResultRequest);
+    void processCoverageResult(CoverageResultRequest coverageResultRequest);
 }

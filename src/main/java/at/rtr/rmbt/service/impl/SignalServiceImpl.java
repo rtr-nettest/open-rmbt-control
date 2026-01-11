@@ -341,7 +341,7 @@ public class SignalServiceImpl implements SignalService {
 
     @Override
     @Transactional
-    public CoverageResultResponse processCoverageResult(CoverageResultRequest coverageResultRequest) {
+    public void processCoverageResult(CoverageResultRequest coverageResultRequest) {
         log.info("CoverageResultRequest = " + coverageResultRequest);
         UUID testUuid = getTestUUID(coverageResultRequest);
 
@@ -366,8 +366,8 @@ public class SignalServiceImpl implements SignalService {
 
         processFences(coverageResultRequest.getFences(), updatedTest);
 
-        return CoverageResultResponse.builder()
-                 .build();
+        CoverageResultResponse.builder()
+                .build();
     }
 
 

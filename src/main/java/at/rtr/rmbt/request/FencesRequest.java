@@ -3,6 +3,7 @@ package at.rtr.rmbt.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,6 +12,7 @@ import lombok.Getter;
 @Builder
 public class FencesRequest {
 
+    @NotNull(message = "Location is mandatory")
     @Schema(description = "Center of fence as latitude and longitude", example = "{\"latitude\": 48.197872928901063, \"longitude\": 16.349006434053081}")
     @JsonProperty(value = "location")
     private final SimpleLocationRequest location;
@@ -23,24 +25,22 @@ public class FencesRequest {
     @JsonProperty(value = "technology")
     private final String technology;
 
-    @Schema(description = "Time offset from measurement start in ms", example = "13000")
+    @NotNull(message = "Time offset is mandatory")
+    @Schema(description = "Time offset relative to /coverageRequest in ms, can be negative", example = "13506")
     @JsonProperty(value = "offset_ms")
     private final Long offsetMs;
 
-    @Schema(description = "Duration of fence in ms", example = "2123")
+    @NotNull(message = "Duration_ms is mandatory")
+    @Schema(description = "Duration of client within fence in ms", example = "2123")
     @JsonProperty(value = "duration_ms")
     private final Long durationMs;
 
-    @Schema(description = "Radius of fence in m", example = "25")
+    @NotNull(message = "Radius is mandatory")
+    @Schema(description = "Radius of fence in m", example = "25.4")
     @JsonProperty(value = "radius")
-    private final Long radius;
+    private final Double radius;
 
-    @Schema(description = "Average ping in ms", example = "15")
+    @Schema(description = "Median ping value in ms, can be null", example = "4.42")
     @JsonProperty(value = "avg_ping_ms")
     private final Double avgPingMs;
-
-    // from iOS prototype, to be removed
-    @Schema(description = "Absolute client time in us", example = "1750762114081328")
-    @JsonProperty(value = "timestamp_microseconds")
-    private final Long timestampMicroseconds;
 }

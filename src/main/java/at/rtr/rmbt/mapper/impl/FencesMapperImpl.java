@@ -35,6 +35,7 @@ public class FencesMapperImpl implements FencesMapper {
                 .technologyId(fr.getTechnologyId())
                 .offsetMs(fr.getOffsetMs())
                 .durationMs(fr.getDurationMs())
+                .radius(fr.getRadius())
                 .geom4326(geom4326)
                 .build();
     }
