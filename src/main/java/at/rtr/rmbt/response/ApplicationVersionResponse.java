@@ -1,5 +1,6 @@
 package at.rtr.rmbt.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,4 +19,9 @@ public class ApplicationVersionResponse {
 
     @JsonProperty(value = "host")
     private final String host;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty(value = "profile")
+    private final String profile;
+
 }
