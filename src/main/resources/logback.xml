@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE configuration>
-
 <configuration scan="true">
+
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
 
+    <!-- Default/Dev profile: Console only -->
+    <springProfile name="!prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
 
-    <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <param name="Encoding" value="UTF-8"/>
-        <remoteHost>${LOG_HOST}</remoteHost>
-        <port>${LOG_PORT}</port>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"app_name":"control-service"}</customFields>
-        </encoder>
-    </appender>
-    <root level="INFO">
-        <appender-ref ref="logstash"/>
-    </root>
+    <!-- Production profile: Console + Logstash -->
+    <springProfile name="prod">
+        <springProperty name="logstashHost" source="LOG_HOST"/>
+        <springProperty name="logstashPort" source="LOG_PORT" defaultValue="4560"/>
+
+        <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+            <param name="Encoding" value="UTF-8"/>
+            <destination>${logstashHost}:${logstashPort}</destination>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <customFields>{"app_name":"statistic-service"}</customFields>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="logstash"/>
+        </root>
+    </springProfile>
 </configuration>
