@@ -683,13 +683,6 @@ public class SignalServiceImpl implements SignalService {
         dataBuffer.put(packetHashTime8); // 8 bytes
         dataBuffer.put(packetHashIp4); // 4 bytes
         byte[] token = dataBuffer.array();
-
-        // Print results
-        System.out.println("Original token (in hex): " + bytesToHex(token));
-        String b64Token = Base64.getEncoder().encodeToString(token);
-        System.out.println("Token (Base64): " + b64Token);
-
-        return b64Token;
-
+        return Base64.getEncoder().encodeToString(token);
     }
 }

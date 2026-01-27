@@ -367,7 +367,7 @@ public class HelperFunctions {
                         final TXTRecord txt = (TXTRecord) record;
                         @SuppressWarnings("unchecked") final List<String> strings = txt.getStrings();
                         if (strings != null && !strings.isEmpty()) {
-                            System.out.println(strings);
+                            // System.out.println(strings);
 
                             final String result = strings.get(0);
                             final String[] parts = result.split(" ?\\| ?");
