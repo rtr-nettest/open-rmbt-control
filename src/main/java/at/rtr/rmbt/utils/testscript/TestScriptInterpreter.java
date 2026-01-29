@@ -274,8 +274,15 @@ public class TestScriptInterpreter {
 			final Bindings bindings = jsEngine.createBindings();
 			bindings.putAll(object.getResultMap());
 			//final Bindings bindings = new SimpleBindings(object.getResultMap());
-			jsEngine.eval("var result=null; " + args[0], bindings);
-			
+
+			// "voip_result_out_num_packets", "voip_objective_call_duration", "voip_objective_delay" are required,
+			// but sometimes a variable is missing and thus triggers a script exception
+			try {
+				jsEngine.eval("var result=null; " + args[0], bindings);
+			} catch (javax.script.ScriptException e) {
+                    return null;
+				}
+
 			EvalResult evalResult = null;
 			final Object result = bindings.get("result");
 			
