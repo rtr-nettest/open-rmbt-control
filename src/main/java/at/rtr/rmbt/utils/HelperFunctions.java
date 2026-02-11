@@ -438,6 +438,11 @@ public class HelperFunctions {
             else
                 ipVersionPublic = "ipv?";
 
+            // in case there is no info regarding local address, store public ip version
+            if (localAdr == null) {
+                return "is_"+ipVersionPublic;
+            }
+
             if (localAdr instanceof Inet4Address)
                 ipVersionLocal = "ipv4";
             else if (localAdr instanceof Inet6Address)
