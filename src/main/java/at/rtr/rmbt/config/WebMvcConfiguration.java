@@ -87,7 +87,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         Arrays.stream(origin).forEach((s) -> {
-            log.info("addind CORS mapping for {}", s);
+            log.info("adding CORS mapping for {}", s);
         });
 
 
