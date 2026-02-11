@@ -41,7 +41,7 @@ public class TestHistoryMapperImpl implements TestHistoryMapper {
                 .pingShortestClassification(ClassificationUtils.classify(ClassificationUtils.THRESHOLD_PING, ObjectUtils.defaultIfNull(testHistory.getPingMedian(), NumberUtils.LONG_ZERO), classificationCount))
                 .fences_count(testHistory.getFencesCount());
 
-        log.info("UserCertMode is true for test result uuid: {}", testHistory.getCertMode());
+        log.debug("UserCertMode is true for test result uuid: {}", testHistory.getCertMode());
 
         if (includeFailedTests) {
             historyItemResponseBuilder.status(testHistory.getStatus().toLowerCase());
