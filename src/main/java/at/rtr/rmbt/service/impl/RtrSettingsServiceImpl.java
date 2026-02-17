@@ -30,16 +30,13 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+//no inspection
+import at.rtr.rmbt.Version;
 
 @Service
 @RequiredArgsConstructor
 public class RtrSettingsServiceImpl implements RtrSettingsService {
 
-    @Value("${git.branch}")
-    private String branch;
-
-    @Value("${git.commit.id.describe}")
-    private String describe;
 
     private final ClientTypeService clientTypeService;
     private final ClientService clientService;
@@ -268,13 +265,13 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
 
     private VersionResponse getVersionResponse() {
         return VersionResponse.builder()
-                .controlServerVersion(String.format(Constants.VERSION_TEMPLATE, branch, describe))
+                .controlServerVersion(String.format(Constants.VERSION_TEMPLATE, Version.BRANCH, Version.DESCRIBE))
                 .build();
     }
 
     private AdminSettingsVersionResponse getAdminSettingsVersionResponse() {
         return AdminSettingsVersionResponse.builder()
-                .controlServerVersion(String.format(Constants.VERSION_TEMPLATE, branch, describe))
+                .controlServerVersion(String.format(Constants.VERSION_TEMPLATE, Version.BRANCH, Version.DESCRIBE))
                 .build();
     }
 
