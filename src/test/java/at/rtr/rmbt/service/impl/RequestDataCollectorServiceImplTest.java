@@ -2,6 +2,8 @@ package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.constant.Constants;
+import at.rtr.rmbt.repository.TestRepository;
+import at.rtr.rmbt.request.IpRequest;
 import at.rtr.rmbt.service.RequestDataCollectorService;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,9 +25,15 @@ public class RequestDataCollectorServiceImplTest {
     private HttpServletRequest request;
     private final Map<String, String> headers = new HashMap<>();
 
+    @Mock
+    private IpRequest iprequest;
+
+    @Mock
+    private TestRepository testRepository;
+
     @Before
     public void setUp() {
-        requestDataCollectorService = new RequestDataCollectorServiceImpl();
+        requestDataCollectorService = new RequestDataCollectorServiceImpl(testRepository);
         headers.put("User-Agent", TestConstants.DEFAULT_USER_AGENT_STRING);
     }
 
@@ -52,7 +60,7 @@ public class RequestDataCollectorServiceImplTest {
     public void getIpVersion_whenIpV4_expectIpResponse() {
         when(request.getLocalAddr()).thenReturn(TestConstants.DEFAULT_IP_V4);
 
-        var response = requestDataCollectorService.getIpVersion(request, headers);
+        var response = requestDataCollectorService.getIpVersion(iprequest, request, headers);
 
         assertEquals(TestConstants.DEFAULT_IP_V4, response.getIp());
         assertEquals(Constants.INET_4_IP_VERSION, response.getVersion());
@@ -62,7 +70,7 @@ public class RequestDataCollectorServiceImplTest {
     public void getIpVersion_whenIpV6_expectIpResponse() {
         when(request.getLocalAddr()).thenReturn(TestConstants.DEFAULT_IP_V6);
 
-        var response = requestDataCollectorService.getIpVersion(request, headers);
+        var response = requestDataCollectorService.getIpVersion(iprequest, request, headers);
 
         assertEquals(TestConstants.DEFAULT_IP_V6, response.getIp());
         assertEquals(Constants.INET_6_IP_VERSION, response.getVersion());
