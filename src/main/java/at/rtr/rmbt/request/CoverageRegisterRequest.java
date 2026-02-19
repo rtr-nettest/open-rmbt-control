@@ -73,11 +73,11 @@ public class CoverageRegisterRequest {
     @JsonProperty(value = "capabilities")
     private final CapabilitiesRequest capabilities;
 
-    @Schema(description = "Version code from the build gradle for Android devices", example = "33201")
+    @Schema(description = "Integer version code of the client (buildVersionCode on Android)", example = "33201")
     @JsonProperty("softwareVersionCode")
     private Integer softwareVersionCode;
 
-    @Schema(description = "Just another historic version", example = "0.3")
+    @Schema(description = "Semantic version of the client (buildVersionName on Android)", example = "3.32.1")
     @JsonProperty(value = "version")
     private final String version;
 
