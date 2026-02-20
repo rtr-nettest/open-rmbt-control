@@ -140,4 +140,10 @@ public class CoverageResultRequest {
 
     @JsonProperty(value = "fences")
     private final List<FencesRequest> fences;
+
+    @JsonProperty(value = "temperature")
+    private final Double temperature;
+
+    @JsonProperty(value = "apn")
+    private final Double apn;
 }

@@ -99,6 +99,7 @@ public class TestMapperImpl implements TestMapper {
         test.setTestErrorCause(resultRequest.getTestErrorCause());
         test.setSubmissionRetryCount(resultRequest.getTestSubmissionRetryCount());
         test.setCertMode(resultRequest.getCertMode());
+        test.setApn(resultRequest.getTelephonyAPN());
     }
 
     @Override
@@ -137,6 +138,19 @@ public class TestMapperImpl implements TestMapper {
         test.setNetworkType(coverageResultRequest.getNetworkType());
         test.setNetworkIsRoaming(coverageResultRequest.getTelephonyNetworkIsRoaming());
         test.setTestErrorCause(coverageResultRequest.getTestErrorCause());
+        test.setNetworkOperator(coverageResultRequest.getTelephonyNetworkOperator());
+        test.setNetworkSimOperator(coverageResultRequest.getTelephonyNetworkSimOperator());
+        test.setClientIpLocal(coverageResultRequest.getTestIpLocal());
+        test.setTemperature(coverageResultRequest.getTemperature());
+        test.setTimezone(coverageResultRequest.getTimezone());
+        test.setApn(coverageResultRequest.getTelephonyAPN());
+        test.setSubmissionRetryCount(
+                coverageResultRequest.getSubmissionRetryCount() == null
+                        ? null
+                        : Math.toIntExact(coverageResultRequest.getSubmissionRetryCount())
+        );
+
+
 
 }
 }

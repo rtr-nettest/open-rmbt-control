@@ -358,7 +358,6 @@ public class SignalServiceImpl implements SignalService {
                 .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.STARTED_TEST_NOT_FOUND, testUuid)));
         updatedTest.setStatus(TestStatus.COVERAGE);
 
-
         testMapper.updateTestWithCoverageResultRequest(coverageResultRequest, updatedTest);
 
         updateIpAddress(coverageResultRequest.getTestIpLocal(), updatedTest);

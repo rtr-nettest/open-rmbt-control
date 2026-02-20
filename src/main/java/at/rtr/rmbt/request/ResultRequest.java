@@ -249,7 +249,7 @@ public class ResultRequest {
     @JsonProperty(value = "telephony_data_state")
     private final Integer telephonyDataState;
 
-    @Schema(description = "Name of the access point, mobile networks only", example = "o2internet")
+    @Schema(description = "Name of the APN, mobile networks only", example = "6g4all")
     @JsonProperty(value = "telephony_apn")
     private final String telephonyAPN;
 
