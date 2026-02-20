@@ -67,6 +67,8 @@ public class SignalServiceImplTest {
     @MockBean
     private RadioSignalService radioSignalService;
     @MockBean
+    private CellLocationService cellLocationService;
+    @MockBean
     private FencesService fencesService;
     @MockBean
     private TestServerService testServerService;
@@ -132,8 +134,9 @@ public class SignalServiceImplTest {
     @Before
     public void setUp() {
         signalService = new SignalServiceImpl(testRepository, providerRepository,
-                uuidGenerator, clientRepository, signalMapper, radioSignalRepository, geoLocationRepository, testMapper, geoLocationService,
-                radioCellService, radioSignalService, signalRepository, fencesService, testServerService,settingsRepository,loopModeSettingsService);
+                uuidGenerator, clientRepository, signalMapper, radioSignalRepository, geoLocationRepository, testMapper,
+                geoLocationService, radioCellService, radioSignalService, signalRepository, fencesService,
+                testServerService,settingsRepository,loopModeSettingsService, cellLocationService);
     }
 
     @Test
