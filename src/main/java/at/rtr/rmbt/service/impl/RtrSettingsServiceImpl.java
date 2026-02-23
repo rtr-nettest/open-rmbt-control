@@ -17,12 +17,12 @@ import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.response.settings.admin.update.*;
 import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.LongUtils;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -94,6 +94,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .serverQosResponseList(testServerService.getServersQos())
                 .mapServerResponse(getMapServerResponse(settings))
                 .versions(getVersionResponse())
+                .classificationThresholds(getClassificationThresholdsResponse(settings))
                 .build();
 
         return SettingsResponse.builder()
@@ -319,6 +320,28 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .ssl(Boolean.parseBoolean(settings.get(Config.MAP_SERVER_SSL_KEY)))
                 .port(LongUtils.parseLong(settings.get(Config.MAP_SERVER_PORT_KEY)))
                 .build();
+    }
+
+    // get classifcation from settings, with fallback
+    private JsonNode getClassificationThresholdsResponse(Map<String, String> settings) {
+        String thresholdsJson = settings.get(Config.CLASSIFICATION_THRESHOLDS_KEY);
+
+        // Default JSON as in @Schema example
+        String defaultJson = "{\"download_kbit\":{\"2\":5000,\"3\":10000,\"4\":100000},\"upload_kbit\":{\"2\":10000,\"3\":20000,\"4\":30000},\"ping_ms\":{\"2\":75,\"3\":25,\"4\":10},\"signal_mobile\":{\"2\":-101,\"3\":-85,\"4\":-75},\"signal_mobile_rsrp\":{\"2\":-111,\"3\":-95,\"4\":-85},\"signal_wifi\":{\"2\":-76,\"3\":-61,\"4\":-51}}";
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readTree(thresholdsJson != null ? thresholdsJson : defaultJson);
+        } catch (Exception e) {
+            // If there's an error parsing the provided JSON, fall back to default
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                return objectMapper.readTree(defaultJson);
+            } catch (JsonProcessingException ex) {
+                // This should never happen since defaultJson is valid
+                return null;
+            }
+        }
     }
 
     private AdminSettingsMapServerResponse getAdminSettingsMapServerResponse(Map<String, String> settings) {

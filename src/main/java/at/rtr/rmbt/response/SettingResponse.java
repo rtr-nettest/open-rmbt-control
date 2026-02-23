@@ -1,6 +1,7 @@
 package at.rtr.rmbt.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,4 +52,11 @@ public class SettingResponse {
     @Schema(description = "Map server settings")
     @JsonProperty(value = "map_server")
     private final MapServerResponse mapServerResponse;
+
+    @JsonProperty("classification_thresholds")
+    @Schema(description = "Thresholds for traffic light classification",
+            example =
+                    "{\"download_kbit\":{\"2\":5000,\"3\":10000,\"4\":100000},\"upload_kbit\":{\"2\":10000,\"3\":20000,\"4\":30000},\"ping_ms\":{\"2\":75,\"3\":25,\"4\":10},\"signal_mobile\":{\"2\":-101,\"3\":-85,\"4\":-75},\"signal_mobile_rsrp\":{\"2\":-111,\"3\":-95,\"4\":-85},\"signal_wifi\":{\"2\":-76,\"3\":-61,\"4\":-51}}"
+    )
+    private JsonNode classificationThresholds;
 }
