@@ -37,6 +37,7 @@ public class FencesMapperImpl implements FencesMapper {
                 .durationMs(fr.getDurationMs())
                 .radius(fr.getRadius())
                 .geom4326(geom4326)
+                .signal(fr.getSignal())
                 .build();
     }
 

@@ -62,5 +62,9 @@ public class Fences {
     @Schema(description = "point geometry with 4326 projection", example = "POINT (16.3738 48.2082)")
     @Column(name = "geom4326") // name in PostgreSQL
     private Geometry geom4326; // name in Java
+
+    @Schema(description = "Minimum signal (RSRP) of fence in dBm", example = "-103.5")
+    @Column(name = "signal") // float8
+    private Double signal;
 }
 
