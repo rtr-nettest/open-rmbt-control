@@ -43,4 +43,8 @@ public class FencesRequest {
     @Schema(description = "Median ping value in ms, can be null", example = "4.42")
     @JsonProperty(value = "avg_ping_ms")
     private final Double avgPingMs;
+
+    @Schema(description = "Minimum signal (RSRP) of fence in dBm", example = "-103.5")
+    @JsonProperty(value = "signal")
+    private final Double signal;
 }
