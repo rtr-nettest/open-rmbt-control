@@ -253,7 +253,8 @@ def send_coverage_result(base_url, test_uuid):
                 "duration_ms": 2123,
                 "radius": 25.234,
                 "avg_ping_ms": 15.4,
-                "timestamp_microseconds": int(time.time() * 1_000_000)
+                "timestamp_microseconds": int(time.time() * 1_000_000),
+                "signal": -95
             },
             {
                 "location": {
@@ -266,7 +267,8 @@ def send_coverage_result(base_url, test_uuid):
                 "duration_ms": 2123,
                 "radius": 25.234,
                 "avg_ping_ms": 15.4,
-                "timestamp_microseconds": int(time.time() * 1_000_000)
+                "timestamp_microseconds": int(time.time() * 1_000_000),
+                "signal": -99.5
             },
             {
                 "location": {
@@ -279,7 +281,8 @@ def send_coverage_result(base_url, test_uuid):
                 "duration_ms": 2123,
                 "radius": 25.234,
                 "avg_ping_ms": 15.4,
-                "timestamp_microseconds": int(time.time() * 1_000_000)
+                "timestamp_microseconds": int(time.time() * 1_000_000),
+                "signal": None # null in JSON
             },
             {
                 "location": {
@@ -292,7 +295,8 @@ def send_coverage_result(base_url, test_uuid):
                 "duration_ms": 2123,
                 "radius": 25.234,
                 "avg_ping_ms": 15.4,
-                "timestamp_microseconds": int(time.time() * 1_000_000)
+                "timestamp_microseconds": int(time.time() * 1_000_000),
+                "signal": -130
             }
         ]
     }
