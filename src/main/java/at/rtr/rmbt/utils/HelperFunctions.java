@@ -1,6 +1,8 @@
 package at.rtr.rmbt.utils;
 
 import at.rtr.rmbt.dto.ASInformation;
+import at.rtr.rmbt.utils.GeoIpHelper.CountryType;
+
 import com.google.common.net.InetAddresses;
 import lombok.experimental.UtilityClass;
 import org.json.JSONException;
@@ -423,7 +425,7 @@ public class HelperFunctions {
         if (asnInfo != null && asnInfo.autonomousSystemNumber != null) {
             asNumber = asnInfo.autonomousSystemNumber.longValue();   // <-- convert Integer to Long;
             asName = asnInfo.autonomousSystemOrganization;
-            asCountry = GeoIpHelper.lookupCountry(addr);
+            asCountry = GeoIpHelper.lookupCountry(addr, CountryType.REGISTERED); //get registered country of the IP as proxy to AS country
         } else {
 
             // 2) Fallback to web API of cymru.com

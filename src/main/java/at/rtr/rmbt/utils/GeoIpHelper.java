@@ -23,6 +23,10 @@ public abstract class GeoIpHelper
     private static final Object LOOKUP_SERVICE_LOCK = new Object();
 
     public enum DbType { COUNTRY, ASN }
+    
+    // DEFAULT: getCountry() is used: "represents the country where MaxMind believes the end user is located."
+    // REGISTERED: getRegisteredCountry() is used: "represents the country where the ISP has registered a given IP block and may differ from the user's country."
+    public enum CountryType { DEFAULT, REGISTERED } 
 
     private static DatabaseReader getLookupService(final DbType type)
     {
@@ -79,16 +83,27 @@ public abstract class GeoIpHelper
     }
 
     public static String lookupCountry(final InetAddress adr) {
+        return lookupCountry(adr, CountryType.DEFAULT);
+    }
+
+    public static String lookupCountry(final InetAddress adr, final CountryType type) {
         try {
-            DatabaseReader lookupService = getLookupService(DbType.COUNTRY);
-            if (lookupService != null) {
-                CountryResponse country = lookupService.country(adr);
-                return country.getCountry().getIsoCode();
+            final DatabaseReader lookupService = getLookupService(DbType.COUNTRY);
+            if (lookupService == null) {
+                return null;
             }
-        } catch (Exception e) {
+        
+            final CountryResponse country = lookupService.country(adr);
+
+            // If called with CountryType.REGISTERED -> return registered country, otherwise (default) the country based on GeoIP
+            return (type == CountryType.REGISTERED)
+                ? country.getRegisteredCountry().getIsoCode()
+                : country.getCountry().getIsoCode();            
+        
+            } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static class AsnInfo {
