@@ -103,11 +103,11 @@ public class TestSettingsFacade {
         String language = getLanguageIfSupportedOrDefault(testSettingsRequest.getLanguage());
         Locale locale = Locale.forLanguageTag(language);
 
-        asn = HelperFunctions.getASN(clientAddress);
-        if (asn != null) {
-            asName = HelperFunctions.getASName(asn);
-            asCountry = HelperFunctions.getAScountry(asn);
-        }
+        // getASInformationForSignalRequest() is used for all test types, not only for signal tests
+        var asInformation = HelperFunctions.getASInformationForSignalRequest(clientAddress); 
+        asn = asInformation.getNumber();
+        asName = asInformation.getName();
+        asCountry = asInformation.getCountry();
 
         try {
             final String settingUuid = testSettingsRequest.getUuid();
