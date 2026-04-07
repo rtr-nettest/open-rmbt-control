@@ -1,6 +1,8 @@
 package at.rtr.rmbt.utils;
 
 import at.rtr.rmbt.dto.ASInformation;
+import at.rtr.rmbt.utils.GeoIpHelper.CountryType;
+
 import com.google.common.net.InetAddresses;
 import lombok.experimental.UtilityClass;
 import org.json.JSONException;
@@ -235,6 +237,7 @@ public class HelperFunctions {
     }
 
     @Deprecated
+    //Don't use this method any more due to stringent rate limiting
     public static ASInformation getASInformation(final InetAddress addr) {
         try {
             String ipAsString = addr.getHostAddress();
@@ -289,6 +292,7 @@ public class HelperFunctions {
         return null;
     }
 
+    // Don't call this method directly, use getASInformationForSignalRequest() instead
     public static Long getASN(final InetAddress adr) {
         try {
             final Name postfix;
@@ -351,6 +355,7 @@ public class HelperFunctions {
         }
     }
 
+    // Don't call this method directly, use getASInformationForSignalRequest() instead
     public static String getASName(final long asn) {
         try {
             final Name postfix = Name.fromConstantString("asn.cymru.com.");
@@ -380,6 +385,7 @@ public class HelperFunctions {
         return null;
     }
 
+    // Don't call this method directly, use getASInformationForSignalRequest() instead
     public static String getAScountry(final long asn) {
         try {
             final Name postfix = Name.fromConstantString("asn.cymru.com.");
@@ -407,18 +413,30 @@ public class HelperFunctions {
         return null;
     }
 
+    // Please use this method for all test types. It is not limited to signal tests, despite the name.
+    // It implements the primary usage of local MaxMind databases and as fallback the web API of cymru.com
     public static ASInformation getASInformationForSignalRequest(final InetAddress addr) {
-        Long asNumber;
-        String asName;
-        String asCountry;
+        Long asNumber = null;
+        String asName = null;
+        String asCountry = null;
 
-        asNumber = HelperFunctions.getASN(addr);
-        if (Objects.isNull(asNumber)) {
-            asName = null;
-            asCountry = null;
+        // 1) Try local MaxMind databases as default (ASN + Country)
+        final GeoIpHelper.AsnInfo asnInfo = GeoIpHelper.lookupAsn(addr);; // asnInfo comprises of Integer autonomousSystemNumber and String autonomousSystemOrganization
+        if (asnInfo != null && asnInfo.autonomousSystemNumber != null) {
+            asNumber = asnInfo.autonomousSystemNumber.longValue();   // <-- convert Integer to Long;
+            asName = asnInfo.autonomousSystemOrganization;
+            asCountry = GeoIpHelper.lookupCountry(addr, CountryType.REGISTERED); //get registered country of the IP as proxy to AS country
         } else {
-            asName = HelperFunctions.getASName(asNumber);
-            asCountry = HelperFunctions.getAScountry(asNumber);
+
+            // 2) Fallback to web API of cymru.com
+            asNumber = HelperFunctions.getASN(addr);
+            if (Objects.isNull(asNumber)) {
+                asName = null;
+                asCountry = null;
+            } else {
+                asName = HelperFunctions.getASName(asNumber);
+                asCountry = HelperFunctions.getAScountry(asNumber);
+            }
         }
         return ASInformation.builder()
                 .number(asNumber)
