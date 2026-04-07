@@ -26,7 +26,7 @@ public class TestMapperImpl implements TestMapper {
 
     @Override
     public void updateTestWithSignalResultRequest(SignalResultRequest signalResultRequest, Test test) {
-        test.setClientVersion(StringUtils.left(signalResultRequest.getClientVersion(), 10));
+        test.setClientVersion(StringUtils.left(signalResultRequest.getClientVersion(), 50));
         test.setClientLanguage(signalResultRequest.getClientLanguage());
         test.setPlatform(signalResultRequest.getPlatform());
         test.setOsVersion(signalResultRequest.getOsVersion());
