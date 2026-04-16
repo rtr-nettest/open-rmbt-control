@@ -236,7 +236,7 @@ public class Test implements Serializable {
     private Integer testSlot;
 
     @OneToOne
-    @JoinColumn(name = "provider_id")
+    @JoinColumn(name = "provider_id", updatable = false)
     private Provider provider;
 
     @Column(name = "network_is_roaming")
@@ -270,7 +270,7 @@ public class Test implements Serializable {
     @Column(name = "comment")
     private String comment;
 
-    @Column(name = "open_uuid")
+    @Column(name = "open_uuid", updatable = false)
     private UUID openUuid;
 
     @Column(name = "client_time")
@@ -280,10 +280,10 @@ public class Test implements Serializable {
     private Integer zipCodeGeo;
 
     @OneToOne
-    @JoinColumn(name = "mobile_provider_id")
+    @JoinColumn(name = "mobile_provider_id", updatable = false, insertable = false)
     private Provider mobileProvider;
 
-    @Column(name = "roaming_type")
+    @Column(name = "roaming_type", updatable = false, insertable = false)
     private Integer roamingType;
 
     @Column(name = "open_test_uuid", updatable = false)
