@@ -425,7 +425,10 @@ public class HelperFunctions {
         if (asnInfo != null && asnInfo.autonomousSystemNumber != null) {
             asNumber = asnInfo.autonomousSystemNumber.longValue();   // <-- convert Integer to Long;
             asName = asnInfo.autonomousSystemOrganization;
+            /* Proxy value abandoned due to ticket:1404#comments:40-44
             asCountry = GeoIpHelper.lookupCountry(addr, CountryType.REGISTERED); //get registered country of the IP as proxy to AS country
+            */
+            asCountry = HelperFunctions.getAScountry(asNumber); // get the AS country always via cymru.com web API
         } else {
 
             // 2) Fallback to web API of cymru.com
