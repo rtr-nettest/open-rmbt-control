@@ -5,7 +5,6 @@ name: WAR build
 
 on:
   push:
-    branches: [ feature/war, feature/jakarta-upgrade, master, feature/*, dev, udptoken2 ]
 jobs:
   build:
 
