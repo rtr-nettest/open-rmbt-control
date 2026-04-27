@@ -168,6 +168,9 @@ public class SignalServiceImpl implements SignalService {
             regStatus = TestStatus.SIGNAL_STARTED;
         }
 
+        // get geoIP country, used for selecting the UDP server
+        String countryIp = GeoIpHelper.lookupCountry(clientAddress);
+
         var test = Test.builder()
                 .uuid(uuid)
                 .openTestUuid(openTestUUID)
@@ -180,6 +183,7 @@ public class SignalServiceImpl implements SignalService {
                 .publicIpAsn(asInformation.getNumber())
                 .publicIpAsName(asInformation.getName())
                 .countryAsn(asInformation.getCountry())
+                .countryGeoip(countryIp)
                 .publicIpRdns(HelperFunctions.getReverseDNS(clientAddress))
                 .status(regStatus)
                 .lastSequenceNumber(-1)
@@ -227,9 +231,7 @@ public class SignalServiceImpl implements SignalService {
         }
         // log.info("UDP-maxCoverageSessionSecondsSetting = " + maxCoverageSessionSeconds);
 
-        // get geoIP country, used for selecting the UDP server
-
-        String countryIp = GeoIpHelper.lookupCountry(clientAddress);
+        //log country of the IP
         log.info("UDP-Country = " + countryIp);
 
         // get test server by geoIp
