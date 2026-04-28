@@ -326,10 +326,10 @@ public class Test implements Serializable {
     @Column(name = "location_max_distance_gps")
     private Integer locationMaxDistanceGps;
 
-    @Column(name = "network_group_name")
+    @Column(name = "network_group_name", insertable = false, updatable = false)
     private NetworkGroupName networkGroupName;
 
-    @Column(name = "network_group_type")
+    @Column(name = "network_group_type", insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private NetworkGroupType networkGroupType;
 
