@@ -74,8 +74,10 @@ public class SignalController {
     @PostMapping(URIConstants.COVERAGE_RESULT)
     @Operation(summary = "Process coverage result")
     @ResponseStatus(HttpStatus.OK)
-    public Map<String, Object> processCoverageResult(@RequestBody CoverageResultRequest coverageResultRequest) {
-        signalService.processCoverageResult(coverageResultRequest);
+    public Map<String, Object> processCoverageResult(HttpServletRequest httpServletRequest,
+                                                     @RequestHeader Map<String, String> headers,
+                                                     @RequestBody CoverageResultRequest coverageResultRequest) {
+        signalService.processCoverageResult(coverageResultRequest, httpServletRequest, headers);
         return Collections.emptyMap(); // Returns "{}" as JSON
     }
 

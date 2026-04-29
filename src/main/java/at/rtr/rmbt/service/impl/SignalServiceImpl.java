@@ -347,7 +347,9 @@ public class SignalServiceImpl implements SignalService {
 
     @Override
     @Transactional
-    public void processCoverageResult(CoverageResultRequest coverageResultRequest) {
+    public void processCoverageResult(CoverageResultRequest coverageResultRequest,
+                                      HttpServletRequest httpServletRequest,
+                                      Map<String, String> headers) {
         log.info("CoverageResultRequest = " + coverageResultRequest);
         UUID testUuid = getTestUUID(coverageResultRequest);
 
@@ -362,7 +364,11 @@ public class SignalServiceImpl implements SignalService {
 
         testMapper.updateTestWithCoverageResultRequest(coverageResultRequest, updatedTest);
 
+        // IP address as reported by the client for test.client_ip_local
         updateIpAddress(coverageResultRequest.getTestIpLocal(), updatedTest);
+
+        // IP address as seen by the server for test.source_ip
+        setSourceIp(httpServletRequest, headers, updatedTest);
 
         // cellLocations
         processCellLocation(coverageResultRequest.getCellLocations(), updatedTest);
@@ -553,6 +559,17 @@ public class SignalServiceImpl implements SignalService {
                 updatedTest.setNatType(HelperFunctions.getNatType(ipLocalAddress, ipPublicAddress));
             }
         }
+    }
+
+    // TODO: Refactor with/in HeaderExtrudeUtil
+    // - ResultServiceImpl.setSourceIp(...)
+    // - SignalServiceImpl.setSourceIp(...)
+    // - SignalServiceImpl.processSignalRequest(...) / processCoverageRequest(...) (clientPublicIp part)
+    private void setSourceIp(HttpServletRequest httpServletRequest, Map<String, String> headers, Test test) {
+        InetAddress sourceAddress = InetAddresses.forString(
+                HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers));
+        test.setSourceIp(InetAddresses.toAddrString(sourceAddress));
+        test.setSourceIpAnonymized(HelperFunctions.anonymizeIp(sourceAddress));
     }
 
     private UUID getTestUUID(SignalResultRequest signalResultRequest) {

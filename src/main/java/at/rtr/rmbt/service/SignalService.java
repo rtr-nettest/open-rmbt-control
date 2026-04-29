@@ -28,5 +28,5 @@ public interface SignalService {
 
     CoverageSettingsResponse processCoverageRequest(CoverageRegisterRequest coverageRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers);
 
-    void processCoverageResult(CoverageResultRequest coverageResultRequest);
+    void processCoverageResult(CoverageResultRequest coverageResultRequest, HttpServletRequest httpServletRequest, Map<String, String> headers);
 }
