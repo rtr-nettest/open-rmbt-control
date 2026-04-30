@@ -1,6 +1,7 @@
 package at.rtr.rmbt.request;
 
 import at.rtr.rmbt.enums.TestPlatform;
+import at.rtr.rmbt.model.AndroidPermission;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -127,7 +128,7 @@ public class CoverageResultRequest {
     private final RadioInfoRequest radioInfo;
 
     @JsonProperty(value = "android_permission_status")
-    private final List<AndroidPermissionStatus> permissionStatuses;
+    private final List<AndroidPermission> permissionStatuses;
 
     @JsonProperty(value = "cellLocations")
     private final List<CellLocationRequest> cellLocations;

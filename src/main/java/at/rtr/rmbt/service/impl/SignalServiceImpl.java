@@ -364,6 +364,10 @@ public class SignalServiceImpl implements SignalService {
 
         testMapper.updateTestWithCoverageResultRequest(coverageResultRequest, updatedTest);
 
+        // write android permission statuses into test.android_permissions (jsonb)
+        Optional.ofNullable(coverageResultRequest.getPermissionStatuses())
+                .ifPresent(updatedTest::setAndroidPermissions);
+
         // IP address as reported by the client for test.client_ip_local
         updateIpAddress(coverageResultRequest.getTestIpLocal(), updatedTest);
 
