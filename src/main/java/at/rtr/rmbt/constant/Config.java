@@ -25,6 +25,7 @@ public interface Config {
     String TERM_AND_CONDITION_NDT_URL_KEY = "tc_ndt_url_android";
     String URL_OPEN_DATA_PREFIX_KEY = "url_open_data_prefix";
     String URL_SHARE_KEY = "url_share";
+    String CLASSIFICATION_THRESHOLDS_KEY = "classification_thresholds";
     String URL_STATISTIC_KEY = "url_statistics";
     String URL_CONTROL_IPV4_ONLY_KEY = "control_ipv4_only";
     String URL_CONTROL_IPV6_ONLY_KEY = "control_ipv6_only";
