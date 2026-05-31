@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.5</version>
+        <version>3.4.13</version>
         <relativePath/>
     </parent>
 
@@ -23,7 +23,7 @@
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <!-- Lombok 1.18.40+ is required to compile on JDK 21+/25 (javac internals changed); still builds on JDK 17. -->
         <org.projectlombok.version>1.18.46</org.projectlombok.version>
-        <!-- Override the Spring Boot 3.4.5 BOM's Byte Buddy so Mockito can instrument JDK 25 bytecode; still works on JDK 17. -->
+        <!-- Override the Spring Boot 3.4.x BOM's Byte Buddy so Mockito can instrument JDK 25 bytecode; still works on JDK 17. -->
         <byte-buddy.version>1.17.6</byte-buddy.version>
         <apache.commons.version>[3.18.0,)</apache.commons.version>
         <auth0-spring-security-api.version>1.4.0</auth0-spring-security-api.version>
