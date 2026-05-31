@@ -7,7 +7,11 @@ import at.rtr.rmbt.request.*;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.SignalService;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.Before;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.data.web.config.SpringDataJacksonConfiguration;
+import org.springframework.data.web.config.SpringDataWebSettings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -51,6 +55,10 @@ public class SignalControllerTest {
     public void setUp() {
         Jackson2ObjectMapperBuilder mapperBuilder = new Jackson2ObjectMapperBuilder();
         mapperBuilder.propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        mapperBuilder.modules(
+                new JavaTimeModule(),
+                new SpringDataJacksonConfiguration.PageModule(
+                        new SpringDataWebSettings(EnableSpringDataWebSupport.PageSerializationMode.DIRECT)));
         SignalController signalController = new SignalController(signalService);
         mockMvc = MockMvcBuilders.standaloneSetup(signalController)
                 .setControllerAdvice(new RtrAdvice())

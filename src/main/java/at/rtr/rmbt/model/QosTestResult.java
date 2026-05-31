@@ -1,7 +1,5 @@
 package at.rtr.rmbt.model;
 
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 

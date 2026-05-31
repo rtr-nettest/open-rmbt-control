@@ -421,9 +421,9 @@ public class HelperFunctions {
         String asCountry = null;
 
         // 1) Try local MaxMind databases as default (ASN + Country)
-        final GeoIpHelper.AsnInfo asnInfo = GeoIpHelper.lookupAsn(addr);; // asnInfo comprises of Integer autonomousSystemNumber and String autonomousSystemOrganization
+        final GeoIpHelper.AsnInfo asnInfo = GeoIpHelper.lookupAsn(addr);
         if (asnInfo != null && asnInfo.autonomousSystemNumber != null) {
-            asNumber = asnInfo.autonomousSystemNumber.longValue();   // <-- convert Integer to Long;
+            asNumber = asnInfo.autonomousSystemNumber;
             asName = asnInfo.autonomousSystemOrganization;
             /* Proxy value abandoned due to ticket:1404#comments:40-44
             asCountry = GeoIpHelper.lookupCountry(addr, CountryType.REGISTERED); //get registered country of the IP as proxy to AS country

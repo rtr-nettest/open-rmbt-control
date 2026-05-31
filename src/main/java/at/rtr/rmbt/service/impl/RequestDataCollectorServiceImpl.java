@@ -14,7 +14,7 @@ import at.rtr.rmbt.repository.TestRepository;
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

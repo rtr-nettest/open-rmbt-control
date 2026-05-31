@@ -107,10 +107,10 @@ public abstract class GeoIpHelper
     }
 
     public static class AsnInfo {
-        public final Integer autonomousSystemNumber;
+        public final Long autonomousSystemNumber;
         public final String autonomousSystemOrganization;
 
-        public AsnInfo(final Integer autonomousSystemNumber, final String autonomousSystemOrganization) {
+        public AsnInfo(final Long autonomousSystemNumber, final String autonomousSystemOrganization) {
             this.autonomousSystemNumber = autonomousSystemNumber;
             this.autonomousSystemOrganization = autonomousSystemOrganization;
         }

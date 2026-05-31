@@ -1,7 +1,6 @@
 package at.rtr.rmbt.model;
 
 import at.rtr.rmbt.enums.TestType;
-import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 

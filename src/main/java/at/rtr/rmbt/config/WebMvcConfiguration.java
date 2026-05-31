@@ -79,8 +79,10 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/v3/api-docs", "/swagger-ui/**", "/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/health").and()
-                .ignoring().requestMatchers(HttpMethod.OPTIONS, "/**");
+        return (web) -> web.ignoring()
+                .requestMatchers("/v3/api-docs", "/swagger-ui/**", "/v2/api-docs", "/configuration/ui",
+                        "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/health")
+                .requestMatchers(HttpMethod.OPTIONS, "/**");
     }
 
 

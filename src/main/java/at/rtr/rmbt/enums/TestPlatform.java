@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
-import static com.vladmihalcea.hibernate.type.util.LogUtils.LOGGER;
 
 @Slf4j
 @Getter
@@ -34,7 +33,7 @@ public enum TestPlatform {
         } catch (IllegalArgumentException e) { // if value not found by name - try find by label
             for (TestPlatform testPlatform : values()) {
                 if (testPlatform.label.equalsIgnoreCase(value)) {
-                    LOGGER.info(value, testPlatform);
+                    log.info("{} -> {}", value, testPlatform);
                     return testPlatform;
                 }
             }

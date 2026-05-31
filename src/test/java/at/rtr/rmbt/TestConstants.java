@@ -325,7 +325,7 @@ public interface TestConstants {
     String DEFAULT_TEST_RESULT_DETAIL_SPEED_UPLOAD_NDT = "1.2 Mbps";
     String DEFAULT_TEST_RESULT_DETAIL_FREQUENCY_DL = "940 MHz";
     String DEFAULT_TEST_RESULT_DETAIL_RADIO_BAND = "8 (GSM 900)";
-    String DEFAULT_TEST_RESULT_DETAIL_TIME_STRING = "Jan 19, 1970, 5:39:24 PM";
+    String DEFAULT_TEST_RESULT_DETAIL_TIME_STRING = "Jan 19, 1970, 5:39:24\u202FPM";
     String DEFAULT_TEST_RESULT_DETAIL_TIMEZONE = "UTC+1h";
     Integer DEFAULT_TEST_LOCATION_LINK_DISTANCE = 5;
     Long DEFAULT_TEST_LOCATION_EDGE_ID = 15L;
@@ -360,10 +360,10 @@ public interface TestConstants {
     String DEFAULT_USER_AGENT_CATEGORY = "pc";
     String DEFAULT_USER_AGENT_OS = "Windows 10";
     Integer DEFAULT_CLASSIFICATION_COUNT = 2;
-    String DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT = "RTR-NetTest result - Jan 19, 1970, 5:39:24 PM";
+    String DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT = "RTR-NetTest result - Jan 19, 1970, 5:39:24\u202FPM";
     String DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_TRUE_SIGNAL_STRENGTH_NOT_NULL = """
             My Result:
-            Date/time: Jan 19, 1970, 5:39:24 PM
+            Date/time: Jan 19, 1970, 5:39:24\u202FPM
             Download: 2,122 Mbps
             Upload: 1,020 Mbps
             Ping: 58 ms
@@ -376,7 +376,7 @@ public interface TestConstants {
             """;
     String DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL = """
             My Result:
-            Date/time: Jan 19, 1970, 5:39:24 PM
+            Date/time: Jan 19, 1970, 5:39:24\u202FPM
             Download: 2,122 Mbps
             Upload: 1,020 Mbps
             Ping: 58 ms
