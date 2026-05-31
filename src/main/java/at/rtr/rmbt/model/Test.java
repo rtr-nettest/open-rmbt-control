@@ -519,12 +519,11 @@ public class Test implements Serializable {
     @OneToOne(mappedBy = "test")
     private TestNdt testNdt;
 
+    // Inverse side of the association; owned by TestLocation.test (FK test_location.open_test_uuid).
+    // Must NOT also declare @JoinColumn here: combining mappedBy with @JoinColumn made Hibernate 6.6
+    // try to resolve TestLocation's columns (e.g. atraster100) by name from the "test" result set
+    // of native "SELECT * FROM test" queries, instead of loading them from test_location.
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "test")
-    @JoinColumn(
-            name = "open_test_uuid",
-            referencedColumnName = "open_test_uuid",
-            insertable = false, nullable = false, updatable = false
-    )
     private TestLocation testLocation;
 
     @Enumerated(EnumType.STRING)
