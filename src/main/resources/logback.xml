@@ -27,7 +27,7 @@
                     <param name="Encoding" value="UTF-8"/>
                     <destination>${logHost}:${logPort}</destination>
                     <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                        <customFields>{"app_name":"statistic-service"}</customFields>
+                        <customFields>{"app_name":"control-service"}</customFields>
                     </encoder>
                 </appender>
 
