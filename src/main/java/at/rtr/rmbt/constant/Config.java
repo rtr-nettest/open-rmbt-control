@@ -103,9 +103,9 @@ public interface Config {
     List<ServerType> SERVER_WS_TEST_SERVER_TYPES = List.of(ServerType.RMBTws, ServerType.RMBThttp);
     List<ServerType> SERVER_QOS_TEST_SERVER_TYPES = List.of(ServerType.QoS);
     List<ServerType> SERVER_UDP_TEST_SERVER_TYPES = List.of(ServerType.RMBTudp);
-    List<String> SIGNAL_RESULT_STATUSES = List.of(TestStatus.SIGNAL_STARTED.toString(), TestStatus.SIGNAL.toString());
+    List<TestStatus> SIGNAL_RESULT_STATUSES = List.of(TestStatus.SIGNAL_STARTED, TestStatus.SIGNAL);
     // List of valid states before coverageResult
-    List<String> COVERAGE_RESULT_STATUSES = List.of(TestStatus.COVERAGE_STARTED.toString(), TestStatus.SIGNAL_STARTED.toString());
+    List<TestStatus> COVERAGE_RESULT_STATUSES = List.of(TestStatus.COVERAGE_STARTED, TestStatus.SIGNAL_STARTED);
     // List of states which contain a vailid result for /testresultdetail
     List<TestStatus> TEST_RESULT_DETAIL_STATUSES = List.of(TestStatus.FINISHED,
             TestStatus.STARTED,
