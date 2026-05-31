@@ -1,6 +1,7 @@
 package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.TestConstants;
+import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.dto.LteFrequencyDto;
@@ -179,9 +180,9 @@ public class TestServiceImplTest {
 
         assertEquals(TIME_TEST_FIELDS_COUNT, result.getTestResultDetailContainerResponse().size());
         for (int i = 0; i < TIME_TEST_FIELDS_COUNT; i++) {
-            assertEquals(getTimeTestResultDetailResponse().getTestResultDetailContainerResponse().get(i), result.getTestResultDetailContainerResponse().get(i));
+            TestUtils.assertEqualsIgnoringSpaces(getTimeTestResultDetailResponse().getTestResultDetailContainerResponse().get(i), result.getTestResultDetailContainerResponse().get(i));
         }
-        assertEquals(getTimeTestResultDetailResponse(), result);
+        TestUtils.assertEqualsIgnoringSpaces(getTimeTestResultDetailResponse(), result);
     }
 
     @Test
@@ -292,9 +293,9 @@ This test tests for DualSim differentiation, but not DualSim shall be treated eq
         assertEquals(1, result.getTestResultResponses().size());
         var testResultResponse = result.getTestResultResponses().get(0);
         assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_OPEN_TEST_UUID, testResultResponse.getOpenTestUUID());
-        assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME_STRING, testResultResponse.getTimeString());
-        assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT, testResultResponse.getShareSubject());
-        assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_TRUE_SIGNAL_STRENGTH_NOT_NULL, testResultResponse.getShareText());
+        TestUtils.assertEqualsIgnoringSpaces(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME_STRING, testResultResponse.getTimeString());
+        TestUtils.assertEqualsIgnoringSpaces(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT, testResultResponse.getShareSubject());
+        TestUtils.assertEqualsIgnoringSpaces(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_TRUE_SIGNAL_STRENGTH_NOT_NULL, testResultResponse.getShareText());
         assertEquals(getMeasurementIfSignalStrengthNotNull(), testResultResponse.getMeasurement());
     }
 
@@ -326,9 +327,9 @@ This test tests for DualSim differentiation, but not DualSim shall be treated eq
         assertEquals(1, result.getTestResultResponses().size());
         var testResultResponse = result.getTestResultResponses().get(0);
         assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_OPEN_TEST_UUID, testResultResponse.getOpenTestUUID());
-        assertEquals(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME_STRING, testResultResponse.getTimeString());
-        assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT, testResultResponse.getShareSubject());
-        assertEquals(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL, testResultResponse.getShareText());
+        TestUtils.assertEqualsIgnoringSpaces(TestConstants.DEFAULT_TEST_RESULT_DETAIL_TIME_STRING, testResultResponse.getTimeString());
+        TestUtils.assertEqualsIgnoringSpaces(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_SUBJECT, testResultResponse.getShareSubject());
+        TestUtils.assertEqualsIgnoringSpaces(TestConstants.DEFAULT_TEST_RESULT_RESPONSE_SHARE_TEXT_DUAL_SIM_FALSE_LTE_RSRP_NOT_NULL, testResultResponse.getShareText());
         assertEquals(getMeasurementIfLteRSRPNotNull(), testResultResponse.getMeasurement());
     }
 

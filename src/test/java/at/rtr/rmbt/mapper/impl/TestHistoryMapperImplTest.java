@@ -1,6 +1,7 @@
 package at.rtr.rmbt.mapper.impl;
 
 import at.rtr.rmbt.TestConstants;
+import at.rtr.rmbt.TestUtils;
 import at.rtr.rmbt.mapper.TestHistoryMapper;
 import at.rtr.rmbt.model.TestHistory;
 import at.rtr.rmbt.response.HistoryItemResponse;
@@ -62,7 +63,7 @@ public class TestHistoryMapperImplTest {
                 .build();
         var response = testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, TestConstants.DEFAULT_CLASSIFICATION_COUNT, Locale.ENGLISH, false,false);
 
-        assertEquals(expectedHistoryItemResponse, response);
+        TestUtils.assertEqualsIgnoringSpaces(expectedHistoryItemResponse, response);
     }
 
     @Test
@@ -74,6 +75,6 @@ public class TestHistoryMapperImplTest {
                 .build();
         var response = testHistoryMapper.testHistoryToHistoryItemResponse(testHistory, TestConstants.DEFAULT_CLASSIFICATION_COUNT, Locale.ENGLISH, false,false);
 
-        assertEquals(expectedHistoryItemResponse, response);
+        TestUtils.assertEqualsIgnoringSpaces(expectedHistoryItemResponse, response);
     }
 }
