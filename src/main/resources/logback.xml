@@ -11,22 +11,33 @@
         </root>
     </springProfile>
 
-    <!-- Production profile: Console + Logstash -->
+    <!-- Production profile: Console, plus Logstash only when a host is configured -->
     <springProfile name="prod">
-        <springProperty name="logstashHost" source="LOG_HOST"/>
+        <springProperty name="logstashHost" source="LOG_HOST" defaultValue=""/>
         <springProperty name="logstashPort" source="LOG_PORT" defaultValue="4560"/>
 
-        <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-            <param name="Encoding" value="UTF-8"/>
-            <destination>${logstashHost}:${logstashPort}</destination>
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                <customFields>{"app_name":"statistic-service"}</customFields>
-            </encoder>
-        </appender>
+        <!-- Register the Logstash appender only when LOG_HOST is set; otherwise fall
+             back to console-only so a missing destination can't crash startup. -->
+        <if condition='!isNull("logstashHost") &amp;&amp; !property("logstashHost").isEmpty()'>
+            <then>
+                <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+                    <param name="Encoding" value="UTF-8"/>
+                    <destination>${logstashHost}:${logstashPort}</destination>
+                    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                        <customFields>{"app_name":"statistic-service"}</customFields>
+                    </encoder>
+                </appender>
 
-        <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="logstash"/>
-        </root>
+                <root level="INFO">
+                    <appender-ref ref="CONSOLE"/>
+                    <appender-ref ref="logstash"/>
+                </root>
+            </then>
+            <else>
+                <root level="INFO">
+                    <appender-ref ref="CONSOLE"/>
+                </root>
+            </else>
+        </if>
     </springProfile>
 </configuration>

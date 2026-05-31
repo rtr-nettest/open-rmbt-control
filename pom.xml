@@ -68,6 +68,11 @@
             <artifactId>logstash-logback-encoder</artifactId>
             <version>8.0</version>
         </dependency>
+        <!-- Required for <if>/<then> conditionals in logback.xml (version managed by spring-boot parent) -->
+        <dependency>
+            <groupId>org.codehaus.janino</groupId>
+            <artifactId>janino</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
