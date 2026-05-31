@@ -1,6 +1,7 @@
 package at.rtr.rmbt.repository;
 
 import at.rtr.rmbt.dto.LteFrequencyDto;
+import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.model.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,14 +44,17 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
 
     Page<Test> findAllByRadioCellIsNotEmptyAndNetworkTypeNotIn(Pageable pageable, List<Integer> networkTypes);
 
-    @Query(value = "SELECT * FROM test WHERE uuid = :testUUID AND (status is null or status in (:testStatuses))", nativeQuery = true)
-    Optional<Test> findByUuidAndStatusesIn(UUID testUUID, Collection<String> testStatuses);
+    // JPQL (not native): lets Hibernate alias columns and join-fetch the eager TestLocation
+    // association by position. A native "SELECT * FROM test" forces Hibernate to read the
+    // associated test_location columns by name from the test result set, which fails.
+    @Query("SELECT t FROM Test t WHERE t.uuid = :testUUID AND (t.status IS NULL OR t.status IN :testStatuses)")
+    Optional<Test> findByUuidAndStatusesIn(UUID testUUID, Collection<TestStatus> testStatuses);
 
     @Query(value = "SELECT * FROM test WHERE uuid = :testUUID AND (status is null or status in (:testStatuses)) for update", nativeQuery = true)
     Optional<Test> findByUuidAndStatusesInLocked(UUID testUUID, Collection<String> testStatuses);
 
-    @Query(value = "SELECT * FROM test WHERE deleted = false AND implausible = false AND uuid = :testUUID AND (status is null or status in (:testStatuses))", nativeQuery = true)
-    Optional<Test> findByUuidAndStatusesInAndActive(UUID testUUID, Collection<String> testStatuses);
+    @Query("SELECT t FROM Test t WHERE t.deleted = false AND t.implausible = false AND t.uuid = :testUUID AND (t.status IS NULL OR t.status IN :testStatuses)")
+    Optional<Test> findByUuidAndStatusesInAndActive(UUID testUUID, Collection<TestStatus> testStatuses);
 
     @Query(
             value = "SELECT * " +

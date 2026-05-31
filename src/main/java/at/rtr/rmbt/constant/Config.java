@@ -107,12 +107,12 @@ public interface Config {
     // List of valid states before coverageResult
     List<String> COVERAGE_RESULT_STATUSES = List.of(TestStatus.COVERAGE_STARTED.toString(), TestStatus.SIGNAL_STARTED.toString());
     // List of states which contain a vailid result for /testresultdetail
-    List<String> TEST_RESULT_DETAIL_STATUSES = List.of(TestStatus.FINISHED.toString(),
-            TestStatus.STARTED.toString(),
-            TestStatus.ERROR.toString(),
-            TestStatus.ABORTED.toString(),
-            TestStatus.COVERAGE.toString(),
-            TestStatus.SIGNAL.toString());
-    List<String> TEST_RESULT_STATUSES = TEST_RESULT_DETAIL_STATUSES;
+    List<TestStatus> TEST_RESULT_DETAIL_STATUSES = List.of(TestStatus.FINISHED,
+            TestStatus.STARTED,
+            TestStatus.ERROR,
+            TestStatus.ABORTED,
+            TestStatus.COVERAGE,
+            TestStatus.SIGNAL);
+    List<TestStatus> TEST_RESULT_STATUSES = TEST_RESULT_DETAIL_STATUSES;
     Integer SIGNIFICANT_PLACES = 2;
 }
