@@ -21,7 +21,10 @@
     <properties>
         <java.version>17</java.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
-        <org.projectlombok.version>1.18.36</org.projectlombok.version>
+        <!-- Lombok 1.18.40+ is required to compile on JDK 21+/25 (javac internals changed); still builds on JDK 17. -->
+        <org.projectlombok.version>1.18.42</org.projectlombok.version>
+        <!-- Override the Spring Boot 3.4.5 BOM's Byte Buddy so Mockito can instrument JDK 25 bytecode; still works on JDK 17. -->
+        <byte-buddy.version>1.17.6</byte-buddy.version>
         <apache.commons.version>[3.18.0,)</apache.commons.version>
         <auth0-spring-security-api.version>1.4.0</auth0-spring-security-api.version>
         <start-class>at.rtr.rmbt.RTRApplication</start-class>
