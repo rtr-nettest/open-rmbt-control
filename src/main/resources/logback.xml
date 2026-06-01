@@ -19,6 +19,17 @@
         <property name="logHost" value="${LOG_HOST:-}"/>
         <property name="logPort" value="${LOG_PORT:-4560}"/>
 
+        <!-- Console appender that only emits ERROR and above (uses the Spring Boot console format). -->
+        <appender name="CONSOLE_ERROR" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>ERROR</level>
+            </filter>
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>${CONSOLE_LOG_CHARSET}</charset>
+            </encoder>
+        </appender>
+
         <!-- Register the Logstash appender only when LOG_HOST is set; otherwise fall
              back to console-only so a missing destination can't crash startup. -->
         <if condition='!property("logHost").isEmpty()'>
@@ -27,16 +38,18 @@
                     <param name="Encoding" value="UTF-8"/>
                     <destination>${logHost}:${logPort}</destination>
                     <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                        <customFields>{"app_name":"control-service"}</customFields>
+                        <customFields>{"app_name":"control-service","host":"${LOGGING_HOST:-}"}</customFields>
                     </encoder>
                 </appender>
 
+                <!-- Console: ERROR only. Logstash: full INFO and above. -->
                 <root level="INFO">
-                    <appender-ref ref="CONSOLE"/>
+                    <appender-ref ref="CONSOLE_ERROR"/>
                     <appender-ref ref="logstash"/>
                 </root>
             </then>
             <else>
+                <!-- No LOG_HOST: keep INFO on the console so logs aren't lost. -->
                 <root level="INFO">
                     <appender-ref ref="CONSOLE"/>
                 </root>
