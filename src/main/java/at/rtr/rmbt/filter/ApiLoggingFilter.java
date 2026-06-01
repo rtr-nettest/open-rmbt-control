@@ -47,7 +47,12 @@ public class ApiLoggingFilter implements Filter {
             try {
                 chain.doFilter(bufferedRequest, bufferedResponse);
             } catch (Throwable a) {
-                LOGGER.error(a.getMessage(), a);
+                if (isClientAbort(a)) {
+                    LOGGER.info("User disconnected before the response was completed: {} {}",
+                            httpServletRequest.getMethod(), httpServletRequest.getServletPath());
+                } else {
+                    LOGGER.error(a.getMessage(), a);
+                }
             } finally {
                 // Only log textual response bodies; binary payloads (e.g. application/pdf) would
                 // otherwise dump raw bytes into the log.
@@ -63,6 +68,21 @@ public class ApiLoggingFilter implements Filter {
         } catch (Throwable a) {
             LOGGER.error(a.getMessage(), a);
         }
+    }
+
+    /** True if the exception (or any cause) is a client-side disconnect (broken pipe / reset). */
+    private static boolean isClientAbort(Throwable t) {
+        for (Throwable c = t; c != null; c = c.getCause()) {
+            if ("ClientAbortException".equals(c.getClass().getSimpleName())) {
+                return true;
+            }
+            final String m = c.getMessage();
+            if (c instanceof java.io.IOException && m != null
+                    && (m.contains("Broken pipe") || m.contains("Connection reset"))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean isTextualContentType(String contentType) {
