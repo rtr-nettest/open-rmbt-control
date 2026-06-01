@@ -160,3 +160,17 @@ Alternatively, log can be sent to Logstash on a remote ELK instance
 Again, make sure the file `etc/tomcat10/logback-control.xml` is owned by`tomcat`.
 
 
+
+## Logging
+
+Logging is configured via `logback.xml` and is independent of the Spring profile.
+
+| Server     | app_name          |
+|------------|-------------------|
+| control    | control-service   |
+
+Behavior:
+
+- **No `LOG_HOST`** → console only, at `INFO`.
+- **`LOG_HOST` set** → Logstash at `INFO` + console at `ERROR` only (with `host` from `${LOGGING_HOST:-}`).
+- **Advanced** → admin points `logging.config` / `LOGGING_CONFIG_FILE*` at their own `logback.xml`.
