@@ -49,15 +49,28 @@ public class ApiLoggingFilter implements Filter {
             } catch (Throwable a) {
                 LOGGER.error(a.getMessage(), a);
             } finally {
-                final StringBuilder logResponse = new StringBuilder("HTTP RESPONSE ")
-                        .append(bufferedResponse.getContent());
-                String responseString = logResponse.toString();
-                LOGGER.info(responseString.substring(0, Math.min(responseString.length(), 10000)));
+                // Only log textual response bodies; binary payloads (e.g. application/pdf) would
+                // otherwise dump raw bytes into the log.
+                final String contentType = httpServletResponse.getContentType();
+                if (isTextualContentType(contentType)) {
+                    final String content = bufferedResponse.getContent();
+                    LOGGER.info("HTTP RESPONSE " + content.substring(0, Math.min(content.length(), 10000)));
+                } else {
+                    LOGGER.info("HTTP RESPONSE [" + contentType + " body not logged]");
+                }
                 MDC.clear();
             }
         } catch (Throwable a) {
             LOGGER.error(a.getMessage(), a);
         }
+    }
+
+    private static boolean isTextualContentType(String contentType) {
+        if (contentType == null) {
+            return true;
+        }
+        final String ct = contentType.toLowerCase();
+        return ct.startsWith("text/") || ct.contains("json") || ct.contains("xml");
     }
 
     private Map<String, String> getTypesafeRequestMap(HttpServletRequest request) {
