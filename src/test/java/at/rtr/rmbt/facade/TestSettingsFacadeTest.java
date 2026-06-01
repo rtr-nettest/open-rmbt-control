@@ -83,6 +83,7 @@ public class TestSettingsFacadeTest {
             .apiLevel("28")
 .build();
 
+
     @Mock
     private at.rtr.rmbt.model.Test test;
     @Mock

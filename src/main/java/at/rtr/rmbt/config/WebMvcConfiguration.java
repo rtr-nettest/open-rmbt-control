@@ -59,9 +59,12 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                             SIGNAL_REQUEST, SIGNAL_RESULT, COVERAGE_REQUEST, COVERAGE_RESULT,
                             NEWS_URL, REGISTRATION_URL, RESULT_QOS_URL, RESULT_URL, SETTINGS_URL,
                             PROVIDERS, TEST_RESULT, HISTORY, SYNC, MEASUREMENT_QOS_RESULT, VERSION, RESULT_UPDATE,
-                            QOS_BY_OPEN_TEST_UUID, QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, ADMIN_SET_IMPLAUSIBLE,
+                            QOS_BY_OPEN_TEST_UUID, QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE,
                             "/swagger-ui/**", "/v3/api-docs/**")
                     .permitAll();
+            // Admin moderation action: must NOT be public. Gated like the other admin routes.
+            authorize.requestMatchers(ADMIN_SET_IMPLAUSIBLE).hasAuthority("write:implausible");
+            authorize.requestMatchers(ADMIN_SET_IMPLAUSIBLE).hasAnyAuthority(clients);
             authorize.requestMatchers(ADMIN_SIGNAL).hasAuthority("read:reports/signal");
             authorize.requestMatchers(ADMIN_SIGNAL).hasAnyAuthority(clients);
             authorize.requestMatchers(ADMIN_NEWS).hasAuthority("read:config/news");
