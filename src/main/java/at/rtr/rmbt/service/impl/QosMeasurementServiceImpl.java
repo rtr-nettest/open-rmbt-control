@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
@@ -95,6 +96,7 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
     }
 
     @Override
+    @Transactional
     public ErrorResponse saveQosMeasurementResult(QosResultRequest request) {
         final ErrorResponse errorList = new ErrorResponse();
         final String lang = request.getClientLanguage();
