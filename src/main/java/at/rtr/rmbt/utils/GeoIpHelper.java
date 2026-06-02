@@ -1,14 +1,19 @@
 package at.rtr.rmbt.utils;
 
 import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.AddressNotFoundException;
 import com.maxmind.geoip2.model.CountryResponse;
 import com.maxmind.geoip2.model.AsnResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.InetAddress;
 
 public abstract class GeoIpHelper
 {
+    private static final Logger LOG = LoggerFactory.getLogger(GeoIpHelper.class);
+
     private static volatile DatabaseReader countryLookupService;
     private static volatile DatabaseReader asnLookupService;
 
@@ -98,10 +103,14 @@ public abstract class GeoIpHelper
             // If called with CountryType.REGISTERED -> return registered country, otherwise (default) the country based on GeoIP
             return (type == CountryType.REGISTERED)
                 ? country.getRegisteredCountry().getIsoCode()
-                : country.getCountry().getIsoCode();            
-        
-            } catch (Exception e) {
-            e.printStackTrace();
+                : country.getCountry().getIsoCode();
+
+        } catch (AddressNotFoundException e) {
+            // Normal: the address is simply not in the GeoIP database (e.g. private/unknown IP).
+            LOG.warn("Country lookup: address {} not found in the GeoIP database", adr.getHostAddress());
+            return null;
+        } catch (Exception e) {
+            LOG.error("Country lookup failed for {}", adr.getHostAddress(), e);
             return null;
         }
     }
@@ -123,8 +132,11 @@ public abstract class GeoIpHelper
                 final AsnResponse asn = lookupService.asn(adr);
                 return new AsnInfo(asn.getAutonomousSystemNumber(), asn.getAutonomousSystemOrganization());
             }
+        } catch (AddressNotFoundException e) {
+            // Normal: the address is simply not in the GeoIP database (e.g. private/unknown IP).
+            LOG.warn("ASN lookup: address {} not found in the GeoIP database", adr.getHostAddress());
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("ASN lookup failed for {}", adr.getHostAddress(), e);
         }
         return null;
     }
