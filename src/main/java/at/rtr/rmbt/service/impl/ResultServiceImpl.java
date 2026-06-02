@@ -58,9 +58,9 @@ public class ResultServiceImpl implements ResultService {
         Test test = testRepository.findByUuidOrOpenTestUuid(requestUUID)
                 .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.TEST_NOT_FOUND, requestUUID)));
 
-        //verify test status
+        //verify test status (handled by RtrAdvice as a clean 400 {"error":[message]} - no stack trace)
         if (test.getStatus() != TestStatus.STARTED) {
-            throw new RuntimeException(String.format(
+            throw new IllegalArgumentException(String.format(
                     "%s (uuid=%s, openTestUuid=%s): expected status %s but was %s",
                     ErrorMessage.INVALID_TEST_STATUS, test.getUuid(), test.getOpenTestUuid(),
                     TestStatus.STARTED, test.getStatus()));
