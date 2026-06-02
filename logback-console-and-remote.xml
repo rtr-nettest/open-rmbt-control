@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Standalone logback config: logs to BOTH the console and Logstash, at INFO.
+
+  Use it to test the LOGGING_CONFIG_FILE path of LoggingConfigurer. Copy this file onto the
+  server (e.g. /etc/tomcat10/logback-console-and-remote.xml) and point the app at it via a
+  Tomcat conf/context.xml <Parameter>:
+
+      <Parameter name="LOGGING_CONFIG_FILE"
+                 value="/etc/tomcat10/logback-console-and-remote.xml" override="false"/>
+
+  At ApplicationReadyEvent the app loads this file verbatim (it takes precedence over LOG_HOST).
+  Self-contained on purpose - no Spring Boot includes / conversion words - so it also works when
+  loaded outside the normal Spring Boot logging setup. Adjust destination / app_name / host below.
+-->
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- Plain pattern; logback appends stack traces automatically when %ex is omitted. -->
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %5p [%t] %-40.40logger{39} : %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>v-elk.lan.netztest.at:5000</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"app_name":"statistic-service","host":"m03"}</customFields>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="logstash"/>
+    </root>
+
+</configuration>

@@ -1,51 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true">
+<!-- Safe baseline: console at INFO. This config never fails to load.
+     Remote (Logstash) logging is applied at runtime by at.rtr.rmbt.config.LoggingConfigurer,
+     which reads the deployment context (Tomcat conf/context.xml <Parameter> entries, or JVM
+     system properties / environment variables):
+       - LOGGING_CONFIG_FILE set to an existing file -> that logback config is loaded verbatim
+       - LOG_HOST set                                -> Logstash (INFO) + console (ERROR only)
+       - neither                                     -> this console config stays in effect -->
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
-    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
-    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
-
-    <!-- Read LOG_HOST / LOG_PORT natively from env vars (or system properties), with defaults, so an
-         unset LOG_HOST resolves to an empty logHost rather than the "..._IS_UNDEFINED" token.
-         Logging behavior is independent of the Spring profile:
-           - LOG_HOST not set  -> console only (INFO)
-           - LOG_HOST set       -> Logstash (INFO), console (ERROR only)
-         For anything more advanced, point logging.config / LOGGING_CONFIG_FILE at a custom file. -->
-    <property name="logHost" value="${LOG_HOST:-}"/>
-    <property name="logPort" value="${LOG_PORT:-4560}"/>
-
-    <!-- Console appender that only emits ERROR and above (uses the Spring Boot console format). -->
-    <appender name="CONSOLE_ERROR" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
-        </filter>
-        <encoder>
-            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-            <charset>${CONSOLE_LOG_CHARSET}</charset>
-        </encoder>
-    </appender>
-
-    <!-- Register the Logstash appender only when LOG_HOST is set; otherwise fall back to
-         console-only so a missing destination can't spam connection errors / delay startup. -->
-    <if condition='!property("logHost").isEmpty()'>
-        <then>
-            <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-                <param name="Encoding" value="UTF-8"/>
-                <destination>${logHost}:${logPort}</destination>
-                <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                    <customFields>{"app_name":"control-service","host":"${LOGGING_HOST:-}"}</customFields>
-                </encoder>
-            </appender>
-            <!-- Console: ERROR only. Logstash: full INFO and above. -->
-            <root level="INFO">
-                <appender-ref ref="CONSOLE_ERROR"/>
-                <appender-ref ref="logstash"/>
-            </root>
-        </then>
-        <else>
-            <!-- No LOG_HOST: log to the console at INFO. -->
-            <root level="INFO">
-                <appender-ref ref="CONSOLE"/>
-            </root>
-        </else>
-    </if>
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
 </configuration>

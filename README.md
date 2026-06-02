@@ -1,7 +1,7 @@
 Open-RMBT-Control
 =========
 
-> *Open-RMBT* is an open source, multi-threaded bandwidth measurement system.
+> *Open-RMBT* is an open source, multithreaded bandwidth measurement system.
 
 It consists of the following components:
 * Web site
@@ -21,7 +21,7 @@ Related material
 ----------------
 
 * [RMBT specification](https://www.netztest.at/doc/)
-* [RTR-NetTest/open-rmbt](https://github.com/rtr-nettest/open-rmbt) - Orignal repository, today mainly contains Map and QoS-server
+* [RTR-NetTest/open-rmbt](https://github.com/rtr-nettest/open-rmbt) - Original repository, today mainly contains Map and QoS-server
 * [RTR-NetTest/rmbt-server](https://github.com/rtr-nettest/rmbt-server) - Test Server for conducting measurements based on the RMBT protocol
 * [RTR-NetTest/rmbtws](https://github.com/rtr-nettest/rmbtws) - JavaScript client for conducting RMBT-based speed measurements
 * [RTR-NetTest/open-rmbt-statistics](https://github.com/rtr-nettest//open-rmbt-statistics) - Statistics server
@@ -34,7 +34,7 @@ System requirements for the Control Server
 
 * single (virtual) server with sufficient RAM and CPU performance
 * Fast disk (NVME) for database
-* Base system Debian 12 or newer
+* Base system Debian 13 or newer
 * At least a single static public IPv4 address (IPv6 support recommended)
 
   *NOTE: other Linux distributions can also be used, but commands and package names may be different*
@@ -62,7 +62,7 @@ for basic setup instructions.
 * Apache Tomcat 10 or higher
 * nginx; configure nginx as reverse-proxy to forward requests to this host on port 8080
 * letsencrypt; create certificate
-* openjdk-17-jre
+* JRE17 - JRE25
 * [Maxmind GeoLite2 database](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data)
 
 ### Build the RMBTControlServer.war archive
@@ -76,7 +76,7 @@ The `WAR build` action produces a WAR file that can be used on a server. This on
 ### Configure Tomcat
 
 ##### Configure catalina.properties
-Edit `/etc/tomcat9/catalina.properties`, at the end of the file add:
+Edit `/etc/tomcat10/catalina.properties`, at the end of the file add:
 
 ```properties
 spring.profiles.active=prod
@@ -111,66 +111,50 @@ Substitute parts with `[]` and URLs with `example.com`. [host_id] is a short str
 which identifies the host, e.g. "host1".
 Make sure the file `context.xml` is owned by`tomcat`.
 
-##### Configure Logstash
+##### Configure Logging - Console or Logstash
 
-Logstash is configured in `etc/tomcat10/logback-control.xml`.
-The basic logging configuration is to send log to `console`. In newer Debian installations systemd is
-configured to redirect that output to systemd log. Older systems send log to `/var/log/tomcat10/catalina.out`.
+The default configuration is to send log to `console`. In current Debian installations systemd
+redirects console output to systemd's journal.
+Older systems logged to `/var/log/tomcat9/catalina.out`.
 
-The following configuration sends log to `console`:
+The following `context.xml` configuration sends log to Logstash at `elk.example.com`:
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE configuration>
-<configuration>
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-    </encoder>
-  </appender>
-<!-- log levels: TRACE, DEBUG, INFO, WARN, ERROR -->
-  <root level="INFO">
-    <appender-ref ref="STDOUT" />
-  </root>
-</configuration>
+<!-- Logging  -->
+<Parameter name="LOG_HOST"     value="elk.example.com"       override="false"/>
+<Parameter name="LOG_PORT"     value="5000"                  override="false"/>
+<Parameter name="LOGGING_HOST" value="dev"                   override="false"/>
 ```
-Alternatively, log can be sent to Logstash on a remote ELK instance
+
+Alternatively, one might want to define a custom logging configuration.
+First, the alternative configuration file need to be specified in `context.xml`:
+```xml
+ <Parameter name="LOGGING_CONFIG_FILE_CONTROL" value="/etc/tomcat10/logback.xml" override="false"/>
+```
+Again, make sure that the file `/etc/tomcat10/logback.xml` is owned by `tomcat`.
+
+This example logs to both Logstash and console:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE configuration>
-<configuration scan="true">
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+<configuration>
 
-    <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <param name="Encoding" value="UTF-8"/>
-<!-- define remote logging  host here -->
-        <remoteHost>elk.example.com</remoteHost>
-        <port>5000</port>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-<!-- add custom fields to identify server and host -->
-            <customFields>{"app_name":"control-service", "host":"[host_id]"}</customFields>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %5p [%t] %-40.40logger{39} : %m%n</pattern>
         </encoder>
     </appender>
-<!-- log levels: TRACE, DEBUG, INFO, WARN, ERROR -->
+
+    <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>elk.example.com:5000</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"app_name":"control-service","host":"dev"}</customFields>
+        </encoder>
+    </appender>
+
     <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
         <appender-ref ref="logstash"/>
     </root>
+
 </configuration>
 ```
-Again, make sure the file `etc/tomcat10/logback-control.xml` is owned by`tomcat`.
-
-
-
-## Logging
-
-Logging is configured via `logback.xml` and is independent of the Spring profile.
-
-| Server     | app_name          |
-|------------|-------------------|
-| control    | control-service   |
-
-Behavior:
-
-- **No `LOG_HOST`** → console only, at `INFO`.
-- **`LOG_HOST` set** → Logstash at `INFO` + console at `ERROR` only (with `host` from `${LOGGING_HOST:-}`).
-- **Advanced** → admin points `logging.config` / `LOGGING_CONFIG_FILE*` at their own `logback.xml`.
