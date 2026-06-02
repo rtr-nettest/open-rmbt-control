@@ -205,7 +205,7 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
         } catch (IllegalAccessException | JsonProcessingException e) {
             logger.error(e.getMessage(), e);
         } catch (UnsupportedOperationException e) {
-            logger.error(String.format(ErrorMessage.QOS_TEST_RESULT_FOR_TEST_NOT_FOUND, qosTestUuid));
+            logger.debug(String.format(ErrorMessage.QOS_TEST_RESULT_FOR_TEST_NOT_FOUND, qosTestUuid));
             errorList.addErrorString(messageSource.getMessage("ERROR_REQUEST_QOS_RESULT_DETAIL_NO_UUID", null, locale));
         }
 
@@ -246,7 +246,7 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
         } catch (IllegalAccessException | JsonProcessingException e) {
             logger.error(e.getMessage(), e);
         } catch (UnsupportedOperationException e) {
-            logger.error(String.format(ErrorMessage.QOS_TEST_RESULT_FOR_TEST_NOT_FOUND, openTestUUID));
+            logger.debug(String.format(ErrorMessage.QOS_TEST_RESULT_FOR_TEST_NOT_FOUND, openTestUUID));
             errorList.addErrorString(messageSource.getMessage("ERROR_REQUEST_QOS_RESULT_DETAIL_NO_UUID", null, locale));
         }
 
