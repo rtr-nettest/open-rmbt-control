@@ -55,7 +55,7 @@ public class LoggingConfigurer implements ApplicationListener<ApplicationReadyEv
                     ? wac.getServletContext() : null;
             final Environment env = appContext.getEnvironment();
 
-            final String configFile = resolve(servletContext, env, "F");
+            final String configFile = resolve(servletContext, env, "LOGGING_CONFIG_FILE_CONTROL");
             final String logHost = resolve(servletContext, env, "LOG_HOST");
             LOG.info("Logging: resolved LOGGING_CONFIG_FILE_CONTROL={}, LOG_HOST={}", configFile, logHost);
 
