@@ -58,7 +58,10 @@ public class ResultServiceImpl implements ResultService {
 
         //verify test status
         if (test.getStatus() != TestStatus.STARTED) {
-            throw new RuntimeException(ErrorMessage.INVALID_TEST_STATUS);
+            throw new RuntimeException(String.format(
+                    "%s (uuid=%s, openTestUuid=%s): expected status %s but was %s",
+                    ErrorMessage.INVALID_TEST_STATUS, test.getUuid(), test.getOpenTestUuid(),
+                    TestStatus.STARTED, test.getStatus()));
         }
 
         verifyTestStatus(resultRequest);
