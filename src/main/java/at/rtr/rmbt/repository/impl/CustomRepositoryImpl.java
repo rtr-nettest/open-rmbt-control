@@ -25,6 +25,11 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
     @Override
     @Transactional
     public void refresh(T t) {
+        // Flush pending changes first so refresh() reloads DB-computed values WITHOUT discarding
+        // the caller's own unflushed writes. Inside a single transaction (e.g. a @Transactional
+        // result handler) a bare entityManager.refresh() would throw away in-memory changes that
+        // were not yet flushed - previously those got flushed implicitly by per-call commits.
+        entityManager.flush();
         entityManager.refresh(t);
     }
 
