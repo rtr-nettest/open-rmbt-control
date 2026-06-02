@@ -19,6 +19,7 @@ import at.rtr.rmbt.utils.HelperFunctions;
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,6 +51,7 @@ public class ResultServiceImpl implements ResultService {
     private final static Pattern MCC_MNC_PATTERN = Pattern.compile("\\d{3}-\\d+");
 
     @Override
+    @Transactional
     public void processResultRequest(HttpServletRequest httpServletRequest, ResultRequest resultRequest, Map<String, String> headers) {
         UUID requestUUID = UUID.fromString(resultRequest.getTestToken().split("_")[0]);
 
