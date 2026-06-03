@@ -2,8 +2,11 @@ package at.rtr.rmbt.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -42,6 +45,20 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         return new RestTemplate();
     }
 
+    /**
+     * Registers the {@link MonitoringAuthFilter} in front of the JavaMelody report. Ordered ahead of
+     * everything else so it gates {@code /monitoring} before JavaMelody's own filter serves it.
+     */
+    @Bean
+    public FilterRegistrationBean<MonitoringAuthFilter> monitoringAuthFilter(Environment environment) {
+        final FilterRegistrationBean<MonitoringAuthFilter> registration =
+                new FilterRegistrationBean<>(new MonitoringAuthFilter(environment));
+        registration.setName("monitoringAuthFilter");
+        registration.addUrlPatterns("/monitoring", "/monitoring/*");
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return registration;
+    }
+
 
     private static final String[] clients = new String[]{"client:specure", "client:rtr"};
 
@@ -60,7 +77,9 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                             NEWS_URL, REGISTRATION_URL, RESULT_QOS_URL, RESULT_URL, SETTINGS_URL,
                             PROVIDERS, TEST_RESULT, HISTORY, SYNC, MEASUREMENT_QOS_RESULT, VERSION, RESULT_UPDATE,
                             QOS_BY_OPEN_TEST_UUID, QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE,
-                            "/swagger-ui/**", "/v3/api-docs/**")
+                            "/swagger-ui/**", "/v3/api-docs/**",
+                            // JavaMelody report: reachable, but guarded by MonitoringAuthFilter (MELODY_PW)
+                            "/monitoring", "/monitoring/**")
                     .permitAll();
             // Admin moderation action: must NOT be public. Gated like the other admin routes.
             authorize.requestMatchers(ADMIN_SET_IMPLAUSIBLE).hasAuthority("write:implausible");
