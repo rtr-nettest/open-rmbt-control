@@ -4,6 +4,7 @@ import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.constant.HeaderConstants;
+import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.mapper.GeoLocationMapper;
 import at.rtr.rmbt.mapper.SignalMapper;
 import at.rtr.rmbt.mapper.TestMapper;
@@ -189,6 +190,24 @@ public class SignalServiceImplTest {
         verify(testRepository).saveAndFlush(test);
         verify(testMapper).updateTestWithSignalResultRequest(signalResultRequest, test);
         assertNotEquals(TestConstants.DEFAULT_TEST_UUID, response.getTestUUID());
+    }
+
+    @Test
+    public void processCoverageResult_whenTestExists_movesToCoverageAndSaves() {
+        CoverageResultRequest coverageResultRequest = mock(CoverageResultRequest.class);
+        when(coverageResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(coverageResultRequest.getClientUUID()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
+        when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.COVERAGE_RESULT_STATUSES))
+                .thenReturn(Optional.of(test));
+        Map<String, String> headers = Map.of(HeaderConstants.IP, "127.0.0.1");
+
+        signalService.processCoverageResult(coverageResultRequest, httpServletRequest, headers);
+
+        verify(test).setStatus(TestStatus.COVERAGE);
+        verify(testMapper).updateTestWithCoverageResultRequest(coverageResultRequest, test);
+        verify(testMapper).updateTestLocation(test);
+        verify(testRepository).saveAndFlush(test);
     }
 
 

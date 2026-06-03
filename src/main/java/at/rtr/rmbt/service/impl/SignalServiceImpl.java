@@ -352,7 +352,7 @@ public class SignalServiceImpl implements SignalService {
     public void processCoverageResult(CoverageResultRequest coverageResultRequest,
                                       HttpServletRequest httpServletRequest,
                                       Map<String, String> headers) {
-        log.info("CoverageResultRequest = " + coverageResultRequest);
+        log.info("CoverageResultRequest = {}", coverageResultRequest);
         UUID testUuid = getTestUUID(coverageResultRequest);
 
         // Check if client uuid exists
@@ -385,14 +385,11 @@ public class SignalServiceImpl implements SignalService {
         // radioInfo (cells, signals)
         processRadioInfo(coverageResultRequest.getRadioInfo(), updatedTest);
 
-        log.info("Updated test before save = " + updatedTest);
+        log.info("Updated test before save = {}", updatedTest);
         testMapper.updateTestLocation(updatedTest);
         testRepository.saveAndFlush(updatedTest);
 
         processFences(coverageResultRequest.getFences(), updatedTest);
-
-        CoverageResultResponse.builder()
-                .build();
     }
 
 
