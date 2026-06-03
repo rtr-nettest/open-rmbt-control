@@ -3,6 +3,7 @@ package at.rtr.rmbt.service.impl;
 import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.config.UUIDGenerator;
 import at.rtr.rmbt.constant.Config;
+import at.rtr.rmbt.dto.ASInformation;
 import at.rtr.rmbt.constant.HeaderConstants;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.mapper.GeoLocationMapper;
@@ -23,6 +24,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -208,6 +210,37 @@ public class SignalServiceImplTest {
         verify(testMapper).updateTestWithCoverageResultRequest(coverageResultRequest, test);
         verify(testMapper).updateTestLocation(test);
         verify(testRepository).saveAndFlush(test);
+    }
+
+    @Test
+    public void processSignalRequest_whenClientExists_savesStartedTestAndReturnsResponse() {
+        Map<String, String> headers = Map.of(HeaderConstants.IP, TestConstants.DEFAULT_IP_V4);
+        when(signalRegisterRequest.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(signalRegisterRequest.getTimezone()).thenReturn(TestConstants.DEFAULT_TIMEZONE);
+        when(signalRegisterRequest.getTime()).thenReturn(TestConstants.DEFAULT_TIME_INSTANT);
+        when(uuidGenerator.generateUUID()).thenReturn(TestConstants.DEFAULT_UUID);
+        when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
+        when(httpServletRequest.getHeader(HeaderConstants.URL)).thenReturn(TestConstants.DEFAULT_URL);
+        when(testRepository.saveAndFlush(any())).thenReturn(savedTest);
+        when(savedTest.getUid()).thenReturn(TestConstants.DEFAULT_UID);
+        when(savedTest.getUuid()).thenReturn(TestConstants.DEFAULT_UUID);
+        when(providerRepository.getProviderNameByTestId(TestConstants.DEFAULT_UID)).thenReturn(TestConstants.DEFAULT_PROVIDER);
+
+        // The AS lookup and reverse-DNS are network/DB calls (static) - stub them so the test is hermetic.
+        try (MockedStatic<HelperFunctions> helperFunctions = mockStatic(HelperFunctions.class)) {
+            helperFunctions.when(() -> HelperFunctions.getASInformationForSignalRequest(any()))
+                    .thenReturn(ASInformation.builder().number(1L).name("AS-NAME").country("AT").build());
+            helperFunctions.when(() -> HelperFunctions.anonymizeIp(any())).thenReturn("37.57.0.0");
+            helperFunctions.when(() -> HelperFunctions.getReverseDNS(any())).thenReturn("host.example.");
+
+            SignalSettingsResponse response =
+                    signalService.processSignalRequest(signalRegisterRequest, httpServletRequest, headers);
+
+            assertEquals(TestConstants.DEFAULT_UUID, response.getTestUUID());
+            assertEquals(TestConstants.DEFAULT_PROVIDER, response.getProvider());
+            assertEquals(TestConstants.DEFAULT_IP_V4, response.getClientRemoteIp());
+            verify(testRepository).saveAndFlush(any(at.rtr.rmbt.model.Test.class));
+        }
     }
 
 

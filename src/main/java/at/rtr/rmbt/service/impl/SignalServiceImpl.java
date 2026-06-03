@@ -84,13 +84,13 @@ public class SignalServiceImpl implements SignalService {
         var uuid = uuidGenerator.generateUUID();
         var openTestUUID = uuidGenerator.generateUUID();
 
-        var client = clientRepository.findByUuid(signalRegisterRequest.getUuid())
-                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, signalRegisterRequest.getUuid())));
+        var client = findClientOrThrow(signalRegisterRequest.getUuid());
 
         var clientAddress = InetAddresses.forString(ip);
         var clientIpString = InetAddresses.toAddrString(clientAddress);
 
         var asInformation = HelperFunctions.getASInformationForSignalRequest(clientAddress);
+        var clientTime = getClientTimeFromSignalRequest(signalRegisterRequest);
 
         var test = Test.builder()
                 .uuid(uuid)
@@ -99,15 +99,15 @@ public class SignalServiceImpl implements SignalService {
                 .clientPublicIp(clientIpString)
                 .clientPublicIpAnonymized(HelperFunctions.anonymizeIp(clientAddress))
                 .timezone(signalRegisterRequest.getTimezone())
-                .clientTime(getClientTimeFromSignalRequest(signalRegisterRequest))
-                .time(getClientTimeFromSignalRequest(signalRegisterRequest))
+                .clientTime(clientTime)
+                .time(clientTime)
                 .publicIpAsn(asInformation.getNumber())
                 .publicIpAsName(asInformation.getName())
                 .countryAsn(asInformation.getCountry())
                 .publicIpRdns(HelperFunctions.getReverseDNS(clientAddress))
                 .status(TestStatus.SIGNAL_STARTED)
                 .lastSequenceNumber(-1)
-                .useSsl(false)//TODO hardcode because of database constraint
+                .useSsl(false) // TODO hardcode because of database constraint
                 .measurementType(signalRegisterRequest.getMeasurementType())
                 .build();
 
@@ -130,8 +130,7 @@ public class SignalServiceImpl implements SignalService {
         var openTestUUID = uuidGenerator.generateUUID();
 
         // Check if client exists
-        var client = clientRepository.findByUuid(coverageRegisterRequest.getClientUuid())
-                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, coverageRegisterRequest.getClientUuid())));
+        var client = findClientOrThrow(coverageRegisterRequest.getClientUuid());
 
         var clientAddress = InetAddresses.forString(ip);
         var clientIpString = InetAddresses.toAddrString(clientAddress);
@@ -307,8 +306,7 @@ public class SignalServiceImpl implements SignalService {
 
         Long sequenceNumber = signalResultRequest.getSequenceNumber();
 
-        RtrClient client = clientRepository.findByUuid(signalResultRequest.getClientUUID())
-                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, signalResultRequest.getClientUUID())));
+        RtrClient client = findClientOrThrow(signalResultRequest.getClientUUID());
 
         Test updatedTest = testRepository.findByUuidAndStatusesInLocked(testUuid, Config.SIGNAL_RESULT_STATUSES)
                 .orElseGet(() -> getEmptyGeneratedTest(signalResultRequest, client));
@@ -356,8 +354,7 @@ public class SignalServiceImpl implements SignalService {
         UUID testUuid = getTestUUID(coverageResultRequest);
 
         // Check if client uuid exists
-        clientRepository.findByUuid(coverageResultRequest.getClientUUID())
-                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, coverageResultRequest.getClientUUID())));
+        findClientOrThrow(coverageResultRequest.getClientUUID());
 
         // Try to find test in correct started state or throw exception
         Test updatedTest = testRepository.findByUuidAndStatusesInLocked(testUuid, Config.COVERAGE_RESULT_STATUSES)
@@ -584,6 +581,11 @@ public class SignalServiceImpl implements SignalService {
             }
             return uuidGenerator.generateUUID();
         }
+    }
+
+    private RtrClient findClientOrThrow(UUID clientUuid) {
+        return clientRepository.findByUuid(clientUuid)
+                .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, clientUuid)));
     }
 
     private UUID getTestUUID(CoverageResultRequest coverageResultRequest) {
