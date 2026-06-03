@@ -45,7 +45,7 @@ public class QosMeasurementServiceImplTest {
         .client(client)
         .build();
     private static final HashSet<DnsResult.DnsEntry> dnsEntries = new HashSet<>();
-    private static final DnsResult.DnsEntry dnsEntry = DnsResult.DnsEntry.builder().address("addr").priority(((short) 1)).build();
+    private static final DnsResult.DnsEntry dnsEntry = DnsResult.DnsEntry.builder().address("addr").priority(1).build();
     private static final DnsResult dnsResult = DnsResult.builder()
         .duration(1)
         .entriesFound(2)

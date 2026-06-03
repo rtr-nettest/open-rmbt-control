@@ -100,7 +100,9 @@ public class DnsResult extends AbstractResult<DnsResult> {
 
         @JsonProperty("dns_result_priority")
         @HstoreKey("dns_result_priority")
-        private Short priority;
+        // DNS priority (MX/SRV) is an unsigned 16-bit value (0-65535); a signed Java short overflows
+        // at values > 32767 (e.g. 65535), so it must be at least an int.
+        private Integer priority;
 
         @Override
         public String toString() {
