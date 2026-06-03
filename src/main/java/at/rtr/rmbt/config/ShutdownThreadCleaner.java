@@ -36,8 +36,8 @@ public class ShutdownThreadCleaner {
         invokeStatic("org.geotools.referencing.factory.DeferredAuthorityFactory", "exit");
     }
 
-    /** Invokes a static no-arg method {@code className.method()} if present. */
-    private static void invokeStatic(final String className, final String method) {
+    /** Invokes a static no-arg method {@code className.method()} if present. Package-private for testing. */
+    static void invokeStatic(final String className, final String method) {
         try {
             Class.forName(className).getMethod(method).invoke(null);
             log.debug("Shutdown cleanup: {}.{}() invoked", className, method);
@@ -46,8 +46,8 @@ public class ShutdownThreadCleaner {
         }
     }
 
-    /** Invokes a no-arg method on the value of a public static field: {@code className.field.method()}. */
-    private static void invokeOnStaticField(final String className, final String field, final String method) {
+    /** Invokes a no-arg method on the value of a public static field: {@code className.field.method()}. Package-private for testing. */
+    static void invokeOnStaticField(final String className, final String field, final String method) {
         try {
             final Class<?> clazz = Class.forName(className);
             final Object target = clazz.getField(field).get(null);
