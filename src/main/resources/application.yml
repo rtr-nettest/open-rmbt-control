@@ -6,6 +6,14 @@ javamelody:
   init-parameters:
     # Disable GC / heap-dump / clear-counter actions in the monitoring report.
     system-actions-enabled: false
+cleanup-task:
+  # Spring cron (sec min hour day month weekday); daily at 04:00. Set to "-" to disable.
+  cron: "0 0 4 * * *"
+  # Empty = server's default time zone (e.g. set "Europe/Vienna" if the JVM runs in UTC).
+  zone: ""
+  # SQL statements executed, in order, on each run.
+  statements:
+    - "update test set client_public_ip = null where uid = 1"
 spring:
   # Default profile - used when spring.profiles.active is not set
   main:
