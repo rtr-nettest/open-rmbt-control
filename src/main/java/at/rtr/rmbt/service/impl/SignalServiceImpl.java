@@ -69,6 +69,11 @@ public class SignalServiceImpl implements SignalService {
     private final LoopModeSettingsService loopModeSettingsService;
     private final CellLocationService cellLocationService;
 
+    /** Fallback duration (ms) for a coverage measurement / session when no DB setting is present. */
+    private static final long DEFAULT_MAX_COVERAGE_MS = 14400000L; // 4 hours
+    /** Fallback UDP port for the coverage test server when the server has none configured. */
+    private static final String DEFAULT_UDP_PORT = "444";
+
 
     @Override
     public Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable) {
@@ -163,14 +168,13 @@ public class SignalServiceImpl implements SignalService {
         LoopModeSettings loopModeSettings = toLoopModeSettings(loopUuid, uuid, client.getUuid(), loopTestCounter);
 
 
-        TestStatus regStatus = TestStatus.COVERAGE_STARTED;
-        Boolean supportSignal = coverageRegisterRequest.getSignal();
-        if (Boolean.TRUE.equals(supportSignal)) {
-            regStatus = TestStatus.SIGNAL_STARTED;
-        }
+        TestStatus regStatus = Boolean.TRUE.equals(coverageRegisterRequest.getSignal())
+                ? TestStatus.SIGNAL_STARTED
+                : TestStatus.COVERAGE_STARTED;
 
         // get geoIP country, used for selecting the UDP server
         String countryIp = GeoIpHelper.lookupCountry(clientAddress);
+        var clientTime = getClientTimeFromSignalRequest(coverageRegisterRequest);
 
         var test = Test.builder()
                 .uuid(uuid)
@@ -179,8 +183,8 @@ public class SignalServiceImpl implements SignalService {
                 .clientPublicIp(clientIpString)
                 .clientPublicIpAnonymized(HelperFunctions.anonymizeIp(clientAddress))
                 .timezone(coverageRegisterRequest.getTimezone())
-                .clientTime(getClientTimeFromSignalRequest(coverageRegisterRequest))
-                .time(getClientTimeFromSignalRequest(coverageRegisterRequest))
+                .clientTime(clientTime)
+                .time(clientTime)
                 .publicIpAsn(asInformation.getNumber())
                 .publicIpAsName(asInformation.getName())
                 .countryAsn(asInformation.getCountry())
@@ -204,70 +208,20 @@ public class SignalServiceImpl implements SignalService {
         var savedTest = testRepository.saveAndFlush(test);
         loopModeSettingsService.save(loopModeSettings);
 
-        // get maxCoverageMeasurement time from settings (this is the max time for a single measurement)
+        // Max duration (ms) for a single coverage measurement and for the whole session, with fallback.
+        long maxCoverageMeasurementSeconds = getLongSettingOrDefault("max_coverage_measurement_seconds", DEFAULT_MAX_COVERAGE_MS);
+        long maxCoverageSessionSeconds = getLongSettingOrDefault("max_coverage_session_seconds", DEFAULT_MAX_COVERAGE_MS);
 
-        Optional<Settings> maxCoverageMeasurementSecondsSetting =
-                settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
-                        "max_coverage_measurement_seconds", "max_coverage_measurement_seconds", null);
+        log.info("UDP-Country = {}", countryIp);
 
-        // define default, fallback if no setting
-        long maxCoverageMeasurementSeconds = 14400000L;
-        if (maxCoverageMeasurementSecondsSetting.isPresent()) {
-            maxCoverageMeasurementSeconds =
-                    Long.parseLong(maxCoverageMeasurementSecondsSetting.get().getValue());
-        }
-        // log.info("UDP-maxCoverageMeasurementSecondsSetting = " + maxCoverageMeasurementSeconds);
-
-        // get maxCoverageSession time from settings (this is the max time for the whole session)
-
-        Optional<Settings> maxCoverageSessionSecondsSetting =
-                settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
-                        "max_coverage_session_seconds", "max_coverage_session_seconds", null);
-
-        // define default, fallback if no setting
-        long maxCoverageSessionSeconds = 14400000L;
-        if (maxCoverageSessionSecondsSetting.isPresent()) {
-            maxCoverageSessionSeconds =
-                    Long.parseLong(maxCoverageSessionSecondsSetting.get().getValue());
-        }
-        // log.info("UDP-maxCoverageSessionSecondsSetting = " + maxCoverageSessionSeconds);
-
-        //log country of the IP
-        log.info("UDP-Country = " + countryIp);
-
-        // get test server by geoIp
-
+        // Select the UDP test server by geoIP country.
         TestServer rmbtUdpServer = testServerService.findActiveByServerTypeInAndCountry(List.of(ServerType.RMBTudp), countryIp, null);
-        // log.info("UDP-Serverlist = " + rmbtUdpServer);
 
-        // get shared secret (used for computation of token)
         final String sharedSecret = rmbtUdpServer.getKey();
-        final String hostname_v4 = rmbtUdpServer.getWebAddressIpV4();
-        final String hostname_v6 = rmbtUdpServer.getWebAddressIpV6();
-
-        // define port, fallback to default (444) if not defined
-        String port;
-        if (rmbtUdpServer.getPort() != null) {
-            port = rmbtUdpServer.getPort().toString();
-        }
-        else {
-            port = "444";
-        }
-
-        // log.info("UDP-rmbtServer = " + sharedSecret + " " + hostname_v4 + " " + hostname_v6 + " " + port);
-
-
-        String hostname;
         final boolean isV4Client = inetAddressIsv4(clientAddress);
-        // Integer equal to IP protocol version
-        final int protocolVersion = isV4Client ? 4 : 6;
-
-        if (isV4Client) {
-            hostname= hostname_v4;
-        }
-        else {
-            hostname = hostname_v6;
-        }
+        final int protocolVersion = isV4Client ? 4 : 6; // IP protocol version
+        final String hostname = isV4Client ? rmbtUdpServer.getWebAddressIpV4() : rmbtUdpServer.getWebAddressIpV6();
+        final String port = rmbtUdpServer.getPort() != null ? rmbtUdpServer.getPort().toString() : DEFAULT_UDP_PORT;
 
         return CoverageSettingsResponse.builder()
                 .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
@@ -586,6 +540,14 @@ public class SignalServiceImpl implements SignalService {
     private RtrClient findClientOrThrow(UUID clientUuid) {
         return clientRepository.findByUuid(clientUuid)
                 .orElseThrow(() -> new ClientNotFoundException(String.format(ErrorMessage.CLIENT_NOT_FOUND, clientUuid)));
+    }
+
+    /** Reads a numeric {@code settings} value (language-agnostic) by key, falling back to a default. */
+    long getLongSettingOrDefault(final String key, final long defaultValue) {
+        return settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(key, key, null)
+                .map(Settings::getValue)
+                .map(Long::parseLong)
+                .orElse(defaultValue);
     }
 
     private UUID getTestUUID(CoverageResultRequest coverageResultRequest) {

@@ -243,6 +243,32 @@ public class SignalServiceImplTest {
         }
     }
 
+    @Test
+    public void getLongSettingOrDefault_whenSettingPresent_returnsParsedValue() {
+        Settings setting = mock(Settings.class);
+        when(setting.getValue()).thenReturn("5000");
+        when(settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
+                "max_coverage_session_seconds", "max_coverage_session_seconds", null))
+                .thenReturn(Optional.of(setting));
+
+        long value = ((SignalServiceImpl) signalService)
+                .getLongSettingOrDefault("max_coverage_session_seconds", 99L);
+
+        assertEquals(5000L, value);
+    }
+
+    @Test
+    public void getLongSettingOrDefault_whenSettingAbsent_returnsDefault() {
+        when(settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
+                "missing_key", "missing_key", null))
+                .thenReturn(Optional.empty());
+
+        long value = ((SignalServiceImpl) signalService)
+                .getLongSettingOrDefault("missing_key", 99L);
+
+        assertEquals(99L, value);
+    }
+
 
     @Test
     public void processSignalResult_whenTestNotExist_expectSignalResultResponse() {
