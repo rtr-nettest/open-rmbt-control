@@ -254,7 +254,10 @@ public class QosUtil {
 
             Map<String, String> testDescMap = qosTestDescRepository.findByKeysAndLocales(locale.getLanguage(), applicationProperties.getLanguage().getSupportedLanguages(), testDescSet)
                 .stream()
-                .collect(Collectors.toMap(QosTestDesc::getDescKey, QosTestDesc::getValue));
+                // The query already returns a single row per key; the merge function is a defensive
+                // guard to data anomaly (a key present in several languages)
+                .collect(Collectors.toMap(QosTestDesc::getDescKey, QosTestDesc::getValue,
+                    (existing, replacement) -> existing));
 
             for (QosTestResult testResult : testResultList) {
                 //and set the test results + put each one to the result list json array
