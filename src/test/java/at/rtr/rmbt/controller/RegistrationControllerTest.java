@@ -58,7 +58,7 @@ public class RegistrationControllerTest {
             "SM-G950F",
             "28",
             false,
-            TestStatus.END,
+            "END",
             1,
             "fix/rtr_release_fixes_'4ce8bda9'",
             "4.1.19",

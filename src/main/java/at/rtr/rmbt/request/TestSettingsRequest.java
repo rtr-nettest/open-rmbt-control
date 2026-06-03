@@ -57,9 +57,9 @@ public class TestSettingsRequest {
     @JsonProperty("ndt")
     private Boolean ndt;
 
-    @Schema(description = "End status of the previous executed test")
+    @Schema(description = "End status of the previous executed test (raw client value; parsed leniently - an unknown value is ignored and logged)")
     @JsonProperty("previousTestStatus")
-    private TestStatus previousTestStatus;
+    private String previousTestStatus;
 
     @Schema(description = "Number of tests, which client performed, -1 if nothing, without actual starting test")
     @JsonProperty("testCounter")

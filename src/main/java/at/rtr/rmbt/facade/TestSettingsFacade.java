@@ -3,6 +3,7 @@ package at.rtr.rmbt.facade;
 import at.rtr.rmbt.config.RollBackService;
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestStatus;
+import at.rtr.rmbt.enums.TestStatusParser;
 import at.rtr.rmbt.exception.TestServerNotFoundException;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
@@ -332,7 +333,11 @@ public class TestSettingsFacade {
         test.setNumberOfThreadsRequested(numberOfThreads);
         test.setStatus(TestStatus.STARTED);
         test.setSoftwareRevision(testSettingsRequest.getSoftwareRevision());
-        test.setClientPreviousTestStatus(testSettingsRequest.getPreviousTestStatus());
+        final String previousTestStatus = testSettingsRequest.getPreviousTestStatus();
+        if (TestStatusParser.isUnknown(previousTestStatus)) {
+            logger.warn("Ignoring unknown previous test status '{}' from client uuid {}", previousTestStatus, testSettingsRequest.getUuid());
+        }
+        test.setClientPreviousTestStatus(TestStatusParser.parse(previousTestStatus).orElse(null));
         test.setPublicIpAsn(asn);
         test.setPublicIpAsName(asName);
         test.setCountryAsn(asCountry);
