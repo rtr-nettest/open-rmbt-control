@@ -77,6 +77,15 @@ public interface TestRepository extends PagingAndSortingRepository<Test, Long>, 
     @Query("select t from Test t where t.uuid = :uuid or t.openTestUuid = :uuid")
     Optional<Test> findByUuidOrOpenTestUuid(UUID uuid);
 
+    // Pessimistic-write variant for the result-submission path: it serialises concurrent
+    // submissions of the SAME test (client retries / double-submits). Without it, two transactions
+    // each take a FK KEY-SHARE lock on the test row (inserting child rows) and then both try to
+    // upgrade to FOR UPDATE on the final test save, which deadlocks. Locking the row up front makes
+    // the second request block until the first commits, then fail the status check cleanly.
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select t from Test t where t.uuid = :uuid or t.openTestUuid = :uuid")
+    Optional<Test> findAndLockByUuidOrOpenTestUuid(UUID uuid);
+
     Optional<Test> findByOpenTestUuidAndImplausibleIsFalseAndDeletedIsFalse(UUID uuid);
 
     Optional<Test> findByUuidAndImplausibleIsFalseAndDeletedIsFalse(UUID uuid);

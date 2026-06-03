@@ -55,7 +55,10 @@ public class ResultServiceImpl implements ResultService {
     public void processResultRequest(HttpServletRequest httpServletRequest, ResultRequest resultRequest, Map<String, String> headers) {
         UUID requestUUID = UUID.fromString(resultRequest.getTestToken().split("_")[0]);
 
-        Test test = testRepository.findByUuidOrOpenTestUuid(requestUUID)
+        // Pessimistic lock: serialise concurrent submissions of the same test so they can't deadlock
+        // on the test-row lock upgrade (FK key-share -> for-update). A second concurrent request
+        // blocks here until the first commits, then fails the status check below.
+        Test test = testRepository.findAndLockByUuidOrOpenTestUuid(requestUUID)
                 .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.TEST_NOT_FOUND, requestUUID)));
 
         //verify test status (handled by RtrAdvice as a clean 400 {"error":[message]} - no stack trace)
