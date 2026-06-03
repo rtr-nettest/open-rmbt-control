@@ -77,6 +77,7 @@ public class SignalServiceImpl implements SignalService {
     }
 
     @Override
+    @Transactional
     public SignalSettingsResponse processSignalRequest(SignalRegisterRequest signalRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers) {
         var ip = HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers);
 
@@ -121,6 +122,7 @@ public class SignalServiceImpl implements SignalService {
     }
 
     @Override
+    @Transactional
     public CoverageSettingsResponse processCoverageRequest(CoverageRegisterRequest coverageRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers) {
         var ip = HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers);
 

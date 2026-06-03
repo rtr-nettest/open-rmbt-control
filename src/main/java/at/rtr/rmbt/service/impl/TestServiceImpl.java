@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -189,6 +190,7 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
+    @Transactional
     public ResultUpdateResponse updateTestResult(ResultUpdateRequest resultUpdateRequest) {
         Test test = testRepository.findByUuid(resultUpdateRequest.getTestUUID())
                 .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.TEST_NOT_FOUND, resultUpdateRequest.getTestUUID())));
