@@ -21,6 +21,9 @@ import lombok.Getter;
 
 import java.util.Locale;
 
+/**
+ * Result options class.
+ */
 @AllArgsConstructor
 @Getter
 public class ResultOptions {

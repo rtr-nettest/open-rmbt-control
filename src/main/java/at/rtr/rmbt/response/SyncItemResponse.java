@@ -7,6 +7,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Sync item response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

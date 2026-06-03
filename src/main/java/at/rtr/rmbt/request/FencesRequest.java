@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 
 
+/**
+ * Fences request class.
+ */
 @Getter
 @Builder
 public class FencesRequest {

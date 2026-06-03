@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 
+/**
+ * Registration controller class.
+ */
 @Tag(name = "Test Settings")
 @RestController
 @RequestMapping(URIConstants.REGISTRATION_URL)
@@ -21,6 +24,14 @@ public class RegistrationController {
 
     private final TestSettingsFacade testSettingsFacade;
 
+    /**
+     * Update test settings.
+     *
+     * @param testSettingsRequest the Test settings request
+     * @param request the Request
+     * @param headers the Headers
+     * @return the result
+     */
     @Operation(summary = "Update test settings", description = "Request to update configuration for basic test")
     @PostMapping
     public TestSettingsResponse updateTestSettings(@RequestBody TestSettingsRequest testSettingsRequest, HttpServletRequest request, @RequestHeader Map<String, String> headers) {

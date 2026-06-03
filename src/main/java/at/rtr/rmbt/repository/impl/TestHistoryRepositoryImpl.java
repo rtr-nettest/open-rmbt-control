@@ -16,6 +16,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+/**
+ * Test history repository impl class.
+ */
 @Repository
 @RequiredArgsConstructor
 public class TestHistoryRepositoryImpl implements TestHistoryRepository {

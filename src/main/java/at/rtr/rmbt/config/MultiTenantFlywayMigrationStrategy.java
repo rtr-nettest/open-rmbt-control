@@ -5,6 +5,9 @@ import org.flywaydb.core.Flyway;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.stereotype.Component;
 
+/**
+ * Multi tenant flyway migration strategy class.
+ */
 @Component
 @AllArgsConstructor
 public class MultiTenantFlywayMigrationStrategy implements FlywayMigrationStrategy {
@@ -12,6 +15,11 @@ public class MultiTenantFlywayMigrationStrategy implements FlywayMigrationStrate
     private DataSourceConfig dataSourceConfig;
     private ClientTenantConfig clientTenantConfig;
 
+    /**
+     * Migrate.
+     *
+     * @param flyway the Flyway
+     */
     @Override
     public void migrate(Flyway flyway) {
         clientTenantConfig.getClientTenantMapping().values().iterator()

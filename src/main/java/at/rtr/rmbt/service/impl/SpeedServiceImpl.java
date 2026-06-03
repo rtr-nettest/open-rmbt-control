@@ -12,12 +12,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
+/**
+ * Speed service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class SpeedServiceImpl implements SpeedService {
 
     private final SpeedRepository speedRepository;
 
+    /**
+     * Process speed requests.
+     *
+     * @param speedDetailsRequests the Speed details requests
+     * @param test the Test
+     */
     @Override
     public void processSpeedRequests(Collection<SpeedDetailsRequest> speedDetailsRequests, Test test) {
         Speed newSpeed = new Speed();

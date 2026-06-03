@@ -15,12 +15,23 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 
+/**
+ * Result controller class.
+ */
 @Tag(name = "Result")
 @RestController
 @RequiredArgsConstructor
 public class ResultController {
     private final ResultService resultService;
 
+    /**
+     * Process result.
+     *
+     * @param httpServletRequest the Http servlet request
+     * @param headers the Headers
+     * @param resultRequest the Result request
+     * @return the result
+     */
     @Operation(summary = "Update measurements")
     @PostMapping(URIConstants.RESULT_URL)
     public ErrorResponse processResult(HttpServletRequest httpServletRequest,

@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * Server type details request class.
+ */
 @Builder
 @Getter
 public class ServerTypeDetailsRequest {

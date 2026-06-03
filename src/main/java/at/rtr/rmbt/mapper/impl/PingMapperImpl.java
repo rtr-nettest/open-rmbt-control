@@ -6,9 +6,19 @@ import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.request.PingRequest;
 import org.springframework.stereotype.Service;
 
+/**
+ * Ping mapper impl class.
+ */
 @Service
 public class PingMapperImpl implements PingMapper {
 
+    /**
+     * Ping request to ping.
+     *
+     * @param pingRequest the Ping request
+     * @param test the Test
+     * @return the result
+     */
     @Override
     public Ping pingRequestToPing(PingRequest pingRequest, Test test) {
         return Ping.builder()

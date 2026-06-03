@@ -23,6 +23,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * Band calculation util class.
+ */
 public class BandCalculationUtil {
 
     public static FrequencyInformation getFrequencyInformationFromChannelNumberAndTechnology(Integer channelNumber, NetworkGroupName technology) {
@@ -135,10 +138,19 @@ public class BandCalculationUtil {
         return null;
     }
 
+    /**
+     * Frequency information class.
+     */
     public static class FrequencyInformation<U extends Band> {
         private int earfcn;
         private Band band;
 
+        /**
+         * Creates a new FrequencyInformation instance.
+         *
+         * @param earfcn the Earfcn
+         * @param band the Band
+         */
         public FrequencyInformation(int earfcn, U band) {
             this.earfcn = earfcn;
             this.band = band;
@@ -400,11 +412,21 @@ public class BandCalculationUtil {
         put(69120, new WifiBand(69120, 6, "60 GHz"));
     }};
 
+    /**
+     * Wifi band class.
+     */
     public static class WifiBand {
         private String informalName; //e.g. 2.4 GHz; 5 GHz; 60 GHz
         private int channelNumber;
         private int frequency;
 
+        /**
+         * Creates a new WifiBand instance.
+         *
+         * @param frequency the Frequency
+         * @param channelNumber the Channel number
+         * @param informalName the Informal name
+         */
         public WifiBand(int frequency, int channelNumber, String informalName) {
             this.frequency = frequency;
             this.channelNumber = channelNumber;
@@ -431,6 +453,9 @@ public class BandCalculationUtil {
         return null;
     }
 
+    /**
+     * Band class.
+     */
     public static abstract class Band {
         private int band;
 
@@ -443,6 +468,19 @@ public class BandCalculationUtil {
         private final double channelOffset; //difference between (uplinkChannelLowerBound - downlinkFrequencyLowerBound)
         private final String informalName;
 
+        /**
+         * Creates a new Band instance.
+         *
+         * @param band the Band
+         * @param uplinkFrequencyLowerBound the Uplink frequency lower bound
+         * @param uplinkFrequencyUpperBound the Uplink frequency upper bound
+         * @param downlinkFrequencyLowerBound the Downlink frequency lower bound
+         * @param downlinkFrequencyUpperBound the Downlink frequency upper bound
+         * @param uplinkChannelLowerBound the Uplink channel lower bound
+         * @param uplinkChannelUpperBound the Uplink channel upper bound
+         * @param channelOffset the Channel offset
+         * @param informalName the Informal name
+         */
         protected Band(int band, double uplinkFrequencyLowerBound, double uplinkFrequencyUpperBound, double downlinkFrequencyLowerBound, double downlinkFrequencyUpperBound, double uplinkChannelLowerBound, double uplinkChannelUpperBound, double channelOffset, String informalName) {
             this.band = band;
             this.uplinkFrequencyLowerBound = uplinkFrequencyLowerBound;
@@ -467,18 +505,42 @@ public class BandCalculationUtil {
             return containsDLChannel(channel) || containsULChannel(channel);
         }
 
+        /**
+         * Contains DL channel.
+         *
+         * @param channel the Channel
+         * @return the result
+         */
         public boolean containsDLChannel(double channel) {
             return channel > (uplinkChannelLowerBound - channelOffset) && channel <= (uplinkChannelUpperBound - channelOffset);
         }
 
+        /**
+         * Contains UL channel.
+         *
+         * @param channel the Channel
+         * @return the result
+         */
         public boolean containsULChannel(double channel) {
             return channel > uplinkChannelLowerBound && channel <= uplinkChannelUpperBound;
         }
 
+        /**
+         * Contains UL frequency.
+         *
+         * @param frequencyMHz the Frequency M hz
+         * @return the result
+         */
         public boolean containsULFrequency(double frequencyMHz) {
             return frequencyMHz >= uplinkFrequencyLowerBound && frequencyMHz <= uplinkFrequencyUpperBound;
         }
 
+        /**
+         * Contains DL frequency.
+         *
+         * @param frequencyMHz the Frequency M hz
+         * @return the result
+         */
         public boolean containsDLFrequency(double frequencyMHz) {
             return frequencyMHz >= downlinkFrequencyLowerBound && frequencyMHz <= downlinkFrequencyUpperBound;
         }
@@ -507,8 +569,24 @@ public class BandCalculationUtil {
         }
     }
 
+    /**
+     * LTE band class.
+     */
     public static class LTEBand extends Band {
 
+        /**
+         * Creates a new LTEBand instance.
+         *
+         * @param band the Band
+         * @param uplinkFrequencyLowerBound the Uplink frequency lower bound
+         * @param uplinkFrequencyUpperBound the Uplink frequency upper bound
+         * @param downlinkFrequencyLowerBound the Downlink frequency lower bound
+         * @param downlinkFrequencyUpperBound the Downlink frequency upper bound
+         * @param uplinkChannelLowerBound the Uplink channel lower bound
+         * @param uplinkChannelUpperBound the Uplink channel upper bound
+         * @param channelOffset the Channel offset
+         * @param informalName the Informal name
+         */
         protected LTEBand(int band, double uplinkFrequencyLowerBound, double uplinkFrequencyUpperBound, double downlinkFrequencyLowerBound, double downlinkFrequencyUpperBound, double uplinkChannelLowerBound, double uplinkChannelUpperBound, double channelOffset, String informalName) {
             super(band, uplinkFrequencyLowerBound, uplinkFrequencyUpperBound, downlinkFrequencyLowerBound, downlinkFrequencyUpperBound, uplinkChannelLowerBound, uplinkChannelUpperBound, channelOffset, informalName);
         }
@@ -519,7 +597,20 @@ public class BandCalculationUtil {
         }
     }
 
+    /**
+     * NR band class.
+     */
     public static class NRBand extends Band {
+        /**
+         * Creates a new NRBand instance.
+         *
+         * @param band the Band
+         * @param uplinkFrequencyLowerBound the Uplink frequency lower bound
+         * @param uplinkFrequencyUpperBound the Uplink frequency upper bound
+         * @param downlinkFrequencyLowerBound the Downlink frequency lower bound
+         * @param downlinkFrequencyUpperBound the Downlink frequency upper bound
+         * @param informalName the Informal name
+         */
         protected NRBand(int band, double uplinkFrequencyLowerBound, double uplinkFrequencyUpperBound, double downlinkFrequencyLowerBound, double downlinkFrequencyUpperBound, String informalName) {
             super(band, uplinkFrequencyLowerBound, uplinkFrequencyUpperBound, downlinkFrequencyLowerBound, downlinkFrequencyUpperBound, 0, 0, 0, informalName);
         }
@@ -537,8 +628,24 @@ public class BandCalculationUtil {
         }
     }
 
+    /**
+     * UMTS band class.
+     */
     public static class UMTSBand extends Band {
 
+        /**
+         * Creates a new UMTSBand instance.
+         *
+         * @param band the Band
+         * @param uplinkFrequencyLowerBound the Uplink frequency lower bound
+         * @param uplinkFrequencyUpperBound the Uplink frequency upper bound
+         * @param downlinkFrequencyLowerBound the Downlink frequency lower bound
+         * @param downlinkFrequencyUpperBound the Downlink frequency upper bound
+         * @param uplinkChannelLowerBound the Uplink channel lower bound
+         * @param uplinkChannelUpperBound the Uplink channel upper bound
+         * @param channelOffset the Channel offset
+         * @param informalName the Informal name
+         */
         public UMTSBand(int band, double uplinkFrequencyLowerBound, double uplinkFrequencyUpperBound, double downlinkFrequencyLowerBound, double downlinkFrequencyUpperBound, double uplinkChannelLowerBound, double uplinkChannelUpperBound, double channelOffset, String informalName) {
             super(band, uplinkFrequencyLowerBound, uplinkFrequencyUpperBound, downlinkFrequencyLowerBound, downlinkFrequencyUpperBound, uplinkChannelLowerBound, uplinkChannelUpperBound, channelOffset, informalName);
         }
@@ -549,8 +656,24 @@ public class BandCalculationUtil {
         }
     }
 
+    /**
+     * GSM band class.
+     */
     public static class GSMBand extends Band {
 
+        /**
+         * Creates a new GSMBand instance.
+         *
+         * @param band the Band
+         * @param uplinkFrequencyLowerBound the Uplink frequency lower bound
+         * @param uplinkFrequencyUpperBound the Uplink frequency upper bound
+         * @param downlinkFrequencyLowerBound the Downlink frequency lower bound
+         * @param downlinkFrequencyUpperBound the Downlink frequency upper bound
+         * @param uplinkChannelLowerBound the Uplink channel lower bound
+         * @param uplinkChannelUpperBound the Uplink channel upper bound
+         * @param channelOffset the Channel offset
+         * @param informalName the Informal name
+         */
         protected GSMBand(int band, double uplinkFrequencyLowerBound, double uplinkFrequencyUpperBound, double downlinkFrequencyLowerBound, double downlinkFrequencyUpperBound, double uplinkChannelLowerBound, double uplinkChannelUpperBound, double channelOffset, String informalName) {
             super(band, uplinkFrequencyLowerBound, uplinkFrequencyUpperBound, downlinkFrequencyLowerBound, downlinkFrequencyUpperBound, uplinkChannelLowerBound, uplinkChannelUpperBound, channelOffset, informalName);
         }

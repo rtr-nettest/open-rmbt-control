@@ -14,6 +14,9 @@ import org.hibernate.type.SqlTypes;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Speed class.
+ */
 @Entity
 @Getter
 @Setter
@@ -30,6 +33,13 @@ public class Speed implements Serializable {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<SpeedDirection, Map<Long, List<SpeedItem>>> items = new HashMap<>();
 
+    /**
+     * Add speed item.
+     *
+     * @param speedItem the Speed item
+     * @param speedDirection the Speed direction
+     * @param thread the Thread
+     */
     public void addSpeedItem(SpeedItem speedItem, SpeedDirection speedDirection, Long thread) {
         Map<Long, List<SpeedItem>> directionMap = Optional.ofNullable(items.get(speedDirection))
                 .orElseGet(() -> {

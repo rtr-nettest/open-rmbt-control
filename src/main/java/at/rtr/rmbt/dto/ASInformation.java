@@ -3,6 +3,9 @@ package at.rtr.rmbt.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * AS information class.
+ */
 @Builder
 @Getter
 public class ASInformation {

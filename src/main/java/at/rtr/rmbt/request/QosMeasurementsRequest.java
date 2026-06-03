@@ -8,6 +8,9 @@ import lombok.Setter;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
+/**
+ * Qos measurements request class.
+ */
 @Getter
 @Setter
 public class QosMeasurementsRequest {

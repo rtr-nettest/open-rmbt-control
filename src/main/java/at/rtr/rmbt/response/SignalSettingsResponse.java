@@ -8,6 +8,9 @@ import lombok.ToString;
 
 import java.util.UUID;
 
+/**
+ * Signal settings response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+/**
+ * News list response class.
+ */
 @Getter
 @RequiredArgsConstructor
 public class NewsListResponse {

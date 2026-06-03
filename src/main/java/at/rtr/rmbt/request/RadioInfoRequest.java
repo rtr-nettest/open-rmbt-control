@@ -6,6 +6,9 @@ import lombok.Getter;
 
 import java.util.List;
 
+/**
+ * Radio info request class.
+ */
 @Builder
 @Getter
 public class RadioInfoRequest {

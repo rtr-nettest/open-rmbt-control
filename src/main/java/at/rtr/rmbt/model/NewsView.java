@@ -9,6 +9,9 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+/**
+ * News view class.
+ */
 @Entity
 @Immutable
 @Getter

@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Geo analytics service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class GeoAnalyticsServiceImpl implements GeoAnalyticsService {

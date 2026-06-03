@@ -33,6 +33,9 @@ import java.util.stream.Collectors;
 //no inspection
 import at.rtr.rmbt.Version;
 
+/**
+ * Rtr settings service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class RtrSettingsServiceImpl implements RtrSettingsService {
@@ -102,6 +105,11 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .build();
     }
 
+    /**
+     * Create settings.
+     *
+     * @param adminSettingsRequest the Admin settings request
+     */
     @Override
     public void createSettings(AdminSettingsRequest adminSettingsRequest) {
         Map<String, Settings> settingsActual = getSettingsMapByLanguageAndKeys(adminSettingsRequest.getLanguage(), Config.SETTINGS_KEYS);
@@ -129,6 +137,11 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .build();
     }
 
+    /**
+     * Update settings.
+     *
+     * @param adminUpdateSettingsRequest the Admin update settings request
+     */
     @Override
     public void updateSettings(AdminUpdateSettingsRequest adminUpdateSettingsRequest) {
         Map<String, Settings> settingsActual = getSettingsMapByLanguageAndKeys("en", Config.ADMIN_SETTINGS_KEYS);
@@ -193,6 +206,14 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .orElse(null);
     }
 
+    /**
+     * Update settings.
+     *
+     * @param settingsActual the Settings actual
+     * @param key the Key
+     * @param value the Value
+     * @param updatedSettings the Updated settings
+     */
     private void updateSettings(Map<String, Settings> settingsActual, String key, String value, List<Settings> updatedSettings) {
         Optional.ofNullable(settingsActual.get(key))
                 .ifPresentOrElse(x -> {
@@ -243,6 +264,14 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .build();
     }
 
+    /**
+     * Update or create settings.
+     *
+     * @param language the Language
+     * @param settingsActual the Settings actual
+     * @param updatedSettings the Updated settings
+     * @param entry the Entry
+     */
     private void updateOrCreateSettings(String language, Map<String, Settings> settingsActual, List<Settings> updatedSettings, Map.Entry<String, String> entry) {
         Optional.ofNullable(settingsActual.get(entry.getKey()))
                 .ifPresentOrElse(x -> {

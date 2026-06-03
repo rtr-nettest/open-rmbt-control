@@ -13,6 +13,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Ping service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class PingServiceImpl implements PingService {
@@ -20,6 +23,12 @@ public class PingServiceImpl implements PingService {
     private final PingMapper pingMapper;
     private final PingRepository pingRepository;
 
+    /**
+     * Save ping requests.
+     *
+     * @param pingRequests the Ping requests
+     * @param test the Test
+     */
     @Override
     public void savePingRequests(Collection<PingRequest> pingRequests, Test test) {
         List<Ping> newPings = pingRequests.stream()

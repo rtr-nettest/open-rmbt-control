@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Application version controller class.
+ */
 @Tag(name = "Version")
 @RestController
 @RequiredArgsConstructor
@@ -16,6 +19,11 @@ public class ApplicationVersionController {
 
     private final ApplicationVersionService applicationVersionService;
 
+    /**
+     * Returns the Application version.
+     *
+     * @return the Application version
+     */
     @Operation(summary = "Get version of application")
     @GetMapping(URIConstants.VERSION)
     public ApplicationVersionResponse getApplicationVersion() {

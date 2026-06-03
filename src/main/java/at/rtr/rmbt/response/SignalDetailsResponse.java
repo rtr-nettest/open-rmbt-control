@@ -8,6 +8,9 @@ import lombok.ToString;
 
 import java.util.List;
 
+/**
+ * Signal details response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 
 
+/**
+ * Test platform enum.
+ */
 @Slf4j
 @Getter
 public enum TestPlatform {
@@ -19,10 +22,21 @@ public enum TestPlatform {
 
     private String label;
 
+    /**
+     * Creates a new TestPlatform instance.
+     *
+     * @param label the Label
+     */
     TestPlatform(String label) {
         this.label = label;
     }
 
+    /**
+     * For value.
+     *
+     * @param value the Value
+     * @return the result
+     */
     @JsonCreator
     public static TestPlatform forValue(String value) {
         if (Objects.isNull(value)) {

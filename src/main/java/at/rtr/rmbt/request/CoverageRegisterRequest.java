@@ -9,6 +9,9 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+/**
+ * Coverage register request class.
+ */
 @Builder
 @Getter
 public class CoverageRegisterRequest {

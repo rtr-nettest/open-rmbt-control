@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Mccmnc to name repository interface.
+ */
 public interface MccmncToNameRepository extends JpaRepository<MccMncName, Long> {
 
     @Query(value = "SELECT m.name from MccMncName m WHERE m.mccmnc in (:mccMnc)")

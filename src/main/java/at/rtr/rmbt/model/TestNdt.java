@@ -5,6 +5,9 @@ import lombok.*;
 import jakarta.persistence.*;
 import java.util.UUID;
 
+/**
+ * Test ndt class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

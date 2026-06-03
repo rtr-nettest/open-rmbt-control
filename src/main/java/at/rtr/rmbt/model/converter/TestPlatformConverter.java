@@ -5,8 +5,17 @@ import at.rtr.rmbt.enums.TestPlatform;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
+/**
+ * Test platform converter class.
+ */
 @Converter(autoApply = true)
 public class TestPlatformConverter implements AttributeConverter<TestPlatform, String> {
+    /**
+     * Convert to database column.
+     *
+     * @param attribute the Attribute
+     * @return the result
+     */
     @Override
     public String convertToDatabaseColumn(TestPlatform attribute) {
         if (attribute != null)
@@ -15,6 +24,12 @@ public class TestPlatformConverter implements AttributeConverter<TestPlatform, S
             return null;
     }
 
+    /**
+     * Convert to entity attribute.
+     *
+     * @param dbData the Db data
+     * @return the result
+     */
     @Override
     public TestPlatform convertToEntityAttribute(String dbData) {
         return TestPlatform.forValue(dbData);

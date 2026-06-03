@@ -15,12 +15,22 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
+/**
+ * Geo location mapper impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class GeoLocationMapperImpl implements GeoLocationMapper {
 
     private final UUIDGenerator uuidGenerator;
 
+    /**
+     * Geo location request to geo location.
+     *
+     * @param geoLocationRequest the Geo location request
+     * @param test the Test
+     * @return the result
+     */
     @Override
     public GeoLocation geoLocationRequestToGeoLocation(GeoLocationRequest geoLocationRequest, Test test) {
         return GeoLocation.builder()
@@ -41,6 +51,16 @@ public class GeoLocationMapperImpl implements GeoLocationMapper {
                 .build();
     }
 
+    /**
+     * Build new geo location.
+     *
+     * @param test the Test
+     * @param geoLat the Geo lat
+     * @param geoLong the Geo long
+     * @param geoAccuracy the Geo accuracy
+     * @param provider the Provider
+     * @return the result
+     */
     @Override
     public GeoLocation buildNewGeoLocation(Test test, double geoLat, double geoLong, double geoAccuracy, String provider) {
         return GeoLocation.builder()

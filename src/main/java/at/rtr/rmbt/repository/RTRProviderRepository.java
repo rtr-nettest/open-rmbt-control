@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+/**
+ * RTR provider repository interface.
+ */
 @Repository
 public interface RTRProviderRepository extends JpaRepository<Provider, Long> {
 

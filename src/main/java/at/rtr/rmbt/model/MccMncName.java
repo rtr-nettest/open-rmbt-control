@@ -13,6 +13,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/**
+ * Mcc mnc name class.
+ */
 @Entity
 @Getter
 @Setter

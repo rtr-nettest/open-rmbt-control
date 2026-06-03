@@ -20,17 +20,36 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableConfigurationProperties(ApplicationProperties.class)
 // Run/Debug this class for debugging (e.g. in IntelliG)
+/**
+ * RTR application class.
+ */
 public class RTRApplication extends SpringBootServletInitializer {
 
+    /**
+     * Main.
+     *
+     * @param args the Args
+     */
     public static void main(String[] args) {
         SpringApplication.run(RTRApplication.class, args);
     }
 
+    /**
+     * Configure.
+     *
+     * @param application the Application
+     * @return the result
+     */
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(RTRApplication.class);
     }
 
+    /**
+     * Message source.
+     *
+     * @return the result
+     */
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();

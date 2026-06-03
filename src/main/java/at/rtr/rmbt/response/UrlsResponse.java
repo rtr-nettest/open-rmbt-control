@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+/**
+ * Urls response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

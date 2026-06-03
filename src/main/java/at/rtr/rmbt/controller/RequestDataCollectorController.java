@@ -22,6 +22,9 @@ import jakarta.servlet.http.HttpServletRequest;
 // import java.io.StringReader;
 import java.util.Map;
 
+/**
+ * Request data collector controller class.
+ */
 @Tag(name = "Request data collector")
 @RestController
 @RequiredArgsConstructor
@@ -32,12 +35,27 @@ public class RequestDataCollectorController {
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * Get data collector response.
+     *
+     * @param httpServletRequest the Http servlet request
+     * @param headers the Headers
+     * @return the Data collector response
+     */
     @Operation(summary = "Request data collector")
     @GetMapping(URIConstants.REQUEST_DATA_COLLECTOR)
     public DataCollectorResponse getDataCollectorResponse(HttpServletRequest httpServletRequest, @RequestHeader Map<String, String> headers) {
         return requestDataCollectorService.getDataCollectorResponse(httpServletRequest, headers);
     }
 
+    /**
+     * Get client ip version JSON.
+     *
+     * @param ipRequest the Ip request
+     * @param httpServletRequest the Http servlet request
+     * @param headers the Headers
+     * @return the Client ip version JSON
+     */
     @Operation(summary = "Get ip from request")
     @PostMapping(value=URIConstants.IP, consumes = MediaType.APPLICATION_JSON_VALUE)
     public IpResponse getClientIpVersionJSON(@RequestBody IpRequest ipRequest, HttpServletRequest httpServletRequest, @RequestHeader Map<String, String> headers) {

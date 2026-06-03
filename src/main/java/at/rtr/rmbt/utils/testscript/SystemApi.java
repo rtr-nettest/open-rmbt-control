@@ -26,6 +26,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * System api class.
+ */
 public class SystemApi {
 
     final static DecimalFormat DEFAULT_DECIMAL_FORMAT = new DecimalFormat("##0.00");
@@ -66,6 +69,13 @@ public class SystemApi {
         return o == null;
     }
 
+    /**
+     * Coalesce.
+     *
+     * @param o the O
+     * @param alternative the Alternative
+     * @return the result
+     */
     public Object coalesce(Object o, Object alternative) {
         return o == null ? alternative : o;
     }
@@ -74,6 +84,13 @@ public class SystemApi {
         return RealtimeTransportProtocol.PayloadType.getByCodecValue(value).name();
     }
 
+    /**
+     * Parse traceroute.
+     *
+     * @param path the Path
+     * @return the result
+     * @throws JSONException if an error occurs
+     */
     public String parseTraceroute(String path) throws JSONException {
         final JSONArray traceRoute = new JSONArray(path);
         final StringBuilder sb = new StringBuilder();
@@ -93,6 +110,12 @@ public class SystemApi {
         return sb.toString();
     }
 
+    /**
+     * Parse traceroute.
+     *
+     * @param path the Path
+     * @return the result
+     */
     public String parseTraceroute(ArrayList<TracerouteResult.PathElement> path) {
         StringBuilder sb = new StringBuilder();
         for (TracerouteResult.PathElement e : path) {
@@ -110,6 +133,12 @@ public class SystemApi {
         return sb.toString();
     }
 
+    /**
+     * Debug.
+     *
+     * @param toLog the To log
+     * @return the result
+     */
     public Object debug(Object toLog) {
         System.out.println("QoSLOG: " + toLog);
         return toLog;

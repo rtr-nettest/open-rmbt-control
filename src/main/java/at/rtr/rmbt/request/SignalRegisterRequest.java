@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * Signal register request class.
+ */
 @Getter
 @Builder
 @EqualsAndHashCode

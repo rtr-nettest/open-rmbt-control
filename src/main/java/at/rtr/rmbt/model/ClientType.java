@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import jakarta.persistence.*;
 
+/**
+ * Client type class.
+ */
 @Entity
 @Getter
 @Setter

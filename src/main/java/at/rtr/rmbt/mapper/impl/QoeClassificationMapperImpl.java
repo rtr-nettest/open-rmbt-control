@@ -8,9 +8,18 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+/**
+ * Qoe classification mapper impl class.
+ */
 @Service
 public class QoeClassificationMapperImpl implements QoeClassificationMapper {
 
+    /**
+     * Qoe classification to qoe classification thresholds.
+     *
+     * @param qoeClassification the Qoe classification
+     * @return the result
+     */
     @Override
     public QoeClassificationThresholds qoeClassificationToQoeClassificationThresholds(QoeClassification qoeClassification) {
         Map<QoeCriteria, Long[]> criteriaThresholdsMap = Map.of(

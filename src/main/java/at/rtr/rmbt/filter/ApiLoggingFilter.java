@@ -14,15 +14,32 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Api logging filter class.
+ */
 public class ApiLoggingFilter implements Filter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiLoggingFilter.class);
     private final String requestIdParamName;
 
+    /**
+     * Creates a new ApiLoggingFilter instance.
+     *
+     * @param requestIdParamName the Request id param name
+     */
     public ApiLoggingFilter(String requestIdParamName) {
         this.requestIdParamName = requestIdParamName;
     }
 
+    /**
+     * Do filter.
+     *
+     * @param request the Request
+     * @param response the Response
+     * @param chain the Chain
+     * @throws IOException if an error occurs
+     * @throws ServletException if an error occurs
+     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -109,12 +126,21 @@ public class ApiLoggingFilter implements Filter {
         return typesafeRequestMap;
     }
 
+    /**
+     * Buffered request wrapper class.
+     */
     private static final class BufferedRequestWrapper extends HttpServletRequestWrapper {
         private ByteArrayInputStream bais = null;
         private ByteArrayOutputStream baos = null;
         private BufferedServletInputStream bsis = null;
         private byte[] buffer = null;
 
+        /**
+         * Creates a new BufferedRequestWrapper instance.
+         *
+         * @param req the Req
+         * @throws IOException if an error occurs
+         */
         public BufferedRequestWrapper(HttpServletRequest req) throws IOException {
             super(req);
             // Read InputStream and store its content in a buffer.
@@ -150,23 +176,49 @@ public class ApiLoggingFilter implements Filter {
         }
     }
 
+    /**
+     * Buffered servlet input stream class.
+     */
     private static final class BufferedServletInputStream extends ServletInputStream {
         private ByteArrayInputStream bais;
 
+        /**
+         * Creates a new BufferedServletInputStream instance.
+         *
+         * @param bais the Bais
+         */
         public BufferedServletInputStream(ByteArrayInputStream bais) {
             this.bais = bais;
         }
 
+        /**
+         * Available.
+         *
+         * @return the result
+         */
         @Override
         public int available() {
             return this.bais.available();
         }
 
+        /**
+         * Read.
+         *
+         * @return the result
+         */
         @Override
         public int read() {
             return this.bais.read();
         }
 
+        /**
+         * Read.
+         *
+         * @param buf the Buf
+         * @param off the Off
+         * @param len the Len
+         * @return the result
+         */
         @Override
         public int read(byte[] buf, int off, int len) {
             return this.bais.read(buf, off, len);
@@ -188,23 +240,48 @@ public class ApiLoggingFilter implements Filter {
         }
     }
 
+    /**
+     * Tee servlet output stream class.
+     */
     public class TeeServletOutputStream extends ServletOutputStream {
         private final TeeOutputStream targetStream;
 
+        /**
+         * Creates a new TeeServletOutputStream instance.
+         *
+         * @param one the One
+         * @param two the Two
+         */
         public TeeServletOutputStream(OutputStream one, OutputStream two) {
             targetStream = new TeeOutputStream(one, two);
         }
 
+        /**
+         * Write.
+         *
+         * @param arg0 the Arg 0
+         * @throws IOException if an error occurs
+         */
         @Override
         public void write(int arg0) throws IOException {
             this.targetStream.write(arg0);
         }
 
+        /**
+         * Flush.
+         *
+         * @throws IOException if an error occurs
+         */
         public void flush() throws IOException {
             super.flush();
             this.targetStream.flush();
         }
 
+        /**
+         * Close.
+         *
+         * @throws IOException if an error occurs
+         */
         public void close() throws IOException {
             super.close();
             this.targetStream.close();
@@ -221,11 +298,19 @@ public class ApiLoggingFilter implements Filter {
         }
     }
 
+    /**
+     * Buffered response wrapper class.
+     */
     public class BufferedResponseWrapper implements HttpServletResponse {
         HttpServletResponse original;
         TeeServletOutputStream tee;
         ByteArrayOutputStream bos;
 
+        /**
+         * Creates a new BufferedResponseWrapper instance.
+         *
+         * @param response the Response
+         */
         public BufferedResponseWrapper(HttpServletResponse response) {
             original = response;
         }
@@ -290,11 +375,19 @@ public class ApiLoggingFilter implements Filter {
             return original.getBufferSize();
         }
 
+        /**
+         * Flush buffer.
+         *
+         * @throws IOException if an error occurs
+         */
         @Override
         public void flushBuffer() throws IOException {
             tee.flush();
         }
 
+        /**
+         * Reset buffer.
+         */
         @Override
         public void resetBuffer() {
             original.resetBuffer();
@@ -305,6 +398,9 @@ public class ApiLoggingFilter implements Filter {
             return original.isCommitted();
         }
 
+        /**
+         * Reset.
+         */
         @Override
         public void reset() {
             original.reset();
@@ -320,21 +416,44 @@ public class ApiLoggingFilter implements Filter {
             return original.getLocale();
         }
 
+        /**
+         * Add cookie.
+         *
+         * @param cookie the Cookie
+         */
         @Override
         public void addCookie(Cookie cookie) {
             original.addCookie(cookie);
         }
 
+        /**
+         * Contains header.
+         *
+         * @param name the Name
+         * @return the result
+         */
         @Override
         public boolean containsHeader(String name) {
             return original.containsHeader(name);
         }
 
+        /**
+         * Encode URL.
+         *
+         * @param url the Url
+         * @return the result
+         */
         @Override
         public String encodeURL(String url) {
             return original.encodeURL(url);
         }
 
+        /**
+         * Encode redirect URL.
+         *
+         * @param url the Url
+         * @return the result
+         */
         @Override
         public String encodeRedirectURL(String url) {
             return original.encodeRedirectURL(url);
@@ -357,11 +476,23 @@ public class ApiLoggingFilter implements Filter {
             original.sendError(sc, msg);
         }
 
+        /**
+         * Send error.
+         *
+         * @param sc the Sc
+         * @throws IOException if an error occurs
+         */
         @Override
         public void sendError(int sc) throws IOException {
             original.sendError(sc);
         }
 
+        /**
+         * Send redirect.
+         *
+         * @param location the Location
+         * @throws IOException if an error occurs
+         */
         @Override
         public void sendRedirect(String location) throws IOException {
             original.sendRedirect(location);
@@ -372,6 +503,12 @@ public class ApiLoggingFilter implements Filter {
             original.setDateHeader(name, date);
         }
 
+        /**
+         * Add date header.
+         *
+         * @param name the Name
+         * @param date the Date
+         */
         @Override
         public void addDateHeader(String name, long date) {
             original.addDateHeader(name, date);
@@ -382,6 +519,12 @@ public class ApiLoggingFilter implements Filter {
             original.setHeader(name, value);
         }
 
+        /**
+         * Add header.
+         *
+         * @param name the Name
+         * @param value the Value
+         */
         @Override
         public void addHeader(String name, String value) {
             original.addHeader(name, value);
@@ -392,6 +535,12 @@ public class ApiLoggingFilter implements Filter {
             original.setIntHeader(name, value);
         }
 
+        /**
+         * Add int header.
+         *
+         * @param name the Name
+         * @param value the Value
+         */
         @Override
         public void addIntHeader(String name, int value) {
             original.addIntHeader(name, value);

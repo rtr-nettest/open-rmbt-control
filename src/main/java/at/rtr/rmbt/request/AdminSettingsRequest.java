@@ -8,6 +8,9 @@ import lombok.Getter;
 
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Admin settings request class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+/**
+ * Admin update settings terms and conditions request class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

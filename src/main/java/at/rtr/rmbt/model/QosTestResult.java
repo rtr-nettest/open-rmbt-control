@@ -9,6 +9,9 @@ import org.hibernate.type.SqlTypes;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Qos test result class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

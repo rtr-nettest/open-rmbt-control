@@ -45,6 +45,9 @@ import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.*;
 
+/**
+ * Qos measurement service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class QosMeasurementServiceImpl implements QosMeasurementService {
@@ -95,6 +98,12 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
             .build();
     }
 
+    /**
+     * Save qos measurement result.
+     *
+     * @param request the Request
+     * @return the result
+     */
     @Override
     @Transactional
     public ErrorResponse saveQosMeasurementResult(QosResultRequest request) {
@@ -215,6 +224,13 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
         return response;
     }
 
+    /**
+     * Evaluate qos by open test UUID.
+     *
+     * @param openTestUUID the Open test UUID
+     * @param lang the Lang
+     * @return the result
+     */
     @Override
     public QosMeasurementsResponse evaluateQosByOpenTestUUID(UUID openTestUUID, String lang) {
         Locale locale = MessageUtils.getLocaleFormLanguage(lang, applicationProperties.getLanguage());
@@ -264,6 +280,13 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
                 .build();
     }
 
+    /**
+     * Save qos test results.
+     *
+     * @param test the Test
+     * @param qosResult the Qos result
+     * @throws JsonProcessingException if an error occurs
+     */
     private void saveQosTestResults(Test test, List<QosSendTestResultItem> qosResult) throws JsonProcessingException {
         Set<QosTestResult> resultsToSave = new HashSet<>();
         for (QosSendTestResultItem testObject : qosResult) {
@@ -282,6 +305,17 @@ public class QosMeasurementServiceImpl implements QosMeasurementService {
         qosTestResultRepository.saveAll(resultsToSave);
     }
 
+    /**
+     * Compare results and save.
+     *
+     * @param resultOptions the Result options
+     * @param resultKeys the Result keys
+     * @param testResult the Test result
+     * @return the result
+     * @throws JsonProcessingException if an error occurs
+     * @throws HstoreParseException if an error occurs
+     * @throws IllegalAccessException if an error occurs
+     */
     private QosTestResult compareResultsAndSave(ResultOptions resultOptions, Map<TestType, TreeSet<ResultDesc>> resultKeys, QosTestResult testResult) throws JsonProcessingException, HstoreParseException, IllegalAccessException {
         final String resultActual = testResult.getResult();
         TestType testType = testResult.getQosTestObjective().getTestType(); //get the correct class of the result;

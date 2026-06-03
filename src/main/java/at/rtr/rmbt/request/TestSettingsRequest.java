@@ -9,6 +9,9 @@ import lombok.*;
 
 import java.util.List;
 
+/**
+ * Test settings request class.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -142,6 +145,9 @@ public class TestSettingsRequest {
     @Schema(description = "Referrer of embedding website in case of iframe measurement")
     private String referrer;
 
+    /**
+     * Protocol version enum.
+     */
     public enum ProtocolVersion {
         @JsonProperty("ipv4")
         IPV4("ipv4"),
@@ -151,10 +157,21 @@ public class TestSettingsRequest {
 
         final private String label;
 
+        /**
+         * Creates a new ProtocolVersion instance.
+         *
+         * @param label the Label
+         */
         ProtocolVersion(String label) {
             this.label = label;
         }
 
+        /**
+         * For value.
+         *
+         * @param value the Value
+         * @return the result
+         */
         @JsonCreator
         public ProtocolVersion forValue(String value) {
             for (ProtocolVersion protocolVersion : ProtocolVersion.values()) {
@@ -164,6 +181,9 @@ public class TestSettingsRequest {
         }
     }
 
+    /**
+     * Location class.
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -204,6 +224,9 @@ public class TestSettingsRequest {
         private Integer satellites;
     }
 
+    /**
+     * Permission state class.
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -217,6 +240,9 @@ public class TestSettingsRequest {
         private boolean status;
     }
 
+    /**
+     * Loop mode info class.
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -266,6 +292,9 @@ public class TestSettingsRequest {
         private Boolean certMode;
     }
 
+    /**
+     * Capabilities class.
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -282,6 +311,9 @@ public class TestSettingsRequest {
         @JsonProperty("RMBThttp")
         private boolean rmbtHttp;
 
+        /**
+         * Classification capabilities class.
+         */
         @Getter
         @Setter
         @NoArgsConstructor
@@ -292,6 +324,9 @@ public class TestSettingsRequest {
             private Integer count;
         }
 
+        /**
+         * Qos capabilities class.
+         */
         @Getter
         @Setter
         @NoArgsConstructor

@@ -42,6 +42,9 @@ import java.util.stream.Collectors;
 
 import static at.rtr.rmbt.constant.Constants.OPEN_TEST_UUID_PREFIX;
 
+/**
+ * Test service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
@@ -58,11 +61,22 @@ public class TestServiceImpl implements TestService {
     private final TestHistoryMapper testHistoryMapper;
     private final GeoLocationService geoLocationService;
 
+    /**
+     * Save.
+     *
+     * @param test the Test
+     * @return the result
+     */
     @Override
     public Test save(Test test) {
         return testRepository.saveAndFlush(test);
     }
 
+    /**
+     * Refresh.
+     *
+     * @param test the Test
+     */
     @Override
     public void refresh(Test test) {
         testRepository.refresh(test);
@@ -188,6 +202,12 @@ public class TestServiceImpl implements TestService {
                 .build();
     }
 
+    /**
+     * Update test result.
+     *
+     * @param resultUpdateRequest the Result update request
+     * @return the result
+     */
     @Override
     public ResultUpdateResponse updateTestResult(ResultUpdateRequest resultUpdateRequest) {
         Test test = testRepository.findByUuid(resultUpdateRequest.getTestUUID())
@@ -320,6 +340,14 @@ public class TestServiceImpl implements TestService {
         testResultResponseBuilder.networkType(test.getNetworkType());
     }
 
+    /**
+     * Add net item response.
+     *
+     * @param locale the Locale
+     * @param netItemResponses the Net item responses
+     * @param providerName the Provider name
+     * @param titleKey the Title key
+     */
     private void addNetItemResponse(Locale locale, List<NetItemResponse> netItemResponses, String providerName, String titleKey) {
         NetItemResponse netItemResponse = NetItemResponse.builder()
                 .title(getStringFromBundle(titleKey, locale))
@@ -401,6 +429,14 @@ public class TestServiceImpl implements TestService {
         return measurementResponses;
     }
 
+    /**
+     * Add signal test result measurement response.
+     *
+     * @param measurementResponses the Measurement responses
+     * @param test the Test
+     * @param locale the Locale
+     * @param capabilitiesRequest the Capabilities request
+     */
     private void addSignalTestResultMeasurementResponse(List<TestResultMeasurementResponse> measurementResponses, Test test, Locale locale, CapabilitiesRequest capabilitiesRequest) {
         boolean dualSim = MeasurementUtils.isDualSim(test.getNetworkType(), test.getDualSim());
         boolean useSignal = MeasurementUtils.isUseSignal(test.getSimCount(), dualSim);
@@ -426,6 +462,14 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Add ping test result measurement response.
+     *
+     * @param measurementResponses the Measurement responses
+     * @param test the Test
+     * @param locale the Locale
+     * @param capabilitiesRequest the Capabilities request
+     */
     private void addPingTestResultMeasurementResponse(List<TestResultMeasurementResponse> measurementResponses, Test test, Locale locale, CapabilitiesRequest capabilitiesRequest) {
         Optional.ofNullable(test.getPingMedian())
                 .ifPresent(pingMedian -> {
@@ -438,6 +482,14 @@ public class TestServiceImpl implements TestService {
                 });
     }
 
+    /**
+     * Add upload test result measurement response.
+     *
+     * @param measurementResponses the Measurement responses
+     * @param test the Test
+     * @param locale the Locale
+     * @param capabilitiesRequest the Capabilities request
+     */
     private void addUploadTestResultMeasurementResponse(List<TestResultMeasurementResponse> measurementResponses, Test test, Locale locale, CapabilitiesRequest capabilitiesRequest) {
         Optional.ofNullable(test.getUploadSpeed())
                 .ifPresent(uploadSpeed -> {
@@ -450,6 +502,14 @@ public class TestServiceImpl implements TestService {
                 });
     }
 
+    /**
+     * Add download test result measurement response.
+     *
+     * @param measurementResponses the Measurement responses
+     * @param test the Test
+     * @param locale the Locale
+     * @param capabilitiesRequest the Capabilities request
+     */
     private void addDownloadTestResultMeasurementResponse(List<TestResultMeasurementResponse> measurementResponses, Test test, Locale locale, CapabilitiesRequest capabilitiesRequest) {
         Optional.ofNullable(test.getDownloadSpeed())
                 .ifPresent(downloadSpeed -> {
@@ -604,6 +664,14 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Add geo location.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param testLocation the Test location
+     * @param openTestUUID the Open test UUID
+     */
     private void addGeoLocation(List<TestResultDetailContainerResponse> propertiesList, Locale locale, TestLocation testLocation, UUID openTestUUID) {
         if (Objects.nonNull(testLocation.getGeoLat()) && Objects.nonNull(testLocation.getGeoLong()) && Objects.nonNull(testLocation.getGeoAccuracy())) {
             if (testLocation.getGeoAccuracy() < applicationProperties.getAccuracyDetailLimit()) {
@@ -658,6 +726,13 @@ public class TestServiceImpl implements TestService {
         return geoString.toString();
     }
 
+    /**
+     * Add open UUID.
+     *
+     * @param propertiesList the Properties list
+     * @param test the Test
+     * @param locale the Locale
+     */
     private void addOpenUUID(List<TestResultDetailContainerResponse> propertiesList, Test test, Locale locale) {
         TestResultDetailContainerResponse timeResponse = TestResultDetailContainerResponse.builder()
                 .title(getStringFromBundleWithKeyPrefix("open_uuid", locale))
@@ -667,6 +742,13 @@ public class TestServiceImpl implements TestService {
         propertiesList.add(timeResponse);
     }
 
+    /**
+     * Add open test UUID.
+     *
+     * @param propertiesList the Properties list
+     * @param test the Test
+     * @param locale the Locale
+     */
     private void addOpenTestUUID(List<TestResultDetailContainerResponse> propertiesList, Test test, Locale locale) {
         TestResultDetailContainerResponse timeResponse = TestResultDetailContainerResponse.builder()
                 .title(getStringFromBundleWithKeyPrefix("open_test_uuid", locale))
@@ -676,6 +758,13 @@ public class TestServiceImpl implements TestService {
         propertiesList.add(timeResponse);
     }
 
+    /**
+     * Add time.
+     *
+     * @param propertiesList the Properties list
+     * @param test the Test
+     * @param locale the Locale
+     */
     private void addTime(List<TestResultDetailContainerResponse> propertiesList, Test test, Locale locale) {
         if (Objects.nonNull(test.getTime()) && Objects.nonNull(test.getTimezone())) {
             Date date = Date.from(test.getTime().toInstant());
@@ -687,6 +776,14 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Build timezone response.
+     *
+     * @param timeZone the Time zone
+     * @param time the Time
+     * @param locale the Locale
+     * @return the result
+     */
     private TestResultDetailContainerResponse buildTimezoneResponse(TimeZone timeZone, long time, Locale locale) {
         return TestResultDetailContainerResponse.builder()
                 .title(getStringFromBundleWithKeyPrefix("timezone", locale))
@@ -694,6 +791,15 @@ public class TestServiceImpl implements TestService {
                 .build();
     }
 
+    /**
+     * Build time response.
+     *
+     * @param test the Test
+     * @param date the Date
+     * @param timeZone the Time zone
+     * @param locale the Locale
+     * @return the result
+     */
     private TestResultDetailContainerResponse buildTimeResponse(Test test, Date date, TimeZone timeZone, Locale locale) {
         return TestResultDetailContainerResponse.builder()
                 .time(date.getTime())
@@ -709,6 +815,13 @@ public class TestServiceImpl implements TestService {
         return String.format(Constants.TIMEZONE_TEMPLATE, timeZoneFormat.format(offset));
     }
 
+    /**
+     * Add test fields.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param test the Test
+     */
     private void addTestFields(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Test test) {
         boolean dualSim = MeasurementUtils.isDualSim(test.getNetworkType(), test.getDualSim());
         boolean useSignal = MeasurementUtils.isUseSignal(test.getSimCount(), dualSim);
@@ -799,12 +912,29 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Add sum of two fields.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param totalBytesDownload the Total bytes download
+     * @param totalBytesUpload the Total bytes upload
+     * @param title the Title
+     */
     private void addSumOfTwoFields(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Long totalBytesDownload, Long totalBytesUpload, String title) {
         if (Objects.nonNull(totalBytesDownload) && Objects.nonNull(totalBytesUpload)) {
             addBytes(propertiesList, locale, title, totalBytesDownload + totalBytesUpload);
         }
     }
 
+    /**
+     * Add test location fields.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param testLocation the Test location
+     * @param openTestUUID the Open test UUID
+     */
     private void addTestLocationFields(List<TestResultDetailContainerResponse> propertiesList, Locale locale, TestLocation testLocation, UUID openTestUUID) {
         addGeoLocation(propertiesList, locale, testLocation, openTestUUID);
         addInteger(propertiesList, locale, "gkz_bev", testLocation.getGkzBev());
@@ -823,12 +953,26 @@ public class TestServiceImpl implements TestService {
                 .ifPresent(administrativeBoundaries -> addAdministrativeBoundariesFields(propertiesList, locale, administrativeBoundaries));
     }
 
+    /**
+     * Add link net fields.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param linknet the Linknet
+     */
     private void addLinkNetFields(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Linknet linknet) {
         addLong(propertiesList, locale, "link_id", linknet.getLinkId());
         addString(propertiesList, locale, "link_name1", linknet.getName1());
         addString(propertiesList, locale, "link_name2", linknet.getName2());
     }
 
+    /**
+     * Add administrative boundaries fields.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param administrativeBoundaries the Administrative boundaries
+     */
     private void addAdministrativeBoundariesFields(List<TestResultDetailContainerResponse> propertiesList, Locale locale, AdministrativeBoundaries administrativeBoundaries) {
         addString(propertiesList, locale, "locality", administrativeBoundaries.getLocality());
         addString(propertiesList, locale, "community", administrativeBoundaries.getCommunity());
@@ -837,6 +981,14 @@ public class TestServiceImpl implements TestService {
         addLong(propertiesList, locale, "kg_nr", administrativeBoundaries.getKgNrInt());
     }
 
+    /**
+     * Add network operator.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param test the Test
+     * @param mobileProviderShortName the Mobile provider short name
+     */
     private void addNetworkOperator(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Test test, String mobileProviderShortName) {
         if (Objects.isNull(test.getNetworkOperatorName()))
             addString(propertiesList, locale, "network_operator", mobileProviderShortName);
@@ -844,6 +996,14 @@ public class TestServiceImpl implements TestService {
             addNetworkOperatorString(propertiesList, locale, mobileProviderShortName, test.getNetworkOperatorName());
     }
 
+    /**
+     * Add band and frequency.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param test the Test
+     * @param bandField the Band field
+     */
     private void addBandAndFrequency(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Test test, Integer bandField) {
         Integer channelNumber = null;
         NetworkGroupName technology = null;
@@ -872,12 +1032,28 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Add seconds.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param title the Title
+     * @param nanos the Nanos
+     */
     private void addSeconds(List<TestResultDetailContainerResponse> propertiesList, Locale locale, String title, Long nanos) {
         if (Objects.nonNull(nanos)) {
             addDoubleAndUnitString(propertiesList, locale, title, nanos / Constants.NANOS_TO_SECONDS_MULTIPLICATOR, "RESULT_DURATION_UNIT");
         }
     }
 
+    /**
+     * Add bytes.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param title the Title
+     * @param value the Value
+     */
     private void addBytes(List<TestResultDetailContainerResponse> propertiesList, Locale locale, String title, Long value) {
         Optional.ofNullable(value)
                 .filter(x -> x > NumberUtils.LONG_ZERO)
@@ -885,6 +1061,13 @@ public class TestServiceImpl implements TestService {
                 .ifPresent(x -> addDoubleAndUnitString(propertiesList, locale, title, x, "RESULT_TOTAL_BYTES_UNIT"));
     }
 
+    /**
+     * Add settlement type.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param settlementType the Settlement type
+     */
     private void addSettlementType(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Integer settlementType) {
         if (Objects.nonNull(settlementType)) {
             switch (settlementType) {
@@ -904,14 +1087,38 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Add network operator string.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param firstValue the First value
+     * @param secondValue the Second value
+     */
     private void addNetworkOperatorString(List<TestResultDetailContainerResponse> propertiesList, Locale locale, String firstValue, String secondValue) {
         addString(propertiesList, locale, "network_operator", String.format(Constants.PARENTHESES_TEMPLATE, firstValue, secondValue));
     }
 
+    /**
+     * Add parentheses string.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param title the Title
+     * @param firstValue the First value
+     * @param secondValue the Second value
+     */
     private void addParenthesesString(List<TestResultDetailContainerResponse> propertiesList, Locale locale, String title, Integer firstValue, String secondValue) {
         addString(propertiesList, locale, title, String.format(Constants.PARENTHESES_TEMPLATE, firstValue, secondValue));
     }
 
+    /**
+     * Add ndt fields.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param testNdt the Test ndt
+     */
     private void addNdtFields(List<TestResultDetailContainerResponse> propertiesList, Locale locale, TestNdt testNdt) {
         Optional.ofNullable(testNdt)
                 .ifPresent(testNdt1 -> {
@@ -923,6 +1130,14 @@ public class TestServiceImpl implements TestService {
                 });
     }
 
+    /**
+     * Add string.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param key the Key
+     * @param value the Value
+     */
     private void addString(List<TestResultDetailContainerResponse> propertiesList, Locale locale, String key, String value) {
         if (value != null && !value.isEmpty()) {
             TestResultDetailContainerResponse newItem = TestResultDetailContainerResponse.builder()
@@ -933,6 +1148,14 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Add long.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param key the Key
+     * @param value the Value
+     */
     private void addLong(List<TestResultDetailContainerResponse> propertiesList, Locale locale, String key, Long value) {
         if (value != null) {
             TestResultDetailContainerResponse newItem = TestResultDetailContainerResponse.builder()
@@ -943,6 +1166,14 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Add integer.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param key the Key
+     * @param value the Value
+     */
     private void addInteger(List<TestResultDetailContainerResponse> propertiesList, Locale locale, String key, Integer value) {
         if (value != null) {
             TestResultDetailContainerResponse newItem = TestResultDetailContainerResponse.builder()
@@ -953,6 +1184,15 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Add long and unit string.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param title the Title
+     * @param value the Value
+     * @param unitKey the Unit key
+     */
     private void addLongAndUnitString(List<TestResultDetailContainerResponse> propertiesList, Locale locale, String title, Long value, String unitKey) {
         String unit = getStringFromBundle(unitKey, locale);
         if (Objects.nonNull(value)) {
@@ -960,6 +1200,15 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Add double and unit string.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param title the Title
+     * @param value the Value
+     * @param unitKey the Unit key
+     */
     private void addDoubleAndUnitString(List<TestResultDetailContainerResponse> propertiesList, Locale locale, String title, Double value, String unitKey) {
         String unit = getStringFromBundle(unitKey, locale);
         if (Objects.nonNull(value)) {
@@ -967,6 +1216,15 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Add speed and unit string.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param title the Title
+     * @param value the Value
+     * @param unitKey the Unit key
+     */
     private void addSpeedAndUnitString(List<TestResultDetailContainerResponse> propertiesList, Locale locale, String title, Integer value, String unitKey) {
         String unit = getStringFromBundle(unitKey, locale);
         if (Objects.nonNull(value)) {
@@ -974,6 +1232,15 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Add integer and unit string.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param title the Title
+     * @param value the Value
+     * @param unitKey the Unit key
+     */
     private void addIntegerAndUnitString(List<TestResultDetailContainerResponse> propertiesList, Locale locale, String title, Integer value, String unitKey) {
         String unit = getStringFromBundle(unitKey, locale);
         if (Objects.nonNull(value)) {
@@ -981,6 +1248,13 @@ public class TestServiceImpl implements TestService {
         }
     }
 
+    /**
+     * Add land cover string.
+     *
+     * @param propertiesList the Properties list
+     * @param locale the Locale
+     * @param value the Value
+     */
     private void addLandCoverString(List<TestResultDetailContainerResponse> propertiesList, Locale locale, Integer value) {
         if (Objects.nonNull(value)) {
             addParenthesesString(propertiesList, locale, "land_cover", value, getStringFromBundle("value_corine_" + value, locale));

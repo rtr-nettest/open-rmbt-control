@@ -1,5 +1,8 @@
 package at.rtr.rmbt.constant;
 
+/**
+ * Error message interface.
+ */
 public interface ErrorMessage {
     String SQL_ERROR_MESSAGE = "SQL Error requesting from database.";
     String ERROR_CLIENT_VERSION = "Your client version is not supported.";

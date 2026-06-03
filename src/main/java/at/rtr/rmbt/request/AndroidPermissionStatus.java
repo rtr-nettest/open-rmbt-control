@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * Android permission status class.
+ */
 @Getter
 @Builder
 public class AndroidPermissionStatus {

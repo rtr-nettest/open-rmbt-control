@@ -1,5 +1,8 @@
 package at.rtr.rmbt.constant;
 
+/**
+ * URI constants interface.
+ */
 public interface URIConstants {
     String NEWS_URL = "/news";
     String REGISTRATION_URL = "/testRequest";

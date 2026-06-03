@@ -29,10 +29,21 @@ public class HstoreParseException extends Exception {
     public final static String HSTORE_MUST_BE_A_COLLECTION = "Field must be a Collection: ";
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Creates a new HstoreParseException instance.
+     *
+     * @param message the Message
+     */
     public HstoreParseException(String message) {
         this(message, null);
     }
 
+    /**
+     * Creates a new HstoreParseException instance.
+     *
+     * @param message the Message
+     * @param cause the Cause
+     */
     public HstoreParseException(String message, Throwable cause) {
         super(message, cause);
     }

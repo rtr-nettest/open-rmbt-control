@@ -5,11 +5,19 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Objects;
 
+/**
+ * Speed direction enum.
+ */
 public enum SpeedDirection {
 
     DOWNLOAD("download"),
     UPLOAD("upload");
 
+    /**
+     * Creates a new SpeedDirection instance.
+     *
+     * @param value the Value
+     */
     SpeedDirection(String value) {
         this.value = value;
     }
@@ -22,6 +30,12 @@ public enum SpeedDirection {
         return value;
     }
 
+    /**
+     * For value.
+     *
+     * @param value the Value
+     * @return the result
+     */
     @JsonCreator
     public static SpeedDirection forValue(String value) {
         if (Objects.isNull(value)) {

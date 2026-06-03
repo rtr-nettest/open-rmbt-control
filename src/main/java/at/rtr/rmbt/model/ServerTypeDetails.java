@@ -5,6 +5,9 @@ import lombok.*;
 
 import jakarta.persistence.*;
 
+/**
+ * Server type details class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

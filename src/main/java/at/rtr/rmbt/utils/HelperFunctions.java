@@ -23,6 +23,9 @@ import java.security.GeneralSecurityException;
 import java.util.*;
 
 
+/**
+ * Helper functions class.
+ */
 @UtilityClass
 public class HelperFunctions {
 
@@ -45,6 +48,13 @@ public class HelperFunctions {
         return "?";
     }
 
+    /**
+     * Geo to string.
+     *
+     * @param geoLat the Geo lat
+     * @param geoLong the Geo long
+     * @return the result
+     */
     public static String geoToString(final Double geoLat, final Double geoLong) {
 
         if (geoLat == null || geoLong == null)
@@ -151,6 +161,13 @@ public class HelperFunctions {
         }
     }
 
+    /**
+     * Calculate HMAC.
+     *
+     * @param secret the Secret
+     * @param data the Data
+     * @return the result
+     */
     public static String calculateHMAC(final byte[] secret, final String data) {
         try {
             final SecretKeySpec signingKey = new SecretKeySpec(secret, "HmacSHA1");
@@ -165,6 +182,13 @@ public class HelperFunctions {
         }
     }
 
+    /**
+     * Calculate sha 256 HMAC.
+     *
+     * @param secret the Secret
+     * @param data the Data
+     * @return the result
+     */
     public byte[] calculateSha256HMAC(final byte[] secret, final byte[] data) {
         try {
             final SecretKeySpec signingKey = new SecretKeySpec(secret, "HmacSHA256");
@@ -179,6 +203,14 @@ public class HelperFunctions {
         }
     }
 
+    /**
+     * Calculate sha 256 HMAC.
+     *
+     * @param secret the Secret
+     * @param data1 the Data 1
+     * @param data2 the Data 2
+     * @return the result
+     */
     public byte[] calculateSha256HMAC(final byte[] secret, final byte[] data1, final byte[] data2) {
         try {
             final SecretKeySpec signingKey = new SecretKeySpec(secret, "HmacSHA256");
@@ -196,6 +228,12 @@ public class HelperFunctions {
     }
 
 
+    /**
+     * Reverse DNS lookup.
+     *
+     * @param adr the Adr
+     * @return the result
+     */
     public static String reverseDNSLookup(final InetAddress adr) {
         try {
             final Name name = ReverseMap.fromAddress(adr);
@@ -217,6 +255,12 @@ public class HelperFunctions {
         return null;
     }
 
+    /**
+     * Anonymize ip.
+     *
+     * @param inetAddress the Inet address
+     * @return the result
+     */
     public String anonymizeIp(final InetAddress inetAddress) {
         try {
             final byte[] address = inetAddress.getAddress();
@@ -491,6 +535,12 @@ public class HelperFunctions {
         return adr.isLinkLocalAddress() || adr.isLoopbackAddress() || adr.isSiteLocalAddress();
     }
 
+    /**
+     * Ip type.
+     *
+     * @param inetAddress the Inet address
+     * @return the result
+     */
     public static String IpType(InetAddress inetAddress) {
         try {
             final String ipVersion;

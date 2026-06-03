@@ -6,9 +6,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
+/**
+ * Open api configuration class.
+ */
 @Configuration
 public class OpenApiConfiguration {
 
+    /**
+     * Open API.
+     *
+     * @return the result
+     */
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()

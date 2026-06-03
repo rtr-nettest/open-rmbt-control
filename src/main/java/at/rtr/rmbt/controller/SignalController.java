@@ -24,6 +24,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Signal controller class.
+ */
 @Tag(name = "Signal")
 @Slf4j
 @RestController
@@ -32,6 +35,14 @@ public class SignalController {
 
     private final SignalService signalService;
 
+    /**
+     * Process signal request.
+     *
+     * @param httpServletRequest the Http servlet request
+     * @param headers the Headers
+     * @param signalRegisterRequest the Signal register request
+     * @return the result
+     */
     @PostMapping(URIConstants.SIGNAL_REQUEST)
     @Operation(summary = "Register signal", description = "Request to obtain configuration for signal monitoring")
     @ResponseStatus(HttpStatus.CREATED)
@@ -41,6 +52,14 @@ public class SignalController {
         return signalService.processSignalRequest(signalRegisterRequest, httpServletRequest, headers);
     }
 
+    /**
+     * Process coverage request.
+     *
+     * @param httpServletRequest the Http servlet request
+     * @param headers the Headers
+     * @param coverageRegisterRequest the Coverage register request
+     * @return the result
+     */
     @PostMapping(URIConstants.COVERAGE_REQUEST)
     @Operation(summary = "Register coverage", description = "Request to obtain configuration for coverage monitoring")
     @ResponseStatus(HttpStatus.CREATED)
@@ -50,6 +69,12 @@ public class SignalController {
         return signalService.processCoverageRequest(coverageRegisterRequest, httpServletRequest, headers);
     }
 
+    /**
+     * Get signal history.
+     *
+     * @param pageable the Pageable
+     * @return the Signal history
+     */
     @GetMapping(URIConstants.ADMIN_SIGNAL)
     @Operation(summary = "Get list of signal measurements")
     @ResponseStatus(HttpStatus.OK)
@@ -57,6 +82,12 @@ public class SignalController {
         return signalService.getSignalsHistory(pageable);
     }
 
+    /**
+     * Process signal result.
+     *
+     * @param signalResultRequest the Signal result request
+     * @return the result
+     */
     @PostMapping(URIConstants.SIGNAL_RESULT)
     @Operation(summary = "Process signal result")
     @ResponseStatus(HttpStatus.OK)
@@ -64,6 +95,12 @@ public class SignalController {
         return signalService.processSignalResult(signalResultRequest);
     }
 
+    /**
+     * Get signal strength.
+     *
+     * @param testUUID the Test UUID
+     * @return the Signal strength
+     */
     @GetMapping(URIConstants.SIGNAL_STRENGTH_BY_UUID)
     @Operation(summary = "Get signal details")
     @ResponseStatus(HttpStatus.OK)
@@ -71,6 +108,14 @@ public class SignalController {
         return signalService.getSignalStrength(testUUID);
     }
 
+    /**
+     * Process coverage result.
+     *
+     * @param httpServletRequest the Http servlet request
+     * @param headers the Headers
+     * @param coverageResultRequest the Coverage result request
+     * @return the result
+     */
     @PostMapping(URIConstants.COVERAGE_RESULT)
     @Operation(summary = "Process coverage result")
     @ResponseStatus(HttpStatus.OK)

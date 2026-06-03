@@ -10,6 +10,9 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 
+/**
+ * News request class.
+ */
 @Builder(toBuilder = true)
 @Getter
 @EqualsAndHashCode

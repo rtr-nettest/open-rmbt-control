@@ -39,6 +39,9 @@ import java.util.*;
 import static at.rtr.rmbt.constant.URIConstants.RESULT_QOS_URL;
 import static at.rtr.rmbt.constant.URIConstants.RESULT_URL;
 
+/**
+ * Test settings facade class.
+ */
 @Service
 public class TestSettingsFacade {
     private static final Logger logger = LoggerFactory.getLogger(TestSettingsFacade.class);
@@ -69,6 +72,20 @@ public class TestSettingsFacade {
     @Value("${application-version.server-url}")
     private String applicationServerUrl;
 
+    /**
+     * Creates a new TestSettingsFacade instance.
+     *
+     * @param loopModeSettingsService the Loop mode settings service
+     * @param clientTypeService the Client type service
+     * @param clientService the Client service
+     * @param testServerService the Test server service
+     * @param testService the Test service
+     * @param applicationProperties the Application properties
+     * @param messageSource the Message source
+     * @param objectMapper the Object mapper
+     * @param rollBackService the Roll back service
+     * @param settingsRepository the Settings repository
+     */
     @Autowired
     public TestSettingsFacade(LoopModeSettingsService loopModeSettingsService, ClientTypeService clientTypeService,
                               ClientService clientService, TestServerService testServerService, TestService testService,
@@ -86,6 +103,14 @@ public class TestSettingsFacade {
         this.settingsRepository = settingsRepository;
     }
 
+    /**
+     * Update test settings.
+     *
+     * @param testSettingsRequest the Test settings request
+     * @param request the Request
+     * @param headers the Headers
+     * @return the result
+     */
     @Transactional
     public TestSettingsResponse updateTestSettings(TestSettingsRequest testSettingsRequest, HttpServletRequest request, Map<String, String> headers) {
         long startTime = System.currentTimeMillis();
@@ -397,6 +422,12 @@ public class TestSettingsFacade {
         return client;
     }
 
+    /**
+     * To loop mode settings.
+     *
+     * @param loopModeInfo the Loop mode info
+     * @return the result
+     */
     private LoopModeSettings toLoopModeSettings(TestSettingsRequest.LoopModeInfo loopModeInfo) {
         var loopModeSettings = new LoopModeSettings();
         if (loopModeInfo.getClientUuid() != null)

@@ -10,6 +10,9 @@ import jakarta.transaction.Transactional;
 import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * Custom repository impl class.
+ */
 public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID> implements CustomRepository<T, ID> {
 
     public static final String UPDATE_IMPLAUSIBLE = "UPDATE public.test SET implausible = :implausible, comment=:comment WHERE NOT implausible = :implausible AND deleted=FALSE AND uid IN ("
@@ -17,11 +20,22 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
 
     private final EntityManager entityManager;
 
+    /**
+     * Creates a new CustomRepositoryImpl instance.
+     *
+     * @param entityInformation the Entity information
+     * @param entityManager the Entity manager
+     */
     public CustomRepositoryImpl(JpaEntityInformation entityInformation, EntityManager entityManager) {
         super(entityInformation, entityManager);
         this.entityManager = entityManager;
     }
 
+    /**
+     * Refresh.
+     *
+     * @param t the T
+     */
     @Override
     @Transactional
     public void refresh(T t) {
@@ -33,6 +47,15 @@ public class CustomRepositoryImpl<T, ID extends Serializable> extends SimpleJpaR
         entityManager.refresh(t);
     }
 
+    /**
+     * Update implausible.
+     *
+     * @param implausible the Implausible
+     * @param comment the Comment
+     * @param uuidField the Uuid field
+     * @param uuid the Uuid
+     * @return the result
+     */
     @Override
     @Transactional
     public Integer updateImplausible(boolean implausible, String comment, String uuidField, UUID uuid) {

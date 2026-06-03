@@ -8,9 +8,23 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Test service interface.
+ */
 public interface TestService {
+    /**
+     * Save.
+     *
+     * @param test the Test
+     * @return the result
+     */
     Test save(Test test);
 
+    /**
+     * Refresh.
+     *
+     * @param test the Test
+     */
     void refresh(Test test);
 
     String getRmbtSetProviderFromAs(Long testUid);
@@ -33,6 +47,12 @@ public interface TestService {
 
     HistoryResponse getHistory(HistoryRequest historyRequest);
 
+    /**
+     * Update test result.
+     *
+     * @param resultUpdateRequest the Result update request
+     * @return the result
+     */
     ResultUpdateResponse updateTestResult(ResultUpdateRequest resultUpdateRequest);
 
     ImplausibleResponse setImplausible(ImplausibleRequest implausibleRequest);

@@ -6,6 +6,9 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+/**
+ * Radio signal request class.
+ */
 @Builder
 @Getter
 public class RadioSignalRequest {

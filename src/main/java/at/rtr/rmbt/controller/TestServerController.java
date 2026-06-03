@@ -15,6 +15,9 @@ import java.util.List;
 import static at.rtr.rmbt.constant.URIConstants.BY_ID;
 import static at.rtr.rmbt.constant.URIConstants.TEST_SERVER;
 
+/**
+ * Test server controller class.
+ */
 @Tag(name = "Test server")
 @RestController
 @RequestMapping(TEST_SERVER)

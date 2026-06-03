@@ -14,6 +14,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 
+/**
+ * Administrative boundaries class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

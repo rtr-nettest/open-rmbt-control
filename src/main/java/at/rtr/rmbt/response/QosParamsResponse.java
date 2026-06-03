@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+/**
+ * Qos params response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

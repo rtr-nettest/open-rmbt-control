@@ -13,6 +13,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Cell location service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class CellLocationServiceImpl implements CellLocationService {
@@ -20,6 +23,12 @@ public class CellLocationServiceImpl implements CellLocationService {
     private final CellLocationMapper cellLocationMapper;
     private final CellLocationRepository cellLocationRepository;
 
+    /**
+     * Save cell location requests.
+     *
+     * @param cellLocationRequests the Cell location requests
+     * @param test the Test
+     */
     @Override
     public void saveCellLocationRequests(Collection<CellLocationRequest> cellLocationRequests, Test test) {
         List<CellLocation> newCellLocation = cellLocationRequests.stream()

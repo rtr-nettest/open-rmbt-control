@@ -4,6 +4,9 @@ import lombok.*;
 
 import jakarta.persistence.*;
 
+/**
+ * Provider class.
+ */
 @Builder
 @Entity
 @Getter

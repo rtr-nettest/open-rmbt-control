@@ -10,6 +10,9 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * Qos send test result item class.
+ */
 @Getter
 @Builder(toBuilder = true)
 public class QosSendTestResultItem {
@@ -333,6 +336,9 @@ public class QosSendTestResultItem {
     @JsonProperty("dns_result_entries_found")
     private Integer dnsResultEntriesFound;
 
+    /**
+     * Traceroute item class.
+     */
     @Getter
     @Setter
     public static class TracerouteItem {
@@ -345,6 +351,9 @@ public class QosSendTestResultItem {
         private Long time;
     }
 
+    /**
+     * Dns result item class.
+     */
     @Getter
     @Setter
     @AllArgsConstructor

@@ -13,6 +13,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Rtr settings request class.
+ */
 @Getter
 @EqualsAndHashCode
 public class RtrSettingsRequest {
@@ -97,6 +100,30 @@ public class RtrSettingsRequest {
     @JsonProperty(value = "capabilities")
     private final CapabilitiesRequest capabilities;
 
+    /**
+     * Creates a new RtrSettingsRequest instance.
+     *
+     * @param type the Type
+     * @param name the Name
+     * @param language the Language
+     * @param platform the Platform
+     * @param osVersion the Os version
+     * @param apiLevel the Api level
+     * @param device the Device
+     * @param model the Model
+     * @param product the Product
+     * @param timezone the Timezone
+     * @param softwareRevision the Software revision
+     * @param softwareRevisionCode the Software revision code
+     * @param softwareVersionName the Software version name
+     * @param versionCode the Version code
+     * @param versionName the Version name
+     * @param uuid the Uuid
+     * @param userServerSelection the User server selection
+     * @param termsAndConditionsAcceptedVersion the Terms and conditions accepted version
+     * @param isTermsAndConditionsAccepted the Is terms and conditions accepted
+     * @param capabilities the Capabilities
+     */
     @Builder
     public RtrSettingsRequest(ClientType type, String name, String language, String platform, String osVersion, Long apiLevel, String device, String model, String product, String timezone, String softwareRevision, Long softwareRevisionCode, String softwareVersionName, Long versionCode, String versionName, UUID uuid, boolean userServerSelection, Long termsAndConditionsAcceptedVersion, boolean isTermsAndConditionsAccepted, CapabilitiesRequest capabilities) {
         this.type = type;
@@ -121,6 +148,9 @@ public class RtrSettingsRequest {
         this.capabilities = capabilities;
     }
 
+    /**
+     * Creates a new RtrSettingsRequest instance.
+     */
     public RtrSettingsRequest() {
         this(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, false, null, false, null);
     }

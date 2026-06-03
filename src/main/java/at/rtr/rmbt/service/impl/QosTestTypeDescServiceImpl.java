@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Qos test type desc service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class QosTestTypeDescServiceImpl implements QosTestTypeDescService {

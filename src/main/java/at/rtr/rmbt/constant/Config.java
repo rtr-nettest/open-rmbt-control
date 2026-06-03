@@ -6,6 +6,9 @@ import at.rtr.rmbt.enums.TestStatus;
 
 import java.util.List;
 
+/**
+ * Config interface.
+ */
 public interface Config {
     String SIGNAL_RESULT_URL_KEY = "signal_result_url";
     String TEST_RESULT_QOS_URL_KEY = "test_result_qos_url";

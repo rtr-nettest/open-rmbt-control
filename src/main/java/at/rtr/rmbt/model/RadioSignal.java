@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+/**
+ * Radio signal class.
+ */
 @Builder
 @Entity
 @Getter

@@ -9,6 +9,9 @@ import lombok.Getter;
 import lombok.ToString;
 import org.locationtech.jts.geom.Geometry;
 
+/**
+ * Signal location response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

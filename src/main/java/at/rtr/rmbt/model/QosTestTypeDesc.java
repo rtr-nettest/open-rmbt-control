@@ -11,6 +11,9 @@ import org.hibernate.annotations.Type;
 
 import jakarta.persistence.*;
 
+/**
+ * Qos test type desc class.
+ */
 @Entity
 @Getter
 @Setter

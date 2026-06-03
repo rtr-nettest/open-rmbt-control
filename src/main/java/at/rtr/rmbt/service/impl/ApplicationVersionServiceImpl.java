@@ -14,6 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+/**
+ * Application version service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class ApplicationVersionServiceImpl implements ApplicationVersionService {

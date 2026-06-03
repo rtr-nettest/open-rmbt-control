@@ -19,6 +19,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Geo location service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class GeoLocationServiceImpl implements GeoLocationService {
@@ -26,6 +29,12 @@ public class GeoLocationServiceImpl implements GeoLocationService {
     private final GeoLocationMapper geoLocationMapper;
     private final GeoLocationRepository geoLocationRepository;
 
+    /**
+     * Process geo location requests.
+     *
+     * @param geoLocationRequests the Geo location requests
+     * @param test the Test
+     */
     @Override
     public void processGeoLocationRequests(Collection<GeoLocationRequest> geoLocationRequests, Test test) {
 
@@ -54,6 +63,12 @@ public class GeoLocationServiceImpl implements GeoLocationService {
         }
     }
 
+    /**
+     * Update geo location.
+     *
+     * @param test the Test
+     * @param resultUpdateRequest the Result update request
+     */
     @Override
     public void updateGeoLocation(Test test, ResultUpdateRequest resultUpdateRequest) {
         final double geoLat = ObjectUtils.defaultIfNull(resultUpdateRequest.getGeoLat(), Double.NaN);
@@ -75,6 +90,12 @@ public class GeoLocationServiceImpl implements GeoLocationService {
                         provider.equals(Config.GEO_PROVIDER_GPS));
     }
 
+    /**
+     * Update test geo.
+     *
+     * @param test the Test
+     * @param geoLocation the Geo location
+     */
     private void updateTestGeo(Test test, GeoLocation geoLocation) {
         test.setGeoLocationUuid(geoLocation.getGeoLocationUUID());
         test.setGeoAccuracy(geoLocation.getAccuracy());

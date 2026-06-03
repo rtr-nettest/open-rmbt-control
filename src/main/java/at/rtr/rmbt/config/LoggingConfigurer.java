@@ -47,6 +47,11 @@ public class LoggingConfigurer implements ApplicationListener<ApplicationReadyEv
     private static final String LOGSTASH_APPENDER = "logstash";
     private static final String DEFAULT_PORT = "5000";
 
+    /**
+     * On application event.
+     *
+     * @param event the event
+     */
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         try {
@@ -93,6 +98,13 @@ public class LoggingConfigurer implements ApplicationListener<ApplicationReadyEv
         return trimToNull(value);
     }
 
+    /**
+     * Enable logstash.
+     *
+     * @param host the host
+     * @param port the port
+     * @param hostField the host field
+     */
     private void enableLogstash(String host, String port, String hostField) {
         final LoggerContext ctx = (LoggerContext) LoggerFactory.getILoggerFactory();
         final Logger root = ctx.getLogger(Logger.ROOT_LOGGER_NAME);
@@ -126,6 +138,12 @@ public class LoggingConfigurer implements ApplicationListener<ApplicationReadyEv
         LOG.info("Logging: shipping to Logstash {}:{} (console limited to ERROR)", host, port);
     }
 
+    /**
+     * Apply external config.
+     *
+     * @param path the path
+     * @throws Exception if an error occurs
+     */
     private void applyExternalConfig(String path) throws Exception {
         final LoggerContext ctx = (LoggerContext) LoggerFactory.getILoggerFactory();
         final JoranConfigurator configurator = new JoranConfigurator();
@@ -135,6 +153,12 @@ public class LoggingConfigurer implements ApplicationListener<ApplicationReadyEv
         LOG.info("Logging: applied external configuration from {}", path);
     }
 
+    /**
+     * Trim to null.
+     *
+     * @param value the value
+     * @return the result
+     */
     private static String trimToNull(String value) {
         if (value == null) {
             return null;
@@ -143,6 +167,13 @@ public class LoggingConfigurer implements ApplicationListener<ApplicationReadyEv
         return trimmed.isEmpty() ? null : trimmed;
     }
 
+    /**
+     * First non blank.
+     *
+     * @param value the value
+     * @param fallback the fallback
+     * @return the result
+     */
     private static String firstNonBlank(String value, String fallback) {
         final String trimmed = trimToNull(value);
         return trimmed == null ? fallback : trimmed;

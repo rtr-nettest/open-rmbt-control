@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 
+/**
+ * Test distance class.
+ */
 @Builder
 @Getter
 @Setter

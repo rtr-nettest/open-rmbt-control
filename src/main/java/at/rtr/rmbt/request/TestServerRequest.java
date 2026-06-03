@@ -12,6 +12,9 @@ import org.locationtech.jts.geom.Geometry;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Test server request class.
+ */
 @Getter
 @EqualsAndHashCode
 public class TestServerRequest {
@@ -74,6 +77,29 @@ public class TestServerRequest {
     @JsonProperty(value = "encrypted")
     private boolean encrypted;
 
+    /**
+     * Creates a new TestServerRequest instance.
+     *
+     * @param name the Name
+     * @param webAddress the Web address
+     * @param port the Port
+     * @param portSsl the Port ssl
+     * @param city the City
+     * @param country the Country
+     * @param latitude the Latitude
+     * @param longitude the Longitude
+     * @param location the Location
+     * @param webAddressIpV4 the Web address ip V 4
+     * @param webAddressIpV6 the Web address ip V 6
+     * @param serverTypeDetails the Server type details
+     * @param priority the Priority
+     * @param weight the Weight
+     * @param active the Active
+     * @param secretKey the Secret key
+     * @param selectable the Selectable
+     * @param node the Node
+     * @param encrypted the Encrypted
+     */
     @Builder
     public TestServerRequest(String name, String webAddress, Integer port, Integer portSsl, String city, String country, Double latitude, Double longitude, Geometry location, String webAddressIpV4, String webAddressIpV6, Set<ServerTypeDetailsRequest> serverTypeDetails, Integer priority, Integer weight, boolean active, String secretKey, boolean selectable, String node, boolean encrypted) {
         this.name = name;

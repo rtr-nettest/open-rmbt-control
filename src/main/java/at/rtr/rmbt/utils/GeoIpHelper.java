@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.InetAddress;
 
+/**
+ * Geo ip helper class.
+ */
 public abstract class GeoIpHelper
 {
     private static final Logger LOG = LoggerFactory.getLogger(GeoIpHelper.class);
@@ -27,10 +30,16 @@ public abstract class GeoIpHelper
 
     private static final Object LOOKUP_SERVICE_LOCK = new Object();
 
+    /**
+     * Db type enum.
+     */
     public enum DbType { COUNTRY, ASN }
     
     // DEFAULT: getCountry() is used: "represents the country where MaxMind believes the end user is located."
     // REGISTERED: getRegisteredCountry() is used: "represents the country where the ISP has registered a given IP block and may differ from the user's country."
+    /**
+     * Country type enum.
+     */
     public enum CountryType { DEFAULT, REGISTERED } 
 
     private static DatabaseReader getLookupService(final DbType type)
@@ -87,10 +96,23 @@ public abstract class GeoIpHelper
         }
     }
 
+    /**
+     * Lookup country.
+     *
+     * @param adr the Adr
+     * @return the result
+     */
     public static String lookupCountry(final InetAddress adr) {
         return lookupCountry(adr, CountryType.DEFAULT);
     }
 
+    /**
+     * Lookup country.
+     *
+     * @param adr the Adr
+     * @param type the Type
+     * @return the result
+     */
     public static String lookupCountry(final InetAddress adr, final CountryType type) {
         try {
             final DatabaseReader lookupService = getLookupService(DbType.COUNTRY);
@@ -115,16 +137,31 @@ public abstract class GeoIpHelper
         }
     }
 
+    /**
+     * Asn info class.
+     */
     public static class AsnInfo {
         public final Long autonomousSystemNumber;
         public final String autonomousSystemOrganization;
 
+        /**
+         * Creates a new AsnInfo instance.
+         *
+         * @param autonomousSystemNumber the Autonomous system number
+         * @param autonomousSystemOrganization the Autonomous system organization
+         */
         public AsnInfo(final Long autonomousSystemNumber, final String autonomousSystemOrganization) {
             this.autonomousSystemNumber = autonomousSystemNumber;
             this.autonomousSystemOrganization = autonomousSystemOrganization;
         }
     }
 
+    /**
+     * Lookup asn.
+     *
+     * @param adr the Adr
+     * @return the result
+     */
     public static AsnInfo lookupAsn(final InetAddress adr) {
         try {
             final DatabaseReader lookupService = getLookupService(DbType.ASN);

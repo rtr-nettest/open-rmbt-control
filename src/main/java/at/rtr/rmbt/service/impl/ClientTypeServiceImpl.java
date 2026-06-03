@@ -8,12 +8,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Client type service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class ClientTypeServiceImpl implements ClientTypeService {
 
     private final ClientTypeRepository clientTypeRepository;
 
+    /**
+     * Find by client type.
+     *
+     * @param clientType the Client type
+     * @return the result
+     */
     @Override
     public Optional<ClientType> findByClientType(at.rtr.rmbt.enums.ClientType clientType) {
         return clientTypeRepository.findByClientType(clientType);

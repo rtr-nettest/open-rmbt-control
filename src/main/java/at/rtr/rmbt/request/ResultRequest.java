@@ -11,6 +11,9 @@ import lombok.Getter;
 
 import java.util.List;
 
+/**
+ * Result request class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

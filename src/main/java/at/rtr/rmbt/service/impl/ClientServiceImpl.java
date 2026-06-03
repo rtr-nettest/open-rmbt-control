@@ -24,6 +24,9 @@ import jakarta.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.util.*;
 
+/**
+ * Client service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
@@ -40,11 +43,23 @@ public class ClientServiceImpl implements ClientService {
                 .orElse(null);
     }
 
+    /**
+     * Save client.
+     *
+     * @param rtrClient the Rtr client
+     * @return the result
+     */
     @Override
     public RtrClient saveClient(RtrClient rtrClient) {
         return clientRepository.save(rtrClient);
     }
 
+    /**
+     * Sync.
+     *
+     * @param syncRequest the Sync request
+     * @return the result
+     */
     @Override
     @Transactional
     public SyncResponse sync(SyncRequest syncRequest) {
@@ -59,6 +74,12 @@ public class ClientServiceImpl implements ClientService {
                 .build();
     }
 
+    /**
+     * List synced client ids by client.
+     *
+     * @param client the Client
+     * @return the result
+     */
     @Override
     public List<Long> listSyncedClientIdsByClient(RtrClient client) {
         if(Objects.isNull(client.getSyncGroupId())){
@@ -89,6 +110,15 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Update sync group id.
+     *
+     * @param locale the Locale
+     * @param clientSyncGroupBySyncCode the Client sync group by sync code
+     * @param clientUidBySyncCode the Client uid by sync code
+     * @param clientSyncGroupByUUID the Client sync group by UUID
+     * @param clientUidByUUID the Client uid by UUID
+     */
     private void updateSyncGroupId(Locale locale, int clientSyncGroupBySyncCode, long clientUidBySyncCode, int clientSyncGroupByUUID, long clientUidByUUID) {
         if (clientSyncGroupBySyncCode == 0 && clientSyncGroupByUUID == 0) {
             SyncGroup newSyncGroup = SyncGroup.builder()
@@ -122,6 +152,9 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    /**
+     * Sync message dto class.
+     */
     @Getter
     private class SyncMessageDto {
         private final UUID clientUUID;
@@ -135,6 +168,13 @@ public class ClientServiceImpl implements ClientService {
         private String msgText;
         private boolean error;
 
+        /**
+         * Creates a new SyncMessageDto instance.
+         *
+         * @param clientUUID the Client UUID
+         * @param syncCode the Sync code
+         * @param locale the Locale
+         */
         public SyncMessageDto(UUID clientUUID, String syncCode, Locale locale) {
             this.clientUUID = clientUUID;
             this.syncCode = syncCode.toUpperCase(Locale.US);
@@ -179,6 +219,11 @@ public class ClientServiceImpl implements ClientService {
             }
         }
 
+        /**
+         * Validate sync group.
+         *
+         * @param locale the Locale
+         */
         private void validateSyncGroup(Locale locale) {
             if (clientSyncGroupBySyncCode > 0 && clientSyncGroupBySyncCode == clientSyncGroupByUUID) {
                 msgTitle = messageSource.getMessage("SYNC_GROUP_TITLE", null, locale);

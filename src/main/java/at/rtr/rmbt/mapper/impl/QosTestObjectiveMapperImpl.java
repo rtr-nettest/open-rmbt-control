@@ -14,9 +14,19 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Qos test objective mapper impl class.
+ */
 @Service
 public class QosTestObjectiveMapperImpl implements QosTestObjectiveMapper {
 
+    /**
+     * Qos test objective to qos params response.
+     *
+     * @param qosTestObjective the Qos test objective
+     * @param clientAddress the Client address
+     * @return the result
+     */
     @Override
     public QosParamsResponse qosTestObjectiveToQosParamsResponse(QosTestObjective qosTestObjective, InetAddress clientAddress) {
         QosParamsResponse qosParamsResponse = QosParamsResponse.builder()
@@ -43,6 +53,12 @@ public class QosTestObjectiveMapperImpl implements QosTestObjectiveMapper {
         return interpret(qosParamsResponse);
     }
 
+    /**
+     * Interpret.
+     *
+     * @param qosParamsResponse the Qos params response
+     * @return the result
+     */
     private QosParamsResponse interpret(QosParamsResponse qosParamsResponse) {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> qosTestObjectiveMap = mapper.convertValue(qosParamsResponse, Map.class);

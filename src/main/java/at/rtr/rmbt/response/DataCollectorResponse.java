@@ -9,6 +9,9 @@ import lombok.ToString;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Data collector response class.
+ */
 @Builder
 @Getter
 @ToString

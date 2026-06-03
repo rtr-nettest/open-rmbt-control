@@ -14,6 +14,9 @@ import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Test server response class.
+ */
 @SuperBuilder
 @Getter
 @EqualsAndHashCode(callSuper = false)

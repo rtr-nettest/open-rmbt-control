@@ -5,6 +5,9 @@ import lombok.*;
 
 import jakarta.persistence.*;
 
+/**
+ * Qoe classification class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

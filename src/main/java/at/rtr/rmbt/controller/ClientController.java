@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Client controller class.
+ */
 @Tag(name = "Client")
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +21,12 @@ public class ClientController {
 
     private final ClientService clientService;
 
+    /**
+     * Sync.
+     *
+     * @param request the Request
+     * @return the result
+     */
     @Operation(summary = "Synchronize device")
     @PostMapping(URIConstants.SYNC)
     public SyncResponse sync(@RequestBody SyncRequest request) {

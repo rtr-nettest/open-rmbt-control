@@ -9,6 +9,9 @@ import lombok.Getter;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Setting response class.
+ */
 @Builder
 @Getter
 public class SettingResponse {

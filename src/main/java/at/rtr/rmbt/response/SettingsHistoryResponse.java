@@ -7,6 +7,9 @@ import lombok.Getter;
 
 import java.util.List;
 
+/**
+ * Settings history response class.
+ */
 @Builder
 @Getter
 public class SettingsHistoryResponse {

@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * Loop mode settings class.
+ */
 @Entity
 @Getter
 @Setter

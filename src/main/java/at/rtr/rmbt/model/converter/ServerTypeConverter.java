@@ -5,8 +5,17 @@ import at.rtr.rmbt.enums.ServerType;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
+/**
+ * Server type converter class.
+ */
 @Converter(autoApply = true)
 public class ServerTypeConverter implements AttributeConverter<ServerType, String> {
+    /**
+     * Convert to database column.
+     *
+     * @param attribute the Attribute
+     * @return the result
+     */
     @Override
     public String convertToDatabaseColumn(ServerType attribute) {
         if (attribute != null)
@@ -15,6 +24,12 @@ public class ServerTypeConverter implements AttributeConverter<ServerType, Strin
             return null;
     }
 
+    /**
+     * Convert to entity attribute.
+     *
+     * @param dbData the Db data
+     * @return the result
+     */
     @Override
     public ServerType convertToEntityAttribute(String dbData) {
         return ServerType.forValue(dbData);

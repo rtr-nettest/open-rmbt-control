@@ -35,6 +35,12 @@ public class RealtimeTransportProtocol {
         return h;
     }
 
+    /**
+     * Create csrc identifier bytes.
+     *
+     * @param csrcIds the Csrc ids
+     * @return the result
+     */
     public static byte[] createCsrcIdentifierBytes(long[] csrcIds) {
         if (csrcIds != null && csrcIds.length > 0) {
             byte[] h = new byte[csrcIds.length * 4];
@@ -46,6 +52,9 @@ public class RealtimeTransportProtocol {
         return null;
     }
 
+    /**
+     * Codec type enum.
+     */
     public static enum CodecType {
         AUDIO,
         VIDEO,
@@ -101,6 +110,14 @@ public class RealtimeTransportProtocol {
         protected final int channels;
         protected final CodecType codecType;
 
+        /**
+         * Creates a new PayloadType instance.
+         *
+         * @param value the Value
+         * @param sampleRate the Sample rate
+         * @param channels the Channels
+         * @param codecType the Codec type
+         */
         PayloadType(int value, int sampleRate, int channels, CodecType codecType) {
             this.value = value;
             this.sampleRate = sampleRate;
@@ -155,6 +172,9 @@ public class RealtimeTransportProtocol {
         }
     }
 
+    /**
+     * Rtp version enum.
+     */
     public static enum RtpVersion {
         VER0(0),
         VER1(1),
@@ -163,6 +183,11 @@ public class RealtimeTransportProtocol {
 
         final int version;
 
+        /**
+         * Creates a new RtpVersion instance.
+         *
+         * @param version the Version
+         */
         RtpVersion(int version) {
             this.version = version;
         }
@@ -182,10 +207,18 @@ public class RealtimeTransportProtocol {
         }
     }
 
+    /**
+     * Rtp exception class.
+     */
     public static class RtpException extends Exception {
         private static final long serialVersionUID = 1L;
         protected RtpErrorType rtpErrorType;
 
+        /**
+         * Creates a new RtpException instance.
+         *
+         * @param rtpErrorType the Rtp error type
+         */
         public RtpException(RtpErrorType rtpErrorType) {
             this.rtpErrorType = rtpErrorType;
         }
@@ -198,6 +231,9 @@ public class RealtimeTransportProtocol {
             this.rtpErrorType = rtpErrorType;
         }
 
+        /**
+         * Rtp error type enum.
+         */
         public static enum RtpErrorType {
             PACKET_SIZE_TOO_SMALL,
             INVALID_HEADER

@@ -9,6 +9,9 @@ import lombok.Getter;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Test result request class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

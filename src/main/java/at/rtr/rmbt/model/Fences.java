@@ -8,6 +8,9 @@ import org.locationtech.jts.geom.Geometry;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+/**
+ * Fences class.
+ */
 @Builder
 @Entity
 @Getter

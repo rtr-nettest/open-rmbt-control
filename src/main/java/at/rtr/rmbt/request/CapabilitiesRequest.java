@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+/**
+ * Capabilities request class.
+ */
 @Getter
 @Builder
 @EqualsAndHashCode

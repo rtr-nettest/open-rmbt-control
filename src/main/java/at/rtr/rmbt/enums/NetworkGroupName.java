@@ -5,6 +5,9 @@ import lombok.Getter;
 
 import java.util.Objects;
 
+/**
+ * Network group name enum.
+ */
 @Getter
 public enum NetworkGroupName { //todo update to not fail on input
     G2("2G", "GPRS (2G)"),
@@ -22,11 +25,23 @@ public enum NetworkGroupName { //todo update to not fail on input
     private String label;
     private String labelEn;
 
+    /**
+     * Creates a new NetworkGroupName instance.
+     *
+     * @param label the Label
+     * @param labelEn the Label en
+     */
     NetworkGroupName(String label, String labelEn) {
         this.label = label;
         this.labelEn = labelEn;
     }
 
+    /**
+     * For value.
+     *
+     * @param value the Value
+     * @return the result
+     */
     @JsonCreator
     public static NetworkGroupName forValue(String value) {
         if (Objects.isNull(value)) {

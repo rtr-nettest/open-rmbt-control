@@ -6,6 +6,9 @@ import lombok.Getter;
 
 import java.util.List;
 
+/**
+ * Settings response class.
+ */
 @Builder
 @Getter
 public class SettingsResponse {

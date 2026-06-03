@@ -37,6 +37,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Test script interpreter class.
+ */
 public class TestScriptInterpreter {
 	private static final Logger logger = LoggerFactory.getLogger(TestScriptInterpreter.class);
 	public final static String COMMAND_RANDOM = "RANDOM";
@@ -44,7 +47,13 @@ public class TestScriptInterpreter {
 	public final static String COMMAND_RANDOM_URL = "RANDOMURL";
 	public final static String COMMAND_EVAL = "EVAL";
 	
+	/**
+	 * Eval result class.
+	 */
 	public final static class EvalResult {
+		/**
+		 * Eval result type enum.
+		 */
 		public static enum EvalResultType {
 			FAILURE,
 			SUCCESS,
@@ -54,10 +63,21 @@ public class TestScriptInterpreter {
 		private final EvalResultType type;
 		private final String resultKey;
 		
+		/**
+		 * Creates a new EvalResult instance.
+		 *
+		 * @param type the Type
+		 */
 		public EvalResult(EvalResultType type) {
 			this(type, null);
 		}
 		
+		/**
+		 * Creates a new EvalResult instance.
+		 *
+		 * @param type the Type
+		 * @param resultKey the Result key
+		 */
 		public EvalResult(EvalResultType type, String resultKey) {
 			this.type = type;
 			this.resultKey = resultKey;
@@ -419,6 +439,14 @@ public class TestScriptInterpreter {
 		return null;
 	}
 	
+	/**
+	 * Control if.
+	 *
+	 * @param clause the Clause
+	 * @param object the Object
+	 * @return the result
+	 * @throws ScriptException if an error occurs
+	 */
 	public static boolean controlIf(String clause, AbstractResult<?> object) throws ScriptException {
 		final Bindings bindings = new SimpleBindings(object.getResultMap());
 		try {
@@ -430,6 +458,15 @@ public class TestScriptInterpreter {
 		}
 	}
 	
+	/**
+	 * Control switch.
+	 *
+	 * @param clause the Clause
+	 * @param object the Object
+	 * @param switchBody the Switch body
+	 * @return the result
+	 * @throws ScriptException if an error occurs
+	 */
 	public static String controlSwitch(String clause, AbstractResult<?> object, String switchBody) throws ScriptException {		
 		final Bindings bindings = new SimpleBindings(object.getResultMap());
 		Object result = null;
@@ -457,6 +494,12 @@ public class TestScriptInterpreter {
 		return "";
 	}
 	
+	/**
+	 * Json to map.
+	 *
+	 * @param json the Json
+	 * @return the result
+	 */
 	public static Map<String, Object> jsonToMap(final JSONObject json) {
 		@SuppressWarnings("unchecked")
 		final Iterator<String> jsonKeys = json.keys();

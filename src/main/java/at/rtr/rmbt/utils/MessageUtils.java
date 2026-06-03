@@ -5,6 +5,9 @@ import lombok.experimental.UtilityClass;
 
 import java.util.Locale;
 
+/**
+ * Message utils class.
+ */
 @UtilityClass
 public class MessageUtils {
 

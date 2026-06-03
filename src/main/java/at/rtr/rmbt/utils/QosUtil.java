@@ -30,6 +30,9 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Qos util class.
+ */
 @Slf4j
 public class QosUtil {
 
@@ -152,6 +155,30 @@ public class QosUtil {
         return resultKeyType != null ? new ResultHolder(resultKeyType, event) : null;
     }
 
+    /**
+     * Evaluate.
+     *
+     * @param answer the Answer
+     * @param qosTestResultMapper the Qos test result mapper
+     * @param qosTestTypeDescRepository the Qos test type desc repository
+     * @param messageSource the Message source
+     * @param applicationProperties the Application properties
+     * @param testRepository the Test repository
+     * @param qosTestResultRepository the Qos test result repository
+     * @param uuid the Uuid
+     * @param isOpenTestUuid the Is open test uuid
+     * @param objectMapper the Object mapper
+     * @param qosTestDescRepository the Qos test desc repository
+     * @param locale the Locale
+     * @param errorList the Error list
+     * @param capabilities the Capabilities
+     * @throws SQLException if an error occurs
+     * @throws HstoreParseException if an error occurs
+     * @throws JSONException if an error occurs
+     * @throws IllegalArgumentException if an error occurs
+     * @throws IllegalAccessException if an error occurs
+     * @throws JsonProcessingException if an error occurs
+     */
     public static void evaluate(
         final QosMeasurementsResponseBuilder answer,
         final QosTestResultMapper qosTestResultMapper,
@@ -360,6 +387,12 @@ public class QosUtil {
         final String resultKeyType;
         final String event;
 
+        /**
+         * Creates a new ResultHolder instance.
+         *
+         * @param resultKeyType the Result key type
+         * @param event the Event
+         */
         public ResultHolder(final String resultKeyType, final String event) {
             this.resultKeyType = resultKeyType;
             this.event = event;

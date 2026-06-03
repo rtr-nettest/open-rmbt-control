@@ -11,12 +11,22 @@ import java.util.Map;
 
 import static at.rtr.rmbt.response.QosMeasurementsResponse.QosTestResultItem;
 
+/**
+ * Qos test result mapper impl class.
+ */
 @Component
 @RequiredArgsConstructor
 public class QosTestResultMapperImpl implements QosTestResultMapper {
 
     private final ObjectMapper objectMapper;
 
+    /**
+     * To qos test result item.
+     *
+     * @param qosTestResult the Qos test result
+     * @param isOpenTestUuid the Is open test uuid
+     * @return the result
+     */
     @Override
     public QosTestResultItem toQosTestResultItem(QosTestResult qosTestResult, boolean isOpenTestUuid) {
         QosTestResultItem.QosTestResultItemBuilder builder = QosTestResultItem.builder()

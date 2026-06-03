@@ -13,6 +13,9 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Signal result request class.
+ */
 @Getter
 @Builder
 @EqualsAndHashCode

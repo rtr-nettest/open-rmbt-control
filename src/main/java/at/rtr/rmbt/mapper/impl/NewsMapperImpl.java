@@ -8,11 +8,20 @@ import at.rtr.rmbt.response.NewsListItemResponse;
 import at.rtr.rmbt.response.NewsResponse;
 import org.springframework.stereotype.Service;
 
+/**
+ * News mapper impl class.
+ */
 @Service
 public class NewsMapperImpl implements NewsMapper {
     private static String LANGUAGE_DE = "de";
     private static String LANGUAGE_EN = "en";
 
+    /**
+     * News to news response.
+     *
+     * @param news the News
+     * @return the result
+     */
     @Override
     public NewsResponse newsToNewsResponse(News news) {
         var isEn = news.getTitleEn() != null;
@@ -23,11 +32,24 @@ public class NewsMapperImpl implements NewsMapper {
         return response.build();
     }
 
+    /**
+     * News request to news.
+     *
+     * @param newsRequest the News request
+     * @return the result
+     */
     @Override
     public News newsRequestToNews(NewsRequest newsRequest) {
         return newsRequestToNewsBuilder(newsRequest).build();
     }
 
+    /**
+     * Update news by news request.
+     *
+     * @param news the News
+     * @param newsRequest the News request
+     * @return the result
+     */
     @Override
     public News updateNewsByNewsRequest(News news, NewsRequest newsRequest) {
         return newsRequestToNewsBuilder(newsRequest)
@@ -36,6 +58,12 @@ public class NewsMapperImpl implements NewsMapper {
             .uuid(news.getUuid()).build();
     }
 
+    /**
+     * News view to news list item.
+     *
+     * @param news the News
+     * @return the result
+     */
     @Override
     public NewsListItemResponse newsViewToNewsListItem(NewsView news) {
         var isEn = news.getTitleEn() != null;
@@ -55,6 +83,12 @@ public class NewsMapperImpl implements NewsMapper {
             .build();
     }
 
+    /**
+     * News request to news builder.
+     *
+     * @param newsRequest the News request
+     * @return the result
+     */
     private News.NewsBuilder newsRequestToNewsBuilder(NewsRequest newsRequest) {
         News.NewsBuilder newsBuilder = News.builder()
             .minSoftwareVersionCode(newsRequest.getAndroidMinSoftwareVersion())

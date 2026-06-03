@@ -6,6 +6,9 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+/**
+ * Test result detail request class.
+ */
 @Builder
 @Getter
 public class TestResultDetailRequest {

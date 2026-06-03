@@ -8,6 +8,9 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+/**
+ * Sync request class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Test class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -530,6 +533,9 @@ public class Test implements Serializable {
     @Column(name = "measurement_type_flag")
     private MeasurementType measurementType;
 
+    /**
+     * Pre insert.
+     */
     @PrePersist
     protected void preInsert() {
         this.timestamp = ZonedDateTime.now();
@@ -537,11 +543,17 @@ public class Test implements Serializable {
         removeCrLrCharacters();
     }
 
+    /**
+     * Pre update.
+     */
     @PreUpdate
     protected void preUpdate() {
         removeCrLrCharacters();
     }
 
+    /**
+     * Post load.
+     */
     @PostLoad
     protected void postLoad() {
         if (Objects.nonNull(location)) {
@@ -549,6 +561,9 @@ public class Test implements Serializable {
         }
     }
 
+    /**
+     * Remove cr lr characters.
+     */
     private void removeCrLrCharacters() {
         if(Objects.nonNull(networkOperatorName)){
             this.networkOperatorName = networkOperatorName.replaceAll("(\\r|\\n)", "");

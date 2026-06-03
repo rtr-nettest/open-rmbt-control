@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Network type repository interface.
+ */
 public interface NetworkTypeRepository extends JpaRepository<NetworkType, Long> {
 
     @Query(value = "SELECT * " +
@@ -23,6 +26,12 @@ public interface NetworkTypeRepository extends JpaRepository<NetworkType, Long> 
             "  ON nt.uid = s2.network_type_id" +
             " ORDER BY technology_order DESC" +
             " LIMIT 1", nativeQuery = true)
+    /**
+     * Find top by open test UUID and order by technology order desc.
+     *
+     * @param openTestUUID the Open test UUID
+     * @return the result
+     */
     Optional<NetworkType> findTopByOpenTestUUIDAndOrderByTechnologyOrderDesc(UUID openTestUUID);
 
     @Query(value = "SELECT * FROM (" +
@@ -43,5 +52,11 @@ public interface NetworkTypeRepository extends JpaRepository<NetworkType, Long> 
             "           ON nt.uid = s2.network_type_id) s3" +
             "  ) agg" +
             " JOIN network_type nt ON nt.aggregate=agg.agg", nativeQuery = true)
+    /**
+     * Find by open test UUID and aggregate.
+     *
+     * @param openTestUUID the Open test UUID
+     * @return the result
+     */
     Optional<NetworkType> findByOpenTestUUIDAndAggregate(UUID openTestUUID);
 }

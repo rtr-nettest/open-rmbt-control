@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 
 import java.util.Objects;
 
+/**
+ * Measurement type enum.
+ */
 @AllArgsConstructor
 public enum MeasurementType {
     REGULAR("regular", "Regular"),
@@ -25,6 +28,12 @@ public enum MeasurementType {
         return valueEn;
     }
 
+    /**
+     * For value.
+     *
+     * @param value the Value
+     * @return the result
+     */
     @JsonCreator
     public static MeasurementType forValue(String value) {
         if (Objects.isNull(value)) {

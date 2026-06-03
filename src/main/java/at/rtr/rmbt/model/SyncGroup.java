@@ -5,6 +5,9 @@ import lombok.*;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 
+/**
+ * Sync group class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

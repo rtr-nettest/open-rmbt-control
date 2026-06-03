@@ -9,12 +9,22 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
+/**
+ * Radio signal mapper impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class RadioSignalMapperImpl implements RadioSignalMapper {
 
     private final UUIDGenerator uuidGenerator;
 
+    /**
+     * Radio signal request to radio signal.
+     *
+     * @param radioSignalRequest the Radio signal request
+     * @param test the Test
+     * @return the result
+     */
     @Override
     public RadioSignal radioSignalRequestToRadioSignal(RadioSignalRequest radioSignalRequest, Test test) {
         return RadioSignal.builder()

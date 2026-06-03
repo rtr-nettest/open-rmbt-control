@@ -3,6 +3,9 @@ package at.rtr.rmbt.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+/**
+ * Qos params class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

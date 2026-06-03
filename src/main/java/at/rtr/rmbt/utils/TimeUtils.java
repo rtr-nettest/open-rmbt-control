@@ -15,6 +15,9 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Time utils class.
+ */
 @UtilityClass
 public class TimeUtils {
 
@@ -43,10 +46,22 @@ public class TimeUtils {
         return dateFormat.format(date);
     }
 
+    /**
+     * Format to seconds.
+     *
+     * @param timeNs the Time ns
+     * @return the result
+     */
     public Double formatToSeconds(Long timeNs) {
         return timeNs != null && timeNs > 0 ? Math.round(timeNs / 1000000.0) / 1000.0 : 0.000;
     }
 
+    /**
+     * Format to seconds round.
+     *
+     * @param timeNs the Time ns
+     * @return the result
+     */
     public Long formatToSecondsRound(Long timeNs) {
         String.format("%d min, %d sec",
                 TimeUnit.MILLISECONDS.toMinutes(timeNs),

@@ -3,6 +3,9 @@ package at.rtr.rmbt.model.speed;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+/**
+ * Speed item class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

@@ -7,6 +7,9 @@ import lombok.*;
 
 import jakarta.persistence.*;
 
+/**
+ * Network type class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

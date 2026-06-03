@@ -8,6 +8,9 @@ import lombok.Getter;
 
 import java.util.List;
 
+/**
+ * History response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode(callSuper = true)

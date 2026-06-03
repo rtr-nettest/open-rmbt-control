@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import jakarta.persistence.*;
 
+/**
+ * Qos test desc class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

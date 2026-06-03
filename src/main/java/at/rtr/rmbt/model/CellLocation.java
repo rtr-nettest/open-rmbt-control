@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+/**
+ * Cell location class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

@@ -5,6 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+/**
+ * Client type repository interface.
+ */
 public interface ClientTypeRepository extends JpaRepository<ClientType, Long> {
+    /**
+     * Find by client type.
+     *
+     * @param clientType the Client type
+     * @return the result
+     */
     Optional<ClientType> findByClientType(at.rtr.rmbt.enums.ClientType clientType);
 }

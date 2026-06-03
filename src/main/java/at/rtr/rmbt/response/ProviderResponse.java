@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * Provider response class.
+ */
 @Builder
 @Getter
 public class ProviderResponse {

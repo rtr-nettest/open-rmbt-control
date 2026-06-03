@@ -6,6 +6,9 @@ import lombok.Getter;
 
 import java.util.Objects;
 
+/**
+ * Qoe category enum.
+ */
 @AllArgsConstructor
 @Getter
 public enum QoeCategory {
@@ -26,6 +29,12 @@ public enum QoeCategory {
 
     private final String value;
 
+    /**
+     * For value.
+     *
+     * @param value the Value
+     * @return the result
+     */
     @JsonCreator
     public static QoeCategory forValue(String value) {
         if (Objects.isNull(value)) {

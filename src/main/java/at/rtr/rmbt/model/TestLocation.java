@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * Test location class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

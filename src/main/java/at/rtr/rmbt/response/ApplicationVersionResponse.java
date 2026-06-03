@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Application version response class.
+ */
 @Builder
 @Getter
 @ToString

@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
+/**
+ * Qos test type desc repository interface.
+ */
 public interface QosTestTypeDescRepository extends JpaRepository<QosTestTypeDesc, Long> {
 
     @Query(value = "SELECT nnttd.uid AS uid, " +

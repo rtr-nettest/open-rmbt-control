@@ -11,6 +11,9 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Abstract result class.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

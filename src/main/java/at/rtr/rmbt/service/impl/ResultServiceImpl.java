@@ -30,6 +30,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+/**
+ * Result service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -50,6 +53,13 @@ public class ResultServiceImpl implements ResultService {
 
     private final static Pattern MCC_MNC_PATTERN = Pattern.compile("\\d{3}-\\d+");
 
+    /**
+     * Process result request.
+     *
+     * @param httpServletRequest the Http servlet request
+     * @param resultRequest the Result request
+     * @param headers the Headers
+     */
     @Override
     @Transactional
     public void processResultRequest(HttpServletRequest httpServletRequest, ResultRequest resultRequest, Map<String, String> headers) {
@@ -88,6 +98,12 @@ public class ResultServiceImpl implements ResultService {
         testRepository.save(updatedTest);
     }
 
+    /**
+     * Process cert mode.
+     *
+     * @param resultRequest the Result request
+     * @param test the Test
+     */
     private void processCertMode(ResultRequest resultRequest, Test test) {
         if (Objects.nonNull(resultRequest.getCertMode()) &&
                 resultRequest.getCertMode() &&
@@ -171,6 +187,11 @@ public class ResultServiceImpl implements ResultService {
                 .ifPresent(test::setAndroidPermissions);
     }
 
+    /**
+     * Check for different type.
+     *
+     * @param test the Test
+     */
     private void checkForDifferentType(Test test) {
         networkTypeRepository.findByOpenTestUUIDAndAggregate(test.getOpenTestUuid())
                 .ifPresent(networkType -> {
@@ -185,24 +206,48 @@ public class ResultServiceImpl implements ResultService {
                 });
     }
 
+    /**
+     * Process signals.
+     *
+     * @param resultRequest the Result request
+     * @param test the Test
+     */
     private void processSignals(ResultRequest resultRequest, Test test) {
         if (Objects.nonNull(resultRequest.getSignals())) {
             signalService.processSignalRequests(resultRequest.getSignals(), test);
         }
     }
 
+    /**
+     * Process cell location.
+     *
+     * @param resultRequest the Result request
+     * @param test the Test
+     */
     private void processCellLocation(ResultRequest resultRequest, Test test) {
         if (Objects.nonNull(resultRequest.getCellLocations())) {
             cellLocationService.saveCellLocationRequests(resultRequest.getCellLocations(), test);
         }
     }
 
+    /**
+     * Process geo location.
+     *
+     * @param resultRequest the Result request
+     * @param test the Test
+     */
     private void processGeoLocation(ResultRequest resultRequest, Test test) {
         if (Objects.nonNull(resultRequest.getGeoLocations())) {
             geoLocationService.processGeoLocationRequests(resultRequest.getGeoLocations(), test);
         }
     }
 
+    /**
+     * Process radio info.
+     *
+     * @param resultRequest the Result request
+     * @param test the Test
+     */
     private void processRadioInfo(ResultRequest resultRequest, Test test) {
         if (Objects.nonNull(resultRequest.getRadioInfo())) {
             if (!CollectionUtils.isEmpty(resultRequest.getRadioInfo().getCells())) {
@@ -214,12 +259,24 @@ public class ResultServiceImpl implements ResultService {
         }
     }
 
+    /**
+     * Process ping data.
+     *
+     * @param resultRequest the Result request
+     * @param test the Test
+     */
     private void processPingData(ResultRequest resultRequest, Test test) {
         if (Objects.nonNull(resultRequest.getPings())) {
             pingService.savePingRequests(resultRequest.getPings(), test);
         }
     }
 
+    /**
+     * Process speed data.
+     *
+     * @param resultRequest the Result request
+     * @param test the Test
+     */
     private void processSpeedData(ResultRequest resultRequest, Test test) {
         if (Objects.nonNull(resultRequest.getSpeedDetails())) {
             speedService.processSpeedRequests(resultRequest.getSpeedDetails(), test);
@@ -267,6 +324,11 @@ public class ResultServiceImpl implements ResultService {
     }
 
     // This code originally checked TestStatus and Clientname/Clientversion
+    /**
+     * Verify test status.
+     *
+     * @param resultRequest the Result request
+     */
     private void verifyTestStatus(ResultRequest resultRequest) {
         if (resultRequest.getTestStatus() != null && resultRequest.getTestStatus().equals("1")) {
             throw new EmptyClientVersionException();

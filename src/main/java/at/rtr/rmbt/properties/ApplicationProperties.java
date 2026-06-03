@@ -8,6 +8,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Set;
 
+/**
+ * Application properties class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,6 +26,9 @@ public class ApplicationProperties {
     private Integer accuracyDetailLimit;
     private Integer accuracyButtonLimit;
 
+    /**
+     * Language properties class.
+     */
     @Getter
     @Setter
     @NoArgsConstructor

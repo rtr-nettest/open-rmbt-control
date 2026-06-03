@@ -62,6 +62,15 @@ public class ResultDesc implements Comparable<ResultDesc> {
         this.options = options;
     }
 
+    /**
+     * Creates a new ResultDesc instance.
+     *
+     * @param statusCode the Status code
+     * @param key the Key
+     * @param resultObject the Result object
+     * @param hstore the Hstore
+     * @param options the Options
+     */
     public <T> ResultDesc(StatusCode statusCode, String key, AbstractResult<T> resultObject, Hstore hstore, ResultOptions options) {
         this(statusCode.name().toLowerCase(Locale.US), key, resultObject, hstore, options);
     }
@@ -115,6 +124,11 @@ public class ResultDesc implements Comparable<ResultDesc> {
         return testResultUidList;
     }
 
+    /**
+     * Add test result uid.
+     *
+     * @param testUid the Test uid
+     */
     public void addTestResultUid(Long testUid) {
         testResultUidList.add(testUid);
     }
@@ -158,6 +172,9 @@ public class ResultDesc implements Comparable<ResultDesc> {
         }
     }
 
+    /**
+     * Status code enum.
+     */
     public enum StatusCode {
         FAIL,
         OK,

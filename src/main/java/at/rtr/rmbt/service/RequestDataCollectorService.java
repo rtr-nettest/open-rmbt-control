@@ -7,6 +7,9 @@ import at.rtr.rmbt.response.IpResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 
+/**
+ * Request data collector service interface.
+ */
 public interface RequestDataCollectorService {
     DataCollectorResponse getDataCollectorResponse(HttpServletRequest request, Map<String, String> headers);
 

@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+/**
+ * Term and conditions response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

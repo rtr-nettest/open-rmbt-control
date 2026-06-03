@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Qoe classification service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class QoeClassificationServiceImpl implements QoeClassificationService {

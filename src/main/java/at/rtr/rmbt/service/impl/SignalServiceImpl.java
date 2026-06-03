@@ -46,6 +46,9 @@ import static at.rtr.rmbt.constant.Constants.NETWORK_TYPE_WLAN;
 import static at.rtr.rmbt.constant.HeaderConstants.URL;
 import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
 
+/**
+ * Signal service impl class.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -76,6 +79,14 @@ public class SignalServiceImpl implements SignalService {
                 .map(signalMapper::signalToSignalMeasurementResponse);
     }
 
+    /**
+     * Process signal request.
+     *
+     * @param signalRegisterRequest the Signal register request
+     * @param httpServletRequest the Http servlet request
+     * @param headers the Headers
+     * @return the result
+     */
     @Override
     public SignalSettingsResponse processSignalRequest(SignalRegisterRequest signalRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers) {
         var ip = HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers);
@@ -120,6 +131,14 @@ public class SignalServiceImpl implements SignalService {
                 .build();
     }
 
+    /**
+     * Process coverage request.
+     *
+     * @param coverageRegisterRequest the Coverage register request
+     * @param httpServletRequest the Http servlet request
+     * @param headers the Headers
+     * @return the result
+     */
     @Override
     public CoverageSettingsResponse processCoverageRequest(CoverageRegisterRequest coverageRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers) {
         var ip = HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers);
@@ -283,6 +302,15 @@ public class SignalServiceImpl implements SignalService {
                 .build();
     }
 
+    /**
+     * To loop mode settings.
+     *
+     * @param loopUUID the Loop UUID
+     * @param testUUID the Test UUID
+     * @param clientUUID the Client UUID
+     * @param testCounter the Test counter
+     * @return the result
+     */
     private LoopModeSettings toLoopModeSettings(UUID loopUUID,UUID testUUID, UUID clientUUID, int testCounter) {
         var loopModeSettings = new LoopModeSettings();
         loopModeSettings.setLoopUuid(loopUUID);
@@ -297,6 +325,12 @@ public class SignalServiceImpl implements SignalService {
     }
 
 
+    /**
+     * Process signal result.
+     *
+     * @param signalResultRequest the Signal result request
+     * @return the result
+     */
     @Override
     @Transactional
     public SignalResultResponse processSignalResult(SignalResultRequest signalResultRequest) {
@@ -345,6 +379,13 @@ public class SignalServiceImpl implements SignalService {
     }
 
 
+    /**
+     * Process coverage result.
+     *
+     * @param coverageResultRequest the Coverage result request
+     * @param httpServletRequest the Http servlet request
+     * @param headers the Headers
+     */
     @Override
     @Transactional
     public void processCoverageResult(CoverageResultRequest coverageResultRequest,
@@ -433,6 +474,12 @@ public class SignalServiceImpl implements SignalService {
                 );
     }
 
+    /**
+     * To location response.
+     *
+     * @param geoLocations the Geo locations
+     * @return the result
+     */
     private List<SignalLocationResponse> toLocationResponse(List<GeoLocation> geoLocations) {
         return geoLocations.stream()
                 .map(geoLocation -> SignalLocationResponse.builder()
@@ -446,6 +493,12 @@ public class SignalServiceImpl implements SignalService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Process signal requests.
+     *
+     * @param signalRequests the Signal requests
+     * @param test the Test
+     */
     @Override
     public void processSignalRequests(Collection<SignalRequest> signalRequests, Test test) {
         int minSignalStrength = Integer.MAX_VALUE; //measured as RSSI (GSM,UMTS,Wifi)
@@ -498,18 +551,36 @@ public class SignalServiceImpl implements SignalService {
         signalRepository.saveAll(newSignals);
     }
 
+    /**
+     * Process geo location.
+     *
+     * @param geoLocations the Geo locations
+     * @param updatedTest the Updated test
+     */
     private void processGeoLocation(List<GeoLocationRequest>  geoLocations, Test updatedTest) {
         if (Objects.nonNull(geoLocations)) {
             geoLocationService.processGeoLocationRequests(geoLocations, updatedTest);
         }
     }
 
+    /**
+     * Process cell location.
+     *
+     * @param cellLocations the Cell locations
+     * @param updatedTest the Updated test
+     */
     private void processCellLocation(List<CellLocationRequest>  cellLocations, Test updatedTest) {
         if (Objects.nonNull(cellLocations)) {
             cellLocationService.saveCellLocationRequests(cellLocations, updatedTest);
         }
     }
 
+    /**
+     * Process fences.
+     *
+     * @param fences the Fences
+     * @param updatedTest the Updated test
+     */
     private void processFences(List<FencesRequest>  fences, Test updatedTest) {
         if (Objects.nonNull(fences)) {
             fencesService.processFencesRequests(fences, updatedTest);
@@ -538,6 +609,12 @@ public class SignalServiceImpl implements SignalService {
                 .orElse(null);
     }
 
+    /**
+     * Process radio info.
+     *
+     * @param radioInfo the Radio info
+     * @param updatedTest the Updated test
+     */
     private void processRadioInfo(RadioInfoRequest radioInfo, Test updatedTest) {
         if (Objects.nonNull(radioInfo)) {
             if (!CollectionUtils.isEmpty(radioInfo.getCells())) {
@@ -549,6 +626,12 @@ public class SignalServiceImpl implements SignalService {
         }
     }
 
+    /**
+     * Update ip address.
+     *
+     * @param ipLocal the Ip local
+     * @param updatedTest the Updated test
+     */
     private void updateIpAddress(String ipLocal, Test updatedTest) {
         if (Objects.nonNull(ipLocal)) {
             InetAddress ipLocalAddress = InetAddresses.forString(ipLocal);
@@ -638,6 +721,12 @@ public class SignalServiceImpl implements SignalService {
     }
 
     // Utility: Hex encoding for debug prints
+    /**
+     * Bytes to hex.
+     *
+     * @param bytes the Bytes
+     * @return the result
+     */
     @SuppressWarnings("unused")
     private static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder(bytes.length * 2);
@@ -648,6 +737,13 @@ public class SignalServiceImpl implements SignalService {
     }
 
     // Utility: Take first N bytes of a byte array
+    /**
+     * First N bytes.
+     *
+     * @param input the Input
+     * @param n the N
+     * @return the result
+     */
     private static byte[] firstNBytes(byte[] input, int n) {
         byte[] out = new byte[n];
         System.arraycopy(input, 0, out, 0, n);
@@ -655,11 +751,24 @@ public class SignalServiceImpl implements SignalService {
     }
 
     // Utility to distinguish between IPv4 and IPv6 addresses
+    /**
+     * Inet address isv 4.
+     *
+     * @param ip the Ip
+     * @return the result
+     */
     private static boolean inetAddressIsv4(InetAddress ip) {
 
         return ip instanceof Inet4Address;
     }
 
+        /**
+         * Generate ping token.
+         *
+         * @param sharedSecret the Shared secret
+         * @param ip the Ip
+         * @return the result
+         */
         private static String generatePingToken(String sharedSecret, InetAddress ip)  {
         // Reference code:
         // src/main/java/at/rtr/rmbt/facade/TestSettingsFacade.java

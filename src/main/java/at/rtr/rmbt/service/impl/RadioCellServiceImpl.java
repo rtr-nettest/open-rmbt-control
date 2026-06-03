@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Radio cell service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class RadioCellServiceImpl implements RadioCellService {
@@ -22,6 +25,12 @@ public class RadioCellServiceImpl implements RadioCellService {
     private final RadioCellMapper radioCellMapper;
     private final RadioCellRepository radioCellRepository;
 
+    /**
+     * Process radio cell requests.
+     *
+     * @param cells the Cells
+     * @param test the Test
+     */
     @Override
     public void processRadioCellRequests(Collection<RadioCellRequest> cells, Test test) {
         boolean radioBandChanged = false;

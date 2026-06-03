@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Objects;
 
+/**
+ * Test type enum.
+ */
 public enum TestType {
     HTTP_PROXY("http_proxy", "test.http", "name.http_proxy", HttpProxyResult.class),
     DNS("dns", "test.dns", "name.dns", DnsResult.class),
@@ -17,6 +20,14 @@ public enum TestType {
     TRACEROUTE_MASKED("traceroute_masked", "test.trace", "name.trace", TracerouteResult.class),
     VOIP("voip", "test.voip", "name.voip", VoipResult.class);
 
+    /**
+     * Creates a new TestType instance.
+     *
+     * @param value the Value
+     * @param descriptionKey the Description key
+     * @param nameKey the Name key
+     * @param clazz the Clazz
+     */
     TestType(String value, String descriptionKey, String nameKey, Class<? extends AbstractResult<?>> clazz) {
         this.value = value;
         this.clazz = clazz;
@@ -46,6 +57,12 @@ public enum TestType {
         return clazz;
     }
 
+    /**
+     * For value.
+     *
+     * @param value the Value
+     * @return the result
+     */
     @JsonCreator
     public static TestType forValue(String value) {
         if (Objects.isNull(value)) {

@@ -6,9 +6,19 @@ import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.request.RadioCellRequest;
 import org.springframework.stereotype.Service;
 
+/**
+ * Radio cell mapper impl class.
+ */
 @Service
 public class RadioCellMapperImpl implements RadioCellMapper {
 
+    /**
+     * Radio cell request to radio cell.
+     *
+     * @param rcq the Rcq
+     * @param test the Test
+     * @return the result
+     */
     @Override
     public RadioCell radioCellRequestToRadioCell(RadioCellRequest rcq, Test test) {
         return RadioCell.builder()

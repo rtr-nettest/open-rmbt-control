@@ -9,14 +9,31 @@ import at.rtr.rmbt.utils.GeometryUtils;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Service;
 
+/**
+ * Fences mapper impl class.
+ */
 @Service
 public class FencesMapperImpl implements FencesMapper {
 
+    /**
+     * Fences request to fences.
+     *
+     * @param fr the Fr
+     * @param test the Test
+     * @return the result
+     */
     @Override
     public Fences fencesRequestToFences(Fences fr, Test test) {
         return null;
     }
 
+       /**
+        * Fences request to fences.
+        *
+        * @param fr the Fr
+        * @param test the Test
+        * @return the result
+        */
     @Override
        public Fences fencesRequestToFences(FencesRequest fr, Test test) {
 

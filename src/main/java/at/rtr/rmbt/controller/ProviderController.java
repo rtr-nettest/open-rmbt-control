@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Provider controller class.
+ */
 @Tag(name = "Provider")
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +21,11 @@ public class ProviderController {
 
     private final ProviderService providerService;
 
+    /**
+     * Returns the All providers.
+     *
+     * @return the All providers
+     */
     @Operation(summary = "Get list of all providers")
     @GetMapping(URIConstants.PROVIDERS)
     public List<ProviderResponse> getAllProviders() {

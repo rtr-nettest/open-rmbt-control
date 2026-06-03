@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * Signal request class.
+ */
 @Builder
 @Getter
 public class SignalRequest {

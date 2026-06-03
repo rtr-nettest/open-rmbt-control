@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
+/**
+ * News list service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class NewsListServiceImpl implements NewsListService {
@@ -34,17 +37,35 @@ public class NewsListServiceImpl implements NewsListService {
         return new NewsListResponse(newsList);
     }
 
+    /**
+     * Create news.
+     *
+     * @param newsRequest the News request
+     */
     @Override
     public void createNews(NewsRequest newsRequest) {
         newsRepository.save(newsMapper.newsRequestToNews(newsRequest));
     }
 
+    /**
+     * Update news.
+     *
+     * @param uid the Uid
+     * @param newsRequest the News request
+     * @return the result
+     */
     @Override
     public News updateNews(Long uid, NewsRequest newsRequest) {
         News news = newsRepository.findById(uid).orElseThrow(NotFoundException::new);
         return newsRepository.save(newsMapper.updateNewsByNewsRequest(news, newsRequest));
     }
 
+    /**
+     * List news.
+     *
+     * @param pageable the Pageable
+     * @return the result
+     */
     @Override
     public Page<NewsListItemResponse> listNews(Pageable pageable) {
         return newsViewRepository.findAll(pageable)

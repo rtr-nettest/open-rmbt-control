@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 
 import static at.rtr.rmbt.constant.Config.*;
 
+/**
+ * Test server service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class TestServerServiceImpl implements TestServerService {
@@ -28,11 +31,26 @@ public class TestServerServiceImpl implements TestServerService {
     private final TestServerMapper testServerMapper;
     private final TestRepository testRepository;
 
+    /**
+     * Find by uuid and active.
+     *
+     * @param preferServer the Prefer server
+     * @param active the Active
+     * @return the result
+     */
     @Override
     public Optional<TestServer> findByUuidAndActive(UUID preferServer, boolean active) {
         return testServerRepository.findByUuidAndActive(preferServer, active);
     }
 
+    /**
+     * Find active by server type in and country.
+     *
+     * @param serverTypes the Server types
+     * @param country the Country
+     * @param coverage the Coverage
+     * @return the result
+     */
     @Override
     public TestServer findActiveByServerTypeInAndCountry(List<ServerType> serverTypes, String country, Boolean coverage) {
         List<String> labels = serverTypes.stream()

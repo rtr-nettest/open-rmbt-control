@@ -6,6 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Test result measurement response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

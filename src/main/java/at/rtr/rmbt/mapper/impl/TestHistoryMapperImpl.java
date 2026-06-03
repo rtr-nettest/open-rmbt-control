@@ -16,9 +16,22 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
 
+/**
+ * Test history mapper impl class.
+ */
 @Slf4j
 @Service
 public class TestHistoryMapperImpl implements TestHistoryMapper {
+    /**
+     * Test history to history item response.
+     *
+     * @param testHistory the Test history
+     * @param classificationCount the Classification count
+     * @param locale the Locale
+     * @param includeFailedTests the Include failed tests
+     * @param includeCoverageFences the Include coverage fences
+     * @return the result
+     */
     @Override
     public HistoryItemResponse testHistoryToHistoryItemResponse(TestHistory testHistory, Integer classificationCount, Locale locale, boolean includeFailedTests, boolean includeCoverageFences) {
         HistoryItemResponse.HistoryItemResponseBuilder historyItemResponseBuilder = HistoryItemResponse.builder()

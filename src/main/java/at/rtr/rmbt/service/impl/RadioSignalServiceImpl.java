@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Radio signal service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class RadioSignalServiceImpl implements RadioSignalService {
@@ -23,6 +26,12 @@ public class RadioSignalServiceImpl implements RadioSignalService {
     private final RadioSignalMapper radioSignalMapper;
     private final RadioSignalRepository radioSignalRepository;
 
+    /**
+     * Save radio signal requests.
+     *
+     * @param signals the Signals
+     * @param test the Test
+     */
     @Override
     public void saveRadioSignalRequests(RadioInfoRequest signals, Test test) {
         int minSignalStrength = Integer.MAX_VALUE; //measured as RSSI (GSM,UMTS,Wifi)

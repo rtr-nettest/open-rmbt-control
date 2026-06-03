@@ -10,6 +10,9 @@ import jakarta.validation.constraints.AssertTrue;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+/**
+ * News list item response class.
+ */
 @Builder
 @Getter
 public class NewsListItemResponse {

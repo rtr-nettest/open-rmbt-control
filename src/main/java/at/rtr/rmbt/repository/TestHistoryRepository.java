@@ -5,6 +5,9 @@ import at.rtr.rmbt.model.TestHistory;
 
 import java.util.List;
 
+/**
+ * Test history repository interface.
+ */
 public interface TestHistoryRepository {
 
     List<TestHistory> getTestHistoryByDevicesAndNetworksAndClient(

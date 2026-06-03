@@ -10,6 +10,9 @@ import org.hibernate.annotations.Type;
 import jakarta.persistence.*;
 import org.hibernate.type.SqlTypes;
 
+/**
+ * Qos test objective class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

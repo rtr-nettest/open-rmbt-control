@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+/**
+ * Admin settings body request class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

@@ -25,64 +25,127 @@ import static at.rtr.rmbt.constant.ErrorMessage.ERROR_DB_GET_CLIENTTYPE;
 import static at.rtr.rmbt.constant.ErrorMessage.ERROR_INVALID_SEQUENCE;
 import static at.rtr.rmbt.constant.ErrorMessage.SQL_ERROR_MESSAGE;
 
+/**
+ * Rtr advice class.
+ */
 @Slf4j
 @RestControllerAdvice
 public class RtrAdvice {
 
+    /**
+     * Handle SQL exception.
+     *
+     * @param ex the Ex
+     * @return the result
+     */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(SQLException.class)
     public ErrorResponse handleSQLException(SQLException ex) {
         return new ErrorResponse(SQL_ERROR_MESSAGE);
     }
 
+    /**
+     * Handle client not found by name exception.
+     *
+     * @param ex the Ex
+     * @return the result
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ClientNotFoundByNameException.class)
     public ErrorResponse handleClientNotFoundByNameException(ClientNotFoundByNameException ex) {
         return new ErrorResponse(ERROR_DB_GET_CLIENTTYPE);
     }
 
+    /**
+     * Handle not supported client version exception.
+     *
+     * @param ex the Ex
+     * @return the result
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NotSupportedClientVersionException.class)
     public ErrorResponse handleNotSupportedClientVersionException(NotSupportedClientVersionException ex) {
         return new ErrorResponse(ERROR_CLIENT_VERSION);
     }
 
+    /**
+     * Sem version exception.
+     *
+     * @param ex the Ex
+     * @return the result
+     */
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(EmptyClientVersionException.class)
     public ErrorResponse semVersionException(EmptyClientVersionException ex) {
         return ErrorResponse.empty();
     }
 
+    /**
+     * Handle client not found exception.
+     *
+     * @param ex the Ex
+     * @return the result
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ClientNotFoundException.class)
     public ErrorResponse handleClientNotFoundException(ClientNotFoundException ex) {
         return new ErrorResponse(ex.getMessage());
     }
 
+    /**
+     * Handle invalid sequence exception.
+     *
+     * @param ex the Ex
+     * @return the result
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidSequenceException.class)
     public ErrorResponse handleInvalidSequenceException(InvalidSequenceException ex) {
         return new ErrorResponse(ERROR_INVALID_SEQUENCE);
     }
 
+    /**
+     * Handle test not found exception.
+     *
+     * @param ex the Ex
+     * @return the result
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(TestNotFoundException.class)
     public ErrorResponse handleTestNotFoundException(TestNotFoundException ex) {
         return new ErrorResponse(ex.getMessage());
     }
 
+    /**
+     * Handle illegal argument exception.
+     *
+     * @param ex the Ex
+     * @return the result
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException ex) {
         return new ErrorResponse(ex.getMessage());
     }
 
+    /**
+     * Handle sync exception.
+     *
+     * @param ex the Ex
+     * @return the result
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(SyncException.class)
     public ErrorResponse handleSyncException(SyncException ex) {
         return new ErrorResponse(ex.getMessage());
     }
     // Catches JSON parsing errors (e.g., invalid format for time_ns)
+    /**
+     * Handle http message not readable.
+     *
+     * @param ex the Ex
+     * @return the result
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ErrorResponse handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
@@ -95,6 +158,12 @@ public class RtrAdvice {
     }
 
     // Catches @Valid validation errors (if you add @Valid to controller)
+    /**
+     * Handle validation exceptions.
+     *
+     * @param ex the Ex
+     * @return the result
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorResponse handleValidationExceptions(MethodArgumentNotValidException ex) {

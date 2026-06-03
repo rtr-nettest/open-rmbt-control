@@ -9,6 +9,9 @@ import lombok.ToString;
 
 import java.util.List;
 
+/**
+ * Sync response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode(callSuper = true)

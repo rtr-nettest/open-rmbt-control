@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+/**
+ * Admin settings signal test response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

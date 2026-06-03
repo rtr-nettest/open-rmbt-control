@@ -8,6 +8,9 @@ import lombok.Getter;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * History request class.
+ */
 @Builder
 @Getter
 public class HistoryRequest {

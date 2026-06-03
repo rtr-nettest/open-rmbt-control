@@ -18,6 +18,9 @@ import java.util.UUID;
 
 import static at.rtr.rmbt.constant.URIConstants.*;
 
+/**
+ * Qos measurement controller class.
+ */
 @Tag(name = "Qos measurement")
 @RestController
 @RequiredArgsConstructor
@@ -25,34 +28,73 @@ public class QosMeasurementController {
 
     private final QosMeasurementService qosMeasurementService;
 
+    /**
+     * Provide measurement qos parameters.
+     *
+     * @param httpServletRequest the Http servlet request
+     * @param headers the Headers
+     * @return the result
+     */
     @Operation(summary = "Provide parameters for qos measurements.")
     @PostMapping(MEASUREMENT_QOS_REQUEST)
     public MeasurementQosResponse provideMeasurementQosParameters(HttpServletRequest httpServletRequest, @RequestHeader Map<String, String> headers) {
         return qosMeasurementService.getQosParameters(httpServletRequest, headers);
     }
 
+    /**
+     * Get qos test results.
+     *
+     * @param request the Request
+     * @return the Qos test results
+     */
     @Operation(summary = "Get QoS test results")
     @PostMapping(MEASUREMENT_QOS_RESULT)
     public QosMeasurementsResponse getQosTestResults(@Validated @RequestBody QosMeasurementsRequest request) {
         return qosMeasurementService.getQosResult(request.getTestUuid(), request.getLanguage(), request.getCapabilities());
     }
 
+    /**
+     * Save qos measurement result.
+     *
+     * @param qosResultRequest the Qos result request
+     * @return the result
+     */
     @Operation(summary = "Save QoS test results")
     @PostMapping(RESULT_QOS_URL)
     public ErrorResponse saveQosMeasurementResult(@RequestBody QosResultRequest qosResultRequest) {
         return qosMeasurementService.saveQosMeasurementResult(qosResultRequest);
     }
 
+    /**
+     * Evaluate qos by open test UUID.
+     *
+     * @param openTestUUID the Open test UUID
+     * @param lang the Lang
+     * @return the result
+     */
     @PostMapping(value = {QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, QOS_BY_OPEN_TEST_UUID})
     public QosMeasurementsResponse evaluateQosByOpenTestUUID(@PathVariable(name = "open_test_uuid") UUID openTestUUID, @PathVariable(name = "lang", required = false) String lang) {
         return qosMeasurementService.evaluateQosByOpenTestUUID(openTestUUID, lang);
     }
 
+    /**
+     * Get qos by open test UUID.
+     *
+     * @param openTestUUID the Open test UUID
+     * @param lang the Lang
+     * @return the Qos by open test UUID
+     */
     @GetMapping(value = {QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, QOS_BY_OPEN_TEST_UUID})
     public QosMeasurementsResponse getQosByOpenTestUUID(@PathVariable(name = "open_test_uuid") UUID openTestUUID, @PathVariable(name = "lang", required = false) String lang) {
         return qosMeasurementService.evaluateQosByOpenTestUUID(openTestUUID, lang);
     }
 
+    /**
+     * Save qos measurement result get.
+     *
+     * @param qosResultRequest the Qos result request
+     * @return the result
+     */
     @Operation(summary = "Save QoS test results")
     @GetMapping(RESULT_QOS_URL)
     public ErrorResponse saveQosMeasurementResultGet(@RequestBody QosResultRequest qosResultRequest) {

@@ -17,12 +17,21 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Test server mapper impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class TestServerMapperImpl implements TestServerMapper {
     private final UUIDGenerator uuidGenerator;
     private final ServerTypeDetailsMapper serverTypeDetailsMapper;
 
+    /**
+     * Test server to test server response for settings.
+     *
+     * @param testServer the Test server
+     * @return the result
+     */
     @Override
     public TestServerResponseForSettings testServerToTestServerResponseForSettings(TestServer testServer) {
         return TestServerResponseForSettings.builder()
@@ -31,6 +40,15 @@ public class TestServerMapperImpl implements TestServerMapper {
                 .build();
     }
 
+    /**
+     * Test server to test server response.
+     *
+     * @param testServer the Test server
+     * @param lastTestTimestamp the Last test timestamp
+     * @param lastSuccessfulTestTimestamp the Last successful test timestamp
+     * @param isLastMeasurementSuccess the Is last measurement success
+     * @return the result
+     */
     @Override
     public TestServerResponse testServerToTestServerResponse(TestServer testServer, Timestamp lastTestTimestamp, Timestamp lastSuccessfulTestTimestamp, boolean isLastMeasurementSuccess) {
         Set<ServerTypeDetailsResponse> serverTypeDetailsResponses = testServer.getServerTypeDetails().stream()
@@ -64,6 +82,12 @@ public class TestServerMapperImpl implements TestServerMapper {
                 .build();
     }
 
+    /**
+     * Test server request to test server.
+     *
+     * @param testServerRequest the Test server request
+     * @return the result
+     */
     @Override
     public TestServer testServerRequestToTestServer(TestServerRequest testServerRequest) {
         Set<ServerTypeDetails> serverTypeDetails = getServerTypeDetails(testServerRequest);

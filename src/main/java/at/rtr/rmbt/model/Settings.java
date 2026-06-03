@@ -4,6 +4,9 @@ import lombok.*;
 
 import jakarta.persistence.*;
 
+/**
+ * Settings class.
+ */
 @Entity
 @Getter
 @Setter

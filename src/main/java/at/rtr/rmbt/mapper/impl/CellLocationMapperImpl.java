@@ -7,9 +7,19 @@ import at.rtr.rmbt.request.CellLocationRequest;
 import at.rtr.rmbt.utils.TimeUtils;
 import org.springframework.stereotype.Service;
 
+/**
+ * Cell location mapper impl class.
+ */
 @Service
 public class CellLocationMapperImpl implements CellLocationMapper {
 
+    /**
+     * Cell location request to cell location.
+     *
+     * @param cellLocationRequest the Cell location request
+     * @param test the Test
+     * @return the result
+     */
     @Override
     public CellLocation cellLocationRequestToCellLocation(CellLocationRequest cellLocationRequest, Test test) {
         return CellLocation.builder()

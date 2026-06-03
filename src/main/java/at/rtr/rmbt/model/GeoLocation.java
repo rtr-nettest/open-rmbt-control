@@ -9,6 +9,9 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+/**
+ * Geo location class.
+ */
 @Builder
 @Entity
 @Getter

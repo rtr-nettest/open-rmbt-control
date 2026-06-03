@@ -9,6 +9,9 @@ import lombok.ToString;
 
 import java.util.UUID;
 
+/**
+ * Coverage settings response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

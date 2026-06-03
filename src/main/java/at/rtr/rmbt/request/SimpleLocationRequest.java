@@ -4,6 +4,9 @@ package at.rtr.rmbt.request;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * Simple location request class.
+ */
 @Getter
 @Builder
 public class SimpleLocationRequest {

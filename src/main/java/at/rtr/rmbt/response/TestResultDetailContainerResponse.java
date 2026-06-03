@@ -7,6 +7,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Test result detail container response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

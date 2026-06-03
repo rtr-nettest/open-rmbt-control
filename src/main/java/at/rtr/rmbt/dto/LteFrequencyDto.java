@@ -3,6 +3,9 @@ package at.rtr.rmbt.dto;
 import at.rtr.rmbt.enums.NetworkGroupName;
 import lombok.*;
 
+/**
+ * Lte frequency dto class.
+ */
 @NoArgsConstructor
 @Setter
 @Getter

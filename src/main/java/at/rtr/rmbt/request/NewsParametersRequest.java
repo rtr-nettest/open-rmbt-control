@@ -11,6 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
+/**
+ * News parameters request class.
+ */
 @Getter
 @EqualsAndHashCode
 public class NewsParametersRequest {
@@ -36,6 +39,15 @@ public class NewsParametersRequest {
     @JsonProperty(value = "language")
     private final String language;
 
+    /**
+     * Creates a new NewsParametersRequest instance.
+     *
+     * @param lastNewsUid the Last news uid
+     * @param platform the Platform
+     * @param softwareVersionCode the Software version code
+     * @param uuid the Uuid
+     * @param language the Language
+     */
     @Builder
     public NewsParametersRequest(Long lastNewsUid,
                                  String platform,
@@ -49,6 +61,9 @@ public class NewsParametersRequest {
         this.language = Optional.ofNullable(language).orElse(StringUtils.EMPTY);
     }
 
+    /**
+     * Creates a new NewsParametersRequest instance.
+     */
     public NewsParametersRequest() {
         this(null, null, null, null, null);
     }

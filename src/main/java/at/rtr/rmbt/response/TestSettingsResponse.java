@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * Test settings response class.
+ */
 @Schema(description = "Configuration for basic test")
 @Builder
 @NoArgsConstructor

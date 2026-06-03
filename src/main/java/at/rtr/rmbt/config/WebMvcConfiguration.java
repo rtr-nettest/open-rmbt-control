@@ -21,12 +21,20 @@ import java.util.List;
 
 import static at.rtr.rmbt.constant.URIConstants.*;
 
+/**
+ * Web mvc configuration class.
+ */
 @Configuration
 @EnableWebMvc
 @EnableWebSecurity
 @Slf4j
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
+    /**
+     * Add argument resolvers.
+     *
+     * @param argumentResolvers the Argument resolvers
+     */
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         final PageableHandlerMethodArgumentResolver pageableResolver = new PageableHandlerMethodArgumentResolver();
@@ -37,6 +45,11 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Value("#{'${origin}'.split(',')}")
     private String[] origin;
 
+    /**
+     * Rest template.
+     *
+     * @return the result
+     */
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
@@ -50,6 +63,13 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Value("${auth0.issuer}")
     private String issuer;
 
+    /**
+     * Filter chain.
+     *
+     * @param httpSecurity the Http security
+     * @return the result
+     * @throws Exception if an error occurs
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors(cors -> cors.disable());
@@ -80,6 +100,11 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         return httpSecurity.build();
     }
 
+    /**
+     * Web security customizer.
+     *
+     * @return the result
+     */
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
@@ -89,6 +114,11 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
 
+    /**
+     * Add cors mappings.
+     *
+     * @param registry the Registry
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         Arrays.stream(origin).forEach((s) -> {

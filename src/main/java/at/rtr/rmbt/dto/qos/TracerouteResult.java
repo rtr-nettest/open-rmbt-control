@@ -76,6 +76,9 @@ public class TracerouteResult extends AbstractResult<TracerouteResult> {
             + ", resultEntries=" + resultEntries + "]";
     }
 
+    /**
+     * Path element class.
+     */
     @Getter
     @Setter
     @NoArgsConstructor

@@ -5,6 +5,9 @@ import lombok.experimental.UtilityClass;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Measurement utils class.
+ */
 @UtilityClass
 public class MeasurementUtils {
 

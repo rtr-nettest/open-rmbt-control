@@ -7,6 +7,9 @@ import lombok.ToString;
 
 import java.util.List;
 
+/**
+ * Test result container response class.
+ */
 @Builder
 @Getter
 @ToString

@@ -13,9 +13,18 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+/**
+ * Test mapper impl class.
+ */
 @Service
 public class TestMapperImpl implements TestMapper {
 
+    /**
+     * Test to test response.
+     *
+     * @param test the Test
+     * @return the result
+     */
     @Override
     public TestResponse testToTestResponse(Test test) {
         return TestResponse.builder()
@@ -24,6 +33,12 @@ public class TestMapperImpl implements TestMapper {
                 .build();
     }
 
+    /**
+     * Update test with signal result request.
+     *
+     * @param signalResultRequest the Signal result request
+     * @param test the Test
+     */
     @Override
     public void updateTestWithSignalResultRequest(SignalResultRequest signalResultRequest, Test test) {
         test.setClientVersion(StringUtils.left(signalResultRequest.getClientVersion(), 50));
@@ -49,6 +64,12 @@ public class TestMapperImpl implements TestMapper {
         test.setTestErrorCause(signalResultRequest.getTestErrorCause());
     }
 
+    /**
+     * Update test with result request.
+     *
+     * @param resultRequest the Result request
+     * @param test the Test
+     */
     @Override
     public void updateTestWithResultRequest(ResultRequest resultRequest, Test test) {
         test.setClientVersion(StringUtils.left(resultRequest.getClientVersion(), 10));
@@ -103,6 +124,12 @@ public class TestMapperImpl implements TestMapper {
         test.setApn(resultRequest.getTelephonyAPN());
     }
 
+    /**
+     * Update test location.
+     *
+     * @param test the Test
+     * @return the result
+     */
     @Override
     public Test updateTestLocation(Test test) {
         if (Objects.nonNull(test.getLongitude()) && Objects.nonNull(test.getLatitude())) {
@@ -116,6 +143,12 @@ public class TestMapperImpl implements TestMapper {
         return test;
     }
 
+    /**
+     * Update test with coverage result request.
+     *
+     * @param coverageResultRequest the Coverage result request
+     * @param test the Test
+     */
     @Override
     public void updateTestWithCoverageResultRequest(CoverageResultRequest coverageResultRequest, Test test) {
         test.setClientVersion(StringUtils.left(coverageResultRequest.getClientVersion(), 10));

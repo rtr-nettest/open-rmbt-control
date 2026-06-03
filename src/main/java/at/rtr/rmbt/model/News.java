@@ -8,6 +8,9 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+/**
+ * News class.
+ */
 @Entity
 @Getter
 @Setter

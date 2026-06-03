@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 
 import static at.rtr.rmbt.constant.HeaderConstants.*;
 
+/**
+ * Header extrude util class.
+ */
 @UtilityClass
 public class HeaderExtrudeUtil {
 

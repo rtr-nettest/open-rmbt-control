@@ -5,6 +5,9 @@ import lombok.*;
 import jakarta.persistence.*;
 import java.io.Serializable;
 
+/**
+ * Linknet class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

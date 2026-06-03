@@ -28,6 +28,11 @@ public class TestTypeUserType implements UserType<TestType> {
         return Types.OTHER;
     }
 
+    /**
+     * Returned class.
+     *
+     * @return the result
+     */
     @Override
     public Class<TestType> returnedClass() {
         return TestType.class;
@@ -43,6 +48,16 @@ public class TestTypeUserType implements UserType<TestType> {
         return Objects.hashCode(x);
     }
 
+    /**
+     * Null safe get.
+     *
+     * @param rs the Rs
+     * @param position the Position
+     * @param session the Session
+     * @param owner the Owner
+     * @return the result
+     * @throws SQLException if an error occurs
+     */
     @Override
     public TestType nullSafeGet(ResultSet rs, int position, SharedSessionContractImplementor session, Object owner)
             throws SQLException {
@@ -50,6 +65,15 @@ public class TestTypeUserType implements UserType<TestType> {
         return rs.wasNull() ? null : TestType.forValue(value);
     }
 
+    /**
+     * Null safe set.
+     *
+     * @param st the St
+     * @param value the Value
+     * @param index the Index
+     * @param session the Session
+     * @throws SQLException if an error occurs
+     */
     @Override
     public void nullSafeSet(PreparedStatement st, TestType value, int index, SharedSessionContractImplementor session)
             throws SQLException {
@@ -62,6 +86,12 @@ public class TestTypeUserType implements UserType<TestType> {
         }
     }
 
+    /**
+     * Deep copy.
+     *
+     * @param value the Value
+     * @return the result
+     */
     @Override
     public TestType deepCopy(TestType value) {
         return value; // enum constants are immutable
@@ -72,11 +102,24 @@ public class TestTypeUserType implements UserType<TestType> {
         return false;
     }
 
+    /**
+     * Disassemble.
+     *
+     * @param value the Value
+     * @return the result
+     */
     @Override
     public Serializable disassemble(TestType value) {
         return value;
     }
 
+    /**
+     * Assemble.
+     *
+     * @param cached the Cached
+     * @param owner the Owner
+     * @return the result
+     */
     @Override
     public TestType assemble(Serializable cached, Object owner) {
         return (TestType) cached;

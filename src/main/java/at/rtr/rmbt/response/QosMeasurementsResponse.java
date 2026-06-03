@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Qos measurements response class.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,6 +31,9 @@ public class QosMeasurementsResponse extends ErrorResponse {
     @JsonProperty("eval_times")
     private EvalTimes evalTimes;
 
+    /**
+     * Eval times class.
+     */
     @Getter
     @Setter
     @AllArgsConstructor
@@ -40,6 +46,9 @@ public class QosMeasurementsResponse extends ErrorResponse {
         private Long full;
     }
 
+    /**
+     * Qos test result test desc item class.
+     */
     @Getter
     @Setter
     @AllArgsConstructor
@@ -55,6 +64,9 @@ public class QosMeasurementsResponse extends ErrorResponse {
         private String desc;
     }
 
+    /**
+     * Qos test result desc item class.
+     */
     @Getter
     @Setter
     @AllArgsConstructor
@@ -76,6 +88,9 @@ public class QosMeasurementsResponse extends ErrorResponse {
         private String desc;
     }
 
+    /**
+     * Qos test result item class.
+     */
     @Getter
     @Setter
     @Builder
@@ -117,6 +132,9 @@ public class QosMeasurementsResponse extends ErrorResponse {
         @JsonProperty("result")
         private Map<String, Object> result;
 
+        /**
+         * Qos test result details item class.
+         */
         @Getter
         @Setter
         @Builder
@@ -287,6 +305,9 @@ public class QosMeasurementsResponse extends ErrorResponse {
             @JsonProperty("voip_result_out_skew")
             private Long voipResultOutSkew;
 
+            /**
+             * Dns result entry class.
+             */
             @Getter
             @Builder
             @AllArgsConstructor
@@ -299,6 +320,9 @@ public class QosMeasurementsResponse extends ErrorResponse {
                 private String dnsResultTtl;
             }
 
+            /**
+             * Trace route details item class.
+             */
             @Getter
             @Builder
             @AllArgsConstructor

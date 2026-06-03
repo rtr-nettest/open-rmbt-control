@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
+/**
+ * News repository interface.
+ */
 public interface NewsRepository extends JpaRepository<News, Long> {
 
     @Query(value = "SELECT * FROM news  " +
@@ -17,5 +20,14 @@ public interface NewsRepository extends JpaRepository<News, Long> {
         + " AND (start_time IS NULL OR start_time <= NOW())"
         + " AND (end_time IS NULL OR end_time >= NOW())"
         + " ORDER BY time ASC", nativeQuery = true)
+    /**
+     * Find active by uid and platform and software version code and uuid.
+     *
+     * @param lastNewsUid the Last news uid
+     * @param platform the Platform
+     * @param softwareVersionCode the Software version code
+     * @param uuid the Uuid
+     * @return the result
+     */
     List<News> findActiveByUidAndPlatformAndSoftwareVersionCodeAndUuid(Long lastNewsUid, String platform, Long softwareVersionCode, String uuid);
 }

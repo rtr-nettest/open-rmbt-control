@@ -23,6 +23,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Signal mapper impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class SignalMapperImpl implements SignalMapper {
@@ -32,6 +35,12 @@ public class SignalMapperImpl implements SignalMapper {
     private final GeoLocationRepository geoLocationRepository;
     private final MccmncToNameRepository mccmncToNameRepository;
 
+    /**
+     * Signal to signal measurement response.
+     *
+     * @param test the Test
+     * @return the result
+     */
     @Override
     public SignalMeasurementResponse signalToSignalMeasurementResponse(Test test) {
         //todo rewrite to one query
@@ -60,6 +69,13 @@ public class SignalMapperImpl implements SignalMapper {
                 .build();
     }
 
+    /**
+     * Calculate duration.
+     *
+     * @param test the Test
+     * @param radioCellUUIDs the Radio cell UUI ds
+     * @return the result
+     */
     private Long calculateDuration(Test test, List<UUID> radioCellUUIDs) {
         long lastRadioSignalTimeNs = radioSignalRepository.findMaxByCellUUIDIn(radioCellUUIDs)
                 .orElse(NumberUtils.LONG_ZERO);
@@ -68,6 +84,13 @@ public class SignalMapperImpl implements SignalMapper {
         return TimeUtils.formatToSecondsRound(Long.max(lastRadioSignalTimeNs, lastGeoLocationTimeNs));
     }
 
+    /**
+     * Signal request to signal.
+     *
+     * @param signalRequest the Signal request
+     * @param test the Test
+     * @return the result
+     */
     @Override
     public Signal signalRequestToSignal(SignalRequest signalRequest, Test test) {
         return Signal.builder()

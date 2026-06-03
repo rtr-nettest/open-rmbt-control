@@ -8,6 +8,9 @@ import lombok.Getter;
 
 import java.util.List;
 
+/**
+ * Qos result request class.
+ */
 @Getter
 @Builder(toBuilder = true)
 @EqualsAndHashCode

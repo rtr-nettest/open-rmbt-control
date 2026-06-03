@@ -7,6 +7,9 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+/**
+ * Result update request class.
+ */
 @Builder
 @Getter
 public class ResultUpdateRequest {

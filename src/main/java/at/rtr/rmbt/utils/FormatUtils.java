@@ -16,17 +16,34 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Format utils class.
+ */
 @UtilityClass
 public class FormatUtils {
     public static NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
     public static MathContext mathContext = new MathContext(Config.SIGNIFICANT_PLACES, RoundingMode.HALF_UP);
 
+    /**
+     * Format.
+     *
+     * @param template the Template
+     * @param value the Value
+     * @return the result
+     */
     public static String format(String template, Integer value) {
         return Optional.ofNullable(value)
                 .map(x -> String.format(template, x))
                 .orElse(StringUtils.EMPTY);
     }
 
+    /**
+     * Format.
+     *
+     * @param template the Template
+     * @param value the Value
+     * @return the result
+     */
     public static String format(String template, Double value) {
         numberFormat.setMaximumFractionDigits(2);
         return Optional.ofNullable(value)
@@ -35,24 +52,60 @@ public class FormatUtils {
                 .orElse(StringUtils.EMPTY);
     }
 
+    /**
+     * Format value and unit.
+     *
+     * @param value the Value
+     * @param unitValue the Unit value
+     * @param locale the Locale
+     * @return the result
+     */
     public static String formatValueAndUnit(Double value, String unitValue, Locale locale) {
         Format format = NumberFormat.getNumberInstance(locale);
         return String.format(Constants.VALUE_AND_UNIT_TEMPLATE, format.format(new BigDecimal(value, mathContext)), unitValue);
     }
 
+    /**
+     * Format speed value and unit.
+     *
+     * @param speedMbps the Speed mbps
+     * @param unitValue the Unit value
+     * @param locale the Locale
+     * @return the result
+     */
     public static String formatSpeedValueAndUnit(Integer speedMbps, String unitValue, Locale locale) {
         Format format = NumberFormat.getNumberInstance(locale);
         return String.format(Constants.VALUE_AND_UNIT_TEMPLATE, formatSpeed(speedMbps), unitValue);
     }
 
+    /**
+     * Format value and unit.
+     *
+     * @param value the Value
+     * @param unitValue the Unit value
+     * @return the result
+     */
     public static String formatValueAndUnit(Long value, String unitValue) {
         return String.format(Constants.VALUE_AND_UNIT_TEMPLATE, value, unitValue);
     }
 
+    /**
+     * Format value and unit.
+     *
+     * @param value the Value
+     * @param unitValue the Unit value
+     * @return the result
+     */
     public static String formatValueAndUnit(Integer value, String unitValue) {
         return String.format(Constants.VALUE_AND_UNIT_TEMPLATE, value, unitValue);
     }
 
+    /**
+     * Format speed.
+     *
+     * @param speedKbps the Speed kbps
+     * @return the result
+     */
     public static String formatSpeed(Integer speedKbps) {
         return Optional.ofNullable(speedKbps)
                 .map(s -> ObjectUtils.defaultIfNull(s, NumberUtils.INTEGER_ZERO))
@@ -69,6 +122,12 @@ public class FormatUtils {
                 .orElse(StringUtils.EMPTY);
     }
 
+    /**
+     * Format ping.
+     *
+     * @param ping the Ping
+     * @return the result
+     */
     public static String formatPing(Long ping) {
         return Optional.ofNullable(ping)
                 .map(s -> ObjectUtils.defaultIfNull(s, NumberUtils.LONG_ZERO))
@@ -78,6 +137,12 @@ public class FormatUtils {
                 .orElse(StringUtils.EMPTY);
     }
 
+    /**
+     * Format loop UUID.
+     *
+     * @param loopUUID the Loop UUID
+     * @return the result
+     */
     public static String formatLoopUUID(UUID loopUUID) {
         return Optional.ofNullable(loopUUID)
                 .map(uuid -> String.format(Constants.TEST_HISTORY_LOOP_UUID_TEMPLATE, uuid))

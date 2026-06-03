@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Classification utils class.
+ */
 @UtilityClass
 public class ClassificationUtils {
 
@@ -37,6 +40,14 @@ public class ClassificationUtils {
     private static final int CLASSIFICATION_ITEMS = 4;
 
 
+    /**
+     * Classify.
+     *
+     * @param threshold the Threshold
+     * @param value the Value
+     * @param classificationItems the Classification items
+     * @return the result
+     */
     public int classify(final int[] threshold, final long value, int classificationItems) {
         int init = threshold.length - (classificationItems - 1);
         final boolean inverse = threshold[0] < threshold[1];
@@ -74,6 +85,15 @@ public class ClassificationUtils {
         }
     }
 
+    /**
+     * Classify.
+     *
+     * @param pingNs the Ping ns
+     * @param downKbps the Down kbps
+     * @param upKbps the Up kbps
+     * @param classifiers the Classifiers
+     * @return the result
+     */
     public static List<QoeClassificationResponse> classify(long pingNs, long downKbps, long upKbps, List<QoeClassificationThresholds> classifiers) {
         ArrayList<QoeClassificationResponse> ret = new ArrayList<>();
 

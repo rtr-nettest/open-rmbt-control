@@ -6,6 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Signal strength response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

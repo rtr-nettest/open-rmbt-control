@@ -8,6 +8,9 @@ import lombok.ToString;
 
 import java.util.List;
 
+/**
+ * Test result response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

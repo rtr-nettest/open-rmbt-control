@@ -8,6 +8,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Qos test desc repository interface.
+ */
 public interface QosTestDescRepository extends JpaRepository<QosTestDesc, Long> {
     @Query(
         value = "SELECT  DISTINCT " +
@@ -24,6 +27,14 @@ public interface QosTestDescRepository extends JpaRepository<QosTestDesc, Long> 
         "WHERE a.lang IN (:langs) AND a.desc_key IN (:keys) ",
         nativeQuery = true
     )
+    /**
+     * Find by keys and locales.
+     *
+     * @param lang the Lang
+     * @param langs the Langs
+     * @param keys the Keys
+     * @return the result
+     */
     List<QosTestDesc> findByKeysAndLocales(
         @Param("lang") String lang,
         @Param("langs") Set<String> langs,

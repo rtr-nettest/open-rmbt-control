@@ -6,6 +6,9 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+/**
+ * Coverage result response class.
+ */
 @Builder
 @Getter
 public class CoverageResultResponse {

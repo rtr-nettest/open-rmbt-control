@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Coverage result request class.
+ */
 @Getter
 @Builder
 @EqualsAndHashCode

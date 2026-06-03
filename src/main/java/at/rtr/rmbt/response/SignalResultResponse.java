@@ -6,6 +6,9 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+/**
+ * Signal result response class.
+ */
 @Builder
 @Getter
 public class SignalResultResponse {

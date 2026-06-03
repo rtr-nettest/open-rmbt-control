@@ -6,6 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Test server response for settings class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

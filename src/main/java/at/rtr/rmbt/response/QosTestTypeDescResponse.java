@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+/**
+ * Qos test type desc response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

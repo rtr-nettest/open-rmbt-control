@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
+/**
+ * Geo analytics repository impl class.
+ */
 @Repository
 @RequiredArgsConstructor
 public class GeoAnalyticsRepositoryImpl implements GeoAnalyticsRepository {

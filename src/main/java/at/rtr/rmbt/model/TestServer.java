@@ -10,6 +10,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Test server class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

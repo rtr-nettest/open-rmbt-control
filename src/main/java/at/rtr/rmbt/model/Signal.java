@@ -8,6 +8,9 @@ import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+/**
+ * Signal class.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

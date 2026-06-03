@@ -12,6 +12,9 @@ import org.locationtech.jts.geom.Geometry;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+/**
+ * Signal measurement response class.
+ */
 @Builder
 @Setter
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)

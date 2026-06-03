@@ -5,9 +5,17 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+/**
+ * Api logging filter config class.
+ */
 @Component
 public class ApiLoggingFilterConfig {
 
+    /**
+     * Logging filter.
+     *
+     * @return the result
+     */
     @Bean
     public FilterRegistrationBean<ApiLoggingFilter> loggingFilter() {
         FilterRegistrationBean<ApiLoggingFilter> registrationBean = new FilterRegistrationBean<>();

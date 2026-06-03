@@ -1,5 +1,8 @@
 package at.rtr.rmbt.constant;
 
+/**
+ * Header constants interface.
+ */
 public interface HeaderConstants {
 
     String IP = "X-Real-IP";

@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Fences service impl class.
+ */
 @Service
 @RequiredArgsConstructor
 public class FencesServiceImpl implements FencesService {
@@ -23,6 +26,12 @@ public class FencesServiceImpl implements FencesService {
     private final FencesMapper fencesMapper;
     private final FencesRepository fencesRepository;
 
+    /**
+     * Process fences requests.
+     *
+     * @param fences the Fences
+     * @param test the Test
+     */
     @Override
     public void processFencesRequests(Collection<FencesRequest> fences, Test test) {
 

@@ -8,6 +8,9 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * Base entity class.
+ */
 @MappedSuperclass
 @Getter
 @Setter
@@ -22,12 +25,18 @@ public abstract class BaseEntity implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDate;
 
+    /**
+     * Pre insert.
+     */
     @PrePersist
     protected void preInsert() {
         this.createdDate = new Date();
         this.modifiedDate = new Date();
     }
 
+    /**
+     * Pre update.
+     */
     @PreUpdate
     protected void preUpdate() {
         this.modifiedDate = new Date();

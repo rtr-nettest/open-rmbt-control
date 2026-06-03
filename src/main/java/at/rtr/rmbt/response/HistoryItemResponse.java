@@ -10,6 +10,9 @@ import lombok.ToString;
 
 import java.util.UUID;
 
+/**
+ * History item response class.
+ */
 @Builder
 @Getter
 @EqualsAndHashCode

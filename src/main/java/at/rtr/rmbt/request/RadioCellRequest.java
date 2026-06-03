@@ -7,6 +7,9 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+/**
+ * Radio cell request class.
+ */
 @Getter
 @Builder
 public class RadioCellRequest {
