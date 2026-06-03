@@ -298,6 +298,14 @@
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
                     <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
                     <commitIdGenerationMode>full</commitIdGenerationMode>
+                    <!-- "long" describe always emits <tag>-<commits>-g<hash>, even on a clean tag,
+                         so /version consistently shows tag + commits-since + hash. -->
+                    <gitDescribe>
+                        <always>true</always>
+                        <abbrev>7</abbrev>
+                        <forceLongFormat>true</forceLongFormat>
+                        <tags>true</tags>
+                    </gitDescribe>
                 </configuration>
             </plugin>
             <plugin>

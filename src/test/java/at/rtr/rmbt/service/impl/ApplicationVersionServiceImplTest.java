@@ -49,7 +49,7 @@ public class ApplicationVersionServiceImplTest {
         assertEquals(TestConstants.DEFAULT_APPLICATION_HOST, response.getHost());
         assertEquals(TestConstants.DEFAULT_APPLICATION_HOST, response.getHost());
 
-        String expectedVersion = String.format("%s(%s) %s",
+        String expectedVersion = ApplicationVersionServiceImpl.formatVersion(
                 Version.DESCRIBE, Version.BRANCH, Version.BUILD_TIME);
         assertEquals(expectedVersion, response.getVersion());
 
