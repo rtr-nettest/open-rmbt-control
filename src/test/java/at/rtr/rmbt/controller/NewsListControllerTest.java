@@ -12,7 +12,7 @@ import at.rtr.rmbt.service.NewsListService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -40,7 +40,7 @@ public class NewsListControllerTest {
 
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private NewsListService newsListService;
 
     @Before

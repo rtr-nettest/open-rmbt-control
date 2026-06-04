@@ -7,7 +7,7 @@ import at.rtr.rmbt.service.GeoAnalyticsService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 public class GeoAnalyticsServiceImplTest {
     private GeoAnalyticsService geoAnalyticsService;
 
-    @MockBean
+    @MockitoBean
     private GeoAnalyticsRepository geoAnalyticsRepository;
 
 

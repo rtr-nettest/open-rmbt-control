@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.MessageSource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -58,9 +58,9 @@ public class QosMeasurementServiceImplTest {
         .timeout(100)
         .build();
     private QosMeasurementService qosMeasurementService;
-    @MockBean
+    @MockitoBean
     private QosTestObjectiveRepository qosTestObjectiveRepository;
-    @MockBean
+    @MockitoBean
     private QosTestObjectiveMapper qosTestObjectiveMapper;
     @Mock
     private QosTestTypeDescRepository qosTestTypeDescRepository;

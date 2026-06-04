@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -35,11 +35,11 @@ import static org.mockito.Mockito.*;
 public class NewsListServiceImplTest {
     private NewsListService newsListService;
 
-    @MockBean
+    @MockitoBean
     private NewsRepository newsRepository;
-    @MockBean
+    @MockitoBean
     private NewsViewRepository newsViewRepository;
-    @MockBean
+    @MockitoBean
     private NewsMapper newsMapper;
 
     @Mock

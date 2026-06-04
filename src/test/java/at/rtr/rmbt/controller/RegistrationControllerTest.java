@@ -7,13 +7,11 @@ import at.rtr.rmbt.facade.TestSettingsFacade;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.TestSettingsResponse;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,7 +32,7 @@ public class RegistrationControllerTest {
 
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private TestSettingsFacade testSettingsFacade;
 
     @Before

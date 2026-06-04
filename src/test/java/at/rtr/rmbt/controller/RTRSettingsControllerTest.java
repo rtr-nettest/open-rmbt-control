@@ -14,7 +14,7 @@ import at.rtr.rmbt.service.RtrSettingsService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RTRSettingsControllerTest {
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private RtrSettingsService rtrSettingsService;
 
     @Before

@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Set;
@@ -25,9 +25,9 @@ import static org.mockito.Mockito.when;
 public class TestServerMapperImplTest {
     private TestServerMapper testServerMapper;
 
-    @MockBean
+    @MockitoBean
     private UUIDGenerator uuidGenerator;
-    @MockBean
+    @MockitoBean
     private ServerTypeDetailsMapper serverTypeDetailsMapper;
 
     @Mock

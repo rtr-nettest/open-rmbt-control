@@ -24,9 +24,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -50,19 +49,19 @@ public class RtrSettingsServiceImplTest {
 
     private RtrSettingsService rtrSettingsService;
 
-    @MockBean
+    @MockitoBean
     private ClientTypeService clientTypeService;
-    @MockBean
+    @MockitoBean
     private ClientService clientService;
-    @MockBean
+    @MockitoBean
     private SettingsRepository settingsRepository;
-    @MockBean
+    @MockitoBean
     private QosTestTypeDescService qosTestTypeDescService;
-    @MockBean
+    @MockitoBean
     private TestService testService;
-    @MockBean
+    @MockitoBean
     private TestServerService testServerService;
-    @MockBean
+    @MockitoBean
     private UUIDGenerator uuidGenerator;
 
     @Mock

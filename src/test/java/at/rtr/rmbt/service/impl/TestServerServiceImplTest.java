@@ -1,7 +1,6 @@
 package at.rtr.rmbt.service.impl;
 
-import at.rtr.rmbt.TestConstants;
-import at.rtr.rmbt.enums.TestStatus;
+
 import at.rtr.rmbt.mapper.TestServerMapper;
 import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.repository.TestRepository;
@@ -14,43 +13,31 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+
 
 import static at.rtr.rmbt.constant.Config.*;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class TestServerServiceImplTest {
     private TestServerService testServerService;
 
-    @MockBean
+    @MockitoBean
     private TestServerRepository testServerRepository;
-    @MockBean
+    @MockitoBean
     private TestServerMapper testServerMapper;
-    @MockBean
+    @MockitoBean
     private TestRepository testRepository;
 
     @Mock
     private TestServer testServer;
     @Mock
     private TestServerResponseForSettings testServerResponseForSettings;
-    @Mock
-    private TestServerRequest testServerRequest;
-    @Mock
-    private TestServerResponse testServerResponse;
-    @Mock
-    private TestServer updatedTestServer;
-    @Mock
-    private at.rtr.rmbt.model.Test lastTest;
-    @Mock
-    private at.rtr.rmbt.model.Test lastSuccessfulTest;
 
     @Before
     public void setUp() {

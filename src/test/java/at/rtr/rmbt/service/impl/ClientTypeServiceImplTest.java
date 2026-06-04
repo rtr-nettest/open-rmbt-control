@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 public class ClientTypeServiceImplTest {
     private ClientTypeService clientTypeService;
 
-    @MockBean
+    @MockitoBean
     private ClientTypeRepository clientTypeRepository;
 
     @Mock

@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -49,23 +49,23 @@ public class TestServiceImplTest {
     private TestService testService;
     private MessageSource messageSource;
 
-    @MockBean
+    @MockitoBean
     private TestRepository testRepository;
-    @MockBean
+    @MockitoBean
     private TestMapper testMapper;
-    @MockBean
+    @MockitoBean
     private GeoAnalyticsService geoAnalyticsService;
-    @MockBean
+    @MockitoBean
     private SettingsRepository settingsRepository;
-    @MockBean
+    @MockitoBean
     private QoeClassificationService qoeClassificationService;
-    @MockBean
+    @MockitoBean
     private ClientRepository clientRepository;
-    @MockBean
+    @MockitoBean
     private TestHistoryRepository testHistoryRepository;
-    @MockBean
+    @MockitoBean
     private TestHistoryMapper testHistoryMapper;
-    @MockBean
+    @MockitoBean
     private GeoLocationService geoLocationService;
     @Mock
     private at.rtr.rmbt.model.Test test;

@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 public class RadioSignalMapperImplTest {
     private RadioSignalMapper radioSignalMapper;
 
-    @MockBean
+    @MockitoBean
     private UUIDGenerator uuidGenerator;
 
     @Mock

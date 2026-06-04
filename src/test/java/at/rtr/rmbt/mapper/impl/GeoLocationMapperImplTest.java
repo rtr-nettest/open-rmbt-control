@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 public class GeoLocationMapperImplTest {
     private GeoLocationMapper geoLocationMapper;
 
-    @MockBean
+    @MockitoBean
     private UUIDGenerator uuidGenerator;
 
     @Mock

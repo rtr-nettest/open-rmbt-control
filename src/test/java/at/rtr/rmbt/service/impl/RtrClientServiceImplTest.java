@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -33,9 +33,9 @@ import static org.mockito.Mockito.when;
 public class RtrClientServiceImplTest {
     private ClientService clientService;
 
-    @MockBean
+    @MockitoBean
     private ClientRepository clientRepository;
-    @MockBean
+    @MockitoBean
     private SyncGroupRepository syncGroupRepository;
 
     private MessageSource messageSource;

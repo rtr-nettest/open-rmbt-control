@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,7 +31,7 @@ public class TestControllerTest {
 
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private TestService testService;
 
     @Before

@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 public class TestHistoryRepositoryImplTest {
     private TestHistoryRepository testHistoryRepository;
 
-    @MockBean
+    @MockitoBean
     private JdbcTemplate jdbcTemplate;
     @Mock
     private RtrClient client;

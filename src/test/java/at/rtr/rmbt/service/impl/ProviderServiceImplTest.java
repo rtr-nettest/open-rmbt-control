@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
@@ -21,9 +21,9 @@ import static org.mockito.Mockito.when;
 public class ProviderServiceImplTest {
     private ProviderService providerService;
 
-    @MockBean
+    @MockitoBean
     private ProviderRepository providerRepository;
-    @MockBean
+    @MockitoBean
     private ProviderMapper providerMapper;
 
     @Mock

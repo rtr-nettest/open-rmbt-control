@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.locationtech.jts.geom.Geometry;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -35,39 +35,39 @@ import static org.mockito.Mockito.*;
 public class SignalServiceImplTest {
     private SignalService signalService;
 
-    @MockBean
+    @MockitoBean
     private TestRepository testRepository;
-    @MockBean
+    @MockitoBean
     private ProviderRepository providerRepository;
-    @MockBean
+    @MockitoBean
     private UUIDGenerator uuidGenerator;
-    @MockBean
+    @MockitoBean
     private ClientRepository clientRepository;
-    @MockBean
+    @MockitoBean
     private SignalMapper signalMapper;
-    @MockBean
+    @MockitoBean
     private RadioSignalRepository radioSignalRepository;
-    @MockBean
+    @MockitoBean
     private GeoLocationRepository geoLocationRepository;
-    @MockBean
+    @MockitoBean
     private TestMapper testMapper;
-    @MockBean
+    @MockitoBean
     private GeoLocationService geoLocationService;
-    @MockBean
+    @MockitoBean
     private RadioCellService radioCellService;
-    @MockBean
+    @MockitoBean
     private RadioSignalService radioSignalService;
-    @MockBean
+    @MockitoBean
     private SignalRepository signalRepository;
-    @MockBean
+    @MockitoBean
     private FencesService fencesService;
-    @MockBean
+    @MockitoBean
     private TestServerService testServerService;
-    @MockBean
+    @MockitoBean
     private SettingsRepository settingsRepository;
-    @MockBean
+    @MockitoBean
     private LoopModeSettingsService loopModeSettingsService;
-    @MockBean
+    @MockitoBean
     private CellLocationService cellLocationService;
     @Mock
     private HttpServletRequest httpServletRequest;

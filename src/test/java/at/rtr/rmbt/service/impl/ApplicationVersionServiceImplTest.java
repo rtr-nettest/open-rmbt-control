@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -25,10 +25,10 @@ import static org.mockito.Mockito.when;
 public class ApplicationVersionServiceImplTest {
     private ApplicationVersionService applicationVersionService;
 
-    @MockBean
+    @MockitoBean
     private SettingsRepository settingsRepository;
 
-    @MockBean
+    @MockitoBean
     private Settings settings;
 
     @Before
