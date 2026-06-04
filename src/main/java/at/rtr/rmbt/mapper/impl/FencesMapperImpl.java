@@ -1,6 +1,5 @@
 package at.rtr.rmbt.mapper.impl;
 
-
 import at.rtr.rmbt.mapper.FencesMapper;
 import at.rtr.rmbt.model.Fences;
 import at.rtr.rmbt.model.Test;
@@ -13,32 +12,22 @@ import org.springframework.stereotype.Service;
 public class FencesMapperImpl implements FencesMapper {
 
     @Override
-    public Fences fencesRequestToFences(Fences fr, Test test) {
-        return null;
-    }
+    public Fences fencesRequestToFences(FencesRequest fencesRequest, Test test) {
+        final double latitude = fencesRequest.getLocation().getLatitude();
+        final double longitude = fencesRequest.getLocation().getLongitude();
+        final Geometry geom4326 = GeometryUtils.getPointEPSG4326FromLongitudeAndLatitude(longitude, latitude);
 
-    @Override
-       public Fences fencesRequestToFences(FencesRequest fr, Test test) {
-
-        // extract lat/long from request, create Geom
-        double lat = fr.getLocation().getLatitude();
-        double lon = fr.getLocation().getLongitude();
-        // Double longitude, Double latitude
-        Geometry geom4326 = GeometryUtils.getPointEPSG4326FromLongitudeAndLatitude(lon,lat);
-
+        // fenceId and fenceTime are assigned by FencesServiceImpl, which owns the per-test counter.
         return Fences.builder()
                 .openTestUUID(test.getOpenTestUuid())
-                .fenceId(test.getFencesCount())
-                .fenceId(test.getFencesCount())
-                .technology(fr.getTechnology())
-                .avgPingMs(fr.getAvgPingMs())
-                .technologyId(fr.getTechnologyId())
-                .offsetMs(fr.getOffsetMs())
-                .durationMs(fr.getDurationMs())
-                .radius(fr.getRadius())
+                .technology(fencesRequest.getTechnology())
+                .avgPingMs(fencesRequest.getAvgPingMs())
+                .technologyId(fencesRequest.getTechnologyId())
+                .offsetMs(fencesRequest.getOffsetMs())
+                .durationMs(fencesRequest.getDurationMs())
+                .radius(fencesRequest.getRadius())
                 .geom4326(geom4326)
-                .signal(fr.getSignal())
+                .signal(fencesRequest.getSignal())
                 .build();
     }
-
 }
