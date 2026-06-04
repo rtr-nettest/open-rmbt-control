@@ -66,5 +66,13 @@ public class Fences {
     @Schema(description = "Minimum signal (RSRP) of fence in dBm", example = "-103.5")
     @Column(name = "signal") // float8
     private Double signal;
+
+    @Schema(description = "Location accuracy of the fence center in m, as reported by the client", example = "13.014")
+    @Column(name = "accuracy") // float8
+    private Double accuracy;
+
+    @Schema(description = "Location provider of the fence center, as reported by the client", example = "gps")
+    @Column(name = "provider") // varchar
+    private String provider;
 }
 

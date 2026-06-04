@@ -47,4 +47,12 @@ public class FencesRequest {
     @Schema(description = "Minimum signal (RSRP) of fence in dBm", example = "-103.5")
     @JsonProperty(value = "signal")
     private final Double signal;
+
+    @Schema(description = "Location accuracy of the fence center in m; if absent a default of 14 m is assumed", example = "13.014")
+    @JsonProperty(value = "accuracy")
+    private final Double accuracy;
+
+    @Schema(description = "Location provider of the fence center; if absent \"GPS\" is assumed", example = "gps")
+    @JsonProperty(value = "provider")
+    private final String provider;
 }

@@ -38,6 +38,8 @@ class FencesMapperImplTest {
         when(request.getTechnology()).thenReturn("LTE");
         when(request.getTechnologyId()).thenReturn(13L);
         when(request.getRadius()).thenReturn(20.0);
+        when(request.getAccuracy()).thenReturn(13.014);
+        when(request.getProvider()).thenReturn("gps");
 
         final at.rtr.rmbt.model.Test test = mock(at.rtr.rmbt.model.Test.class);
         when(test.getOpenTestUuid()).thenReturn(openTestUuid);
@@ -49,6 +51,8 @@ class FencesMapperImplTest {
         assertEquals(openTestUuid, fences.getOpenTestUUID());
         assertEquals("LTE", fences.getTechnology());
         assertEquals(Long.valueOf(13), fences.getTechnologyId());
+        assertEquals(13.014, fences.getAccuracy());
+        assertEquals("gps", fences.getProvider());
 
         final Geometry geom = fences.getGeom4326();
         assertNotNull(geom);

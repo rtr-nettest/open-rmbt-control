@@ -138,6 +138,53 @@ public class SignalServiceImplTest {
     }
 
     @Test
+    public void processSignalMeasurementResult_whenFirstFencePresent_locationTakenFromFirstFence() {
+        SignalMeasurementResultRequest request = mock(SignalMeasurementResultRequest.class);
+        when(request.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(request.getClientUUID()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
+        when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_MEASUREMENT_RESULT_STATUSES))
+                .thenReturn(Optional.of(test));
+
+        FencesRequest firstFence = FencesRequest.builder()
+                .location(SimpleLocationRequest.builder().latitude(48.2).longitude(16.3).build())
+                .accuracy(9.5).provider("network").offsetMs(0L).durationMs(1L).radius(10.0).build();
+        FencesRequest secondFence = FencesRequest.builder()
+                .location(SimpleLocationRequest.builder().latitude(1.0).longitude(2.0).build())
+                .accuracy(5.0).provider("gps").offsetMs(100L).durationMs(1L).radius(10.0).build();
+        when(request.getFences()).thenReturn(List.of(firstFence, secondFence));
+        Map<String, String> headers = Map.of(HeaderConstants.IP, "127.0.0.1");
+
+        signalService.processSignalMeasurementResult(request, httpServletRequest, headers);
+
+        verify(test).setLatitude(48.2);
+        verify(test).setLongitude(16.3);
+        verify(test).setGeoAccuracy(9.5);
+        verify(test).setGeoProvider("network");
+    }
+
+    @Test
+    public void processSignalMeasurementResult_whenFenceHasNoAccuracy_usesDefaultAccuracy() {
+        SignalMeasurementResultRequest request = mock(SignalMeasurementResultRequest.class);
+        when(request.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(request.getClientUUID()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
+        when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_MEASUREMENT_RESULT_STATUSES))
+                .thenReturn(Optional.of(test));
+
+        FencesRequest fence = FencesRequest.builder()
+                .location(SimpleLocationRequest.builder().latitude(48.2).longitude(16.3).build())
+                .offsetMs(0L).durationMs(1L).radius(10.0).build();
+        when(request.getFences()).thenReturn(List.of(fence));
+        Map<String, String> headers = Map.of(HeaderConstants.IP, "127.0.0.1");
+
+        signalService.processSignalMeasurementResult(request, httpServletRequest, headers);
+
+        verify(test).setGeoAccuracy(14.0);
+        verify(test).setGeoProvider("gps");
+    }
+
+    @Test
     public void getLongSettingOrDefault_whenSettingPresent_returnsParsedValue() {
         Settings setting = mock(Settings.class);
         when(setting.getValue()).thenReturn("5000");

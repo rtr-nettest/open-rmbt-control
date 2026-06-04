@@ -28,6 +28,10 @@ public class FencesMapperImpl implements FencesMapper {
                 .radius(fencesRequest.getRadius())
                 .geom4326(geom4326)
                 .signal(fencesRequest.getSignal())
+                // Persist only what the client sent; the 14 m / "gps" defaults apply to the
+                // test row's location, not to the stored fence.
+                .accuracy(fencesRequest.getAccuracy())
+                .provider(fencesRequest.getProvider())
                 .build();
     }
 }

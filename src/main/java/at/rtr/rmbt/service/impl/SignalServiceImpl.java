@@ -71,6 +71,10 @@ public class SignalServiceImpl implements SignalService {
     private static final long DEFAULT_MAX_SIGNAL_MEASUREMENT_MS = 14400000L; // 4 hours
     /** Fallback UDP port for the signal measurement test server when the server has none configured. */
     private static final String DEFAULT_UDP_PORT = "444";
+    /** Default location accuracy (m) assumed for a fence center when the client sends none. */
+    private static final double DEFAULT_FENCE_ACCURACY_M = 14.0;
+    /** Geo provider assumed for a fence-derived location when the client sends none. */
+    private static final String DEFAULT_FENCE_GEO_PROVIDER = Config.GEO_PROVIDER_GPS;
 
 
     @Override
@@ -242,6 +246,11 @@ public class SignalServiceImpl implements SignalService {
         // radioInfo (cells, signals)
         processRadioInfo(signalMeasurementResultRequest.getRadioInfo(), updatedTest);
 
+        // If at least one fence is present, the test location is defined by the first
+        // (oldest, index 0) fence rather than by the geoLocations. The geoLocations are
+        // still stored above; only the test's representative position is overridden.
+        applyFenceLocation(signalMeasurementResultRequest.getFences(), updatedTest);
+
         log.info("Updated test before save = {}", updatedTest);
         testMapper.updateTestLocation(updatedTest);
         testRepository.saveAndFlush(updatedTest);
@@ -370,6 +379,31 @@ public class SignalServiceImpl implements SignalService {
         if (Objects.nonNull(fences)) {
             fencesService.processFencesRequests(fences, updatedTest);
         }
+    }
+
+    /**
+     * Overrides the test's representative location with that of the first (oldest, index 0)
+     * fence, if any fence is present. Latitude/longitude are taken from the fence center;
+     * accuracy from the fence (defaulting to {@link #DEFAULT_FENCE_ACCURACY_M} when absent);
+     * provider from the fence (defaulting to {@link #DEFAULT_FENCE_GEO_PROVIDER} when absent).
+     * The derived geometries are computed
+     * afterwards by {@code updateTestLocation}. When no fence is present the location set from
+     * the geoLocations is left untouched.
+     */
+    private void applyFenceLocation(List<FencesRequest> fences, Test updatedTest) {
+        if (fences == null || fences.isEmpty()) {
+            return;
+        }
+        FencesRequest firstFence = fences.get(0);
+        SimpleLocationRequest location = firstFence.getLocation();
+        if (location == null || location.getLatitude() == null || location.getLongitude() == null) {
+            return;
+        }
+        updatedTest.setLatitude(location.getLatitude());
+        updatedTest.setLongitude(location.getLongitude());
+        updatedTest.setGeoAccuracy(Objects.requireNonNullElse(firstFence.getAccuracy(), DEFAULT_FENCE_ACCURACY_M));
+        final String provider = firstFence.getProvider();
+        updatedTest.setGeoProvider(provider == null || provider.isBlank() ? DEFAULT_FENCE_GEO_PROVIDER : provider);
     }
 
     private String getSignalStrength(RadioSignal signal) {
