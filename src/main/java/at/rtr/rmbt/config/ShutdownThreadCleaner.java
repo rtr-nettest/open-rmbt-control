@@ -7,12 +7,11 @@ import org.springframework.stereotype.Component;
 /**
  * Stops library-owned background threads when the web application shuts down.
  *
- * <p>{@code dnsjava} and GeoTools each start long-lived helper threads (a DNS NIO selector, the
- * GeoTools weak-reference cleaner, and the authority-factory disposer timer) that they do not stop
+ * <p>{@code dnsjava} starts a long-lived helper thread (the DNS NIO selector) that it does not stop
  * on servlet-context destroy. On a normal JVM stop this is harmless, but Tomcat's classloader-leak
- * detector logs "…appears to have started a thread … but has failed to stop it …" for each of them,
- * and on a <em>hot redeploy</em> (new WAR without a JVM restart) those threads keep the old webapp
- * classloader alive and eventually exhaust Metaspace.
+ * detector logs "…appears to have started a thread … but has failed to stop it …", and on a
+ * <em>hot redeploy</em> (new WAR without a JVM restart) that thread keeps the old webapp classloader
+ * alive and eventually exhausts Metaspace.
  *
  * <p>Spring runs this {@code @PreDestroy} while closing the application context, which happens
  * <em>before</em> Tomcat's leak check, so stopping the threads here removes both the warnings and
@@ -30,10 +29,6 @@ public class ShutdownThreadCleaner {
     public void stopLibraryThreads() {
         // dnsjava NIO selector thread.
         invokeStatic("org.xbill.DNS.NioClient", "close");
-        // GeoTools weak-reference cleaner thread.
-        invokeOnStaticField("org.geotools.util.WeakCollectionCleaner", "DEFAULT", "exit");
-        // GeoTools "GT authority factory disposer" timer thread.
-        invokeStatic("org.geotools.referencing.factory.DeferredAuthorityFactory", "exit");
     }
 
     /** Invokes a static no-arg method {@code className.method()} if present. Package-private for testing. */
