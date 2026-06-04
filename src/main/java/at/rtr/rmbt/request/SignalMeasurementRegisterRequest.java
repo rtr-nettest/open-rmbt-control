@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Builder
 @Getter
-public class CoverageRegisterRequest {
+public class SignalMeasurementRegisterRequest {
 
     @NotNull
     @Schema(description = "UUID of client", example = "68796996-5f40-11eb-ae93-0242ac130002")

@@ -2,8 +2,8 @@ package at.rtr.rmbt.controller;
 
 
 import at.rtr.rmbt.constant.URIConstants;
-import at.rtr.rmbt.request.CoverageRegisterRequest;
-import at.rtr.rmbt.request.CoverageResultRequest;
+import at.rtr.rmbt.request.SignalMeasurementRegisterRequest;
+import at.rtr.rmbt.request.SignalMeasurementResultRequest;
 import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.SignalService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,10 +33,10 @@ public class SignalController {
     @PostMapping({URIConstants.SIGNAL_MEASUREMENT_REQUEST, URIConstants.COVERAGE_REQUEST})
     @Operation(summary = "Register signal measurement", description = "Request to obtain configuration for signal measurement monitoring")
     @ResponseStatus(HttpStatus.CREATED)
-    public CoverageSettingsResponse processCoverageRequest(HttpServletRequest httpServletRequest,
+    public SignalMeasurementSettingsResponse processSignalMeasurementRequest(HttpServletRequest httpServletRequest,
                                                            @RequestHeader Map<String, String> headers,
-                                                           @RequestBody CoverageRegisterRequest coverageRegisterRequest) {
-        return signalService.processCoverageRequest(coverageRegisterRequest, httpServletRequest, headers);
+                                                           @RequestBody SignalMeasurementRegisterRequest signalMeasurementRegisterRequest) {
+        return signalService.processSignalMeasurementRequest(signalMeasurementRegisterRequest, httpServletRequest, headers);
     }
 
     @GetMapping(URIConstants.ADMIN_SIGNAL)
@@ -56,10 +56,10 @@ public class SignalController {
     @PostMapping({URIConstants.SIGNAL_MEASUREMENT_RESULT, URIConstants.COVERAGE_RESULT})
     @Operation(summary = "Process signal measurement result")
     @ResponseStatus(HttpStatus.OK)
-    public Map<String, Object> processCoverageResult(HttpServletRequest httpServletRequest,
+    public Map<String, Object> processSignalMeasurementResult(HttpServletRequest httpServletRequest,
                                                      @RequestHeader Map<String, String> headers,
-                                                     @RequestBody CoverageResultRequest coverageResultRequest) {
-        signalService.processCoverageResult(coverageResultRequest, httpServletRequest, headers);
+                                                     @RequestBody SignalMeasurementResultRequest signalMeasurementResultRequest) {
+        signalService.processSignalMeasurementResult(signalMeasurementResultRequest, httpServletRequest, headers);
         return Collections.emptyMap(); // Returns "{}" as JSON
     }
 

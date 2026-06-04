@@ -22,7 +22,7 @@ public interface SignalService {
 
     void processSignalRequests(Collection<SignalRequest> signalRequests, Test test);
 
-    CoverageSettingsResponse processCoverageRequest(CoverageRegisterRequest coverageRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers);
+    SignalMeasurementSettingsResponse processSignalMeasurementRequest(SignalMeasurementRegisterRequest signalMeasurementRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers);
 
-    void processCoverageResult(CoverageResultRequest coverageResultRequest, HttpServletRequest httpServletRequest, Map<String, String> headers);
+    void processSignalMeasurementResult(SignalMeasurementResultRequest signalMeasurementResultRequest, HttpServletRequest httpServletRequest, Map<String, String> headers);
 }

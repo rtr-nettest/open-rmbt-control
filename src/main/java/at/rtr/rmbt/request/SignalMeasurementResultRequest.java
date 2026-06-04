@@ -18,7 +18,7 @@ import java.util.UUID;
 @Builder
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class CoverageResultRequest {
+public class SignalMeasurementResultRequest {
 
 
     @JsonProperty(value = "test_uuid")

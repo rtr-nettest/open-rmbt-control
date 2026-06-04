@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class CoverageSettingsResponse {
+public class SignalMeasurementSettingsResponse {
 
     @Schema(description = "Public IP of client", example = "1.2.3.4")
     @JsonProperty(value = "client_remote_ip")
@@ -44,11 +44,12 @@ public class CoverageSettingsResponse {
     private final Integer ipVersion;
 
     @Schema(description = "Maximum duration of single session in seconds", example = "3600")
-    private final Long maxCoverageSessionSeconds;
+    @JsonProperty(value = "max_coverage_session_seconds")
+    private final Long maxSignalMeasurementSessionSeconds;
 
-    @Schema(description = "Maximum total duration of coverage measurement in seconds", example = "86400")
+    @Schema(description = "Maximum total duration of signal measurement in seconds", example = "86400")
     @JsonProperty(value = "max_coverage_measurement_seconds")
-    private final Long maxCoverageMeasurementSeconds;
+    private final Long maxSignalMeasurementSeconds;
 
     @Schema(description = "UUID of sequence, generated if not existing", example = "dfa91a7a-fa8f-4bcd-86f5-e0b906162c4e")
     @JsonProperty(value = "loop_uuid")

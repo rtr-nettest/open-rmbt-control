@@ -120,19 +120,19 @@ public class SignalServiceImplTest {
     }
 
     @Test
-    public void processCoverageResult_whenTestExists_movesToCoverageAndSaves() {
-        CoverageResultRequest coverageResultRequest = mock(CoverageResultRequest.class);
-        when(coverageResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
-        when(coverageResultRequest.getClientUUID()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+    public void processSignalMeasurementResult_whenTestExists_movesToCoverageAndSaves() {
+        SignalMeasurementResultRequest signalMeasurementResultRequest = mock(SignalMeasurementResultRequest.class);
+        when(signalMeasurementResultRequest.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
+        when(signalMeasurementResultRequest.getClientUUID()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
-        when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.COVERAGE_RESULT_STATUSES))
+        when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_MEASUREMENT_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
         Map<String, String> headers = Map.of(HeaderConstants.IP, "127.0.0.1");
 
-        signalService.processCoverageResult(coverageResultRequest, httpServletRequest, headers);
+        signalService.processSignalMeasurementResult(signalMeasurementResultRequest, httpServletRequest, headers);
 
         verify(test).setStatus(TestStatus.COVERAGE);
-        verify(testMapper).updateTestWithCoverageResultRequest(coverageResultRequest, test);
+        verify(testMapper).updateTestWithSignalMeasurementResultRequest(signalMeasurementResultRequest, test);
         verify(testMapper).updateTestLocation(test);
         verify(testRepository).saveAndFlush(test);
     }

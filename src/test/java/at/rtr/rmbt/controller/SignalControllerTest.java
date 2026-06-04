@@ -108,28 +108,28 @@ public class SignalControllerTest {
 
     @Test
     public void processSignalMeasurementRequest_expectServiceInvoked() throws Exception {
-        when(signalService.processCoverageRequest(any(), any(), any()))
-                .thenReturn(CoverageSettingsResponse.builder().build());
+        when(signalService.processSignalMeasurementRequest(any(), any(), any()))
+                .thenReturn(SignalMeasurementSettingsResponse.builder().build());
 
         mockMvc.perform(MockMvcRequestBuilders.post(SIGNAL_MEASUREMENT_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isCreated());
 
-        verify(signalService).processCoverageRequest(any(), any(), any());
+        verify(signalService).processSignalMeasurementRequest(any(), any(), any());
     }
 
     @Test
     public void processCoverageRequest_alias_expectServiceInvoked() throws Exception {
-        when(signalService.processCoverageRequest(any(), any(), any()))
-                .thenReturn(CoverageSettingsResponse.builder().build());
+        when(signalService.processSignalMeasurementRequest(any(), any(), any()))
+                .thenReturn(SignalMeasurementSettingsResponse.builder().build());
 
         mockMvc.perform(MockMvcRequestBuilders.post(COVERAGE_REQUEST)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isCreated());
 
-        verify(signalService).processCoverageRequest(any(), any(), any());
+        verify(signalService).processSignalMeasurementRequest(any(), any(), any());
     }
 
     @Test
@@ -139,7 +139,7 @@ public class SignalControllerTest {
                         .content("{\"sequence_number\":0}"))
                 .andExpect(status().isOk());
 
-        verify(signalService).processCoverageResult(any(), any(), any());
+        verify(signalService).processSignalMeasurementResult(any(), any(), any());
     }
 
     @Test
@@ -149,7 +149,7 @@ public class SignalControllerTest {
                         .content("{\"sequence_number\":0}"))
                 .andExpect(status().isOk());
 
-        verify(signalService).processCoverageResult(any(), any(), any());
+        verify(signalService).processSignalMeasurementResult(any(), any(), any());
     }
 
     private SignalDetailsResponse getSignalStrengthResponse() {

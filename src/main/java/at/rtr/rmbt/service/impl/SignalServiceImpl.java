@@ -67,9 +67,9 @@ public class SignalServiceImpl implements SignalService {
     private final LoopModeSettingsService loopModeSettingsService;
     private final CellLocationService cellLocationService;
 
-    /** Fallback duration (ms) for a coverage measurement / session when no DB setting is present. */
-    private static final long DEFAULT_MAX_COVERAGE_MS = 14400000L; // 4 hours
-    /** Fallback UDP port for the coverage test server when the server has none configured. */
+    /** Fallback duration (ms) for a signal measurement / session when no DB setting is present. */
+    private static final long DEFAULT_MAX_SIGNAL_MEASUREMENT_MS = 14400000L; // 4 hours
+    /** Fallback UDP port for the signal measurement test server when the server has none configured. */
     private static final String DEFAULT_UDP_PORT = "444";
 
 
@@ -81,14 +81,14 @@ public class SignalServiceImpl implements SignalService {
 
     @Override
     @Transactional
-    public CoverageSettingsResponse processCoverageRequest(CoverageRegisterRequest coverageRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers) {
+    public SignalMeasurementSettingsResponse processSignalMeasurementRequest(SignalMeasurementRegisterRequest signalMeasurementRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers) {
         var ip = HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers);
 
         var uuid = uuidGenerator.generateUUID();
         var openTestUUID = uuidGenerator.generateUUID();
 
         // Check if client exists
-        var client = findClientOrThrow(coverageRegisterRequest.getClientUuid());
+        var client = findClientOrThrow(signalMeasurementRegisterRequest.getClientUuid());
 
         var clientAddress = InetAddresses.forString(ip);
         var clientIpString = InetAddresses.toAddrString(clientAddress);
@@ -97,7 +97,7 @@ public class SignalServiceImpl implements SignalService {
 
 
         // check if client submitted a loopUuid
-        var loopUuid = coverageRegisterRequest.getLoopUuid();
+        var loopUuid = signalMeasurementRegisterRequest.getLoopUuid();
         int loopTestCounter;
 
         if (loopUuid == null) {
@@ -121,13 +121,13 @@ public class SignalServiceImpl implements SignalService {
         LoopModeSettings loopModeSettings = toLoopModeSettings(loopUuid, uuid, client.getUuid(), loopTestCounter);
 
 
-        TestStatus regStatus = Boolean.TRUE.equals(coverageRegisterRequest.getSignal())
+        TestStatus regStatus = Boolean.TRUE.equals(signalMeasurementRegisterRequest.getSignal())
                 ? TestStatus.SIGNAL_STARTED
                 : TestStatus.COVERAGE_STARTED;
 
         // get geoIP country, used for selecting the UDP server
         String countryIp = GeoIpHelper.lookupCountry(clientAddress);
-        var clientTime = getClientTimeFromSignalRequest(coverageRegisterRequest);
+        var clientTime = getClientTimeFromSignalRequest(signalMeasurementRegisterRequest);
 
         var test = Test.builder()
                 .uuid(uuid)
@@ -135,7 +135,7 @@ public class SignalServiceImpl implements SignalService {
                 .client(client)
                 .clientPublicIp(clientIpString)
                 .clientPublicIpAnonymized(HelperFunctions.anonymizeIp(clientAddress))
-                .timezone(coverageRegisterRequest.getTimezone())
+                .timezone(signalMeasurementRegisterRequest.getTimezone())
                 .clientTime(clientTime)
                 .time(clientTime)
                 .publicIpAsn(asInformation.getNumber())
@@ -146,24 +146,24 @@ public class SignalServiceImpl implements SignalService {
                 .status(regStatus)
                 .lastSequenceNumber(-1)
                 .useSsl(false) // hardcode because of database constraint
-                .measurementType(coverageRegisterRequest.getMeasurementType())
-                .clientLanguage(coverageRegisterRequest.getClientLanguage())
-                .softwareRevision(coverageRegisterRequest.getSoftwareRevision())
-                .model(coverageRegisterRequest.getModel())
-                .osVersion(coverageRegisterRequest.getOsVersion())
-                .clientName(ServerType.valueOf(coverageRegisterRequest.getClient_name()))
-                .clientSoftwareVersion(coverageRegisterRequest.getClientSoftwareVersion())
-                .device(coverageRegisterRequest.getDevice())
-                .platform(TestPlatform.valueOf(coverageRegisterRequest.getPlatform().toUpperCase()))
+                .measurementType(signalMeasurementRegisterRequest.getMeasurementType())
+                .clientLanguage(signalMeasurementRegisterRequest.getClientLanguage())
+                .softwareRevision(signalMeasurementRegisterRequest.getSoftwareRevision())
+                .model(signalMeasurementRegisterRequest.getModel())
+                .osVersion(signalMeasurementRegisterRequest.getOsVersion())
+                .clientName(ServerType.valueOf(signalMeasurementRegisterRequest.getClient_name()))
+                .clientSoftwareVersion(signalMeasurementRegisterRequest.getClientSoftwareVersion())
+                .device(signalMeasurementRegisterRequest.getDevice())
+                .platform(TestPlatform.valueOf(signalMeasurementRegisterRequest.getPlatform().toUpperCase()))
                 .build();
                 // version (0.3), softwareVersionCode (11), type (MOBILE), name (RMBT), client (RMBT)
 
         var savedTest = testRepository.saveAndFlush(test);
         loopModeSettingsService.save(loopModeSettings);
 
-        // Max duration (ms) for a single coverage measurement and for the whole session, with fallback.
-        long maxCoverageMeasurementSeconds = getLongSettingOrDefault("max_coverage_measurement_seconds", DEFAULT_MAX_COVERAGE_MS);
-        long maxCoverageSessionSeconds = getLongSettingOrDefault("max_coverage_session_seconds", DEFAULT_MAX_COVERAGE_MS);
+        // Max duration (ms) for a single signal measurement and for the whole session, with fallback.
+        long maxSignalMeasurementSeconds = getLongSettingOrDefault("max_coverage_measurement_seconds", DEFAULT_MAX_SIGNAL_MEASUREMENT_MS);
+        long maxSignalMeasurementSessionSeconds = getLongSettingOrDefault("max_coverage_session_seconds", DEFAULT_MAX_SIGNAL_MEASUREMENT_MS);
 
         log.info("UDP-Country = {}", countryIp);
 
@@ -176,7 +176,7 @@ public class SignalServiceImpl implements SignalService {
         final String hostname = isV4Client ? rmbtUdpServer.getWebAddressIpV4() : rmbtUdpServer.getWebAddressIpV6();
         final String port = rmbtUdpServer.getPort() != null ? rmbtUdpServer.getPort().toString() : DEFAULT_UDP_PORT;
 
-        return CoverageSettingsResponse.builder()
+        return SignalMeasurementSettingsResponse.builder()
                 .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
                 .clientRemoteIp(ip)
                 .testUUID(savedTest.getUuid())
@@ -184,8 +184,8 @@ public class SignalServiceImpl implements SignalService {
                 .pingHost(hostname)
                 .pingPort(port)
                 .ipVersion(protocolVersion)
-                .maxCoverageMeasurementSeconds(maxCoverageMeasurementSeconds)
-                .maxCoverageSessionSeconds(maxCoverageSessionSeconds)
+                .maxSignalMeasurementSeconds(maxSignalMeasurementSeconds)
+                .maxSignalMeasurementSessionSeconds(maxSignalMeasurementSessionSeconds)
                 .loopUUID(loopUuid)
                 .loopTestCounter(loopTestCounter)
                 .build();
@@ -207,46 +207,46 @@ public class SignalServiceImpl implements SignalService {
 
     @Override
     @Transactional
-    public void processCoverageResult(CoverageResultRequest coverageResultRequest,
+    public void processSignalMeasurementResult(SignalMeasurementResultRequest signalMeasurementResultRequest,
                                       HttpServletRequest httpServletRequest,
                                       Map<String, String> headers) {
-        log.info("CoverageResultRequest = {}", coverageResultRequest);
-        UUID testUuid = getTestUUID(coverageResultRequest);
+        log.info("SignalMeasurementResultRequest = {}", signalMeasurementResultRequest);
+        UUID testUuid = getTestUUID(signalMeasurementResultRequest);
 
         // Check if client uuid exists
-        findClientOrThrow(coverageResultRequest.getClientUUID());
+        findClientOrThrow(signalMeasurementResultRequest.getClientUUID());
 
         // Try to find test in correct started state or throw exception
-        Test updatedTest = testRepository.findByUuidAndStatusesInLocked(testUuid, Config.COVERAGE_RESULT_STATUSES)
+        Test updatedTest = testRepository.findByUuidAndStatusesInLocked(testUuid, Config.SIGNAL_MEASUREMENT_RESULT_STATUSES)
                 .orElseThrow(() -> new TestNotFoundException(String.format(ErrorMessage.STARTED_TEST_NOT_FOUND, testUuid)));
         updatedTest.setStatus(TestStatus.COVERAGE);
 
-        testMapper.updateTestWithCoverageResultRequest(coverageResultRequest, updatedTest);
+        testMapper.updateTestWithSignalMeasurementResultRequest(signalMeasurementResultRequest, updatedTest);
 
         // write android permission statuses into test.android_permissions (jsonb)
-        Optional.ofNullable(coverageResultRequest.getPermissionStatuses())
+        Optional.ofNullable(signalMeasurementResultRequest.getPermissionStatuses())
                 .ifPresent(updatedTest::setAndroidPermissions);
 
         // IP address as reported by the client for test.client_ip_local
-        updateIpAddress(coverageResultRequest.getTestIpLocal(), updatedTest);
+        updateIpAddress(signalMeasurementResultRequest.getTestIpLocal(), updatedTest);
 
         // IP address as seen by the server for test.source_ip
         setSourceIp(httpServletRequest, headers, updatedTest);
 
         // cellLocations
-        processCellLocation(coverageResultRequest.getCellLocations(), updatedTest);
+        processCellLocation(signalMeasurementResultRequest.getCellLocations(), updatedTest);
 
         // geoLocations
-        processGeoLocation(coverageResultRequest.getGeoLocations(), updatedTest);
+        processGeoLocation(signalMeasurementResultRequest.getGeoLocations(), updatedTest);
 
         // radioInfo (cells, signals)
-        processRadioInfo(coverageResultRequest.getRadioInfo(), updatedTest);
+        processRadioInfo(signalMeasurementResultRequest.getRadioInfo(), updatedTest);
 
         log.info("Updated test before save = {}", updatedTest);
         testMapper.updateTestLocation(updatedTest);
         testRepository.saveAndFlush(updatedTest);
 
-        processFences(coverageResultRequest.getFences(), updatedTest);
+        processFences(signalMeasurementResultRequest.getFences(), updatedTest);
     }
 
 
@@ -424,7 +424,7 @@ public class SignalServiceImpl implements SignalService {
     // TODO: Refactor with/in HeaderExtrudeUtil
     // - ResultServiceImpl.setSourceIp(...)
     // - SignalServiceImpl.setSourceIp(...)
-    // - SignalServiceImpl.processCoverageRequest(...) (clientPublicIp part)
+    // - SignalServiceImpl.processSignalMeasurementRequest(...) (clientPublicIp part)
     private void setSourceIp(HttpServletRequest httpServletRequest, Map<String, String> headers, Test test) {
         InetAddress sourceAddress = InetAddresses.forString(
                 HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers));
@@ -445,18 +445,18 @@ public class SignalServiceImpl implements SignalService {
                 .orElse(defaultValue);
     }
 
-    private UUID getTestUUID(CoverageResultRequest coverageResultRequest) {
-        if (Objects.nonNull(coverageResultRequest.getTestUUID())) {
-            return coverageResultRequest.getTestUUID();
+    private UUID getTestUUID(SignalMeasurementResultRequest signalMeasurementResultRequest) {
+        if (Objects.nonNull(signalMeasurementResultRequest.getTestUUID())) {
+            return signalMeasurementResultRequest.getTestUUID();
         } else {
-            if (coverageResultRequest.getSequenceNumber() != 0) {
+            if (signalMeasurementResultRequest.getSequenceNumber() != 0) {
                 throw new InvalidSequenceException();
             }
             return uuidGenerator.generateUUID();
         }
     }
 
-    private ZonedDateTime getClientTimeFromSignalRequest(CoverageRegisterRequest signalRegisterRequest) {
+    private ZonedDateTime getClientTimeFromSignalRequest(SignalMeasurementRegisterRequest signalRegisterRequest) {
         return TimeUtils.getZonedDateTimeFromMillisAndTimezone(signalRegisterRequest.getTime(), signalRegisterRequest.getTimezone());
     }
 
