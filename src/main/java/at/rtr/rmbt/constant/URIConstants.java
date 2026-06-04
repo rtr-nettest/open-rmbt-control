@@ -10,8 +10,10 @@ public interface URIConstants {
     String ADMIN_NEWS_ITEM = ADMIN_NEWS + "/{newsId}";
     String ADMIN_SETTING = "/admin/settings";
     String ADMIN_SET_IMPLAUSIBLE = "/admin/setImplausible";
-    String COVERAGE_REQUEST = "/coverageRequest";
-    String COVERAGE_RESULT = "/coverageResult";
+    String SIGNAL_MEASUREMENT_REQUEST = "/signalMeasurementRequest";
+    String SIGNAL_MEASUREMENT_RESULT = "/signalMeasurementResult";
+    String COVERAGE_REQUEST = "/coverageRequest"; // alias of SIGNAL_MEASUREMENT_REQUEST (kept for backwards compatibility)
+    String COVERAGE_RESULT = "/coverageResult";   // alias of SIGNAL_MEASUREMENT_RESULT (kept for backwards compatibility)
     String ADMIN_SIGNAL = "/reports/signal";
     String TEST_SERVER = "/measurementServer";
     String TEST = "/test";

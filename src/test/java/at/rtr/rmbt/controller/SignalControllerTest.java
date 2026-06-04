@@ -29,6 +29,7 @@ import java.util.Collections;
 
 import static at.rtr.rmbt.constant.URIConstants.*;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -103,6 +104,52 @@ public class SignalControllerTest {
                 .andExpect(jsonPath("testResponse.time").value(TestConstants.DEFAULT_ZONED_DATE_TIME.toInstant().getEpochSecond()));
 
         verify(signalService).getSignalStrength(TestConstants.DEFAULT_UUID);
+    }
+
+    @Test
+    public void processSignalMeasurementRequest_expectServiceInvoked() throws Exception {
+        when(signalService.processCoverageRequest(any(), any(), any()))
+                .thenReturn(CoverageSettingsResponse.builder().build());
+
+        mockMvc.perform(MockMvcRequestBuilders.post(SIGNAL_MEASUREMENT_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isCreated());
+
+        verify(signalService).processCoverageRequest(any(), any(), any());
+    }
+
+    @Test
+    public void processCoverageRequest_alias_expectServiceInvoked() throws Exception {
+        when(signalService.processCoverageRequest(any(), any(), any()))
+                .thenReturn(CoverageSettingsResponse.builder().build());
+
+        mockMvc.perform(MockMvcRequestBuilders.post(COVERAGE_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isCreated());
+
+        verify(signalService).processCoverageRequest(any(), any(), any());
+    }
+
+    @Test
+    public void processSignalMeasurementResult_expectServiceInvoked() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(SIGNAL_MEASUREMENT_RESULT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"sequence_number\":0}"))
+                .andExpect(status().isOk());
+
+        verify(signalService).processCoverageResult(any(), any(), any());
+    }
+
+    @Test
+    public void processCoverageResult_alias_expectServiceInvoked() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(COVERAGE_RESULT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"sequence_number\":0}"))
+                .andExpect(status().isOk());
+
+        verify(signalService).processCoverageResult(any(), any(), any());
     }
 
     private SignalDetailsResponse getSignalStrengthResponse() {
