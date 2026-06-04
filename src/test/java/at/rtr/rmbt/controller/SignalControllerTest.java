@@ -107,20 +107,7 @@ public class SignalControllerTest {
     }
 
     @Test
-    public void processSignalMeasurementRequest_expectServiceInvoked() throws Exception {
-        when(signalService.processSignalMeasurementRequest(any(), any(), any()))
-                .thenReturn(SignalMeasurementSettingsResponse.builder().build());
-
-        mockMvc.perform(MockMvcRequestBuilders.post(SIGNAL_MEASUREMENT_REQUEST)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isCreated());
-
-        verify(signalService).processSignalMeasurementRequest(any(), any(), any());
-    }
-
-    @Test
-    public void processCoverageRequest_alias_expectServiceInvoked() throws Exception {
+    public void processCoverageRequest_expectServiceInvoked() throws Exception {
         when(signalService.processSignalMeasurementRequest(any(), any(), any()))
                 .thenReturn(SignalMeasurementSettingsResponse.builder().build());
 
@@ -133,17 +120,7 @@ public class SignalControllerTest {
     }
 
     @Test
-    public void processSignalMeasurementResult_expectServiceInvoked() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(SIGNAL_MEASUREMENT_RESULT)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"sequence_number\":0}"))
-                .andExpect(status().isOk());
-
-        verify(signalService).processSignalMeasurementResult(any(), any(), any());
-    }
-
-    @Test
-    public void processCoverageResult_alias_expectServiceInvoked() throws Exception {
+    public void processCoverageResult_expectServiceInvoked() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post(COVERAGE_RESULT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"sequence_number\":0}"))

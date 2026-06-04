@@ -30,7 +30,7 @@ public class SignalController {
 
     private final SignalService signalService;
 
-    @PostMapping({URIConstants.SIGNAL_MEASUREMENT_REQUEST, URIConstants.COVERAGE_REQUEST})
+    @PostMapping(URIConstants.COVERAGE_REQUEST)
     @Operation(summary = "Register signal measurement", description = "Request to obtain configuration for signal measurement monitoring")
     @ResponseStatus(HttpStatus.CREATED)
     public SignalMeasurementSettingsResponse processSignalMeasurementRequest(HttpServletRequest httpServletRequest,
@@ -53,7 +53,7 @@ public class SignalController {
         return signalService.getSignalStrength(testUUID);
     }
 
-    @PostMapping({URIConstants.SIGNAL_MEASUREMENT_RESULT, URIConstants.COVERAGE_RESULT})
+    @PostMapping(URIConstants.COVERAGE_RESULT)
     @Operation(summary = "Process signal measurement result")
     @ResponseStatus(HttpStatus.OK)
     public Map<String, Object> processSignalMeasurementResult(HttpServletRequest httpServletRequest,
