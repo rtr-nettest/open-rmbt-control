@@ -18,10 +18,6 @@ public interface SignalService {
 
     Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable);
 
-    SignalSettingsResponse processSignalRequest(SignalRegisterRequest signalRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers);
-
-    SignalResultResponse processSignalResult(SignalResultRequest signalResultRequest);
-
     SignalDetailsResponse getSignalStrength(UUID testUUID);
 
     void processSignalRequests(Collection<SignalRequest> signalRequests, Test test);

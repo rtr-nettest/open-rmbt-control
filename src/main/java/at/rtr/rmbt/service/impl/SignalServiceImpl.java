@@ -43,8 +43,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static at.rtr.rmbt.constant.Constants.NETWORK_TYPE_WLAN;
-import static at.rtr.rmbt.constant.HeaderConstants.URL;
-import static at.rtr.rmbt.constant.URIConstants.SIGNAL_RESULT;
 
 @Slf4j
 @Service
@@ -79,51 +77,6 @@ public class SignalServiceImpl implements SignalService {
     public Page<SignalMeasurementResponse> getSignalsHistory(Pageable pageable) {
         return testRepository.findAllByRadioCellIsNotEmptyAndNetworkTypeNotIn(pageable, Collections.singletonList(NETWORK_TYPE_WLAN))
                 .map(signalMapper::signalToSignalMeasurementResponse);
-    }
-
-    @Override
-    @Transactional
-    public SignalSettingsResponse processSignalRequest(SignalRegisterRequest signalRegisterRequest, HttpServletRequest httpServletRequest, Map<String, String> headers) {
-        var ip = HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers);
-
-        var uuid = uuidGenerator.generateUUID();
-        var openTestUUID = uuidGenerator.generateUUID();
-
-        var client = findClientOrThrow(signalRegisterRequest.getUuid());
-
-        var clientAddress = InetAddresses.forString(ip);
-        var clientIpString = InetAddresses.toAddrString(clientAddress);
-
-        var asInformation = HelperFunctions.getASInformationForSignalRequest(clientAddress);
-        var clientTime = getClientTimeFromSignalRequest(signalRegisterRequest);
-
-        var test = Test.builder()
-                .uuid(uuid)
-                .openTestUuid(openTestUUID)
-                .client(client)
-                .clientPublicIp(clientIpString)
-                .clientPublicIpAnonymized(HelperFunctions.anonymizeIp(clientAddress))
-                .timezone(signalRegisterRequest.getTimezone())
-                .clientTime(clientTime)
-                .time(clientTime)
-                .publicIpAsn(asInformation.getNumber())
-                .publicIpAsName(asInformation.getName())
-                .countryAsn(asInformation.getCountry())
-                .publicIpRdns(HelperFunctions.getReverseDNS(clientAddress))
-                .status(TestStatus.SIGNAL_STARTED)
-                .lastSequenceNumber(-1)
-                .useSsl(false) // TODO hardcode because of database constraint
-                .measurementType(signalRegisterRequest.getMeasurementType())
-                .build();
-
-        var savedTest = testRepository.saveAndFlush(test);
-
-        return SignalSettingsResponse.builder()
-                .provider(providerRepository.getProviderNameByTestId(savedTest.getUid()))
-                .clientRemoteIp(ip)
-                .resultUrl(getSignalResultUrl(httpServletRequest))
-                .testUUID(savedTest.getUuid())
-                .build();
     }
 
     @Override
@@ -249,53 +202,6 @@ public class SignalServiceImpl implements SignalService {
         loopModeSettings.setMaxTests(null);
         loopModeSettings.setCertMode(null);
         return loopModeSettings;
-    }
-
-
-    @Override
-    @Transactional
-    public SignalResultResponse processSignalResult(SignalResultRequest signalResultRequest) {
-        log.info("SignalResultRequest = " + signalResultRequest);
-        UUID testUuid = getTestUUID(signalResultRequest);
-
-        Long sequenceNumber = signalResultRequest.getSequenceNumber();
-
-        RtrClient client = findClientOrThrow(signalResultRequest.getClientUUID());
-
-        Test updatedTest = testRepository.findByUuidAndStatusesInLocked(testUuid, Config.SIGNAL_RESULT_STATUSES)
-                .orElseGet(() -> getEmptyGeneratedTest(signalResultRequest, client));
-        updatedTest.setStatus(TestStatus.SIGNAL);
-
-        if (Objects.isNull(sequenceNumber) || sequenceNumber <= updatedTest.getLastSequenceNumber()) {
-            throw new InvalidSequenceException();
-        }
-        updatedTest.setLastSequenceNumber(sequenceNumber.intValue());
-
-        testMapper.updateTestWithSignalResultRequest(signalResultRequest, updatedTest);
-
-        updateIpAddress(signalResultRequest.getTestIpLocal(), updatedTest);
-
-        // cellLocations
-        processCellLocation(signalResultRequest.getCellLocations(), updatedTest);
-
-        processGeoLocation(signalResultRequest.getGeoLocations(), updatedTest);
-
-        processRadioInfo(signalResultRequest.getRadioInfo(), updatedTest);
-
-        log.info("Updated test before save = " + updatedTest);
-        testMapper.updateTestLocation(updatedTest);
-        testRepository.saveAndFlush(updatedTest);
-
-        UUID uuidToReturn = updatedTest.getUuid();
-        if (updatedTest.getTimestamp().plusMinutes(Constants.SIGNAL_CHANGE_UUID_AFTER_MIN)
-                .compareTo(Instant.now().atZone(updatedTest.getTimestamp().getZone())) < 0) {
-            log.info("updating signal uuid after " + Constants.SIGNAL_CHANGE_UUID_AFTER_MIN + " minutes");
-            uuidToReturn = UUID.randomUUID();
-        }
-
-        return SignalResultResponse.builder()
-                .testUUID(uuidToReturn)
-                .build();
     }
 
 
@@ -518,23 +424,12 @@ public class SignalServiceImpl implements SignalService {
     // TODO: Refactor with/in HeaderExtrudeUtil
     // - ResultServiceImpl.setSourceIp(...)
     // - SignalServiceImpl.setSourceIp(...)
-    // - SignalServiceImpl.processSignalRequest(...) / processCoverageRequest(...) (clientPublicIp part)
+    // - SignalServiceImpl.processCoverageRequest(...) (clientPublicIp part)
     private void setSourceIp(HttpServletRequest httpServletRequest, Map<String, String> headers, Test test) {
         InetAddress sourceAddress = InetAddresses.forString(
                 HeaderExtrudeUtil.getIpFromNgNixHeader(httpServletRequest, headers));
         test.setSourceIp(InetAddresses.toAddrString(sourceAddress));
         test.setSourceIpAnonymized(HelperFunctions.anonymizeIp(sourceAddress));
-    }
-
-    private UUID getTestUUID(SignalResultRequest signalResultRequest) {
-        if (Objects.nonNull(signalResultRequest.getTestUUID())) {
-            return signalResultRequest.getTestUUID();
-        } else {
-            if (signalResultRequest.getSequenceNumber() != 0) {
-                throw new InvalidSequenceException();
-            }
-            return uuidGenerator.generateUUID();
-        }
     }
 
     private RtrClient findClientOrThrow(UUID clientUuid) {
@@ -561,43 +456,8 @@ public class SignalServiceImpl implements SignalService {
         }
     }
 
-    private Test getEmptyGeneratedTest(SignalResultRequest signalResultRequest, RtrClient client) {
-        Test newTest = Test.builder()
-                .uuid(uuidGenerator.generateUUID())
-                .openTestUuid(uuidGenerator.generateUUID())
-                .time(getClientTimeFromSignalResultRequest(signalResultRequest))
-                .timezone(signalResultRequest.getTimezone())
-                .client(client)
-                .useSsl(false)
-                .lastSequenceNumber(-1)
-                .build();
-
-        return testRepository.saveAndFlush(newTest);
-    }
-
-
-    private ZonedDateTime getClientTimeFromSignalResultRequest(SignalResultRequest signalResultRequest) {
-        return TimeUtils.getZonedDateTimeFromMillisAndTimezone(Math.round(signalResultRequest.getTimeNanos() / 1e6), signalResultRequest.getTimezone());
-    }
-
-
-    private ZonedDateTime getClientTimeFromSignalRequest(SignalRegisterRequest signalRegisterRequest) {
-        return TimeUtils.getZonedDateTimeFromMillisAndTimezone(signalRegisterRequest.getTime(), signalRegisterRequest.getTimezone());
-    }
-
     private ZonedDateTime getClientTimeFromSignalRequest(CoverageRegisterRequest signalRegisterRequest) {
         return TimeUtils.getZonedDateTimeFromMillisAndTimezone(signalRegisterRequest.getTime(), signalRegisterRequest.getTimezone());
-    }
-
-    private String getSignalResultUrl(HttpServletRequest req) {
-        return Optional.ofNullable(req.getHeader(URL))
-                .map(url -> String.join(URL, SIGNAL_RESULT))
-                .orElse(getDefaultResultUrl(req));
-    }
-
-    private String getDefaultResultUrl(HttpServletRequest req) {
-        return String.format("%s://%s:%s%s", req.getScheme(), req.getServerName(), req.getServerPort(), req.getRequestURI())
-                .replace("Request", "Result");
     }
 
     // Utility: Hex encoding for debug prints

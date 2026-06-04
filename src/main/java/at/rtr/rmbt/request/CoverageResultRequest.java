@@ -20,7 +20,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CoverageResultRequest {
 
-    // TODO - still old stuff (from SignalResultRequest), partly ok
 
     @JsonProperty(value = "test_uuid")
     private final UUID testUUID;

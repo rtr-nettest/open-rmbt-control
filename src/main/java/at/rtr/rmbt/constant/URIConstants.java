@@ -10,8 +10,6 @@ public interface URIConstants {
     String ADMIN_NEWS_ITEM = ADMIN_NEWS + "/{newsId}";
     String ADMIN_SETTING = "/admin/settings";
     String ADMIN_SET_IMPLAUSIBLE = "/admin/setImplausible";
-    String SIGNAL_REQUEST = "/signalRequest";
-    String SIGNAL_RESULT = "/signalResult";
     String COVERAGE_REQUEST = "/coverageRequest";
     String COVERAGE_RESULT = "/coverageResult";
     String ADMIN_SIGNAL = "/reports/signal";

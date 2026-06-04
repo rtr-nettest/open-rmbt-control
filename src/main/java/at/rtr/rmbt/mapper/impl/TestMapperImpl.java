@@ -4,7 +4,6 @@ import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.request.CoverageResultRequest;
 import at.rtr.rmbt.request.ResultRequest;
-import at.rtr.rmbt.request.SignalResultRequest;
 import at.rtr.rmbt.response.TestResponse;
 import at.rtr.rmbt.utils.GeometryUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,31 +21,6 @@ public class TestMapperImpl implements TestMapper {
                 .testUUID(test.getUuid())
                 .time(test.getTime())
                 .build();
-    }
-
-    @Override
-    public void updateTestWithSignalResultRequest(SignalResultRequest signalResultRequest, Test test) {
-        test.setClientVersion(StringUtils.left(signalResultRequest.getClientVersion(), 50));
-        test.setClientLanguage(signalResultRequest.getClientLanguage());
-        test.setPlatform(signalResultRequest.getPlatform());
-        test.setOsVersion(signalResultRequest.getOsVersion());
-        test.setApiLevel(signalResultRequest.getApiLevel());
-        test.setDevice(signalResultRequest.getDevice());
-        test.setModel(signalResultRequest.getModel());
-        test.setProduct(signalResultRequest.getProduct());
-        test.setPhoneType(signalResultRequest.getTelephonyPhoneType());
-        test.setDataState(signalResultRequest.getTelephonyDataState());
-        test.setNetworkCountry(signalResultRequest.getTelephonyNetworkCountry());
-        test.setNetworkOperatorName(signalResultRequest.getTelephonyNetworkOperatorName());
-        test.setNetworkSimCountry(signalResultRequest.getTelephonyNetworkSimCountry());
-        test.setNetworkSimOperatorName(signalResultRequest.getTelephonyNetworkSimOperatorName());
-        test.setWifiSsid(signalResultRequest.getWifiSSID());
-        test.setWifiBssid(signalResultRequest.getWifiBSSID());
-        test.setWifiNetworkId(signalResultRequest.getWifiNetworkId());
-        test.setClientSoftwareVersion(signalResultRequest.getClientSoftwareVersion());
-        test.setNetworkType(signalResultRequest.getNetworkType());
-        test.setNetworkIsRoaming(signalResultRequest.getTelephonyNetworkIsRoaming());
-        test.setTestErrorCause(signalResultRequest.getTestErrorCause());
     }
 
     @Override
