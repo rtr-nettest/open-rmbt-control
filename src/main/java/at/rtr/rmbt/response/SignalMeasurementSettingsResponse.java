@@ -59,4 +59,20 @@ public class SignalMeasurementSettingsResponse {
     @JsonProperty(value = "loop_test_counter")
     private final Integer loopTestCounter;
 
+    /**
+     * Legacy camelCase alias of {@code max_coverage_session_seconds}. Older clients read this
+     * key, so it is emitted in addition to the snake_case variant to let the client base migrate
+     * gradually. Remove once all clients consume {@code max_coverage_session_seconds}.
+     *
+     * @deprecated use {@code max_coverage_session_seconds} instead.
+     */
+    @Deprecated
+    @Schema(deprecated = true,
+            description = "Deprecated camelCase alias of max_coverage_session_seconds; will be removed once clients migrate",
+            example = "3600")
+    @JsonProperty(value = "maxCoverageSessionSeconds", access = JsonProperty.Access.READ_ONLY)
+    public Long getMaxCoverageSessionSecondsLegacy() {
+        return maxSignalMeasurementSessionSeconds;
+    }
+
 }
