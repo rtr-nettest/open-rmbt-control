@@ -365,7 +365,98 @@ localized strings; many responses pick a `Locale` from the client's `language`.
 
 ---
 
-## 9. Configuration & deployment
+## 9. Database triggers & server-side post-processing
+
+A large amount of per-test derivation does **not** happen in Java — it happens in **PL/pgSQL
+triggers on the `test` table**. This matters because a trigger fires for **every** writer of the
+table (the control server, the statistics/map servers, batch jobs, migrations, manual `UPDATE`s),
+so many `test` columns are filled in by the database regardless of which code wrote the row.
+
+### The `test` trigger
+
+`trigger_test()` is a row-level `BEFORE INSERT OR UPDATE` trigger that runs **inside the same
+transaction** as the write and rewrites/derives many `NEW` columns. It bundles ~15 concerns:
+
+| Category | Examples |
+|---|---|
+| **Scalar derivations** | `speed_download_log`, `speed_upload_log`, `ping_shortest_log`, `ping_median(_log)`, `network_group_name/type` |
+| **Reference lookups** | `roaming_type`, `mobile_provider_id`, `mobile_network_id`, `mobile_sim_id`, `mobile_provider_id2` (`mccmnc2provider`, `mccmnc2name`, `provider`, `network_type`) |
+| **Cross-test logic** | `open_uuid` (loop-mode finalization), `similar_test_uid`/`pinned` (statistics pinning), `dist_prev`/`speed_prev` |
+| **Spatial / PostGIS** | upsert into `test_location`, `location_max_distance`, Austria-boundary checks (`rmbt_get_distance_iso_a2`), `radio_signal_location` interpolation |
+| **Plausibility flags** | sets `status='UPDATE ERROR'`, `implausible`, `deleted`, `comment` (exclude CLI `#211`, AT operators outside AT `#272`, `model='unknown'` `#356`, …) |
+
+A second trigger, **`trigger_test_location()`**, sits on the `test_location` table and performs the
+heavy **GIS enrichment** (below).
+
+### How the location reaches the database (Java side)
+
+The location stored on a `test` row comes from the **client-submitted points** in a request
+(`/result`, `/signalResult`, `/coverageResult`). Two helpers put it on the row:
+
+- **`GeoLocationServiceImpl.processGeoLocationRequests`** saves every point to `geo_location`,
+  picks the **most accurate** one, and `updateTestGeo(...)` copies its `geo_location_uuid`,
+  `geo_accuracy`, `geo_long`, `geo_lat`, `geo_provider` onto `test`.
+- **`TestMapperImpl.updateTestLocation`** derives the projected geometries `location` (EPSG:900913),
+  `geom4326`, `geom3857` from that lat/long.
+
+The control server **never writes `test_location`** — the `TestLocation` entity is mapped read-only
+(the inverse side of the association).
+
+### How the trigger processes the location
+
+On save, `trigger_test()` upserts the basic location columns into `test_location` (keyed by
+`open_test_uuid`), but **only when the geometry changed** (`NEW.geom4326 IS DISTINCT FROM
+OLD.geom4326` and `geo_location_uuid` set), copying `geom4326`/`geom3857`/`location`/`geo_lat`/
+`geo_long`/`geo_accuracy`/`geo_provider` straight from the `test` row. That write then fires
+`trigger_test_location()`, which **enriches** the row via PostGIS spatial joins (only for
+`geo_accuracy <= 2000`): `settlement_type` (`dsr`), `link_*`/`frc`/`edge_id` (`linknet`),
+`gkz_bev`/`kg_nr_bev` (`bev_vgd`), `land_cover`, `country_location`, raster cells, `dtm_level`, …
+
+```
+Java: best client point → test.geo_* + geom4326/geom3857
+        → trigger_test()          : upsert basic columns into test_location
+        → trigger_test_location() : GIS enrichment of that row
+```
+
+`trigger_test()` afterwards re-reads `country_location` back from `test_location` and uses it for the
+mobile-provider logic — an ordering dependency to respect.
+
+### What it would mean to move this into Java
+
+This is a recurring question, so the trade-offs are worth stating.
+
+- **It is a split, not an elimination.** The spatial joins against large GIS tables (`dsr`,
+  `linknet`, `bev_vgd`, boundaries, rasters) and functions like `ST_DistanceSpheroid` belong in
+  PostGIS for performance; you would move *invocation* into Java, not the computation.
+- **The decisive caveat:** the trigger guarantees these invariants for **every** writer. Java logic
+  only runs on application code paths, so any out-of-band write to `test` (sibling servers, SQL,
+  admin fixes) would silently skip the derivations — unless all writes go through the app or a thin
+  trigger is kept as a backstop.
+
+| Concern | Portability | Notes |
+|---|---|---|
+| Scalar derivations | Easy | arithmetic / one query |
+| Reference lookups | Medium | many small queries; cache reference data |
+| Cross-test logic | Hard | queries other `test` rows; partly spatial |
+| `test_location` basic upsert | Easy–Medium | column copy; make `TestLocation` writable |
+| GIS enrichment, boundary/movement, interpolation | Keep in DB | PostGIS-bound |
+| Plausibility flags / status rewrites | Medium | replicate guard conditions exactly |
+
+**Pros:** testable/debuggable/versioned with the app; no PL/pgSQL "magic" rewriting `NEW.*`; removes
+real trigger overhead (it even runs `pg_locks` debug loops and `RAISE NOTICE` on every write); rules
+evolve without DB migrations. **Cons:** the trigger encodes years of edge cases
+(`#211, #272, #356, #664, #668, #759, …`) that are easy to port wrongly; loss of the
+single-source-of-truth invariant; ordering dependencies; per-write query volume.
+
+**Recommendation:** don't wholesale-port. Move scalar/lookup concerns to a shared Java
+post-processor *one at a time, with parity tests*, and keep spatial/GIS in PostGIS. For the coverage
+path, a clean first slice is to move just the `test_location` basic upsert into Java (persist a
+`TestLocation` from the geo fields already on `test`) and leave `trigger_test_location()` enrichment
+in the database.
+
+---
+
+## 10. Configuration & deployment
 
 - **Profiles** (`application.yml`): a default block plus `dev` and `prod` documents
   (`spring.config.activate.on-profile`). The active profile is selected at the Tomcat level
@@ -382,7 +473,7 @@ localized strings; many responses pick a `Locale` from the client's `language`.
 
 ---
 
-## 10. Conventions you should follow
+## 11. Conventions you should follow
 
 - **Layer discipline:** controller (HTTP only) → service/facade (logic, `@Transactional`) →
   repository (data) → entity. Don't put logic in controllers or SQL in services.
@@ -401,7 +492,7 @@ localized strings; many responses pick a `Locale` from the client's `language`.
 
 ---
 
-## 11. Where to start reading (a suggested path)
+## 12. Where to start reading (a suggested path)
 
 1. **`constant/URIConstants`** — the catalogue of endpoints.
 2. **`facade/TestSettingsFacade`** — follow `/testRequest` end to end; it touches clients, server
@@ -416,7 +507,7 @@ localized strings; many responses pick a `Locale` from the client's `language`.
 
 ---
 
-## 12. Glossary
+## 13. Glossary
 
 - **Test / measurement** — one run of download+upload+ping (+optional QoS). Stored as a `test` row.
 - **`test_token`** — `uuid_timestamp_signature`; the HMAC-signed credential a client uses to submit
@@ -438,4 +529,4 @@ localized strings; many responses pick a `Locale` from the client's `language`.
 ---
 
 *This document describes the structure and intent of the code as it stands. When in doubt, the
-code is the source of truth — start from the reading path in §11 and follow the calls.*
+code is the source of truth — start from the reading path in §12 and follow the calls.*
