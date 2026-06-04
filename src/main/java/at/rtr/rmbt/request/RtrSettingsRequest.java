@@ -1,8 +1,10 @@
 package at.rtr.rmbt.request;
 
 import at.rtr.rmbt.enums.ClientType;
+import at.rtr.rmbt.utils.LenientUuidDeserializer;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -80,6 +82,7 @@ public class RtrSettingsRequest {
 
     @Schema(description = "UUID of the client if client is already registered, to register client leave this as empty string or do not send at all", example = "68796996-5f40-11eb-ae93-0242ac130002")
     @JsonProperty(value = "uuid")
+    @JsonDeserialize(using = LenientUuidDeserializer.class)
     private final UUID uuid;
 
     @Schema(description = "If true - list of the measurement servers will be sent, hidden settings", example = "true")
@@ -119,9 +122,5 @@ public class RtrSettingsRequest {
         this.termsAndConditionsAcceptedVersion = Optional.ofNullable(termsAndConditionsAcceptedVersion).orElse(NumberUtils.LONG_ZERO);
         this.isTermsAndConditionsAccepted = isTermsAndConditionsAccepted;
         this.capabilities = capabilities;
-    }
-
-    public RtrSettingsRequest() {
-        this(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, false, null, false, null);
     }
 }
