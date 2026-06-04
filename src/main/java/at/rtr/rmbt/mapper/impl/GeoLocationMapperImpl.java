@@ -42,7 +42,7 @@ public class GeoLocationMapperImpl implements GeoLocationMapper {
     }
 
     @Override
-    public GeoLocation buildNewGeoLocation(Test test, double geoLat, double geoLong, double geoAccuracy, String provider) {
+    public GeoLocation buildNewGeoLocation(Test test, double geoLat, double geoLong, Double geoAccuracy, String provider) {
         return GeoLocation.builder()
                 .test(test)
                 .time(ZonedDateTime.now())

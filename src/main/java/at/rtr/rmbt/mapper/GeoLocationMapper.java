@@ -8,5 +8,5 @@ public interface GeoLocationMapper {
 
     GeoLocation geoLocationRequestToGeoLocation(GeoLocationRequest geoLocationRequest, Test test);
 
-    GeoLocation buildNewGeoLocation(Test test, double geoLat, double geoLong, double geoAccuracy, String provider);
+    GeoLocation buildNewGeoLocation(Test test, double geoLat, double geoLong, Double geoAccuracy, String provider);
 }

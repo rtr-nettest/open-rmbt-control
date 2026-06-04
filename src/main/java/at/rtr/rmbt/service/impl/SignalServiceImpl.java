@@ -37,6 +37,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -71,10 +72,6 @@ public class SignalServiceImpl implements SignalService {
     private static final long DEFAULT_MAX_SIGNAL_MEASUREMENT_MS = 14400000L; // 4 hours
     /** Fallback UDP port for the signal measurement test server when the server has none configured. */
     private static final String DEFAULT_UDP_PORT = "444";
-    /** Default location accuracy (m) assumed for a fence center when the client sends none. */
-    private static final double DEFAULT_FENCE_ACCURACY_M = 14.0;
-    /** Geo provider assumed for a fence-derived location when the client sends none. */
-    private static final String DEFAULT_FENCE_GEO_PROVIDER = Config.GEO_PROVIDER_GPS;
 
 
     @Override
@@ -382,13 +379,13 @@ public class SignalServiceImpl implements SignalService {
     }
 
     /**
-     * Overrides the test's representative location with that of the first (oldest, index 0)
-     * fence, if any fence is present. Latitude/longitude are taken from the fence center;
-     * accuracy from the fence (defaulting to {@link #DEFAULT_FENCE_ACCURACY_M} when absent);
-     * provider from the fence (defaulting to {@link #DEFAULT_FENCE_GEO_PROVIDER} when absent).
-     * The derived geometries are computed
-     * afterwards by {@code updateTestLocation}. When no fence is present the location set from
-     * the geoLocations is left untouched.
+     * Defines the test's representative location from the first (oldest, index 0) fence, if any
+     * fence is present. Since a fence has no client {@code geo_location} of its own, a single
+     * geo_location row with a server-generated UUID is created from the fence center and assigned
+     * to the test (which also sets lat/long, accuracy and provider); the derived geometries are
+     * computed afterwards by {@code updateTestLocation}. Accuracy and provider are taken from the
+     * fence as-is (NULL when the client did not supply them — no default is invented). When no fence
+     * is present the location set from the geoLocations is left untouched.
      */
     private void applyFenceLocation(List<FencesRequest> fences, Test updatedTest) {
         if (fences == null || fences.isEmpty()) {
@@ -399,11 +396,14 @@ public class SignalServiceImpl implements SignalService {
         if (location == null || location.getLatitude() == null || location.getLongitude() == null) {
             return;
         }
-        updatedTest.setLatitude(location.getLatitude());
-        updatedTest.setLongitude(location.getLongitude());
-        updatedTest.setGeoAccuracy(Objects.requireNonNullElse(firstFence.getAccuracy(), DEFAULT_FENCE_ACCURACY_M));
-        final String provider = firstFence.getProvider();
-        updatedTest.setGeoProvider(provider == null || provider.isBlank() ? DEFAULT_FENCE_GEO_PROVIDER : provider);
+        // Derive the geo_location timestamp from the fence/test time: test time + fence offset
+        // (same derivation FencesServiceImpl uses for fence_time).
+        final ZonedDateTime fenceTime = updatedTest.getTime() == null
+                ? null
+                : updatedTest.getTime().plus(Objects.requireNonNullElse(firstFence.getOffsetMs(), 0L), ChronoUnit.MILLIS);
+        geoLocationService.createAndAssignGeoLocation(
+                updatedTest, location.getLatitude(), location.getLongitude(),
+                firstFence.getAccuracy(), firstFence.getProvider(), fenceTime);
     }
 
     private String getSignalStrength(RadioSignal signal) {

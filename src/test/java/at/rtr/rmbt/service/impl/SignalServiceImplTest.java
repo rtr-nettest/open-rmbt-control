@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static at.rtr.rmbt.TestConstants.*;
@@ -145,10 +146,11 @@ public class SignalServiceImplTest {
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
         when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_MEASUREMENT_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
+        when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
 
         FencesRequest firstFence = FencesRequest.builder()
                 .location(SimpleLocationRequest.builder().latitude(48.2).longitude(16.3).build())
-                .accuracy(9.5).provider("network").offsetMs(0L).durationMs(1L).radius(10.0).build();
+                .accuracy(9.5).provider("network").offsetMs(5000L).durationMs(1L).radius(10.0).build();
         FencesRequest secondFence = FencesRequest.builder()
                 .location(SimpleLocationRequest.builder().latitude(1.0).longitude(2.0).build())
                 .accuracy(5.0).provider("gps").offsetMs(100L).durationMs(1L).radius(10.0).build();
@@ -157,20 +159,22 @@ public class SignalServiceImplTest {
 
         signalService.processSignalMeasurementResult(request, httpServletRequest, headers);
 
-        verify(test).setLatitude(48.2);
-        verify(test).setLongitude(16.3);
-        verify(test).setGeoAccuracy(9.5);
-        verify(test).setGeoProvider("network");
+        // A geo_location with a server-generated UUID is created from the first fence (incl. its
+        // accuracy/provider and a timestamp derived from test time + fence offset) and assigned to
+        // the test.
+        var expectedTime = TestConstants.DEFAULT_ZONED_DATE_TIME.plus(5000L, ChronoUnit.MILLIS);
+        verify(geoLocationService).createAndAssignGeoLocation(test, 48.2, 16.3, 9.5, "network", expectedTime);
     }
 
     @Test
-    public void processSignalMeasurementResult_whenFenceHasNoAccuracy_usesDefaultAccuracy() {
+    public void processSignalMeasurementResult_whenFenceHasNoAccuracyOrProvider_passesNull() {
         SignalMeasurementResultRequest request = mock(SignalMeasurementResultRequest.class);
         when(request.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(request.getClientUUID()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
         when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_MEASUREMENT_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
+        when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
 
         FencesRequest fence = FencesRequest.builder()
                 .location(SimpleLocationRequest.builder().latitude(48.2).longitude(16.3).build())
@@ -180,8 +184,9 @@ public class SignalServiceImplTest {
 
         signalService.processSignalMeasurementResult(request, httpServletRequest, headers);
 
-        verify(test).setGeoAccuracy(14.0);
-        verify(test).setGeoProvider("gps");
+        // No accuracy/provider on the fence -> stored as NULL (no invented default).
+        var expectedTime = TestConstants.DEFAULT_ZONED_DATE_TIME.plus(0L, ChronoUnit.MILLIS);
+        verify(geoLocationService).createAndAssignGeoLocation(test, 48.2, 16.3, null, null, expectedTime);
     }
 
     @Test

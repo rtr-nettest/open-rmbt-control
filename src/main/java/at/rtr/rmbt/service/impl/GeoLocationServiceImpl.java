@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,6 +66,16 @@ public class GeoLocationServiceImpl implements GeoLocationService {
             geoLocationRepository.save(geoLocation);
             updateTestGeo(test, geoLocation);
         }
+    }
+
+    @Override
+    public void createAndAssignGeoLocation(Test test, double geoLat, double geoLong, Double geoAccuracy, String provider, ZonedDateTime time) {
+        GeoLocation geoLocation = geoLocationMapper.buildNewGeoLocation(test, geoLat, geoLong, geoAccuracy, provider);
+        if (time != null) {
+            geoLocation.setTime(time);
+        }
+        geoLocationRepository.save(geoLocation);
+        updateTestGeo(test, geoLocation);
     }
 
     private boolean isGeoNotNullAndProviderIsSupported(double geoLat, double geoLong, String provider) {

@@ -98,4 +98,24 @@ public class GeoLocationServiceImplTest {
         verify(test).setLongitude(TestConstants.DEFAULT_LONGITUDE);
         verify(test).setLatitude(TestConstants.DEFAULT_LATITUDE);
     }
+
+    @Test
+    public void createAndAssignGeoLocation_whenCommonData_expectGeoLocationSavedWithTimeAndTestModified() {
+        when(geoLocationMapper.buildNewGeoLocation(test, TestConstants.DEFAULT_LATITUDE, TestConstants.DEFAULT_LONGITUDE, TestConstants.DEFAULT_ACCURACY_FIRST, Config.GEO_PROVIDER_GPS)).thenReturn(geoLocationFirst);
+        when(geoLocationFirst.getGeoLocationUUID()).thenReturn(TestConstants.DEFAULT_GEO_LOCATION_UUID);
+        when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_FIRST);
+        when(geoLocationFirst.getGeoLong()).thenReturn(TestConstants.DEFAULT_LONGITUDE);
+        when(geoLocationFirst.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE);
+        when(geoLocationFirst.getProvider()).thenReturn(TestConstants.DEFAULT_PROVIDER);
+
+        geoLocationService.createAndAssignGeoLocation(test, TestConstants.DEFAULT_LATITUDE, TestConstants.DEFAULT_LONGITUDE, TestConstants.DEFAULT_ACCURACY_FIRST, Config.GEO_PROVIDER_GPS, TestConstants.DEFAULT_ZONED_DATE_TIME);
+
+        verify(geoLocationFirst).setTime(TestConstants.DEFAULT_ZONED_DATE_TIME);
+        verify(geoLocationRepository).save(geoLocationFirst);
+        verify(test).setGeoLocationUuid(TestConstants.DEFAULT_GEO_LOCATION_UUID);
+        verify(test).setGeoProvider(TestConstants.DEFAULT_PROVIDER);
+        verify(test).setGeoAccuracy(TestConstants.DEFAULT_ACCURACY_FIRST);
+        verify(test).setLongitude(TestConstants.DEFAULT_LONGITUDE);
+        verify(test).setLatitude(TestConstants.DEFAULT_LATITUDE);
+    }
 }
