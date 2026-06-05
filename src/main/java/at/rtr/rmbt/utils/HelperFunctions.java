@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.security.GeneralSecurityException;
+import java.time.Duration;
 import java.util.*;
 
 
@@ -26,22 +27,19 @@ import java.util.*;
 public class HelperFunctions {
 
     private static final int DNS_TIMEOUT = 1;
-    private static Logger logger = LoggerFactory.getLogger(HelperFunctions.class);
+    private static final Logger logger = LoggerFactory.getLogger(HelperFunctions.class);
 
     public String getTimeZoneId() {
         return TimeZone.getDefault().getID();
     }
 
     public static String getRoamingType(final MessageSource messageSource, final int roamingType, Locale locale) {
-        switch (roamingType) {
-            case 0:
-                return messageSource.getMessage("value_roaming_none", null, locale);
-            case 1:
-                return messageSource.getMessage("value_roaming_national", null, locale);
-            case 2:
-                return messageSource.getMessage("value_roaming_international", null, locale);
-        }
-        return "?";
+        return switch (roamingType) {
+            case 0 -> messageSource.getMessage("value_roaming_none", null, locale);
+            case 1 -> messageSource.getMessage("value_roaming_national", null, locale);
+            case 2 -> messageSource.getMessage("value_roaming_international", null, locale);
+            default -> "?";
+        };
     }
 
     public static String geoToString(final Double geoLat, final Double geoLong) {
@@ -83,71 +81,39 @@ public class HelperFunctions {
     public static String getNetworkTypeName(final Integer type) {
         if (type == null)
             return "UNKNOWN";
-        switch (type) {
-            case 1:
-            case 16:
-                return "2G (GSM)";
-            case 2:
-                return "2G (EDGE)";
-            case 3:
-                return "3G (UMTS)";
-            case 4:
-                return "2G (CDMA)";
-            case 5:
-                return "2G (EVDO_0)";
-            case 6:
-                return "2G (EVDO_A)";
-            case 7:
-                return "2G (1xRTT)";
-            case 8:
-                return "3G (HSDPA)";
-            case 9:
-                return "3G (HSUPA)";
-            case 10:
-                return "3G (HSPA)";
-            case 11:
-                return "2G (IDEN)";
-            case 12:
-                return "2G (EVDO_B)";
-            case 13:
-                return "4G (LTE)";
-            case 14:
-                return "2G (EHRPD)";
-            case 15:
-                return "3G (HSPA+)";
-            case 19:
-                return "4G (LTE CA)";
-            case 20:
-                return "5G (NR)";
-            case 40:
-                return "4G (+5G)";
-            case 41:
-                return "5G (NR)";
-            case 42:
-                return "5G (NR)";
-            case 97:
-                return "CLI";
-            case 98:
-                return "BROWSER";
-            case 99:
-                return "WLAN";
-            case 101:
-                return "2G/3G";
-            case 102:
-                return "3G/4G";
-            case 103:
-                return "2G/4G";
-            case 104:
-                return "2G/3G/4G";
-            case 105:
-                return "MOBILE";
-            case 106:
-                return "Ethernet";
-            case 107:
-                return "Bluetooth";
-            default:
-                return "UNKNOWN";
-        }
+        return switch (type) {
+            case 1, 16 -> "2G (GSM)";
+            case 2 -> "2G (EDGE)";
+            case 3 -> "3G (UMTS)";
+            case 4 -> "2G (CDMA)";
+            case 5 -> "2G (EVDO_0)";
+            case 6 -> "2G (EVDO_A)";
+            case 7 -> "2G (1xRTT)";
+            case 8 -> "3G (HSDPA)";
+            case 9 -> "3G (HSUPA)";
+            case 10 -> "3G (HSPA)";
+            case 11 -> "2G (IDEN)";
+            case 12 -> "2G (EVDO_B)";
+            case 13 -> "4G (LTE)";
+            case 14 -> "2G (EHRPD)";
+            case 15 -> "3G (HSPA+)";
+            case 19 -> "4G (LTE CA)";
+            case 20 -> "5G (NR)";
+            case 40 -> "4G (+5G)";
+            case 41 -> "5G (NR)";
+            case 42 -> "5G (NR)";
+            case 97 -> "CLI";
+            case 98 -> "BROWSER";
+            case 99 -> "WLAN";
+            case 101 -> "2G/3G";
+            case 102 -> "3G/4G";
+            case 103 -> "2G/4G";
+            case 104 -> "2G/3G/4G";
+            case 105 -> "MOBILE";
+            case 106 -> "Ethernet";
+            case 107 -> "Bluetooth";
+            default -> "UNKNOWN";
+        };
     }
 
     public static String calculateHMAC(final byte[] secret, final String data) {
@@ -172,7 +138,7 @@ public class HelperFunctions {
             return mac.doFinal(data);
         } catch (final GeneralSecurityException e) {
 
-            logger.error("Unexpected error while creating sha256-hash: {}", e.getMessage());
+            logger.error("Error while creating 2 arg sha256-hash: {}", e.getMessage());
             int size = 16;
             return new byte[size];
         }
@@ -188,7 +154,7 @@ public class HelperFunctions {
             return mac.doFinal();
         } catch (final GeneralSecurityException e) {
 
-            logger.error("Unexpected error while creating sha256-hash: {}", e.getMessage());
+            logger.error("Error while creating 3 arg sha256-hash: {}", e.getMessage());
             int size = 16;
             return new byte[size];
         }
@@ -203,7 +169,7 @@ public class HelperFunctions {
         try {
             final Lookup lookup = new Lookup(ReverseMap.fromAddress(adr), Type.PTR);
             final SimpleResolver resolver = new SimpleResolver();
-            resolver.setTimeout(DNS_TIMEOUT);
+            resolver.setTimeout(Duration.ofSeconds(DNS_TIMEOUT));
             lookup.setResolver(resolver);
             final Record[] records = lookup.run();
             if (lookup.getResult() == Lookup.SUCCESSFUL && records != null) {
@@ -241,44 +207,9 @@ public class HelperFunctions {
                 result = result.replaceFirst(".0$", "");
             return result;
         } catch (final Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to anonymize IP address", e);
             return null;
         }
-    }
-
-    @Deprecated
-    //Don't use this method any more due to stringent rate limiting
-    public static ASInformation getASInformation(final InetAddress addr) {
-        try {
-            String ipAsString = addr.getHostAddress();
-
-            final HttpURLConnection urlConnection = (HttpURLConnection) new URL("https://api.iptoasn.com/v1/as/ip/" + ipAsString).openConnection();
-            urlConnection.setConnectTimeout(3000);
-            urlConnection.setRequestProperty("Accept", "application/json");
-            urlConnection.setRequestProperty("User-Agent", "curl/7.47.0");
-            final StringBuilder stringBuilder = new StringBuilder();
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-            int read;
-            final char[] chars = new char[1024];
-            while ((read = reader.read(chars)) != -1) {
-                stringBuilder.append(chars, 0, read);
-            }
-
-            JSONObject jo = new JSONObject(stringBuilder.toString());
-
-            if (jo.optLong("as_number", 0) <= 0) {
-                return null;
-            }
-            return ASInformation.builder()
-                    .name(jo.optString("as_description", null))
-                    .country(jo.optString("as_country_code", null))
-                    .number(jo.optLong("as_number", 0))
-                    .build();
-
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private static Long getASN(final InetAddress adr) {
@@ -344,7 +275,7 @@ public class HelperFunctions {
             final Lookup lookup = new Lookup(name, Type.TXT);
             final SimpleResolver resolver = new SimpleResolver();
             if (timeoutSeconds > 0) {
-                resolver.setTimeout(timeoutSeconds);
+                resolver.setTimeout(Duration.ofSeconds(timeoutSeconds));
             }
             lookup.setResolver(resolver);
             final Record[] records = lookup.run();
@@ -389,36 +320,96 @@ public class HelperFunctions {
         }
     }
 
-    // Please use this method for all test types. It is not limited to signal tests, despite the name.
-    // It implements the primary usage of local MaxMind databases and as fallback the web API of cymru.com
+    /** Strategy for resolving {@link ASInformation} for an IP address; returns {@code null} when it cannot. */
+    @FunctionalInterface
+    private interface AsInformationResolver {
+        ASInformation resolve(InetAddress address);
+    }
+
+    /**
+     * AS information (number/name/country) for an IP address. Prioritizes the local MaxMind databases
+     * and falls back to the cymru.com DNS API. Used for all test types (the "...ForSignalRequest" name
+     * is historical). Always returns a non-null {@link ASInformation}; its fields are null when nothing
+     * resolves.
+     */
     public static ASInformation getASInformationForSignalRequest(final InetAddress addr) {
-        Long asNumber = null;
-        String asName = null;
-        String asCountry = null;
-
-        // 1) Try local MaxMind databases as default (ASN + Country)
-        final GeoIpHelper.AsnInfo asnInfo = GeoIpHelper.lookupAsn(addr);
-        if (asnInfo != null && asnInfo.autonomousSystemNumber != null) {
-            asNumber = asnInfo.autonomousSystemNumber;
-            asName = asnInfo.autonomousSystemOrganization;
-            asCountry = HelperFunctions.getAScountry(asNumber); // get the AS country always via cymru.com web API
-        } else {
-
-            // 2) Fallback to web API of cymru.com
-            asNumber = HelperFunctions.getASN(addr);
-            if (Objects.isNull(asNumber)) {
-                asName = null;
-                asCountry = null;
-            } else {
-                asName = HelperFunctions.getASName(asNumber);
-                asCountry = HelperFunctions.getAScountry(asNumber);
+        final AsInformationResolver[] resolvers = {
+                HelperFunctions::asInformationFromMaxMind, // 1) local MaxMind databases (preferred)
+                HelperFunctions::asInformationFromCymru,   // 2) cymru.com DNS API (fallback)
+                HelperFunctions::asInformationFromIpToAsn  // 3) iptoasn (2nd fallback)
+        };
+        for (final AsInformationResolver resolver : resolvers) {
+            final ASInformation info = resolver.resolve(addr);
+            if (info != null && info.getNumber() != null) {
+                return info;
             }
         }
+        return ASInformation.builder().build();
+    }
+
+    /**
+     * AS info from the local MaxMind databases (number + name). The MaxMind ASN database carries no AS
+     * registration country, so the country is enriched from cymru.com by ASN. Returns {@code null} if
+     * MaxMind has no ASN for the address.
+     */
+    static ASInformation asInformationFromMaxMind(final InetAddress addr) {
+        final GeoIpHelper.AsnInfo asnInfo = GeoIpHelper.lookupAsn(addr);
+        if (asnInfo == null || asnInfo.autonomousSystemNumber == null) {
+            return null;
+        }
+        final Long asn = asnInfo.autonomousSystemNumber;
         return ASInformation.builder()
-                .number(asNumber)
-                .name(asName)
-                .country(asCountry)
+                .number(asn)
+                .name(asnInfo.autonomousSystemOrganization)
+                .country(getAScountry(asn))
                 .build();
+    }
+
+    /** AS info entirely from the cymru.com DNS API (number, name, country). Returns {@code null} if no ASN. */
+    private static ASInformation asInformationFromCymru(final InetAddress addr) {
+        final Long asn = getASN(addr);
+        if (asn == null) {
+            return null;
+        }
+        return ASInformation.builder()
+                .number(asn)
+                .name(getASName(asn))
+                .country(getAScountry(asn))
+                .build();
+    }
+
+    /**
+     * AS info from the iptoasn.com HTTP API. Deprecated (stringent rate limiting); retained as an
+     * alternative {@link AsInformationResolver}.
+     */
+    private static ASInformation asInformationFromIpToAsn(final InetAddress addr) {
+        try {
+            final HttpURLConnection urlConnection = (HttpURLConnection)
+                    new URL("https://api.iptoasn.com/v1/as/ip/" + addr.getHostAddress()).openConnection();
+            urlConnection.setConnectTimeout(3000);
+            urlConnection.setRequestProperty("Accept", "application/json");
+            urlConnection.setRequestProperty("User-Agent", "curl/7.47.0");
+            final StringBuilder sb = new StringBuilder();
+            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+                int read;
+                final char[] chars = new char[1024];
+                while ((read = reader.read(chars)) != -1) {
+                    sb.append(chars, 0, read);
+                }
+            }
+            final JSONObject jo = new JSONObject(sb.toString());
+            if (jo.optLong("as_number", 0) <= 0) {
+                return null;
+            }
+            return ASInformation.builder()
+                    .number(jo.optLong("as_number", 0))
+                    .name(jo.optString("as_description", null))
+                    .country(jo.optString("as_country_code", null))
+                    .build();
+        } catch (final JSONException | IOException e) {
+            logger.warn("iptoasn.com AS lookup failed: {}", e.getMessage());
+        }
+        return null;
     }
 
     public static String getNatType(final InetAddress localAdr, final InetAddress publicAdr) {
