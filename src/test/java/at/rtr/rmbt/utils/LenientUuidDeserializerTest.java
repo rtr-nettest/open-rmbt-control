@@ -52,5 +52,7 @@ class LenientUuidDeserializerTest {
     @Test
     void malformedUuidIsNull() throws Exception {
         assertNull(read("\"not-a-uuid\""));
+        // the exact value that crashed /result (TestResultRequest.test_uuid)
+        assertNull(read("\"46e6e982-d654-4bba-9dc4-orf\""));
     }
 }

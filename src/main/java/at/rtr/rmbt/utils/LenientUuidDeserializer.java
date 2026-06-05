@@ -22,18 +22,10 @@ public class LenientUuidDeserializer extends JsonDeserializer<UUID> {
     @Override
     public UUID deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
         final String raw = parser.getValueAsString();
-        if (raw == null) {
-            return null;
+        final UUID uuid = UuidUtils.toUuidOrNull(raw);
+        if (uuid == null && raw != null && !raw.isBlank() && !"null".equalsIgnoreCase(raw.trim())) {
+            log.debug("Ignoring malformed client uuid '{}'", raw);
         }
-        final String value = raw.trim();
-        if (value.isEmpty() || "null".equalsIgnoreCase(value)) {
-            return null;
-        }
-        try {
-            return UUID.fromString(value);
-        } catch (IllegalArgumentException invalid) {
-            log.debug("Ignoring malformed client uuid '{}'", value);
-            return null;
-        }
+        return uuid;
     }
 }
