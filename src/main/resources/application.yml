@@ -83,6 +83,16 @@ client-tenant:
     rtr: rtr
   defaultTenant: rtr
 
+# springdoc / Swagger UI. Serve the OpenAPI spec at /api-docs(.yaml) instead of the springdoc
+# default /v3/api-docs. Rationale: this Tomcat shares catalina.properties (JVM-global system
+# properties) across webapps, and the statistics backend sets springdoc.swagger-ui.url=/api-docs.yaml
+# there, which leaks into this control server (a JVM system property outranks this file, so we
+# cannot override swagger-ui.url back — but api-docs.path is NOT injected, so we can move the spec
+# to match). Swagger UI then resolves the spec via swagger-config regardless of environment.
+springdoc:
+  api-docs:
+    path: /api-docs
+
 ---
 spring:
   config:

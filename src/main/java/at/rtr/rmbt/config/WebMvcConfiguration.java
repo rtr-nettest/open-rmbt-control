@@ -77,7 +77,12 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                             NEWS_URL, REGISTRATION_URL, RESULT_QOS_URL, RESULT_URL, SETTINGS_URL,
                             PROVIDERS, TEST_RESULT, HISTORY, SYNC, MEASUREMENT_QOS_RESULT, VERSION, RESULT_UPDATE,
                             QOS_BY_OPEN_TEST_UUID, QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE,
-                            "/swagger-ui/**", "/v3/api-docs/**",
+                            // Swagger UI + OpenAPI spec. Both the springdoc default (/v3/api-docs)
+                            // and the deployment's overridden path (/api-docs, incl. .yaml/.json) are
+                            // whitelisted, so the spec is not blocked by anyRequest().authenticated().
+                            "/swagger-ui/**", "/swagger-ui.html",
+                            "/v3/api-docs", "/v3/api-docs/**", "/v3/api-docs.yaml",
+                            "/api-docs", "/api-docs/**", "/api-docs.yaml", "/api-docs.json",
                             // JavaMelody report: reachable, but guarded by MonitoringAuthFilter (MELODY_PW)
                             "/monitoring", "/monitoring/**")
                     .permitAll();
@@ -102,7 +107,12 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers("/v3/api-docs", "/swagger-ui/**", "/v2/api-docs", "/configuration/ui",
+                // OpenAPI spec + Swagger UI. Both the springdoc default (/v3/api-docs) and the
+                // path this app serves the spec at (/api-docs, incl. .yaml/.json and the
+                // swagger-config sub-path) bypass the security chain, so the spec is never 403'd.
+                .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/v3/api-docs.yaml",
+                        "/api-docs", "/api-docs/**", "/api-docs.yaml", "/api-docs.json",
+                        "/swagger-ui/**", "/v2/api-docs", "/configuration/ui",
                         "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/health")
                 .requestMatchers(HttpMethod.OPTIONS, "/**");
     }

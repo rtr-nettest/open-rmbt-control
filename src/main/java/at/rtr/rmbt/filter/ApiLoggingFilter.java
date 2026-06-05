@@ -30,6 +30,15 @@ public class ApiLoggingFilter implements Filter {
             HttpServletRequest httpServletRequest = (HttpServletRequest) request;
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
+            // Swagger UI / OpenAPI spec and other static infrastructure are not RMBT API calls and
+            // must not be wrapped: the BufferedResponseWrapper below corrupts springdoc's spec
+            // response (it would otherwise be returned as HTTP 200 with an empty body). Pass these
+            // through untouched, against the original request/response.
+            if (isInfrastructurePath(httpServletRequest.getServletPath())) {
+                chain.doFilter(request, response);
+                return;
+            }
+
             Map<String, String> requestMap = this.getTypesafeRequestMap(httpServletRequest);
             BufferedRequestWrapper bufferedRequest = new BufferedRequestWrapper(httpServletRequest);
             BufferedResponseWrapper bufferedResponse = new BufferedResponseWrapper(httpServletResponse);
@@ -83,6 +92,23 @@ public class ApiLoggingFilter implements Filter {
             }
         }
         return false;
+    }
+
+    /**
+     * Paths that must bypass request/response buffering: the springdoc OpenAPI spec and Swagger UI
+     * (whose responses the buffering wrapper corrupts), plus webjars and the actuator health probe.
+     * Matched against the context-relative servlet path (e.g. {@code /v3/api-docs}).
+     */
+    private static boolean isInfrastructurePath(String servletPath) {
+        if (servletPath == null) {
+            return false;
+        }
+        return servletPath.startsWith("/v3/api-docs")
+                || servletPath.startsWith("/api-docs")
+                || servletPath.startsWith("/swagger-ui")
+                || servletPath.startsWith("/swagger-resources")
+                || servletPath.startsWith("/webjars")
+                || servletPath.equals("/health");
     }
 
     private static boolean isTextualContentType(String contentType) {
