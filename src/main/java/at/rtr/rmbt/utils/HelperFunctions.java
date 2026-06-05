@@ -28,6 +28,9 @@ public class HelperFunctions {
 
     private static final int DNS_TIMEOUT = 1;
     private static final Logger logger = LoggerFactory.getLogger(HelperFunctions.class);
+    /** Base URL of the iptoasn-compatible "AS by IP" HTTP API; the client IP is appended.
+     * see <a href="https://github.com/jedisct1/iptoasn-webservice">...</a> */
+    private static final String IPTOASN_AS_BY_IP_URL = "http://127.0.0.1:53661/v1/as/ip/";
 
     public String getTimeZoneId() {
         return TimeZone.getDefault().getID();
@@ -347,12 +350,31 @@ public class HelperFunctions {
         return ASInformation.builder().build();
     }
 
+    /** A single AS-information source, for {@link #getASInformation(InetAddress, AsSource)}. */
+    public enum AsSource {
+        MAXMIND, CYMRU, IPTOASN
+    }
+
+    /**
+     * Resolves AS information from one explicitly chosen source; returns {@code null} when that source
+     * has no data or is unreachable. For normal use prefer {@link #getASInformationForSignalRequest},
+     * which prioritizes the sources. This single-source entry point exists mainly so each resolver can
+     * be exercised directly (e.g. by integration tests) without reflection.
+     */
+    public static ASInformation getASInformation(final InetAddress addr, final AsSource source) {
+        return switch (source) {
+            case MAXMIND -> asInformationFromMaxMind(addr);
+            case CYMRU -> asInformationFromCymru(addr);
+            case IPTOASN -> asInformationFromIpToAsn(addr);
+        };
+    }
+
     /**
      * AS info from the local MaxMind databases (number + name). The MaxMind ASN database carries no AS
      * registration country, so the country is enriched from cymru.com by ASN. Returns {@code null} if
      * MaxMind has no ASN for the address.
      */
-    static ASInformation asInformationFromMaxMind(final InetAddress addr) {
+    private static ASInformation asInformationFromMaxMind(final InetAddress addr) {
         final GeoIpHelper.AsnInfo asnInfo = GeoIpHelper.lookupAsn(addr);
         if (asnInfo == null || asnInfo.autonomousSystemNumber == null) {
             return null;
@@ -385,7 +407,7 @@ public class HelperFunctions {
     private static ASInformation asInformationFromIpToAsn(final InetAddress addr) {
         try {
             final HttpURLConnection urlConnection = (HttpURLConnection)
-                    new URL("https://api.iptoasn.com/v1/as/ip/" + addr.getHostAddress()).openConnection();
+                    new URL(IPTOASN_AS_BY_IP_URL + addr.getHostAddress()).openConnection();
             urlConnection.setConnectTimeout(3000);
             urlConnection.setRequestProperty("Accept", "application/json");
             urlConnection.setRequestProperty("User-Agent", "curl/7.47.0");

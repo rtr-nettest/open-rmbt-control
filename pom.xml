@@ -28,6 +28,10 @@
         <apache.commons.version>[3.18.0,)</apache.commons.version>
         <auth0-spring-security-api.version>1.4.0</auth0-spring-security-api.version>
         <start-class>at.rtr.rmbt.RTRApplication</start-class>
+        <!-- JUnit 5 @Tag("integration") tests (e.g. live network lookups) are excluded by default,
+             including in CI's `mvn compile test`. Run them on demand by clearing the exclusion:
+             mvn test -Dsurefire.excludedGroups=  (optionally with -Dgroups=integration) -->
+        <surefire.excludedGroups>integration</surefire.excludedGroups>
         <!-- log4j2.version is intentionally NOT pinned: the old 2.16.0 override was a stale post-Log4Shell
              workaround that downgraded the log4j-api/log4j-to-slf4j bridge (log4j-core is not on the
              classpath; the backend is Logback). Let the Spring Boot BOM manage the current version. -->
@@ -248,6 +252,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
+                <configuration>
+                    <!-- Skip @Tag("integration") tests by default (overridable via -Dsurefire.excludedGroups=). -->
+                    <excludedGroups>${surefire.excludedGroups}</excludedGroups>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

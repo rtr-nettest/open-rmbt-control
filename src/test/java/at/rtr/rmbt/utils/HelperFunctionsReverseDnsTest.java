@@ -1,5 +1,6 @@
 package at.rtr.rmbt.utils;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.net.Inet6Address;
@@ -15,8 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  * <p>Uses Google Public DNS {@code 2001:4860:4860::8888}, whose PTR record is the stable, globally
  * published {@code dns.google}. This test performs a real DNS query and therefore needs outbound
- * DNS / network access.
+ * DNS / network access, so it is tagged {@code "integration"} (excluded from normal/CI runs).
  */
+@Tag("integration")
 class HelperFunctionsReverseDnsTest {
 
     @Test
