@@ -354,7 +354,7 @@ public class TestSettingsFacade {
         );
         String reverseDns = HelperFunctions.reverseDNSLookup(clientAddress);
         if (StringUtils.isNotBlank(reverseDns))
-            test.setPublicIpRdns(reverseDns.replaceFirst("\\.$", ""));
+            test.setPublicIpRdns(reverseDns);
         test.setRunNdt(testSettingsRequest.getNdt());
         test.setMeasurementType(testSettingsRequest.getMeasurementType());
         return test;

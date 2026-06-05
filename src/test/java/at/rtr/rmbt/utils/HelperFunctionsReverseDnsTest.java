@@ -27,7 +27,7 @@ class HelperFunctionsReverseDnsTest {
         final String reverse = HelperFunctions.reverseDNSLookup(address);
 
         assertNotNull(reverse, "reverse lookup returned null - no PTR resolved for the IPv6 address");
-        // dnsjava returns the fully qualified name with a trailing dot, e.g. "dns.google."
-        assertEquals("dns.google", reverse.replaceFirst("\\.$", ""));
+        // reverseDNSLookup strips the trailing dot, so the result is "dns.google" (not "dns.google.")
+        assertEquals("dns.google", reverse);
     }
 }

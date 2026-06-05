@@ -143,7 +143,7 @@ public class SignalServiceImpl implements SignalService {
                 .publicIpAsName(asInformation.getName())
                 .countryAsn(asInformation.getCountry())
                 .countryGeoip(countryIp)
-                .publicIpRdns(HelperFunctions.getReverseDNS(clientAddress))
+                .publicIpRdns(HelperFunctions.reverseDNSLookup(clientAddress))
                 .status(regStatus)
                 .lastSequenceNumber(-1)
                 .useSsl(false) // hardcode because of database constraint

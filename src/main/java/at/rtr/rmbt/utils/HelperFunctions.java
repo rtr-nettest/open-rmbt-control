@@ -1,7 +1,6 @@
 package at.rtr.rmbt.utils;
 
 import at.rtr.rmbt.dto.ASInformation;
-import at.rtr.rmbt.utils.GeoIpHelper.CountryType;
 
 import com.google.common.net.InetAddresses;
 import lombok.experimental.UtilityClass;
@@ -196,24 +195,36 @@ public class HelperFunctions {
     }
 
 
+    /**
+     * Reverse-DNS (PTR) lookup of an IP address. Best-effort: returns {@code null} on any failure
+     * or timeout. The result has no trailing dot (e.g. {@code dns.google}, not {@code dns.google.}).
+     */
     public static String reverseDNSLookup(final InetAddress adr) {
         try {
-            final Name name = ReverseMap.fromAddress(adr);
-
-            final Lookup lookup = new Lookup(name, Type.PTR);
-            SimpleResolver simpleResolver = new SimpleResolver();
-            simpleResolver.setTimeout(DNS_TIMEOUT);
-            lookup.setResolver(simpleResolver);
+            final Lookup lookup = new Lookup(ReverseMap.fromAddress(adr), Type.PTR);
+            final SimpleResolver resolver = new SimpleResolver();
+            resolver.setTimeout(DNS_TIMEOUT);
+            lookup.setResolver(resolver);
             final Record[] records = lookup.run();
-            if (lookup.getResult() == Lookup.SUCCESSFUL)
-                for (final Record record : records)
-                    if (record instanceof PTRRecord) {
-                        final PTRRecord ptr = (PTRRecord) record;
-                        return ptr.getTarget().toString();
+            if (lookup.getResult() == Lookup.SUCCESSFUL && records != null) {
+                for (final Record record : records) {
+                    if (record instanceof PTRRecord ptr) {
+                        return stripTrailingDot(ptr.getTarget().toString());
                     }
+                }
+            }
         } catch (final Exception ignored) {
+            // reverse DNS is best-effort; resolution failures are non-fatal
         }
         return null;
+    }
+
+    /** Removes a single trailing dot so dnsjava's FQDN {@code "dns.google."} becomes {@code "dns.google"}. */
+    static String stripTrailingDot(final String host) {
+        if (host == null) {
+            return null;
+        }
+        return host.endsWith(".") ? host.substring(0, host.length() - 1) : host;
     }
 
     public String anonymizeIp(final InetAddress inetAddress) {
@@ -270,58 +281,11 @@ public class HelperFunctions {
         return null;
     }
 
-    public static String getReverseDNS(final InetAddress adr) {
-        try {
-            final Name name = ReverseMap.fromAddress(adr);
-
-            final Lookup lookup = new Lookup(name, Type.PTR);
-            SimpleResolver simpleResolver = new SimpleResolver();
-            simpleResolver.setTimeout(DNS_TIMEOUT);
-            lookup.setResolver(simpleResolver);
-            final Record[] records = lookup.run();
-            if (lookup.getResult() == Lookup.SUCCESSFUL)
-                for (final Record record : records)
-                    if (record instanceof PTRRecord) {
-                        final PTRRecord ptr = (PTRRecord) record;
-                        return ptr.getTarget().toString();
-                    }
-        } catch (final Exception e) {
-        }
-        return null;
-    }
-
-    // Don't call this method directly, use getASInformationForSignalRequest() instead
-    public static Long getASN(final InetAddress adr) {
-        try {
-            final Name postfix;
-            if (adr instanceof Inet6Address)
-                postfix = Name.fromConstantString("origin6.asn.cymru.com");
-            else
-                postfix = Name.fromConstantString("origin.asn.cymru.com");
-
-            final Name name = getReverseIPName(adr, postfix);
-            // System.out.println("lookup: " + name);
-
-            final Lookup lookup = new Lookup(name, Type.TXT);
-            SimpleResolver resolver = new SimpleResolver();
-            resolver.setTimeout(3);
-            lookup.setResolver(resolver);
-            final Record[] records = lookup.run();
-            if (lookup.getResult() == Lookup.SUCCESSFUL)
-                for (final Record record : records)
-                    if (record instanceof TXTRecord) {
-                        final TXTRecord txt = (TXTRecord) record;
-                        @SuppressWarnings("unchecked") final List<String> strings = txt.getStrings();
-                        if (strings != null && !strings.isEmpty()) {
-                            final String result = strings.get(0);
-                            final String[] parts = result.split(" ?\\| ?");
-                            if (parts != null && parts.length >= 1)
-                                return Long.parseLong(parts[0].split(" ")[0]);
-                        }
-                    }
-        } catch (final Exception e) {
-        }
-        return null;
+    private static Long getASN(final InetAddress adr) {
+        final Name postfix = (adr instanceof Inet6Address)
+                ? Name.fromConstantString("origin6.asn.cymru.com")
+                : Name.fromConstantString("origin.asn.cymru.com");
+        return parseCymruAsn(cymruTxtLine(getReverseIPName(adr, postfix), 3));
     }
 
     public static Name getReverseIPName(final InetAddress adr, final Name postfix) {
@@ -352,60 +316,77 @@ public class HelperFunctions {
         }
     }
 
-    // Don't call this method directly, use getASInformationForSignalRequest() instead
-    public static String getASName(final long asn) {
+    // Cymru AS line: "<asn> | <country> | <registry> | <date> | <name>"
+    private static String getASName(final long asn) {
+        return cymruField(cymruTxtLine(asnCymruName(asn), 0), 4);
+    }
+
+    // Cymru AS line: "<asn> | <country> | <registry> | <date> | <name>"
+    private static String getAScountry(final long asn) {
+        return cymruField(cymruTxtLine(asnCymruName(asn), 0), 1);
+    }
+
+    /** Builds the Cymru AS lookup name, e.g. {@code AS15169.asn.cymru.com}. */
+    private static Name asnCymruName(final long asn) {
         try {
-            final Name postfix = Name.fromConstantString("asn.cymru.com.");
-            final Name name = new Name(String.format("AS%d", asn), postfix);
-            // System.out.println("lookup: " + name);
+            return new Name(String.format("AS%d", asn), Name.fromConstantString("asn.cymru.com."));
+        } catch (final TextParseException e) {
+            throw new IllegalStateException("AS name cannot be invalid", e);
+        }
+    }
 
+    /**
+     * Runs a Cymru TXT lookup and returns the first TXT record's pipe-delimited "verbose" line, or
+     * {@code null}. Network call; best-effort (any failure/timeout returns {@code null}).
+     */
+    private static String cymruTxtLine(final Name name, final int timeoutSeconds) {
+        try {
             final Lookup lookup = new Lookup(name, Type.TXT);
-            lookup.setResolver(new SimpleResolver());
+            final SimpleResolver resolver = new SimpleResolver();
+            if (timeoutSeconds > 0) {
+                resolver.setTimeout(timeoutSeconds);
+            }
+            lookup.setResolver(resolver);
             final Record[] records = lookup.run();
-            if (lookup.getResult() == Lookup.SUCCESSFUL)
-                for (final Record record : records)
-                    if (record instanceof TXTRecord) {
-                        final TXTRecord txt = (TXTRecord) record;
-                        @SuppressWarnings("unchecked") final List<String> strings = txt.getStrings();
+            if (lookup.getResult() == Lookup.SUCCESSFUL && records != null) {
+                for (final Record record : records) {
+                    if (record instanceof TXTRecord txt) {
+                        final List<String> strings = txt.getStrings();
                         if (strings != null && !strings.isEmpty()) {
-                            // System.out.println(strings);
-
-                            final String result = strings.get(0);
-                            final String[] parts = result.split(" ?\\| ?");
-                            if (parts != null && parts.length >= 1)
-                                return parts[4];
+                            return strings.get(0);
                         }
                     }
-        } catch (final Exception e) {
+                }
+            }
+        } catch (final Exception ignored) {
+            // best-effort
         }
         return null;
     }
 
-    // Don't call this method directly, use getASInformationForSignalRequest() instead
-    public static String getAScountry(final long asn) {
-        try {
-            final Name postfix = Name.fromConstantString("asn.cymru.com.");
-            final Name name = new Name(String.format("AS%d", asn), postfix);
-            // System.out.println("lookup: " + name);
-
-            final Lookup lookup = new Lookup(name, Type.TXT);
-            lookup.setResolver(new SimpleResolver());
-            final Record[] records = lookup.run();
-            if (lookup.getResult() == Lookup.SUCCESSFUL)
-                for (final Record record : records)
-                    if (record instanceof TXTRecord) {
-                        final TXTRecord txt = (TXTRecord) record;
-                        @SuppressWarnings("unchecked") final List<String> strings = txt.getStrings();
-                        if (strings != null && !strings.isEmpty()) {
-                            final String result = strings.get(0);
-                            final String[] parts = result.split(" ?\\| ?");
-                            if (parts != null && parts.length >= 1)
-                                return parts[1];
-                        }
-                    }
-        } catch (final Exception e) {
+    /**
+     * Returns the trimmed field at {@code index} of a Cymru pipe-delimited line, or {@code null} if
+     * the line is null or has fewer fields (no {@link ArrayIndexOutOfBoundsException}).
+     */
+    static String cymruField(final String txtLine, final int index) {
+        if (txtLine == null) {
+            return null;
         }
-        return null;
+        final String[] parts = txtLine.split(" ?\\| ?");
+        return index >= 0 && index < parts.length ? parts[index].trim() : null;
+    }
+
+    /** Parses the first ASN of a Cymru origin line (field 0 may list several, space-separated). */
+    static Long parseCymruAsn(final String txtLine) {
+        final String first = cymruField(txtLine, 0);
+        if (first == null || first.isBlank()) {
+            return null;
+        }
+        try {
+            return Long.parseLong(first.split(" ")[0]);
+        } catch (final NumberFormatException e) {
+            return null;
+        }
     }
 
     // Please use this method for all test types. It is not limited to signal tests, despite the name.
@@ -420,9 +401,6 @@ public class HelperFunctions {
         if (asnInfo != null && asnInfo.autonomousSystemNumber != null) {
             asNumber = asnInfo.autonomousSystemNumber;
             asName = asnInfo.autonomousSystemOrganization;
-            /* Proxy value abandoned due to ticket:1404#comments:40-44
-            asCountry = GeoIpHelper.lookupCountry(addr, CountryType.REGISTERED); //get registered country of the IP as proxy to AS country
-            */
             asCountry = HelperFunctions.getAScountry(asNumber); // get the AS country always via cymru.com web API
         } else {
 
