@@ -204,7 +204,6 @@ public class HelperFunctions {
             SimpleResolver simpleResolver = new SimpleResolver();
             simpleResolver.setTimeout(DNS_TIMEOUT);
             lookup.setResolver(simpleResolver);
-            lookup.setCache(null);
             final Record[] records = lookup.run();
             if (lookup.getResult() == Lookup.SUCCESSFUL)
                 for (final Record record : records)
@@ -279,7 +278,6 @@ public class HelperFunctions {
             SimpleResolver simpleResolver = new SimpleResolver();
             simpleResolver.setTimeout(DNS_TIMEOUT);
             lookup.setResolver(simpleResolver);
-            lookup.setCache(null);
             final Record[] records = lookup.run();
             if (lookup.getResult() == Lookup.SUCCESSFUL)
                 for (final Record record : records)
@@ -308,7 +306,6 @@ public class HelperFunctions {
             SimpleResolver resolver = new SimpleResolver();
             resolver.setTimeout(3);
             lookup.setResolver(resolver);
-            lookup.setCache(null);
             final Record[] records = lookup.run();
             if (lookup.getResult() == Lookup.SUCCESSFUL)
                 for (final Record record : records)
@@ -364,7 +361,6 @@ public class HelperFunctions {
 
             final Lookup lookup = new Lookup(name, Type.TXT);
             lookup.setResolver(new SimpleResolver());
-            lookup.setCache(null);
             final Record[] records = lookup.run();
             if (lookup.getResult() == Lookup.SUCCESSFUL)
                 for (final Record record : records)
@@ -394,7 +390,6 @@ public class HelperFunctions {
 
             final Lookup lookup = new Lookup(name, Type.TXT);
             lookup.setResolver(new SimpleResolver());
-            lookup.setCache(null);
             final Record[] records = lookup.run();
             if (lookup.getResult() == Lookup.SUCCESSFUL)
                 for (final Record record : records)
