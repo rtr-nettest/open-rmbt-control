@@ -309,9 +309,7 @@ public class ResultRequest {
     @JsonProperty(value = "last_qos_status")
     private final QosStatus lastQosStatus;
 
-
-    @Schema(description = "Stacktrace of IllegalNetworkChangeException exception grabbed from RMBTClient which was happened during the test.\n" +
-            "May be null if test was success or cancelled")
+    @Schema(description = "Information on error cause")
     @JsonProperty(value = "test_error_cause")
     private final String testErrorCause;
 
