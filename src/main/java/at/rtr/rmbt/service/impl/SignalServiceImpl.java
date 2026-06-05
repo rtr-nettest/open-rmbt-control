@@ -37,7 +37,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -243,16 +242,15 @@ public class SignalServiceImpl implements SignalService {
         // radioInfo (cells, signals)
         processRadioInfo(signalMeasurementResultRequest.getRadioInfo(), updatedTest);
 
-        // If at least one fence is present, the test location is defined by the first
-        // (oldest, index 0) fence rather than by the geoLocations. The geoLocations are
-        // still stored above; only the test's representative position is overridden.
-        applyFenceLocation(signalMeasurementResultRequest.getFences(), updatedTest);
+        // Fences: each fence's centre location is stored as a geo_location and referenced by the
+        // fence; the first (oldest) fence's geo_location defines the test's representative location.
+        // Done before the save so the geo_location exists and the test location is set when the
+        // test_location trigger fires.
+        processFences(signalMeasurementResultRequest.getFences(), updatedTest);
 
         log.info("Updated test before save = {}", updatedTest);
         testMapper.updateTestLocation(updatedTest);
         testRepository.saveAndFlush(updatedTest);
-
-        processFences(signalMeasurementResultRequest.getFences(), updatedTest);
     }
 
 
@@ -376,34 +374,6 @@ public class SignalServiceImpl implements SignalService {
         if (Objects.nonNull(fences)) {
             fencesService.processFencesRequests(fences, updatedTest);
         }
-    }
-
-    /**
-     * Defines the test's representative location from the first (oldest, index 0) fence, if any
-     * fence is present. Since a fence has no client {@code geo_location} of its own, a single
-     * geo_location row with a server-generated UUID is created from the fence center and assigned
-     * to the test (which also sets lat/long, accuracy and provider); the derived geometries are
-     * computed afterwards by {@code updateTestLocation}. Accuracy and provider are taken from the
-     * fence as-is (NULL when the client did not supply them — no default is invented). When no fence
-     * is present the location set from the geoLocations is left untouched.
-     */
-    private void applyFenceLocation(List<FencesRequest> fences, Test updatedTest) {
-        if (fences == null || fences.isEmpty()) {
-            return;
-        }
-        FencesRequest firstFence = fences.get(0);
-        SimpleLocationRequest location = firstFence.getLocation();
-        if (location == null || location.getLatitude() == null || location.getLongitude() == null) {
-            return;
-        }
-        // Derive the geo_location timestamp from the fence/test time: test time + fence offset
-        // (same derivation FencesServiceImpl uses for fence_time).
-        final ZonedDateTime fenceTime = updatedTest.getTime() == null
-                ? null
-                : updatedTest.getTime().plus(Objects.requireNonNullElse(firstFence.getOffsetMs(), 0L), ChronoUnit.MILLIS);
-        geoLocationService.createAndAssignGeoLocation(
-                updatedTest, location.getLatitude(), location.getLongitude(),
-                firstFence.getAccuracy(), firstFence.getProvider(), fenceTime);
     }
 
     private String getSignalStrength(RadioSignal signal) {

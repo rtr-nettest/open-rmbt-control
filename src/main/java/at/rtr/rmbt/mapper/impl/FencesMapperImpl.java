@@ -4,8 +4,6 @@ import at.rtr.rmbt.mapper.FencesMapper;
 import at.rtr.rmbt.model.Fences;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.request.FencesRequest;
-import at.rtr.rmbt.utils.GeometryUtils;
-import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,11 +11,9 @@ public class FencesMapperImpl implements FencesMapper {
 
     @Override
     public Fences fencesRequestToFences(FencesRequest fencesRequest, Test test) {
-        final double latitude = fencesRequest.getLocation().getLatitude();
-        final double longitude = fencesRequest.getLocation().getLongitude();
-        final Geometry geom4326 = GeometryUtils.getPointEPSG4326FromLongitudeAndLatitude(longitude, latitude);
-
-        // fenceId and fenceTime are assigned by FencesServiceImpl, which owns the per-test counter.
+        // The fence's centre location is no longer stored on the fence; it is held in a geo_location
+        // row and referenced via geo_location_uuid (assigned by FencesServiceImpl, which also owns
+        // the per-test fenceId/fenceTime counters).
         return Fences.builder()
                 .openTestUUID(test.getOpenTestUuid())
                 .technology(fencesRequest.getTechnology())
@@ -26,12 +22,7 @@ public class FencesMapperImpl implements FencesMapper {
                 .offsetMs(fencesRequest.getOffsetMs())
                 .durationMs(fencesRequest.getDurationMs())
                 .radius(fencesRequest.getRadius())
-                .geom4326(geom4326)
                 .signal(fencesRequest.getSignal())
-                // Persist only what the client sent; the 14 m / "gps" defaults apply to the
-                // test row's location, not to the stored fence.
-                .accuracy(fencesRequest.getAccuracy())
-                .provider(fencesRequest.getProvider())
                 .build();
     }
 }

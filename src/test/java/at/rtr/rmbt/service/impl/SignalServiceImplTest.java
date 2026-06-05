@@ -24,7 +24,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static at.rtr.rmbt.TestConstants.*;
@@ -139,54 +138,28 @@ public class SignalServiceImplTest {
     }
 
     @Test
-    public void processSignalMeasurementResult_whenFirstFencePresent_locationTakenFromFirstFence() {
+    public void processSignalMeasurementResult_whenFencesPresent_delegatesToFencesService() {
         SignalMeasurementResultRequest request = mock(SignalMeasurementResultRequest.class);
         when(request.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
         when(request.getClientUUID()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
         when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
         when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_MEASUREMENT_RESULT_STATUSES))
                 .thenReturn(Optional.of(test));
-        when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
-
-        FencesRequest firstFence = FencesRequest.builder()
-                .location(SimpleLocationRequest.builder().latitude(48.2).longitude(16.3).build())
-                .accuracy(9.5).provider("network").offsetMs(5000L).durationMs(1L).radius(10.0).build();
-        FencesRequest secondFence = FencesRequest.builder()
-                .location(SimpleLocationRequest.builder().latitude(1.0).longitude(2.0).build())
-                .accuracy(5.0).provider("gps").offsetMs(100L).durationMs(1L).radius(10.0).build();
-        when(request.getFences()).thenReturn(List.of(firstFence, secondFence));
-        Map<String, String> headers = Map.of(HeaderConstants.IP, "127.0.0.1");
-
-        signalService.processSignalMeasurementResult(request, httpServletRequest, headers);
-
-        // A geo_location with a server-generated UUID is created from the first fence (incl. its
-        // accuracy/provider and a timestamp derived from test time + fence offset) and assigned to
-        // the test.
-        var expectedTime = TestConstants.DEFAULT_ZONED_DATE_TIME.plus(5000L, ChronoUnit.MILLIS);
-        verify(geoLocationService).createAndAssignGeoLocation(test, 48.2, 16.3, 9.5, "network", expectedTime);
-    }
-
-    @Test
-    public void processSignalMeasurementResult_whenFenceHasNoAccuracyOrProvider_passesNull() {
-        SignalMeasurementResultRequest request = mock(SignalMeasurementResultRequest.class);
-        when(request.getTestUUID()).thenReturn(TestConstants.DEFAULT_TEST_UUID);
-        when(request.getClientUUID()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
-        when(clientRepository.findByUuid(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(Optional.of(rtrClient));
-        when(testRepository.findByUuidAndStatusesInLocked(TestConstants.DEFAULT_TEST_UUID, Config.SIGNAL_MEASUREMENT_RESULT_STATUSES))
-                .thenReturn(Optional.of(test));
-        when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
 
         FencesRequest fence = FencesRequest.builder()
                 .location(SimpleLocationRequest.builder().latitude(48.2).longitude(16.3).build())
                 .offsetMs(0L).durationMs(1L).radius(10.0).build();
-        when(request.getFences()).thenReturn(List.of(fence));
+        var fences = List.of(fence);
+        when(request.getFences()).thenReturn(fences);
         Map<String, String> headers = Map.of(HeaderConstants.IP, "127.0.0.1");
 
         signalService.processSignalMeasurementResult(request, httpServletRequest, headers);
 
-        // No accuracy/provider on the fence -> stored as NULL (no invented default).
-        var expectedTime = TestConstants.DEFAULT_ZONED_DATE_TIME.plus(0L, ChronoUnit.MILLIS);
-        verify(geoLocationService).createAndAssignGeoLocation(test, 48.2, 16.3, null, null, expectedTime);
+        // FencesServiceImpl owns creating a geo_location per fence and assigning the first to the
+        // test (covered by FencesServiceImplTest); here we only assert the delegation and ordering.
+        verify(fencesService).processFencesRequests(fences, test);
+        verify(testMapper).updateTestLocation(test);
+        verify(testRepository).saveAndFlush(test);
     }
 
     @Test

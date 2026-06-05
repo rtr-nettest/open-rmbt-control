@@ -3,7 +3,6 @@ package at.rtr.rmbt.model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
-import org.locationtech.jts.geom.Geometry;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -59,20 +58,19 @@ public class Fences {
     @Column(name = "fence_time") // timestamptz
     private ZonedDateTime fenceTime;
 
-    @Schema(description = "point geometry with 4326 projection", example = "POINT (16.3738 48.2082)")
-    @Column(name = "geom4326") // name in PostgreSQL
-    private Geometry geom4326; // name in Java
-
     @Schema(description = "Minimum signal (RSRP) of fence in dBm", example = "-103.5")
     @Column(name = "signal") // float8
     private Double signal;
 
-    @Schema(description = "Location accuracy of the fence center in m, as reported by the client", example = "13.014")
-    @Column(name = "accuracy") // float8
-    private Double accuracy;
-
-    @Schema(description = "Location provider of the fence center, as reported by the client", example = "gps")
-    @Column(name = "provider") // varchar
-    private String provider;
+    /**
+     * The geo_location row holding this fence's centre location. Every fence has exactly one
+     * (server generated); the column is NOT NULL — a fence cannot exist without a location.
+     * Mapping it as an association (rather than a bare UUID) lets Hibernate order the geo_location
+     * insert before the fence insert.
+     */
+    @Schema(description = "geo_location row holding this fence's centre location (server generated)")
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "geo_location_uuid", referencedColumnName = "geo_location_uuid", nullable = false)
+    private GeoLocation geoLocation;
 }
 

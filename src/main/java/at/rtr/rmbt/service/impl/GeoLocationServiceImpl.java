@@ -69,13 +69,20 @@ public class GeoLocationServiceImpl implements GeoLocationService {
     }
 
     @Override
-    public void createAndAssignGeoLocation(Test test, double geoLat, double geoLong, Double geoAccuracy, String provider, ZonedDateTime time) {
+    public GeoLocation createGeoLocation(Test test, double geoLat, double geoLong, Double geoAccuracy, String provider, ZonedDateTime time) {
         GeoLocation geoLocation = geoLocationMapper.buildNewGeoLocation(test, geoLat, geoLong, geoAccuracy, provider);
         if (time != null) {
             geoLocation.setTime(time);
         }
         geoLocationRepository.save(geoLocation);
+        return geoLocation;
+    }
+
+    @Override
+    public GeoLocation createAndAssignGeoLocation(Test test, double geoLat, double geoLong, Double geoAccuracy, String provider, ZonedDateTime time) {
+        GeoLocation geoLocation = createGeoLocation(test, geoLat, geoLong, geoAccuracy, provider, time);
         updateTestGeo(test, geoLocation);
+        return geoLocation;
     }
 
     private boolean isGeoNotNullAndProviderIsSupported(double geoLat, double geoLong, String provider) {
