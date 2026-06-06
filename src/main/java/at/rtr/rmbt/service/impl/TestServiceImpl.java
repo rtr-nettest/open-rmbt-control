@@ -653,15 +653,17 @@ public class TestServiceImpl implements TestService {
     }
 
     private void addOpenUUID(List<TestResultDetailContainerResponse> propertiesList, Test test, Locale locale) {
-        final String openUuidFormated = (test.getOpenUuid() != null) ?
-            String.format(Constants.TEST_RESULT_DETAIL_OPEN_UUID_TEMPLATE, test.getOpenUuid()):null;
+        if (test.getOpenUuid() != null) {
+            final String openUuidFormated =
+                    String.format(Constants.TEST_RESULT_DETAIL_OPEN_UUID_TEMPLATE, test.getOpenUuid());
 
-        TestResultDetailContainerResponse timeResponse = TestResultDetailContainerResponse.builder()
-                .title(getStringFromBundleWithKeyPrefix("open_uuid", locale))
-                .value(openUuidFormated)
-                .openUUID(openUuidFormated)
-                .build();
-        propertiesList.add(timeResponse);
+            TestResultDetailContainerResponse timeResponse = TestResultDetailContainerResponse.builder()
+                    .title(getStringFromBundleWithKeyPrefix("open_uuid", locale))
+                    .value(openUuidFormated)
+                    .openUUID(openUuidFormated)
+                    .build();
+            propertiesList.add(timeResponse);
+        }
     }
 
     private void addOpenTestUUID(List<TestResultDetailContainerResponse> propertiesList, Test test, Locale locale) {
