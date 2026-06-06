@@ -11,9 +11,11 @@ cleanup-task:
   cron: "0 0 4 * * *"
   # Empty = server's default time zone (e.g. set "Europe/Vienna" if the JVM runs in UTC).
   zone: ""
-  # SQL statements executed, in order, on each run.
+  # SQL statements executed, in order, on each run. This default is a harmless dummy (it just
+  # returns the DB version); a deployment via context.xml may override this, e.g.
+  # cleanup-task.statements[0] = "SELECT version()".
   statements:
-    - "update test set client_public_ip = null where uid = 1"
+    - "select version()"
 spring:
   # Default profile - used when spring.profiles.active is not set
   main:
