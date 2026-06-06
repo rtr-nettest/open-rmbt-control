@@ -70,7 +70,8 @@ public class CleanupTask {
      * row count for DML) are logged.
      */
     private void executeAndLog(final JdbcTemplate jdbc, final String sql) {
-        log.debug("Cleanup task: executing [{}]", sql);
+        final long startNanos = System.nanoTime();
+        log.info("Cleanup task: executing [{}]", sql);
         jdbc.execute((StatementCallback<Void>) stmt -> {
             final boolean hasResultSet = stmt.execute(sql);
             for (SQLWarning w = stmt.getWarnings(); w != null; w = w.getNextWarning()) {
@@ -87,5 +88,7 @@ public class CleanupTask {
             }
             return null;
         });
+        final long elapsedMs = (System.nanoTime() - startNanos) / 1_000_000;
+        log.info("Cleanup task [{}]: completed in {} s", sql, elapsedMs/1000.0);
     }
 }
