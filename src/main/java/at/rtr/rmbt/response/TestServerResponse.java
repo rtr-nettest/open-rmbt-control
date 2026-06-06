@@ -28,9 +28,6 @@ public class TestServerResponse {
     @JsonProperty(value = "name")
     private final String name;
 
-    @JsonProperty(value = "webAddress")
-    private final String webAddress;
-
     @JsonProperty(value = "provider")
     private final ProviderResponse provider;
 

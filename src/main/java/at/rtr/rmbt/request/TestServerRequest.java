@@ -19,9 +19,6 @@ public class TestServerRequest {
     @JsonProperty(value = "name")
     private String name;
 
-    @JsonProperty(value = "webAddress")
-    private String webAddress;
-
     @JsonProperty(value = "port")
     private Integer port;
 
@@ -75,9 +72,8 @@ public class TestServerRequest {
     private boolean encrypted;
 
     @Builder
-    public TestServerRequest(String name, String webAddress, Integer port, Integer portSsl, String city, String country, Double latitude, Double longitude, Geometry location, String webAddressIpV4, String webAddressIpV6, Set<ServerTypeDetailsRequest> serverTypeDetails, Integer priority, Integer weight, boolean active, String secretKey, boolean selectable, String node, boolean encrypted) {
+    public TestServerRequest(String name, Integer port, Integer portSsl, String city, String country, Double latitude, Double longitude, Geometry location, String webAddressIpV4, String webAddressIpV6, Set<ServerTypeDetailsRequest> serverTypeDetails, Integer priority, Integer weight, boolean active, String secretKey, boolean selectable, String node, boolean encrypted) {
         this.name = name;
-        this.webAddress = webAddress;
         this.port = port;
         this.portSsl = portSsl;
         this.city = city;

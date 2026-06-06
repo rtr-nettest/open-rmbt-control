@@ -29,9 +29,6 @@ public class TestServer {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "web_address")
-    private String webAddress;
-
     @Column(name = "port")
     private Integer port;
 

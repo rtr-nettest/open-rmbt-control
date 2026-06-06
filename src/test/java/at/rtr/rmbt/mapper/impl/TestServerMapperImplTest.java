@@ -61,7 +61,6 @@ public class TestServerMapperImplTest {
     public void testServerToTestServerResponse_whenCommonData_expectTestServerResponse() {
         when(testServer.getUid()).thenReturn(TestConstants.DEFAULT_UID);
         when(testServer.getName()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_NAME);
-        when(testServer.getWebAddress()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS);
         when(testServer.getPort()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_PORT);
         when(testServer.getPortSsl()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_PORT_SSL);
         when(testServer.getCity()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_CITY);
@@ -85,7 +84,6 @@ public class TestServerMapperImplTest {
 
         assertEquals(TestConstants.DEFAULT_UID, actualResponse.getId());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_NAME, actualResponse.getName());
-        assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS, actualResponse.getWebAddress());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_PORT, actualResponse.getPort());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_PORT_SSL, actualResponse.getPortSsl());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_CITY, actualResponse.getCity());
@@ -111,7 +109,6 @@ public class TestServerMapperImplTest {
     @Test
     public void testServerRequestToTestServer_whenCommonData_expectTestServer() {
         when(testServerRequest.getName()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_NAME);
-        when(testServerRequest.getWebAddress()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS);
         when(testServerRequest.getPort()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_PORT);
         when(testServerRequest.getPortSsl()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_PORT_SSL);
         when(testServerRequest.getCity()).thenReturn(TestConstants.DEFAULT_TEST_SERVER_CITY);
@@ -134,7 +131,6 @@ public class TestServerMapperImplTest {
         var actualTestServer = testServerMapper.testServerRequestToTestServer(testServerRequest);
 
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_NAME, actualTestServer.getName());
-        assertEquals(TestConstants.DEFAULT_TEST_SERVER_WEB_ADDRESS, actualTestServer.getWebAddress());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_PORT, actualTestServer.getPort());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_PORT_SSL, actualTestServer.getPortSsl());
         assertEquals(TestConstants.DEFAULT_TEST_SERVER_CITY, actualTestServer.getCity());

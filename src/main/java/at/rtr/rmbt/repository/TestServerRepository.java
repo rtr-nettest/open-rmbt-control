@@ -15,6 +15,9 @@ import java.io.*;
 public interface TestServerRepository extends JpaRepository<TestServer, Long> {
     Optional<TestServer> findByUuidAndActive(UUID uuid, Boolean active);
 
+    /** Active servers of the given legacy {@code server_type} — used by the test-server quality check. */
+    List<TestServer> findByServerTypeAndActiveTrue(ServerType serverType);
+
     // use server with coverage = true when coverage in request is true
     @Query(
         value = "SELECT * FROM test_server ts " +
