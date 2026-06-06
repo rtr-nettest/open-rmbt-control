@@ -5,6 +5,7 @@ import at.rtr.rmbt.model.Settings;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.response.ApplicationVersionResponse;
 import at.rtr.rmbt.service.ApplicationVersionService;
+import at.rtr.rmbt.utils.GeoIpHelper;
 
 //no inspection
 import at.rtr.rmbt.Version;
@@ -37,6 +38,7 @@ public class ApplicationVersionServiceImpl implements ApplicationVersionService 
                 .systemUUID(getSystemUUID())
                 .host(applicationHost)
                 .profile(activeProfile)
+                .geoip(GeoIpHelper.isAvailable() ? "present" : "none")
                 .build();
     }
 

@@ -87,6 +87,15 @@ public abstract class GeoIpHelper
         }
     }
 
+    /**
+     * Whether the MaxMind GeoIP databases are available — i.e. at least one of the COUNTRY/ASN
+     * readers can be obtained (the {@code .mmdb} files are present and loadable). Reuses the cached
+     * lazy-loaded readers and the failure-backoff, so it does not repeatedly hit the filesystem.
+     */
+    public static boolean isAvailable() {
+        return getLookupService(DbType.COUNTRY) != null || getLookupService(DbType.ASN) != null;
+    }
+
     public static String lookupCountry(final InetAddress adr) {
         return lookupCountry(adr, CountryType.DEFAULT);
     }

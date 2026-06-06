@@ -24,4 +24,8 @@ public class ApplicationVersionResponse {
     @JsonProperty(value = "profile")
     private final String profile;
 
+    /** GeoIP availability: {@code "present"} when a MaxMind database is loadable, else {@code "none"}. */
+    @JsonProperty(value = "geoip")
+    private final String geoip;
+
 }
