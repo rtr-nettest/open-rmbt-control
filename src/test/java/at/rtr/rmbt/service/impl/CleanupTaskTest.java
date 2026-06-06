@@ -9,11 +9,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.StatementCallback;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
@@ -31,6 +35,9 @@ class CleanupTaskTest {
     @Mock
     private JdbcTemplate jdbcTemplate;
 
+    @Mock
+    private Statement statement;
+
     private CleanupTaskProperties properties;
     private CleanupTask cleanupTask;
 
@@ -41,39 +48,44 @@ class CleanupTaskTest {
     }
 
     @Test
-    void run_executesAllConfiguredStatementsInOrder() {
+    void run_executesAllConfiguredStatementsInOrder() throws SQLException {
         properties.setStatements(List.of("update a set x = null", "delete from b where y = 1"));
-        when(jdbcTemplate.update("update a set x = null")).thenReturn(1);
-        when(jdbcTemplate.update("delete from b where y = 1")).thenReturn(3);
+        // CleanupTask runs each statement via JdbcTemplate.execute(StatementCallback); drive the
+        // callback with a mock Statement so we can assert the SQL was actually executed.
+        when(jdbcTemplate.execute(any(StatementCallback.class))).thenAnswer(inv ->
+                ((StatementCallback<?>) inv.getArgument(0)).doInStatement(statement));
 
         cleanupTask.run();
 
-        final InOrder inOrder = inOrder(jdbcTemplate);
-        inOrder.verify(jdbcTemplate).update("update a set x = null");
-        inOrder.verify(jdbcTemplate).update("delete from b where y = 1");
+        final InOrder inOrder = inOrder(statement);
+        inOrder.verify(statement).execute("update a set x = null");
+        inOrder.verify(statement).execute("delete from b where y = 1");
     }
 
     @Test
-    void run_skipsNullAndBlankStatements() {
+    void run_skipsNullAndBlankStatements() throws SQLException {
         properties.setStatements(Arrays.asList("   ", null, "update test set client_public_ip = null where uid = 1"));
-        when(jdbcTemplate.update("update test set client_public_ip = null where uid = 1")).thenReturn(1);
+        when(jdbcTemplate.execute(any(StatementCallback.class))).thenAnswer(inv ->
+                ((StatementCallback<?>) inv.getArgument(0)).doInStatement(statement));
 
         cleanupTask.run();
 
-        verify(jdbcTemplate).update("update test set client_public_ip = null where uid = 1");
-        verify(jdbcTemplate, times(1)).update(anyString());
+        verify(statement).execute("update test set client_public_ip = null where uid = 1");
+        verify(statement, times(1)).execute(anyString());
     }
 
     @Test
     void run_continuesAfterAStatementFails() {
         properties.setStatements(List.of("broken statement", "good statement"));
-        when(jdbcTemplate.update("broken statement")).thenThrow(new DataAccessResourceFailureException("db down"));
-        when(jdbcTemplate.update("good statement")).thenReturn(2);
+        // The first statement fails (JdbcTemplate translates the SQLException to a DataAccessException);
+        // the task must catch it and still run the second statement.
+        when(jdbcTemplate.execute(any(StatementCallback.class)))
+                .thenThrow(new DataAccessResourceFailureException("db down"))
+                .thenReturn(null);
 
         cleanupTask.run();
 
-        verify(jdbcTemplate).update("broken statement");
-        verify(jdbcTemplate).update("good statement");
+        verify(jdbcTemplate, times(2)).execute(any(StatementCallback.class));
     }
 
     @Test
