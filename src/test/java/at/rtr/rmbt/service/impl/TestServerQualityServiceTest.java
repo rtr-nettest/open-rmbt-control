@@ -67,7 +67,7 @@ class TestServerQualityServiceTest {
 
     private static TestServer udpServer(final String v4, final String v6) {
         return TestServer.builder()
-                .name("udp").uuid(SERVER_UUID).key("secret").portSsl(444)
+                .name("udp").uuid(SERVER_UUID).key("secret").port(444)
                 .webAddressIpV4(v4).webAddressIpV6(v6)
                 .serverType(ServerType.RMBTudp).active(true)
                 .build();
@@ -111,7 +111,7 @@ class TestServerQualityServiceTest {
     }
 
     @Test
-    void measureAll_udpServer_usesUdpPingerOnPlainPort_unverifiedWhenNoPublicIp() {
+    void measureAll_udpServer_usesUdpPingerOnSSLPort_unverifiedWhenNoPublicIp() {
         when(testServerRepository.findByServerTypeInAndActiveTrue(anyList()))
                 .thenReturn(List.of(udpServer("v4.example.com", null)));
         // No public IP configured → requireIpMatch = false.

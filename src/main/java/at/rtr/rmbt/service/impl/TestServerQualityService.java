@@ -88,7 +88,7 @@ public class TestServerQualityService {
     private String publicIpv6;
 
     @Scheduled(
-            cron = "${test-server-quality.cron:0 */5 * * * *}",
+            cron = "${test-server-quality.cron:0 * * * * *}",
             zone = "${test-server-quality.zone:}")
     public void measureAll() {
         final List<TestServer> servers = testServerRepository.findByServerTypeInAndActiveTrue(
@@ -99,6 +99,8 @@ public class TestServerQualityService {
         }
         log.info("Test-server quality: checking {} active server(s)", servers.size());
         for (final TestServer server : servers) {
+            log.debug("Measure server {} with port {} and SSL port {} v4: {} v6: {}",
+                    server,server.getPort(), server.getPortSsl(), server.getWebAddressIpV4(), server.getWebAddressIpV6());
             measureServer(server, 4, server.getWebAddressIpV4());
             measureServer(server, 6, server.getWebAddressIpV6());
         }
@@ -127,10 +129,10 @@ public class TestServerQualityService {
 
         save(server, protocol, outcome);
         if (outcome.reachable()) {
-            log.info("Test-server quality: '{}' [{}] IPv{} reachable, latency={}ms",
+            log.info("Test-server quality: '{}' [{}]  IPv{} reachable, latency={} ms",
                     server.getName(), host, protocol, outcome.latencyMs());
         } else {
-            log.info("Test-server quality: '{}' [{}] IPv{} UNREACHABLE", server.getName(), host, protocol);
+            log.info("Test-server quality: '{}' [{}] IPv{} UNREACHABLE", server.getName(), host , protocol);
         }
     }
 
@@ -160,7 +162,7 @@ public class TestServerQualityService {
             return qosPinger.ping(host, server.getPortSsl());
         }
         if (type == ServerType.RMBTudp) {
-            if (server.getPortSsl() == null) {
+            if (server.getPort() == null) {
                 log.warn("Test-server quality: '{}' has no SSL port, skipping IPv{}", server.getName(), protocol);
                 return null;
             }
@@ -168,7 +170,7 @@ public class TestServerQualityService {
                 log.warn("Test-server quality: '{}' has no key, cannot build token, skipping IPv{}", server.getName(), protocol);
                 return null;
             }
-            final int port = server.getPortSsl();
+            final int port = server.getPort();
             // If our public IP for this family is configured, sign the token with it and demand an
             // RR01 (source-IP confirmed) reply; otherwise use a placeholder and accept RE01 too.
             final InetAddress publicIp = resolvePublicIp(protocol == 4 ? publicIpv4 : publicIpv6);
