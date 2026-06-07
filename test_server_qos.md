@@ -208,9 +208,14 @@ SELECT latest.server_uuid, ts.name, ts.server_type, latest.protocol, latest.reac
 FROM latest_entries latest
     JOIN test_server ts ON ts.uuid = latest.server_uuid
     LEFT JOIN stats_24h stats ON stats.server_uuid = latest.server_uuid AND stats.protocol = latest.protocol
-WHERE (CAST(:testServer AS uuid) IS NULL OR ts.uuid = CAST(:testServer AS uuid))
+WHERE ts.active                                                          -- only currently-active servers
+  AND (CAST(:testServer AS uuid) IS NULL OR ts.uuid = CAST(:testServer AS uuid))
+  AND (CAST(:protocol AS integer) IS NULL OR latest.protocol = CAST(:protocol AS integer))
 ORDER BY latest.reachable DESC, latest.latency_ms;
 ```
+
+Only **active** servers are returned: when a server is deactivated (`test_server.active = false`) it
+disappears from the endpoint immediately, even though its historical samples remain in the table.
 
 Rows are mapped to `TestServerStatusResponse` by `TestServerStatusResponse.fromRow(...)`
 (`controller/TestServerStatusController` → `service/TestServerStatusService`).
