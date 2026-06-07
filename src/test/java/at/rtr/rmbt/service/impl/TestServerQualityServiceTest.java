@@ -7,8 +7,8 @@ import at.rtr.rmbt.repository.TestServerQualityRepository;
 import at.rtr.rmbt.repository.TestServerRepository;
 import at.rtr.rmbt.service.quality.PingOutcome;
 import at.rtr.rmbt.service.quality.RmbtPinger;
+import at.rtr.rmbt.service.quality.QosTlsPinger;
 import at.rtr.rmbt.service.quality.RmbtUdpPinger;
-import at.rtr.rmbt.service.quality.TcpPinger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -50,7 +50,7 @@ class TestServerQualityServiceTest {
     @Mock
     private RmbtUdpPinger udpPinger;
     @Mock
-    private TcpPinger tcpPinger;
+    private QosTlsPinger qosPinger;
 
     @InjectMocks
     private TestServerQualityService service;
@@ -67,16 +67,16 @@ class TestServerQualityServiceTest {
 
     private static TestServer udpServer(final String v4, final String v6) {
         return TestServer.builder()
-                .name("udp").uuid(SERVER_UUID).key("secret").port(444)
+                .name("udp").uuid(SERVER_UUID).key("secret").portSsl(444)
                 .webAddressIpV4(v4).webAddressIpV6(v6)
                 .serverType(ServerType.RMBTudp).active(true)
                 .build();
     }
 
     private static TestServer qosServer(final String v4, final String v6) {
-        // QoS needs no key; uses port_ssl for the TCP connect.
+        // QoS needs no key; uses port_ssl for the TLS connect.
         return TestServer.builder()
-                .name("qos").uuid(SERVER_UUID).portSsl(5233)
+                .name("qos").uuid(SERVER_UUID).portSsl(443)
                 .webAddressIpV4(v4).webAddressIpV6(v6)
                 .serverType(ServerType.QoS).active(true)
                 .build();
@@ -144,14 +144,14 @@ class TestServerQualityServiceTest {
     }
 
     @Test
-    void measureAll_qosServer_usesTcpPingerOnSslPort_noKeyNeeded() {
+    void measureAll_qosServer_usesQosPingerOnSslPort_noKeyNeeded() {
         when(testServerRepository.findByServerTypeInAndActiveTrue(anyList()))
                 .thenReturn(List.of(qosServer("v4.example.com", null)));
-        when(tcpPinger.ping(eq("v4.example.com"), eq(5233))).thenReturn(PingOutcome.reachable(3.0));
+        when(qosPinger.ping(eq("v4.example.com"), eq(443))).thenReturn(PingOutcome.reachable(3.0));
 
         service.measureAll();
 
-        verify(tcpPinger).ping(eq("v4.example.com"), eq(5233));
+        verify(qosPinger).ping(eq("v4.example.com"), eq(443));
         verifyNoInteractions(webSocketPinger);
         verifyNoInteractions(udpPinger);
 

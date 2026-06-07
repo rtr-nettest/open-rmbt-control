@@ -75,7 +75,7 @@ token falls inside the server's accept window.
 
 ### 3.2 RMBTudp — open-rmbt-udp-ping (`RmbtUdpPinger`)
 
-Implements the `open-rmbt-udp-ping` protocol (default UDP port **444**, or `test_server.port`):
+Implements the `open-rmbt-udp-ping` protocol (UDP port from `port_ssl`):
 
 ```
 Request  (24 bytes):  "RP01" ‖ sequence(4) ‖ time(4) ‖ HMAC256(seed,time)[0..8] ‖ HMAC256(seed, time‖ip)[0..4]
@@ -104,12 +104,15 @@ There are two modes, depending on whether that IP is configured:
 **Token** (`RmbtUdpTokenFactory`): the 16-byte `time ‖ HMAC256(seed,time)[0..8] ‖ HMAC256(seed, time‖ip)[0..4]`
 (matching `makeToken.py` and the Rust server), wrapped in the 24-byte `RP01` request packet.
 
-### 3.3 QoS — plain TCP connect (`TcpPinger`)
+### 3.3 QoS — TLS handshake + greeting (`QosTlsPinger`)
 
-QoS test servers (`open-rmbt-qos`) run a TLS line protocol, but for a reachability/latency check a
-**plain TCP connect is enough** (as the protocol is reference for the server, not re-implemented here).
-`TcpPinger` opens a TCP socket to `web_address_ipv{4,6}` on `port_ssl` (or `port`) and reports the
-**TCP connect round-trip** as `latency_ms`; a successful connect = reachable. No token is needed.
+QoS test servers (`open-rmbt-qos`) speak a **TLS line protocol** (typically port 443): right after the
+TLS handshake the server sends a greeting `QoSSP<version>` followed by `ACCEPT [TOKEN string]`.
+`QosTlsPinger` connects to `web_address_ipv{4,6}` on `port_ssl`, completes the TLS
+handshake (cert not verified), and reads that greeting to confirm it really is a QoS server. The
+**TCP-connect round-trip** is reported as `latency_ms`; a recognised greeting = reachable. No token is
+needed. (A bare TCP connect is not enough — it would pass for any open port and not confirm the
+service.)
 
 ---
 
@@ -140,12 +143,14 @@ The JPA entity is `model/TestServerQuality`; the repository is `repository/TestS
 ## 5. The `/testServerStatus` endpoint
 
 `GET /testServerStatus` (public; `permitAll`) returns, **per server and IP protocol**, the latest
-sample plus 24-hour aggregates. Optional query parameter **`test_server`** filters to a single
-`test_server.uuid`.
+sample plus 24-hour aggregates. Optional query parameters: **`test_server`** (a `test_server.uuid`)
+and **`protocol`** (`4` or `6`). Combining both narrows the result to a single row.
 
 ```
-GET /testServerStatus
-GET /testServerStatus?test_server=<uuid>
+GET /testServerStatus                                  # all servers, both protocols
+GET /testServerStatus?test_server=<uuid>               # one server (its v4 + v6 rows)
+GET /testServerStatus?protocol=4                       # all servers, IPv4 only
+GET /testServerStatus?test_server=<uuid>&protocol=4    # exactly one row
 ```
 
 Response (JSON array; mirrors the `test_server_qos_view` columns):
@@ -218,7 +223,7 @@ Rows are mapped to `TestServerStatusResponse` by `TestServerStatusResponse.fromR
 | `service/impl/TestServerQualityService` | scheduled orchestration: load servers, dispatch by type, persist |
 | `service/quality/RmbtPinger` + `RmbtWebSocketPinger` | RMBThttp WebSocket/TLS PING |
 | `service/quality/RmbtUdpPinger` | RMBTudp UDP PING |
-| `service/quality/TcpPinger` | QoS plain TCP-connect PING |
+| `service/quality/QosTlsPinger` | QoS TLS handshake + greeting PING |
 | `service/quality/PingOutcome` | `{reachable, latencyMs}` result |
 | `utils/RmbtTokenFactory` | RMBThttp HMAC-SHA1 token |
 | `utils/RmbtUdpTokenFactory` | RMBTudp HMAC-SHA256 token + request packet |

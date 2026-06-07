@@ -20,9 +20,11 @@ public class TestServerStatusService {
 
     /**
      * @param testServer optional {@code test_server.uuid} to filter to a single server; {@code null} = all
+     * @param protocol   optional IP protocol (4 / 6) to filter to; {@code null} = both. Combined with
+     *                   {@code testServer} this narrows the result to a single row.
      */
-    public List<TestServerStatusResponse> getStatus(final UUID testServer) {
-        return testServerQualityRepository.findStatus(testServer != null ? testServer.toString() : null)
+    public List<TestServerStatusResponse> getStatus(final UUID testServer, final Integer protocol) {
+        return testServerQualityRepository.findStatus(testServer != null ? testServer.toString() : null, protocol)
                 .stream()
                 .map(TestServerStatusResponse::fromRow)
                 .toList();

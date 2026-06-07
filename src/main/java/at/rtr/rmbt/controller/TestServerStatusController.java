@@ -19,10 +19,11 @@ public class TestServerStatusController {
     private final TestServerStatusService testServerStatusService;
 
     @Operation(summary = "Latest reachability/latency status of the measurement servers (per IP protocol), "
-            + "with 24h aggregates. Optionally filtered to a single test_server uuid.")
+            + "with 24h aggregates. Optionally filtered to a single test_server uuid and/or protocol (4/6).")
     @GetMapping(URIConstants.TEST_SERVER_STATUS)
     public List<TestServerStatusResponse> getTestServerStatus(
-            @RequestParam(value = "test_server", required = false) final UUID testServer) {
-        return testServerStatusService.getStatus(testServer);
+            @RequestParam(value = "test_server", required = false) final UUID testServer,
+            @RequestParam(value = "protocol", required = false) final Integer protocol) {
+        return testServerStatusService.getStatus(testServer, protocol);
     }
 }

@@ -7,8 +7,8 @@ import at.rtr.rmbt.repository.TestServerQualityRepository;
 import at.rtr.rmbt.repository.TestServerRepository;
 import at.rtr.rmbt.service.quality.PingOutcome;
 import at.rtr.rmbt.service.quality.RmbtPinger;
+import at.rtr.rmbt.service.quality.QosTlsPinger;
 import at.rtr.rmbt.service.quality.RmbtUdpPinger;
-import at.rtr.rmbt.service.quality.TcpPinger;
 import at.rtr.rmbt.utils.RmbtTokenFactory;
 import at.rtr.rmbt.utils.RmbtUdpTokenFactory;
 import lombok.RequiredArgsConstructor;
@@ -34,13 +34,17 @@ import java.util.UUID;
  * stored in {@code test_server_quality}.
  *
  * <ul>
+ * <p>All ports come from {@code port_ssl} (the legacy {@code port} column is obsolete); a server with
+ * no {@code port_ssl} is skipped.
+ *
+ * <ul>
  *   <li><b>RMBThttp</b>: RMBT protocol over WebSocket/TLS on {@code port_ssl}, HMAC token signed with
  *       the server's {@code key} ({@link RmbtPinger}).</li>
- *   <li><b>RMBTudp</b>: {@code open-rmbt-udp-ping} on {@code port} (default 444) ({@link RmbtUdpPinger}).
+ *   <li><b>RMBTudp</b>: {@code open-rmbt-udp-ping} on {@code port_ssl} ({@link RmbtUdpPinger}).
  *       The IP HMAC normally will not match our (unknown) public source IP, so the server answers
  *       {@code RE01} — which still confirms reachability.</li>
- *   <li><b>QoS</b>: a plain TCP connect to {@code port_ssl} (or {@code port}) ({@link TcpPinger}); the
- *       connect round-trip is the latency. No token needed.</li>
+ *   <li><b>QoS</b>: a TLS handshake to {@code port_ssl} + the QoS greeting ({@link QosTlsPinger});
+ *       the TCP-connect round-trip is the latency. No token needed.</li>
  * </ul>
  *
  * <p>The network/protocol work is delegated to the pingers (so this orchestration is unit-testable
@@ -50,9 +54,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class TestServerQualityService {
-
-    /** RMBTudp default port (open-rmbt-udp-ping), used when {@code test_server.port} is not set. */
-    private static final int DEFAULT_UDP_PORT = 444;
 
     /**
      * Placeholder source IP for the UDP token's IP HMAC: we do not know the control server's public
@@ -73,7 +74,7 @@ public class TestServerQualityService {
     private final TestServerQualityRepository testServerQualityRepository;
     private final RmbtPinger webSocketPinger;
     private final RmbtUdpPinger udpPinger;
-    private final TcpPinger tcpPinger;
+    private final QosTlsPinger qosPinger;
 
     /**
      * Optional public IPs of <b>this</b> control server, as seen by the UDP test servers. When set, the
@@ -150,20 +151,24 @@ public class TestServerQualityService {
             return webSocketPinger.ping(host, server.getPortSsl(), token);
         }
         if (type == ServerType.QoS) {
-            // QoS servers: a plain TCP connect is enough to confirm reachability + latency, no token.
-            final Integer port = server.getPortSsl() != null ? server.getPortSsl() : server.getPort();
-            if (port == null) {
-                log.warn("Test-server quality: '{}' has no port, skipping IPv{}", server.getName(), protocol);
+            // QoS servers speak a TLS line protocol; a TLS handshake + greeting confirms reachability
+            // and the TCP-connect round-trip is the latency. No token needed.
+            if (server.getPortSsl() == null) {
+                log.warn("Test-server quality: '{}' has no SSL port, skipping IPv{}", server.getName(), protocol);
                 return null;
             }
-            return tcpPinger.ping(host, port);
+            return qosPinger.ping(host, server.getPortSsl());
         }
         if (type == ServerType.RMBTudp) {
+            if (server.getPortSsl() == null) {
+                log.warn("Test-server quality: '{}' has no SSL port, skipping IPv{}", server.getName(), protocol);
+                return null;
+            }
             if (StringUtils.isBlank(server.getKey())) {
                 log.warn("Test-server quality: '{}' has no key, cannot build token, skipping IPv{}", server.getName(), protocol);
                 return null;
             }
-            final int port = server.getPort() != null ? server.getPort() : DEFAULT_UDP_PORT;
+            final int port = server.getPortSsl();
             // If our public IP for this family is configured, sign the token with it and demand an
             // RR01 (source-IP confirmed) reply; otherwise use a placeholder and accept RE01 too.
             final InetAddress publicIp = resolvePublicIp(protocol == 4 ? publicIpv4 : publicIpv6);

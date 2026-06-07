@@ -12,7 +12,8 @@ public interface TestServerQualityRepository extends JpaRepository<TestServerQua
     /**
      * Per server + IP protocol: the latest reachability/latency sample, plus 24h aggregates
      * (max/min latency, reachability %, sample count). Mirrors the {@code test_server_qos_view} view.
-     * Optionally filtered to a single {@code test_server.uuid} (pass {@code null} for all servers).
+     * Optionally filtered to a single {@code test_server.uuid} and/or a single {@code protocol}
+     * (4/6); pass {@code null} for either to not filter on it.
      *
      * <p>Returns rows of {@code [server_uuid, name, server_type, protocol, reachable, latency_ms,
      * max_latency_ms, min_latency_ms, reachability_pct]} (see {@code TestServerStatusResponse.fromRow}).
@@ -40,7 +41,8 @@ public interface TestServerQualityRepository extends JpaRepository<TestServerQua
             "    JOIN test_server ts ON ts.uuid = latest.server_uuid " +
             "    LEFT JOIN stats_24h stats ON stats.server_uuid = latest.server_uuid AND stats.protocol = latest.protocol " +
             "WHERE (CAST(:testServer AS uuid) IS NULL OR ts.uuid = CAST(:testServer AS uuid)) " +
+            "  AND (CAST(:protocol AS integer) IS NULL OR latest.protocol = CAST(:protocol AS integer)) " +
             "ORDER BY latest.reachable DESC, latest.latency_ms",
             nativeQuery = true)
-    List<Object[]> findStatus(@Param("testServer") String testServer);
+    List<Object[]> findStatus(@Param("testServer") String testServer, @Param("protocol") Integer protocol);
 }
