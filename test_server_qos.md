@@ -143,14 +143,15 @@ The JPA entity is `model/TestServerQuality`; the repository is `repository/TestS
 ## 5. The `/testServerStatus` endpoint
 
 `GET /testServerStatus` (public; `permitAll`) returns, **per server and IP protocol**, the latest
-sample plus 24-hour aggregates. Optional query parameters: **`test_server`** (a `test_server.uuid`)
-and **`protocol`** (`4` or `6`). Combining both narrows the result to a single row.
+sample plus 24-hour aggregates. Optional query parameters: **`server_uuid`** (a `test_server.uuid`;
+surrounding single/double quotes are tolerated) and **`protocol`** (`4` or `6`). Combining both
+narrows the result to a single row.
 
 ```
 GET /testServerStatus                                  # all servers, both protocols
-GET /testServerStatus?test_server=<uuid>               # one server (its v4 + v6 rows)
+GET /testServerStatus?server_uuid=<uuid>               # one server (its v4 + v6 rows)
 GET /testServerStatus?protocol=4                       # all servers, IPv4 only
-GET /testServerStatus?test_server=<uuid>&protocol=4    # exactly one row
+GET /testServerStatus?server_uuid=<uuid>&protocol=4    # exactly one row
 ```
 
 Response (JSON array; mirrors the `test_server_qos_view` columns):
