@@ -76,7 +76,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                             COVERAGE_REQUEST, COVERAGE_RESULT,
                             NEWS_URL, REGISTRATION_URL, RESULT_QOS_URL, RESULT_URL, SETTINGS_URL,
                             PROVIDERS, TEST_RESULT, HISTORY, SYNC, MEASUREMENT_QOS_RESULT, VERSION, RESULT_UPDATE,
-                            QOS_BY_OPEN_TEST_UUID, QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE,
+                            QOS_BY_OPEN_TEST_UUID, QOS_BY_OPEN_TEST_UUID_AND_LANGUAGE, TEST_SERVER_STATUS,
                             // Swagger UI + OpenAPI spec. Both the springdoc default (/v3/api-docs)
                             // and the deployment's overridden path (/api-docs, incl. .yaml/.json) are
                             // whitelisted, so the spec is not blocked by anyRequest().authenticated().
@@ -134,7 +134,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
                 });
 
-        Arrays.asList(IP, QOS_RESULT, QOS_RESULT + "/**", VERSION, REQUEST_DATA_COLLECTOR)
+        Arrays.asList(IP, QOS_RESULT, QOS_RESULT + "/**", VERSION, REQUEST_DATA_COLLECTOR, TEST_SERVER_STATUS)
                 .forEach(url -> registry.addMapping(url));
     }
 

@@ -2,6 +2,7 @@ package at.rtr.rmbt.constant;
 
 public interface URIConstants {
     String NEWS_URL = "/news";
+    String TEST_SERVER_STATUS = "/testServerStatus";
     String REGISTRATION_URL = "/testRequest";
     String RESULT_URL = "/result";
     String RESULT_QOS_URL = "/resultQoS";
