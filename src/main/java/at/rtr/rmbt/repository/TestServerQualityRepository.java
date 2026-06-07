@@ -14,8 +14,8 @@ public interface TestServerQualityRepository extends JpaRepository<TestServerQua
      * (max/min latency, reachability %, sample count). Mirrors the {@code test_server_qos_view} view.
      * Optionally filtered to a single {@code test_server.uuid} (pass {@code null} for all servers).
      *
-     * <p>Returns rows of {@code [name, server_type, protocol, reachable, latency_ms, max_latency_ms,
-     * min_latency_ms, reachability_pct]} (see {@code TestServerStatusResponse.fromRow}).
+     * <p>Returns rows of {@code [server_uuid, name, server_type, protocol, reachable, latency_ms,
+     * max_latency_ms, min_latency_ms, reachability_pct]} (see {@code TestServerStatusResponse.fromRow}).
      */
     @Query(value =
             "WITH latest_entries AS ( " +
@@ -32,8 +32,8 @@ public interface TestServerQualityRepository extends JpaRepository<TestServerQua
             "    WHERE tsq.timestamp > (now() - interval '24 hours') " +
             "    GROUP BY tsq.server_uuid, tsq.protocol " +
             ") " +
-            "SELECT ts.name AS name, ts.server_type AS server_type, latest.protocol AS protocol, " +
-            "    latest.reachable AS reachable, latest.latency_ms AS latency_ms, " +
+            "SELECT latest.server_uuid AS server_uuid, ts.name AS name, ts.server_type AS server_type, " +
+            "    latest.protocol AS protocol, latest.reachable AS reachable, latest.latency_ms AS latency_ms, " +
             "    stats.max_latency_ms AS max_latency_ms, stats.min_latency_ms AS min_latency_ms, " +
             "    stats.reachability_pct AS reachability_pct " +
             "FROM latest_entries latest " +

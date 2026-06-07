@@ -14,8 +14,8 @@ There are three parts:
 
 ## 1. What is measured
 
-For every **active** test server whose `server_type` is **`RMBThttp`** or **`RMBTudp`**, every run
-performs one protocol **PING** over **both** IP families and records:
+For every **active** test server whose `server_type` is **`RMBThttp`**, **`RMBTudp`** or **`QoS`**,
+every run performs one **PING** over **both** IP families and records:
 
 | Field | Meaning |
 |---|---|
@@ -104,6 +104,13 @@ There are two modes, depending on whether that IP is configured:
 **Token** (`RmbtUdpTokenFactory`): the 16-byte `time ‖ HMAC256(seed,time)[0..8] ‖ HMAC256(seed, time‖ip)[0..4]`
 (matching `makeToken.py` and the Rust server), wrapped in the 24-byte `RP01` request packet.
 
+### 3.3 QoS — plain TCP connect (`TcpPinger`)
+
+QoS test servers (`open-rmbt-qos`) run a TLS line protocol, but for a reachability/latency check a
+**plain TCP connect is enough** (as the protocol is reference for the server, not re-implemented here).
+`TcpPinger` opens a TCP socket to `web_address_ipv{4,6}` on `port_ssl` (or `port`) and reports the
+**TCP connect round-trip** as `latency_ms`; a successful connect = reachable. No token is needed.
+
 ---
 
 ## 4. Storage & migrations
@@ -146,6 +153,7 @@ Response (JSON array; mirrors the `test_server_qos_view` columns):
 ```json
 [
   {
+    "server_uuid": "11111111-2222-3333-4444-555555555555",
     "name": "RMBT TCP/TLS",
     "server_type": "RMBThttp",
     "protocol": 4,
@@ -160,8 +168,9 @@ Response (JSON array; mirrors the `test_server_qos_view` columns):
 
 | Field | Source |
 |---|---|
+| `server_uuid` | `test_server.uuid` |
 | `name` | `test_server.name` |
-| `server_type` | `test_server.server_type` (`RMBThttp` / `RMBTudp`) |
+| `server_type` | `test_server.server_type` (`RMBThttp` / `RMBTudp` / `QoS`) |
 | `protocol` | `4` / `6` |
 | `reachable`, `latency_ms` | the **latest** sample for that server+protocol |
 | `max_latency_ms`, `min_latency_ms`, `reachability_pct` | aggregated over the **last 24 h** |
@@ -188,7 +197,7 @@ WITH latest_entries AS (                      -- newest row per (server, protoco
     WHERE timestamp > (now() - interval '24 hours')
     GROUP BY server_uuid, protocol
 )
-SELECT ts.name, ts.server_type, latest.protocol, latest.reachable, latest.latency_ms,
+SELECT latest.server_uuid, ts.name, ts.server_type, latest.protocol, latest.reachable, latest.latency_ms,
        stats.max_latency_ms, stats.min_latency_ms, stats.reachability_pct
 FROM latest_entries latest
     JOIN test_server ts ON ts.uuid = latest.server_uuid
@@ -209,6 +218,7 @@ Rows are mapped to `TestServerStatusResponse` by `TestServerStatusResponse.fromR
 | `service/impl/TestServerQualityService` | scheduled orchestration: load servers, dispatch by type, persist |
 | `service/quality/RmbtPinger` + `RmbtWebSocketPinger` | RMBThttp WebSocket/TLS PING |
 | `service/quality/RmbtUdpPinger` | RMBTudp UDP PING |
+| `service/quality/TcpPinger` | QoS plain TCP-connect PING |
 | `service/quality/PingOutcome` | `{reachable, latencyMs}` result |
 | `utils/RmbtTokenFactory` | RMBThttp HMAC-SHA1 token |
 | `utils/RmbtUdpTokenFactory` | RMBTudp HMAC-SHA256 token + request packet |

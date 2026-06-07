@@ -8,6 +8,7 @@ import at.rtr.rmbt.repository.TestServerRepository;
 import at.rtr.rmbt.service.quality.PingOutcome;
 import at.rtr.rmbt.service.quality.RmbtPinger;
 import at.rtr.rmbt.service.quality.RmbtUdpPinger;
+import at.rtr.rmbt.service.quality.TcpPinger;
 import at.rtr.rmbt.utils.RmbtTokenFactory;
 import at.rtr.rmbt.utils.RmbtUdpTokenFactory;
 import lombok.RequiredArgsConstructor;
@@ -27,17 +28,19 @@ import java.util.UUID;
  * Scheduled test-server quality check.
  *
  * <p>Every 5 minutes (configurable via {@code test-server-quality.cron}) it walks every <b>active</b>
- * test server of type {@link ServerType#RMBThttp} or {@link ServerType#RMBTudp} and, for each,
- * performs a protocol PING over IPv4 ({@code web_address_ipv4}) and IPv6 ({@code web_address_ipv6})
- * — one after another, no parallelism — authenticating with a freshly minted HMAC token signed with
- * the server's {@code key}. The protocol, reachability and client-measured latency are stored in
- * {@code test_server_quality}.
+ * test server of type {@link ServerType#RMBThttp}, {@link ServerType#RMBTudp} or {@link ServerType#QoS}
+ * and, for each, performs a PING over IPv4 ({@code web_address_ipv4}) and IPv6 ({@code web_address_ipv6})
+ * — one after another, no parallelism. The protocol, reachability and client-measured latency are
+ * stored in {@code test_server_quality}.
  *
  * <ul>
- *   <li><b>RMBThttp</b>: RMBT protocol over WebSocket/TLS on {@code port_ssl} ({@link RmbtPinger}).</li>
+ *   <li><b>RMBThttp</b>: RMBT protocol over WebSocket/TLS on {@code port_ssl}, HMAC token signed with
+ *       the server's {@code key} ({@link RmbtPinger}).</li>
  *   <li><b>RMBTudp</b>: {@code open-rmbt-udp-ping} on {@code port} (default 444) ({@link RmbtUdpPinger}).
  *       The IP HMAC normally will not match our (unknown) public source IP, so the server answers
  *       {@code RE01} — which still confirms reachability.</li>
+ *   <li><b>QoS</b>: a plain TCP connect to {@code port_ssl} (or {@code port}) ({@link TcpPinger}); the
+ *       connect round-trip is the latency. No token needed.</li>
  * </ul>
  *
  * <p>The network/protocol work is delegated to the pingers (so this orchestration is unit-testable
@@ -70,6 +73,7 @@ public class TestServerQualityService {
     private final TestServerQualityRepository testServerQualityRepository;
     private final RmbtPinger webSocketPinger;
     private final RmbtUdpPinger udpPinger;
+    private final TcpPinger tcpPinger;
 
     /**
      * Optional public IPs of <b>this</b> control server, as seen by the UDP test servers. When set, the
@@ -87,9 +91,9 @@ public class TestServerQualityService {
             zone = "${test-server-quality.zone:}")
     public void measureAll() {
         final List<TestServer> servers = testServerRepository.findByServerTypeInAndActiveTrue(
-                List.of(ServerType.RMBThttp, ServerType.RMBTudp));
+                List.of(ServerType.RMBThttp, ServerType.RMBTudp, ServerType.QoS));
         if (servers == null || servers.isEmpty()) {
-            log.info("Test-server quality: no active RMBThttp/RMBTudp servers to check");
+            log.info("Test-server quality: no active RMBThttp/RMBTudp/QoS servers to check");
             return;
         }
         log.info("Test-server quality: checking {} active server(s)", servers.size());
@@ -103,10 +107,6 @@ public class TestServerQualityService {
     void measureServer(final TestServer server, final int protocol, final String host) {
         if (StringUtils.isBlank(host)) {
             log.debug("Test-server quality: '{}' has no IPv{} address, skipping", server.getName(), protocol);
-            return;
-        }
-        if (StringUtils.isBlank(server.getKey())) {
-            log.warn("Test-server quality: '{}' has no key, cannot build token, skipping IPv{}", server.getName(), protocol);
             return;
         }
 
@@ -141,11 +141,28 @@ public class TestServerQualityService {
                 log.warn("Test-server quality: '{}' has no SSL port, skipping IPv{}", server.getName(), protocol);
                 return null;
             }
+            if (StringUtils.isBlank(server.getKey())) {
+                log.warn("Test-server quality: '{}' has no key, cannot build token, skipping IPv{}", server.getName(), protocol);
+                return null;
+            }
             final String token = RmbtTokenFactory.createToken(
                     server.getKey(), UUID.randomUUID(), Instant.now().getEpochSecond());
             return webSocketPinger.ping(host, server.getPortSsl(), token);
         }
+        if (type == ServerType.QoS) {
+            // QoS servers: a plain TCP connect is enough to confirm reachability + latency, no token.
+            final Integer port = server.getPortSsl() != null ? server.getPortSsl() : server.getPort();
+            if (port == null) {
+                log.warn("Test-server quality: '{}' has no port, skipping IPv{}", server.getName(), protocol);
+                return null;
+            }
+            return tcpPinger.ping(host, port);
+        }
         if (type == ServerType.RMBTudp) {
+            if (StringUtils.isBlank(server.getKey())) {
+                log.warn("Test-server quality: '{}' has no key, cannot build token, skipping IPv{}", server.getName(), protocol);
+                return null;
+            }
             final int port = server.getPort() != null ? server.getPort() : DEFAULT_UDP_PORT;
             // If our public IP for this family is configured, sign the token with it and demand an
             // RR01 (source-IP confirmed) reply; otherwise use a placeholder and accept RE01 too.
