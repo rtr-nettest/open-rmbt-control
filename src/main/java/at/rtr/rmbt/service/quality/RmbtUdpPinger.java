@@ -6,21 +6,26 @@ import org.springframework.stereotype.Component;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
- * Pinger for RMBTudp servers (the {@code open-rmbt-udp-ping} protocol). Sends one {@code RP01} UDP
- * packet and treats <b>any</b> valid reply — {@code RR01} (source-IP confirmed) or {@code RE01}
- * (source-IP HMAC mismatch) — as "reachable": we do not know the control server's public source IP,
- * so the IP HMAC normally will not match and {@code RE01} is the expected, perfectly fine answer.
- * {@code latency_ms} is the client-measured round-trip. Never throws.
+ * Pinger for RMBTudp servers (the {@code open-rmbt-udp-ping} protocol). Sends a few {@code RP01} UDP
+ * packets and reports the <b>minimum</b> round-trip; any valid reply — {@code RR01} (source-IP
+ * confirmed) or {@code RE01} (source-IP HMAC mismatch) — counts as "reachable" (we usually do not know
+ * the control server's public source IP, so {@code RE01} is the expected, fine answer).
+ *
+ * <p>Taking the minimum matters: the first packet on a fresh datagram socket pays the kernel's
+ * ARP/route-resolution (and JIT/scheduler) cost — on a LAN that alone can be ~10–20 ms — while
+ * subsequent packets are clean, so the minimum reflects the true latency. Never throws.
  */
 @Component
 @Slf4j
 public class RmbtUdpPinger {
 
-    private static final int TIMEOUT_MS = 3_000;
+    private static final int PING_COUNT = 5;
+    private static final int PER_PACKET_TIMEOUT_MS = 1_000;
     private static final byte[] RESP_OK = "RR01".getBytes(StandardCharsets.US_ASCII);
     private static final byte[] RESP_ERR = "RE01".getBytes(StandardCharsets.US_ASCII);
 
@@ -34,24 +39,47 @@ public class RmbtUdpPinger {
      */
     public PingOutcome ping(final String host, final int port, final byte[] request, final boolean requireIpMatch) {
         try (DatagramSocket socket = new DatagramSocket()) {
-            socket.setSoTimeout(TIMEOUT_MS);
+            socket.setSoTimeout(PER_PACKET_TIMEOUT_MS);
             final InetAddress addr = InetAddress.getByName(host);
             final DatagramPacket out = new DatagramPacket(request, request.length, addr, port);
-            final byte[] buf = new byte[64];
-            final DatagramPacket in = new DatagramPacket(buf, buf.length);
 
-            final long t0 = System.nanoTime();
-            socket.send(out);
-            socket.receive(in); // SocketTimeoutException when no reply arrives within TIMEOUT_MS
-            final long clientNs = System.nanoTime() - t0;
+            double bestMs = Double.POSITIVE_INFINITY;
+            int valid = 0;
+            int consecutiveTimeouts = 0;
 
-            if (!isValidResponse(in, request, requireIpMatch)) {
-                log.debug("UDP ping {}:{} got unexpected response (requireIpMatch={})", host, port, requireIpMatch);
+            // Send several pings and keep the MINIMUM round-trip — the first packet pays the ARP/route
+            // resolution cost (see class doc), later ones are clean. Bail out early if the server is
+            // clearly down (two unanswered probes) or only ever gives an unaccepted reply.
+            for (int i = 0; i < PING_COUNT; i++) {
+                final DatagramPacket in = new DatagramPacket(new byte[64], 64);
+                try {
+                    final long t0 = System.nanoTime();
+                    socket.send(out);
+                    socket.receive(in); // SocketTimeoutException after PER_PACKET_TIMEOUT_MS
+                    final long rttNs = System.nanoTime() - t0;
+                    if (isValidResponse(in, request, requireIpMatch)) {
+                        valid++;
+                        consecutiveTimeouts = 0;
+                        bestMs = Math.min(bestMs, rttNs / 1_000_000.0);
+                    } else if (valid == 0) {
+                        // Reply received but not accepted (e.g. RE01 while requireIpMatch) — it will not
+                        // change, so stop probing.
+                        log.debug("UDP ping {}:{} unaccepted response (requireIpMatch={})", host, port, requireIpMatch);
+                        break;
+                    }
+                } catch (SocketTimeoutException e) {
+                    if (valid == 0 && ++consecutiveTimeouts >= 2) {
+                        break; // no answer to the first probes → unreachable, don't keep waiting
+                    }
+                }
+            }
+
+            if (valid == 0) {
+                log.debug("UDP ping {}:{} unreachable", host, port);
                 return PingOutcome.unreachable();
             }
-            final double latencyMs = clientNs / 1_000_000.0;
-            log.debug("UDP ping {}:{} reachable, latency={}ms", host, port, latencyMs);
-            return PingOutcome.reachable(latencyMs);
+            log.debug("UDP ping {}:{} reachable, latency={}ms (min of {} replies)", host, port, bestMs, valid);
+            return PingOutcome.reachable(bestMs);
         } catch (Exception e) {
             log.debug("UDP ping {}:{} failed: {}", host, port, e.toString());
             return PingOutcome.unreachable();

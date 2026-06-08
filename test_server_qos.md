@@ -99,7 +99,9 @@ There are two modes, depending on whether that IP is configured:
   `RR01` is accepted (an `RE01` is treated as **not** reachable). This gives a stricter, source-verified
   check when the deployment's public IPs are known and stable.
 
-`latency_ms` = client RTT either way.
+`latency_ms` = client RTT either way — measured as the **minimum** over a few probes, because the
+first packet on a fresh socket pays the kernel's ARP/route-resolution cost (≈10–20 ms on a LAN) that
+would otherwise distort the figure.
 
 **Token** (`RmbtUdpTokenFactory`): the 16-byte `time ‖ HMAC256(seed,time)[0..8] ‖ HMAC256(seed, time‖ip)[0..4]`
 (matching `makeToken.py` and the Rust server), wrapped in the 24-byte `RP01` request packet.
