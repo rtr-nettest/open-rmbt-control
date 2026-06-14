@@ -41,7 +41,6 @@ public class TestServerMapperImpl implements TestServerMapper {
                 .id(testServer.getUid())
                 .uuid(testServer.getUuid())
                 .name(testServer.getName())
-                .webAddress(testServer.getWebAddress())
                 .port(testServer.getPort())
                 .portSsl(testServer.getPortSsl())
                 .city(testServer.getCity())
@@ -69,7 +68,6 @@ public class TestServerMapperImpl implements TestServerMapper {
         Set<ServerTypeDetails> serverTypeDetails = getServerTypeDetails(testServerRequest);
         TestServer testServer = TestServer.builder()
                 .name(testServerRequest.getName())
-                .webAddress(testServerRequest.getWebAddress())
                 .port(testServerRequest.getPort())
                 .portSsl(testServerRequest.getPortSsl())
                 .city(testServerRequest.getCity())

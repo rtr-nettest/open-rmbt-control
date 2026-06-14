@@ -16,6 +16,17 @@ cleanup-task:
   # cleanup-task.statements[0] = "SELECT version()".
   statements:
     - "select version()"
+test-server-quality:
+  # Spring cron (sec min hour day month weekday); every 5 minutes. Set to "-" to disable the check.
+  cron: "0 */5 * * * *"
+  # Empty = server's default time zone (e.g. set "Europe/Vienna" if the JVM runs in UTC).
+  zone: ""
+  # Optional: this control server's own public IPv4/IPv6.
+  # When set, the UDP ping token is signed with the correct source IP and only a source-verified
+  # reply (RR01) is accepted. When empty, a placeholder IP is used and an RE01 (IP-mismatch) reply
+  # is also accepted.
+  public-ipv4: ""
+  public-ipv6: ""
 spring:
   # Default profile - used when spring.profiles.active is not set
   main:

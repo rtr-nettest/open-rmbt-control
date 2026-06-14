@@ -362,7 +362,11 @@ public class TestSettingsFacade {
 
     private String getServerAddress(Boolean ipV6, TestServer testServer) {
         if (ipV6 == null)
-            return testServer.getWebAddress();
+            // No protocol preference: fall back to the IPv4 address (then IPv6) now that the legacy
+            // generic web_address column has been removed.
+            return StringUtils.isNotBlank(testServer.getWebAddressIpV4())
+                    ? testServer.getWebAddressIpV4()
+                    : testServer.getWebAddressIpV6();
         else if (ipV6)
             return testServer.getWebAddressIpV6();
         else

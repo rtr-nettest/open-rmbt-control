@@ -13,7 +13,7 @@ The system has several cooperating servers:
 | Server | Repo | Role |
 |--------|------|------|
 | **Control Server** | `open-rmbt-control` (this repo) | The brain. Registers tests, hands out tokens, stores results, computes classifications, serves result pages. |
-| Measurement Server(s) | (separate) | The "speed" peers the client actually pushes/pulls bytes against. The Control Server only *tells the client which one to use*. |
+| Measurement Server(s) | (separate) | The "speed" peers the client actually pushes/pulls bytes against. The Control Server only *tells the client which one to use* (plus a lightweight periodic reachability/latency PING — see §10). |
 | QoS Server | `open-rmbt-qos` | Runs the active QoS probes (UDP/TCP/VoIP/…). |
 | Map Server | `open-rmbt-map` | Serves the public map / tiles of aggregated results. |
 | Statistics Server | `open-rmbt-statistics` | Serves statistics, open-data exports, the results search. |
@@ -229,8 +229,9 @@ know:
 JPA `@Entity` classes — the database in Java form. The central one is **`Test`** (table `test`):
 the row created at `/testRequest` and filled in at `/result`. It carries the uuid/open-test-uuid,
 token, client link, speeds, pings, network info, a PostGIS `Geometry` location, status, etc.
-Other notable entities: `RtrClient`, `TestServer`, `QosTestResult`, `QosTestObjective`,
-`QosTestTypeDesc`, `RadioCell`, `Signal`, `GeoLocation`, `News`, `Provider`, `NetworkType`.
+Other notable entities: `RtrClient`, `TestServer`, `TestServerQuality` (reachability/latency
+samples — see §10), `QosTestResult`, `QosTestObjective`, `QosTestTypeDesc`, `RadioCell`, `Signal`,
+`GeoLocation`, `News`, `Provider`, `NetworkType`.
 
 Domain-specific persistence details to be aware of:
 - **PostGIS geometry** columns map to JTS `Geometry` (needs hibernate-spatial; queries use
@@ -456,7 +457,50 @@ in the database.
 
 ---
 
-## 10. Configuration & deployment
+## 10. Scheduled background tasks
+
+Two `@Scheduled` jobs run inside the control server (scheduling is enabled by `@EnableScheduling`
+on `RTRApplication`). Each is configured under its own top-level key in `application.yml` and can be
+disabled by setting its cron to `-`; failures are logged and never break the scheduler thread.
+
+### `CleanupTask` (`service/impl/CleanupTask`)
+Runs daily (default `cleanup-task.cron = "0 0 4 * * *"`). It executes the configured
+`cleanup-task.statements` in order via `JdbcTemplate.execute(...)` — which, unlike `update()`,
+allows value-returning calls such as `SELECT rmbt_purge_obsolete(...)` — and logs each statement's
+result plus any PostgreSQL `NOTICE`. The shipped default is a harmless dummy (`select version()`);
+the real privacy-purge statement is supplied per deployment via Tomcat `context.xml`.
+
+### `TestServerQualityService` (`service/impl/TestServerQualityService`)
+Runs every 5 minutes (default `test-server-quality.cron = "0 */5 * * * *"`). It measures the
+reachability and latency of every **active** measurement server of `server_type = RMBThttp`, over
+**both IPv4 and IPv6**, and stores one sample per family in `test_server_quality`.
+
+This is the **one place the control server actively connects to a measurement server** — everywhere
+else it only *names* the server for the client. It still moves **no payload**: it performs a single
+RMBT-protocol **PING** and records the round-trip. Per server, per family:
+
+1. Take `web_address_ipv4` / `web_address_ipv6` and the SSL port (`port_ssl`); a family whose
+   address is blank is skipped.
+2. Mint a fresh HMAC token signed with the server's `key` (`utils/RmbtTokenFactory`) — the same
+   `uuid_timestamp_signature` scheme as the client `test_token`, with the timestamp set to "now" so
+   it falls inside the server's accept window.
+3. `RmbtPinger` (impl `service/quality/RmbtWebSocketPinger`) opens a TLS socket, performs the
+   `GET /rmbt` **WebSocket** upgrade, runs the greeting (`RMBTv…` → `TOKEN …` → `OK`/`CHUNKSIZE`),
+   then `PING → PONG → OK → TIME`. `latency_ms` is the **client-measured** PING→PONG round-trip;
+   server certificates are not verified (measurement servers commonly self-sign).
+4. The outcome (`protocol` 4/6, `reachable`, `latency_ms`) is written to `test_server_quality`. Any
+   failure (connect / TLS / handshake / auth / timeout) is recorded as `reachable = false`. Servers
+   are checked **sequentially** (there are only a few).
+
+The transport and protocol mirror the reference implementations in `open-rmbt-server` (Rust) and the
+`open-rmbt-client-cli` Java client (`RmbtConn`). The orchestration is split from the network code
+behind the `RmbtPinger` interface so it is unit-testable with a mocked pinger. The
+`test_server_quality` table and its indexes are created by the standalone `open-rmbt-database`
+migration set (`V104__create_test_server_quality.sql`).
+
+---
+
+## 11. Configuration & deployment
 
 - **Profiles** (`application.yml`): a default block plus `dev` and `prod` documents
   (`spring.config.activate.on-profile`). The active profile is selected at the Tomcat level
@@ -473,7 +517,7 @@ in the database.
 
 ---
 
-## 11. Conventions you should follow
+## 12. Conventions you should follow
 
 - **Layer discipline:** controller (HTTP only) → service/facade (logic, `@Transactional`) →
   repository (data) → entity. Don't put logic in controllers or SQL in services.
@@ -492,7 +536,7 @@ in the database.
 
 ---
 
-## 12. Where to start reading (a suggested path)
+## 13. Where to start reading (a suggested path)
 
 1. **`constant/URIConstants`** — the catalogue of endpoints.
 2. **`facade/TestSettingsFacade`** — follow `/testRequest` end to end; it touches clients, server
@@ -507,7 +551,7 @@ in the database.
 
 ---
 
-## 13. Glossary
+## 14. Glossary
 
 - **Test / measurement** — one run of download+upload+ping (+optional QoS). Stored as a `test` row.
 - **`test_token`** — `uuid_timestamp_signature`; the HMAC-signed credential a client uses to submit
@@ -529,4 +573,4 @@ in the database.
 ---
 
 *This document describes the structure and intent of the code as it stands. When in doubt, the
-code is the source of truth — start from the reading path in §12 and follow the calls.*
+code is the source of truth — start from the reading path in §13 and follow the calls.*
