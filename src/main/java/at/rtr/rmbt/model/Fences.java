@@ -74,5 +74,17 @@ public class Fences {
     @Schema(description = "Location provider of the fence center, as reported by the client", example = "gps")
     @Column(name = "provider") // varchar
     private String provider;
+
+    @Schema(description = "Altitude of the fence in meter, as reported by the client", example = "2183.4")
+    @Column(name = "altitude") // float8
+    private Double altitude;
+
+    @Schema(description = "Heading of the fence in degrees from north, as reported by the client", example = "271.5")
+    @Column(name = "bearing") // float8
+    private Double bearing;
+
+    @Schema(description = "Speed of the fence in meter per second, as reported by the client", example = "13.8")
+    @Column(name = "speed") // float8
+    private Double speed;
 }
 

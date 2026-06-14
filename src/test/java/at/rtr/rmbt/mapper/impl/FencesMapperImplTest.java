@@ -40,6 +40,9 @@ class FencesMapperImplTest {
         when(request.getRadius()).thenReturn(20.0);
         when(request.getAccuracy()).thenReturn(13.014);
         when(request.getProvider()).thenReturn("gps");
+        when(request.getAltitude()).thenReturn(183.4);
+        when(request.getHeading()).thenReturn(271.5);
+        when(request.getSpeed()).thenReturn(13.8);
 
         final at.rtr.rmbt.model.Test test = mock(at.rtr.rmbt.model.Test.class);
         when(test.getOpenTestUuid()).thenReturn(openTestUuid);
@@ -53,6 +56,10 @@ class FencesMapperImplTest {
         assertEquals(Long.valueOf(13), fences.getTechnologyId());
         assertEquals(13.014, fences.getAccuracy());
         assertEquals("gps", fences.getProvider());
+        assertEquals(183.4, fences.getAltitude());
+        // request "heading" is persisted as the DB "bearing" column
+        assertEquals(271.5, fences.getBearing());
+        assertEquals(13.8, fences.getSpeed());
 
         final Geometry geom = fences.getGeom4326();
         assertNotNull(geom);

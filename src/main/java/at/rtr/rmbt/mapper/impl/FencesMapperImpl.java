@@ -32,6 +32,9 @@ public class FencesMapperImpl implements FencesMapper {
                 // test row's location, not to the stored fence.
                 .accuracy(fencesRequest.getAccuracy())
                 .provider(fencesRequest.getProvider())
+                .altitude(fencesRequest.getAltitude())
+                .bearing(fencesRequest.getHeading())
+                .speed(fencesRequest.getSpeed())
                 .build();
     }
 }
