@@ -123,7 +123,7 @@ public class QosSendTestResultItem {
 
     @Schema(example = "-181283337", description = "VOIP outgoing skew in nanoseconds")
     @JsonProperty("voip_result_out_skew")
-    private Integer voipResultOutSkew;
+    private Long voipResultOutSkew;
 
     @Schema(example = "30", description = "max valid hops to count this test results as success")
     @JsonProperty("traceroute_objective_max_hops")
