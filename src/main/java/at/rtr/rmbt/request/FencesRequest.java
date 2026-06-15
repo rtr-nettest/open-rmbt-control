@@ -60,9 +60,9 @@ public class FencesRequest {
     @JsonProperty(value = "altitude")
     private final Double altitude;
 
-    @Schema(description = "Heading of the fence in degrees from north, can be null", example = "271.5")
-    @JsonProperty(value = "heading")
-    private final Double heading;
+    @Schema(description = "Bearing of the fence in degrees from north, can be null", example = "271.5")
+    @JsonProperty(value = "bearing")
+    private final Double bearing;
 
     @Schema(description = "Speed of the fence in meter per second, can be null", example = "13.8")
     @JsonProperty(value = "speed")

@@ -33,7 +33,7 @@ public class FencesMapperImpl implements FencesMapper {
                 .accuracy(fencesRequest.getAccuracy())
                 .provider(fencesRequest.getProvider())
                 .altitude(fencesRequest.getAltitude())
-                .bearing(fencesRequest.getHeading())
+                .bearing(fencesRequest.getBearing())
                 .speed(fencesRequest.getSpeed())
                 .build();
     }
