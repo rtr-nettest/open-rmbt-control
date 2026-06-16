@@ -113,6 +113,9 @@ public class TestMapperImpl implements TestMapper {
         test.setNetworkType(signalMeasurementResultRequest.getNetworkType());
         test.setNetworkIsRoaming(signalMeasurementResultRequest.getTelephonyNetworkIsRoaming());
         test.setTestErrorCause(signalMeasurementResultRequest.getTestErrorCause());
+        // Optional termination cause; null/empty stays as-is, longer values are quietly
+        // truncated to the column's 100 char limit.
+        test.setTerminationCause(StringUtils.left(signalMeasurementResultRequest.getTerminationCause(), 100));
         test.setNetworkOperator(signalMeasurementResultRequest.getTelephonyNetworkOperator());
         test.setNetworkSimOperator(signalMeasurementResultRequest.getTelephonyNetworkSimOperator());
         test.setClientIpLocal(signalMeasurementResultRequest.getTestIpLocal());

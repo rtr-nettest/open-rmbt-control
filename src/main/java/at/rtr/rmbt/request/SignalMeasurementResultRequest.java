@@ -150,6 +150,10 @@ public class SignalMeasurementResultRequest {
     @JsonProperty(value = "test_error_cause")
     private final String testErrorCause;
 
+    @Schema(description = "Reason why the measurement ended, e.g. \"ended by network change\"", example = "ended by network change")
+    @JsonProperty(value = "termination_cause")
+    private final String terminationCause;
+
     @Schema(description = "Capabilities")
     @JsonProperty(value = "capabilitiesRequest")
     private final CapabilitiesRequest capabilitiesRequest;

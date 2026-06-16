@@ -487,6 +487,9 @@ public class Test implements Serializable {
     @Column(name = "test_error_cause")
     private String testErrorCause;
 
+    @Column(name = "termination_cause", length = 100)
+    private String terminationCause;
+
     @Column(name = "last_sequence_number")
     private Integer lastSequenceNumber;
 
