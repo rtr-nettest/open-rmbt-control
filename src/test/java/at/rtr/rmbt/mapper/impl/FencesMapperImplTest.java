@@ -32,17 +32,18 @@ class FencesMapperImplTest {
         final SimpleLocationRequest location = mock(SimpleLocationRequest.class);
         when(location.getLatitude()).thenReturn(LAT);
         when(location.getLongitude()).thenReturn(LON);
+        // accuracy/provider/altitude/bearing/speed are nested in the location
+        when(location.getAccuracy()).thenReturn(13.014);
+        when(location.getProvider()).thenReturn("gps");
+        when(location.getAltitude()).thenReturn(183.4);
+        when(location.getBearing()).thenReturn(271.5);
+        when(location.getSpeed()).thenReturn(13.8);
 
         final FencesRequest request = mock(FencesRequest.class);
         when(request.getLocation()).thenReturn(location);
         when(request.getTechnology()).thenReturn("LTE");
         when(request.getTechnologyId()).thenReturn(13L);
         when(request.getRadius()).thenReturn(20.0);
-        when(request.getAccuracy()).thenReturn(13.014);
-        when(request.getProvider()).thenReturn("gps");
-        when(request.getAltitude()).thenReturn(183.4);
-        when(request.getBearing()).thenReturn(271.5);
-        when(request.getSpeed()).thenReturn(13.8);
 
         final at.rtr.rmbt.model.Test test = mock(at.rtr.rmbt.model.Test.class);
         when(test.getOpenTestUuid()).thenReturn(openTestUuid);

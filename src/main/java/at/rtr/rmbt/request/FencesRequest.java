@@ -48,23 +48,6 @@ public class FencesRequest {
     @JsonProperty(value = "signal")
     private final Double signal;
 
-    @Schema(description = "Location accuracy of the fence center in m; if absent a default of 14 m is assumed", example = "13.014")
-    @JsonProperty(value = "accuracy")
-    private final Double accuracy;
-
-    @Schema(description = "Location provider of the fence center; if absent \"GPS\" is assumed", example = "gps")
-    @JsonProperty(value = "provider")
-    private final String provider;
-
-    @Schema(description = "Altitude of the fence center in meter, can be null", example = "2183.4")
-    @JsonProperty(value = "altitude")
-    private final Double altitude;
-
-    @Schema(description = "Bearing of the fence in degrees from north, can be null", example = "271.5")
-    @JsonProperty(value = "bearing")
-    private final Double bearing;
-
-    @Schema(description = "Speed of the fence in meter per second, can be null", example = "13.8")
-    @JsonProperty(value = "speed")
-    private final Double speed;
+    // accuracy, provider, altitude, bearing and speed are nested inside "location"
+    // (SimpleLocationRequest), as the client sends them there alongside latitude/longitude.
 }

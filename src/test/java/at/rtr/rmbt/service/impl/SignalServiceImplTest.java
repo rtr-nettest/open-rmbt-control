@@ -149,11 +149,11 @@ public class SignalServiceImplTest {
         when(test.getTime()).thenReturn(TestConstants.DEFAULT_ZONED_DATE_TIME);
 
         FencesRequest firstFence = FencesRequest.builder()
-                .location(SimpleLocationRequest.builder().latitude(48.2).longitude(16.3).build())
-                .accuracy(9.5).provider("network").offsetMs(5000L).durationMs(1L).radius(10.0).build();
+                .location(SimpleLocationRequest.builder().latitude(48.2).longitude(16.3).accuracy(9.5).provider("network").build())
+                .offsetMs(5000L).durationMs(1L).radius(10.0).build();
         FencesRequest secondFence = FencesRequest.builder()
-                .location(SimpleLocationRequest.builder().latitude(1.0).longitude(2.0).build())
-                .accuracy(5.0).provider("gps").offsetMs(100L).durationMs(1L).radius(10.0).build();
+                .location(SimpleLocationRequest.builder().latitude(1.0).longitude(2.0).accuracy(5.0).provider("gps").build())
+                .offsetMs(100L).durationMs(1L).radius(10.0).build();
         when(request.getFences()).thenReturn(List.of(firstFence, secondFence));
         Map<String, String> headers = Map.of(HeaderConstants.IP, "127.0.0.1");
 

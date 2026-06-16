@@ -389,8 +389,8 @@ public class SignalServiceImpl implements SignalService {
      * geo_location row with a server-generated UUID is created from the fence center and assigned
      * to the test (which also sets lat/long, accuracy and provider); the derived geometries are
      * computed afterwards by {@code updateTestLocation}. Accuracy and provider are taken from the
-     * fence as-is (NULL when the client did not supply them — no default is invented). When no fence
-     * is present the location set from the geoLocations is left untouched.
+     * fence's nested location as-is (NULL when the client did not supply them — no default is
+     * invented). When no fence is present the location set from the geoLocations is left untouched.
      */
     private void applyFenceLocation(List<FencesRequest> fences, Test updatedTest) {
         if (fences == null || fences.isEmpty()) {
@@ -408,7 +408,7 @@ public class SignalServiceImpl implements SignalService {
                 : updatedTest.getTime().plus(Objects.requireNonNullElse(firstFence.getOffsetMs(), 0L), ChronoUnit.MILLIS);
         geoLocationService.createAndAssignGeoLocation(
                 updatedTest, location.getLatitude(), location.getLongitude(),
-                firstFence.getAccuracy(), firstFence.getProvider(), fenceTime);
+                location.getAccuracy(), location.getProvider(), fenceTime);
     }
 
     private String getSignalStrength(RadioSignal signal) {
