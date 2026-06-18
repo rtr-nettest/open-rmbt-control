@@ -321,8 +321,6 @@ public class TestScriptInterpreter {
 			// scalar result (typically a boolean): return the host value so the caller's
 			// String.valueOf(...) yields "true"/"false" as before
 			return result.as(Object.class);
-		} catch (final ScriptException e) {
-			throw e;
 		} catch (final Exception e) {
 			e.printStackTrace();
 			throw new ScriptException(e.getMessage() + " " + args[0]);

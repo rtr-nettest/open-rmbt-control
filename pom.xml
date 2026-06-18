@@ -26,8 +26,12 @@
         <!-- Override the Spring Boot 3.4.x BOM's Byte Buddy so Mockito can instrument JDK 25 bytecode; still works on JDK 17. -->
         <byte-buddy.version>1.17.6</byte-buddy.version>
         <apache.commons.version>[3.18.0,)</apache.commons.version>
-        <!-- GraalJS via the Truffle "unchained" coordinates; 23.1.x runs on a stock JDK 17+ (no GraalVM required). -->
-        <graalvm.version>23.1.2</graalvm.version>
+        <!-- GraalJS (Truffle "unchained") version. No single Truffle line spans JDK 17 and JDK 22+,
+             so the version is selected by the JDK running the build via the profiles below: this
+             default (24.2.0) is used on JDK 21+; JDK < 21 falls back to 23.1.2. (24.2.x needs JDK 21+;
+             23.1.x uses sun.misc.Unsafe.ensureClassInitialized, removed in JDK 22, so it crashes on
+             JDK 22+.) The build JDK should therefore match the JDK the WAR is deployed on. -->
+        <graalvm.version>24.2.0</graalvm.version>
         <auth0-spring-security-api.version>1.4.0</auth0-spring-security-api.version>
         <start-class>at.rtr.rmbt.RTRApplication</start-class>
         <!-- JUnit 5 @Tag("integration") tests (e.g. live network lookups) are excluded by default,
@@ -333,4 +337,21 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Select the GraalJS/Truffle version by the JDK running the build (= the JDK that runs the
+             tests, and should match the deployment JDK). JDK 21+ uses the default ${graalvm.version}
+             (24.2.0) from <properties>; JDK < 21 falls back to the last 23.1.x line, which is the
+             newest GraalJS that still runs on JDK 17 (24.2.x requires JDK 21+; 23.1.x crashes on
+             JDK 22+ via the removed sun.misc.Unsafe.ensureClassInitialized). -->
+        <profile>
+            <id>graaljs-jdk-legacy</id>
+            <activation>
+                <jdk>(,21)</jdk>
+            </activation>
+            <properties>
+                <graalvm.version>23.1.2</graalvm.version>
+            </properties>
+        </profile>
+    </profiles>
 </project>
