@@ -26,6 +26,8 @@
         <!-- Override the Spring Boot 3.4.x BOM's Byte Buddy so Mockito can instrument JDK 25 bytecode; still works on JDK 17. -->
         <byte-buddy.version>1.17.6</byte-buddy.version>
         <apache.commons.version>[3.18.0,)</apache.commons.version>
+        <!-- GraalJS via the Truffle "unchained" coordinates; 23.1.x runs on a stock JDK 17+ (no GraalVM required). -->
+        <graalvm.version>23.1.2</graalvm.version>
         <auth0-spring-security-api.version>1.4.0</auth0-spring-security-api.version>
         <start-class>at.rtr.rmbt.RTRApplication</start-class>
         <!-- JUnit 5 @Tag("integration") tests (e.g. live network lookups) are excluded by default,
@@ -189,10 +191,19 @@
             <artifactId>jakarta.xml.bind-api</artifactId>
             <version>4.0.2</version>
         </dependency>
+        <!-- GraalJS replaces the end-of-life Nashorn engine for the QoS evaluation scripts
+             (at.rtr.rmbt.utils.testscript). 'polyglot' is the embedding API; 'js-community' pulls
+             the JavaScript language + Truffle runtime (community/GPL+CE). -->
         <dependency>
-            <groupId>org.openjdk.nashorn</groupId>
-            <artifactId>nashorn-core</artifactId>
-            <version>15.7</version>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>polyglot</artifactId>
+            <version>${graalvm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>js-community</artifactId>
+            <version>${graalvm.version}</version>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

@@ -27,8 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
-import javax.script.*;
-import java.lang.reflect.Method;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Engine;
+import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.PolyglotException;
+import org.graalvm.polyglot.Value;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -88,12 +91,39 @@ public class TestScriptInterpreter {
 	
 	public final static Pattern PATTERN_RECURSIVE_COMMAND = Pattern.compile("([%%])(?:(?=(\\\\?))\\2.)*?\\1");
 	
-	private static ScriptEngine jsEngine;
-	
-	private static Method jsEngineNativeObjectGetter;
-	
-	private static boolean alredayLookedForGetter = false;
-	
+	// Shared GraalJS engine (thread-safe). Suppress the "interpreter only" warning that is printed
+	// when running on a stock (non-GraalVM) JDK; the QoS rule scripts are tiny so the lack of JIT
+	// compilation is irrelevant.
+	private static final Engine ENGINE = Engine.newBuilder()
+			.option("engine.WarnInterpreterOnly", "false")
+			.build();
+
+	private static final SystemApi SYSTEM_API = new SystemApi();
+
+	// Only @HostAccess.Export-annotated SystemApi methods are callable from a script, but the
+	// result values bound as variables (parsed from JSON into Lists/Maps, e.g. dns_result_entries
+	// or traceroute details) must stay readable/iterable from JS as they were under Nashorn.
+	private static final HostAccess HOST_ACCESS = HostAccess.newBuilder()
+			.allowAccessAnnotatedBy(HostAccess.Export.class)
+			.allowListAccess(true)
+			.allowArrayAccess(true)
+			.allowMapAccess(true)
+			.allowIterableAccess(true)
+			.allowIteratorAccess(true)
+			.build();
+
+	/**
+	 * A fresh GraalJS context for a single evaluation. A {@link Context} is not safe for concurrent
+	 * use, so one is created per script and closed (try-with-resources); the shared {@link Engine}
+	 * keeps creation cheap.
+	 */
+	private static Context createContext() {
+		return Context.newBuilder("js")
+				.engine(ENGINE)
+				.allowHostAccess(HOST_ACCESS)
+				.build();
+	}
+
 	/**
 	 * 
 	 * @param command
@@ -110,15 +140,6 @@ public class TestScriptInterpreter {
 	 */
 	public static <T> Object interprete(String command, Hstore hstore, AbstractResult<T> object, boolean useRecursion, ResultOptions resultOptions) {
 
-		if (jsEngine == null) {
-			ScriptEngineManager sem = new ScriptEngineManager();
-			jsEngine = sem.getEngineByName("JavaScript");
-			logger.debug("JS Engine: {}", jsEngine.getClass().getCanonicalName());
-			Bindings b = jsEngine.createBindings();
-			b.put("nn", new SystemApi());
-			jsEngine.setBindings(b, ScriptContext.GLOBAL_SCOPE);
-		}
-		
 		command = command.replace("\\%", "{PERCENT}");
 
 		try {			
@@ -268,60 +289,41 @@ public class TestScriptInterpreter {
 	 * @throws ScriptException
 	 */
 	private static Object eval(String[] args, Hstore hstore, AbstractResult<?> object) throws ScriptException {
-		try {
-			boolean isJsObject = false;
-			
-			final Bindings bindings = jsEngine.createBindings();
-			bindings.putAll(object.getResultMap());
-			//final Bindings bindings = new SimpleBindings(object.getResultMap());
+		try (Context context = createContext()) {
+			final Value jsBindings = context.getBindings("js");
+			jsBindings.putMember("nn", SYSTEM_API);
+			for (final Map.Entry<String, Object> entry : object.getResultMap().entrySet()) {
+				jsBindings.putMember(entry.getKey(), entry.getValue());
+			}
 
-			// "voip_result_out_num_packets", "voip_objective_call_duration", "voip_objective_delay" are required,
-			// but sometimes a variable is missing and thus triggers a script exception
+			final Value result;
+			// A referenced variable may be missing (e.g. a result without outgoing/incoming data),
+			// which raises a ReferenceError. Treat that as "no result" (failure), matching the
+			// previous behaviour.
 			try {
-				jsEngine.eval("var result=null; " + args[0], bindings);
-			} catch (javax.script.ScriptException e) {
-                    return null;
-				}
+				context.eval("js", "var result=null; " + args[0]);
+				result = jsBindings.getMember("result");
+			} catch (final PolyglotException e) {
+				return null;
+			}
 
-			EvalResult evalResult = null;
-			final Object result = bindings.get("result");
-			
-			if (result != null) {
-				if (jsEngine.getClass().getCanonicalName().equals("jdk.nashorn.api.scripting.NashornScriptEngine")) {
-					if (result.getClass().getCanonicalName().equals("jdk.nashorn.api.scripting.ScriptObjectMirror")) {
-						isJsObject = true;
-					}
-				}
-				else {
-					if (result.getClass().getCanonicalName().equals("sun.org.mozilla.javascript.NativeObject") 
-							|| result.getClass().getCanonicalName().equals("sun.org.mozilla.javascript.internal.NativeObject")) {
-						isJsObject = true;
-					}
-				}
+			if (result == null || result.isNull()) {
+				return "";
 			}
-			
-			if (isJsObject) {
-				if (!alredayLookedForGetter && jsEngineNativeObjectGetter == null) {
-					alredayLookedForGetter = true;
-					logger.debug("js getter is null, trying to get methody with reflections...");
-					try {
-						jsEngineNativeObjectGetter = result.getClass().getMethod("get", Object.class);
-						logger.debug("method found: " + jsEngineNativeObjectGetter.getName());
-					}
-					catch (Exception e) {
-						logger.error("Method not found", e);
-					}
-				}
-				
-				if (jsEngineNativeObjectGetter != null) {
-					final String type = (String) jsEngineNativeObjectGetter.invoke(result, "type");
-					final String key = (String) jsEngineNativeObjectGetter.invoke(result, "key");
-					evalResult = new EvalResult(EvalResultType.valueOf(type.toUpperCase(Locale.US)), key);
-				}
+
+			// object-literal result, e.g. result = { type: 'failure', key: 'voip.timeout' }
+			if (result.hasMembers() && result.hasMember("type")) {
+				final String type = result.getMember("type").asString();
+				final String key = result.hasMember("key") ? result.getMember("key").asString() : null;
+				return new EvalResult(EvalResultType.valueOf(type.toUpperCase(Locale.US)), key);
 			}
-			
-			return evalResult == null ? (result == null ? "" : result) : evalResult;
-		} catch (Exception e) {
+
+			// scalar result (typically a boolean): return the host value so the caller's
+			// String.valueOf(...) yields "true"/"false" as before
+			return result.as(Object.class);
+		} catch (final ScriptException e) {
+			throw e;
+		} catch (final Exception e) {
 			e.printStackTrace();
 			throw new ScriptException(e.getMessage() + " " + args[0]);
 		}
@@ -420,40 +422,46 @@ public class TestScriptInterpreter {
 	}
 	
 	public static boolean controlIf(String clause, AbstractResult<?> object) throws ScriptException {
-		final Bindings bindings = new SimpleBindings(object.getResultMap());
-		try {
-			final Object result = jsEngine.eval(clause, bindings);
+		try (Context context = createContext()) {
+			final Value bindings = context.getBindings("js");
+			bindings.putMember("nn", SYSTEM_API);
+			object.getResultMap().forEach(bindings::putMember);
+			final Value result = context.eval("js", clause);
 			return Boolean.parseBoolean(result.toString());
-			
-		} catch (javax.script.ScriptException e) {
+		} catch (final PolyglotException e) {
 			throw new ScriptException(ScriptException.ERROR_UNKNOWN + " IF: " + e.getMessage());
 		}
 	}
-	
-	public static String controlSwitch(String clause, AbstractResult<?> object, String switchBody) throws ScriptException {		
-		final Bindings bindings = new SimpleBindings(object.getResultMap());
-		Object result = null;
-		try {
-			result = jsEngine.eval(clause, bindings);
-		} catch (javax.script.ScriptException e) {
-			throw new ScriptException(ScriptException.ERROR_UNKNOWN + " SWITCH: " + e.getMessage());
-		}
-		
-		try {
-			if (result != null) {
-				final String switchCase = result.toString();
-				final Matcher m = PATTERN_CONTROL_SWITCH.matcher(switchBody);
-				while (m.find()) {
-					final String caseOption = jsEngine.eval(m.group(2), bindings).toString(); 
-					if ((m.group(1).equals("CASE") && switchCase.equals(caseOption)) || m.group(1).equals("DEFAULT")) {
-						return m.group(3);
+
+	public static String controlSwitch(String clause, AbstractResult<?> object, String switchBody) throws ScriptException {
+		try (Context context = createContext()) {
+			final Value bindings = context.getBindings("js");
+			bindings.putMember("nn", SYSTEM_API);
+			object.getResultMap().forEach(bindings::putMember);
+
+			final Value result;
+			try {
+				result = context.eval("js", clause);
+			} catch (final PolyglotException e) {
+				throw new ScriptException(ScriptException.ERROR_UNKNOWN + " SWITCH: " + e.getMessage());
+			}
+
+			try {
+				if (result != null && !result.isNull()) {
+					final String switchCase = result.toString();
+					final Matcher m = PATTERN_CONTROL_SWITCH.matcher(switchBody);
+					while (m.find()) {
+						final String caseOption = context.eval("js", m.group(2)).toString();
+						if ((m.group(1).equals("CASE") && switchCase.equals(caseOption)) || m.group(1).equals("DEFAULT")) {
+							return m.group(3);
+						}
 					}
 				}
+			} catch (final PolyglotException e) {
+				throw new ScriptException(ScriptException.ERROR_UNKNOWN + " CASE: " + e.getMessage());
 			}
-		} catch (javax.script.ScriptException e) {
-			throw new ScriptException(ScriptException.ERROR_UNKNOWN + " CASE: " + e.getMessage());
 		}
-		
+
 		return "";
 	}
 	

@@ -1,6 +1,7 @@
 package at.rtr.rmbt.utils.testscript;
 
 import at.rtr.rmbt.dto.qos.TracerouteResult;
+import org.graalvm.polyglot.HostAccess;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +35,7 @@ public class SystemApi {
         return randomUrl.toString();
     }
 
+    @HostAccess.Export
     public int getCount(Object array) {
         if (array != null && array.getClass().isArray()) {
             return Array.getLength(array);
@@ -42,10 +44,12 @@ public class SystemApi {
         return 0;
     }
 
+    @HostAccess.Export
     public boolean isEmpty(Object array) {
         return getCount(array) == 0;
     }
 
+    @HostAccess.Export
     public boolean isNull(Object o) {
         return o == null;
     }
@@ -57,6 +61,7 @@ public class SystemApi {
      * "nn.coalesce is not a function", which {@code TestScriptInterpreter.eval} swallows and turns
      * into a (wrong) test failure.
      */
+    @HostAccess.Export
     public Object coalesce(Object value, Object fallback) {
         return value != null ? value : fallback;
     }
@@ -69,6 +74,7 @@ public class SystemApi {
      * overloads when the argument is {@code null}, which previously failed with
      * "Can't unambiguously select between ... parseTraceroute".
      */
+    @HostAccess.Export
     public String parseTraceroute(Object path) throws JSONException {
         if (path == null) {
             return null;
@@ -119,6 +125,7 @@ public class SystemApi {
         return sb.toString();
     }
 
+    @HostAccess.Export
     public Object debug(Object toLog) {
         System.out.println("QoSLOG: " + toLog);
         return toLog;
