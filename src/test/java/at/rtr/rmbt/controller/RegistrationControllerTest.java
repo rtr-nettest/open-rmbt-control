@@ -99,6 +99,7 @@ public class RegistrationControllerTest {
             ServerType.RMBT,
             true,
             "test_token",
+            null, // ping_token (added field; not asserted in this test)
             "5",
             "a165c0a4-cc23-4e39-a1b3-8a111a32e755",
             "provider",

@@ -15,6 +15,7 @@ import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.GeoIpHelper;
 import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import at.rtr.rmbt.utils.HelperFunctions;
+import at.rtr.rmbt.utils.RmbtUdpTokenFactory;
 import at.rtr.rmbt.utils.TimeUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -262,11 +263,24 @@ public class TestSettingsFacade {
 
                             final String token = data + "_" + hmac;
 
+                            // Additional backward-compatible token following the open-rmbt-udp-ping
+                            // schema (base64 of time(4) ‖ HMAC-SHA256(key, time)[:8] ‖
+                            // HMAC-SHA256(key, time ‖ ip)[:4]). The legacy test_token is unchanged;
+                            // this extra ping_token lets the same session authenticate the UDP ping
+                            // test against the measurement server. It binds the client source IP, so
+                            // it is only emitted when that IP is known.
+                            String pingToken = null;
+                            if (clientAddress != null) {
+                                pingToken = Base64.getEncoder().encodeToString(
+                                        RmbtUdpTokenFactory.createToken(testServer.getKey(), clientAddress, testSlot));
+                            }
+
                             test.setToken(token);
                             test = testService.save(test);
 
                             int waitTime = testSlot - (int) (System.currentTimeMillis() / 1000);
                             builder.testToken(token)
+                                    .pingToken(pingToken)
                                     .testUuid(testUuid.toString())
                                     .openTestUuid("O" + openTestUuid)
                                     .testWait(Math.max(waitTime, 0));
