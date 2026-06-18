@@ -50,6 +50,17 @@ public class SystemApi {
         return o == null;
     }
 
+    /**
+     * SQL-style COALESCE used by the QoS evaluation scripts, e.g.
+     * {@code nn.coalesce(voip_result_in_mean_jitter, 50000000)}: returns {@code value} when it is
+     * non-null, otherwise the {@code fallback}. Without this the script call throws
+     * "nn.coalesce is not a function", which {@code TestScriptInterpreter.eval} swallows and turns
+     * into a (wrong) test failure.
+     */
+    public Object coalesce(Object value, Object fallback) {
+        return value != null ? value : fallback;
+    }
+
 
     /**
      * Single entry point for the QoS evaluation script, which calls {@code nn.parseTraceroute(x)}

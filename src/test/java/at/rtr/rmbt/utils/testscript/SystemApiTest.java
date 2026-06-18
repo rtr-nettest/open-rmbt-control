@@ -2,6 +2,7 @@ package at.rtr.rmbt.utils.testscript;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,5 +37,16 @@ class SystemApiTest {
     @Test
     void parseTraceroute_unsupportedType_returnsNull()  {
         assertNull(systemApi.parseTraceroute(42));
+    }
+
+    @Test
+    void coalesce_valuePresent_returnsValue() {
+        // mirrors nn.coalesce(voip_result_in_mean_jitter, 50000000) when the result is present
+        assertEquals(1214508, systemApi.coalesce(1214508, 50000000));
+    }
+
+    @Test
+    void coalesce_valueNull_returnsFallback() {
+        assertEquals(50000000, systemApi.coalesce(null, 50000000));
     }
 }
