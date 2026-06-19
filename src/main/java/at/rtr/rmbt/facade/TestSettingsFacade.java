@@ -15,6 +15,7 @@ import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.GeoIpHelper;
 import at.rtr.rmbt.utils.HeaderExtrudeUtil;
 import at.rtr.rmbt.utils.HelperFunctions;
+import at.rtr.rmbt.utils.RmbtUdpTokenFactory;
 import at.rtr.rmbt.utils.TimeUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -260,7 +261,22 @@ public class TestSettingsFacade {
                             if (StringUtils.isBlank(hmac))
                                 errorResponse.getError().add(getErrorMessage("ERROR_TEST_TOKEN", locale));
 
-                            final String token = data + "_" + hmac;
+                            // v1 token, unchanged: <openTestUuid>_<testSlot>_<HMAC-SHA1>. Old
+                            // measurement servers keep parsing exactly this.
+                            String token = data + "_" + hmac;
+
+                            // Append the v2 (open-rmbt-udp-ping schema) token as a marker-delimited
+                            // trailing field: <v1_token>_#v2#<base64 udp token>, where the udp token is
+                            // base64 of time(4) ‖ HMAC-SHA256(key, time)[:8] ‖ HMAC-SHA256(key, time ‖ ip)[:4].
+                            // New servers detect "#v2#" and validate the SHA256 token (source IP + time);
+                            // old servers ignore the trailing field. Carrying it inside test_token means
+                            // the client sends one token to every server — no client change needed.
+                            // Bound to the client source IP, so only appended when that IP is known.
+                            if (clientAddress != null) {
+                                final String udpToken = Base64.getEncoder().encodeToString(
+                                        RmbtUdpTokenFactory.createToken(testServer.getKey(), clientAddress, testSlot));
+                                token = token + "_#v2#" + udpToken;
+                            }
 
                             test.setToken(token);
                             test = testService.save(test);
