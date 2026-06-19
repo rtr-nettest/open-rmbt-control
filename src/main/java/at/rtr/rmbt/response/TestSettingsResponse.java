@@ -70,14 +70,11 @@ public class TestSettingsResponse {
     private Boolean testServerEncryption;
 
     @JsonProperty("test_token")
-    @Schema(description = "Test token used to autheticate on measurement server", example = "53d69299-0206-4732-a623-6b0c2fec306d_1572526785_oFAdP8+Cw9TqvJOgNc5ABOQRxss=")
+    @Schema(description = "Test token used to authenticate on the measurement server. v1 form "
+            + "<uuid>_<ts>_<hmacSha1>; when the client IP is known a v2 (open-rmbt-udp-ping) token is "
+            + "appended as <v1>_#v2#<base64>, also usable for the UDP ping test.",
+            example = "53d69299-0206-4732-a623-6b0c2fec306d_1572526785_oFAdP8+Cw9TqvJOgNc5ABOQRxss=_#v2#aWKUzZEyb7t34wCPfV0ATA==")
     private String testToken;
-
-    @JsonProperty("ping_token")
-    @Schema(description = "Backward-compatible SHA256 token (open-rmbt-udp-ping schema) that can also "
-            + "be used to authenticate the UDP ping test against the measurement server; null when the "
-            + "client IP is unknown", example = "aWKUzZEyb7t34wCPfV0ATA==")
-    private String pingToken;
 
     @JsonProperty("test_numpings")
     @Schema(description = "Minimum number of pings to be executed during the test", example = "10")
