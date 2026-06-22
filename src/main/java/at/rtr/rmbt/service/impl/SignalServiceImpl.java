@@ -237,7 +237,7 @@ public class SignalServiceImpl implements SignalService {
         // If the public IP seen at the result submission (source_ip) differs from the one captured at the registration
         // (client_public_ip), the client's network changed between register and result, so the
         // register-time IP and everything derived from it are stale: null them out.
-        nullStaleClientPublicIpData(updatedTest);
+        processClientPublicIpChanged(updatedTest);
 
         // cellLocations
         processCellLocation(signalMeasurementResultRequest.getCellLocations(), updatedTest);
@@ -472,25 +472,17 @@ public class SignalServiceImpl implements SignalService {
     }
 
     /**
-     * Clears {@code client_public_ip} and every field derived from it at /coverageRequest when the
-     * result-time {@code source_ip} differs — i.e. the client's apparent public IP changed between
-     * register and result, making the register-time IP and its geo/ASN/rDNS data unreliable.
+     * Processes a public IP changed between register and result.
+     * (Currently logging event only)
      */
-    private void nullStaleClientPublicIpData(Test test) {
+    private void processClientPublicIpChanged(Test test) {
         final String clientPublicIp = test.getClientPublicIp();
         final String sourceIp = test.getSourceIp();
         if (clientPublicIp == null || sourceIp == null || clientPublicIp.equals(sourceIp)) {
             return;
         }
-        log.info("source_ip ({}) differs from client_public_ip ({}); nulling stale register-time IP data for test {}",
+        log.info("source_ip ({}) differs from client_public_ip ({}) at test {}",
                 sourceIp, clientPublicIp, test.getUuid());
-        test.setClientPublicIp(null);
-        test.setClientPublicIpAnonymized(null);
-        test.setPublicIpRdns(null);
-        test.setCountryGeoip(null);
-        test.setPublicIpAsName(null);
-        test.setCountryAsn(null);
-        test.setPublicIpAsn(null);
     }
 
     private RtrClient findClientOrThrow(UUID clientUuid) {
