@@ -45,6 +45,8 @@ public class ResultServiceImplTest {
     @MockitoBean
     private PingService pingService;
     @MockitoBean
+    private UdpPingService udpPingService;
+    @MockitoBean
     private SpeedService speedService;
     @MockitoBean
     private TestMapper testMapper;
@@ -80,7 +82,7 @@ public class ResultServiceImplTest {
     public void setUp() {
         resultService = new ResultServiceImpl(testRepository, geoLocationService, radioCellService,
                 radioSignalService, cellLocationService, signalService, networkTypeRepository,
-                pingService, speedService, applicationProperties, testMapper,loopModeSettings);
+                pingService, udpPingService, speedService, applicationProperties, testMapper,loopModeSettings);
     }
 
     @Test
