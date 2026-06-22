@@ -235,9 +235,14 @@ public class SignalServiceImpl implements SignalService {
         setSourceIp(httpServletRequest, headers, updatedTest);
 
         // If the public IP seen at the result submission (source_ip) differs from the one captured at the registration
-        // (client_public_ip), the client's network changed between register and result, so the
-        // register-time IP and everything derived from it are stale: null them out.
+        // (client_public_ip), the client's network changed between register and result.
         processClientPublicIpChanged(updatedTest);
+
+        // A fence's ping proves the client's IP is correct (the ping server only answers a
+        // reachable source IP); log whether any fence in this submission carried a ping.
+        if (!fencesContainPing(signalMeasurementResultRequest.getFences())) {
+            nullIClientiPInfos(updatedTest);
+        }
 
         // cellLocations
         processCellLocation(signalMeasurementResultRequest.getCellLocations(), updatedTest);
@@ -384,6 +389,22 @@ public class SignalServiceImpl implements SignalService {
     }
 
     /**
+     * Returns {@code true} if at least one fence reported a ping value ({@code avg_ping_ms}).
+     * <p>
+     * A returned ping proves the client's IP is correct: the ping server only answers a
+     * reachable source address, so a non-null ping in any fence confirms the IP. The result
+     * is {@code false} when the submission contains no fence, or when every fence is missing
+     * a ping value. The outcome is logged.
+     */
+    static boolean fencesContainPing(List<FencesRequest> fences) {
+        boolean ipConfirmedByPing = fences != null && fences.stream()
+                .map(FencesRequest::getAvgPingMs)
+                .anyMatch(Objects::nonNull);
+        log.info("coverageResult fences confirm client IP via ping = {}", ipConfirmedByPing);
+        return ipConfirmedByPing;
+    }
+
+    /**
      * Defines the test's representative location from the first (oldest, index 0) fence, if any
      * fence is present. Since a fence has no client {@code geo_location} of its own, a single
      * geo_location row with a server-generated UUID is created from the fence center and assigned
@@ -483,6 +504,16 @@ public class SignalServiceImpl implements SignalService {
         }
         log.info("source_ip ({}) differs from client_public_ip ({}) at test {}",
                 sourceIp, clientPublicIp, test.getUuid());
+    }
+
+    private void nullIClientiPInfos(Test test) {
+        test.setClientPublicIp(null);
+        test.setClientPublicIpAnonymized(null);
+        test.setPublicIpRdns(null);
+        test.setCountryGeoip(null);
+        test.setPublicIpAsName(null);
+        test.setCountryAsn(null);
+        test.setPublicIpAsn(null);
     }
 
     private RtrClient findClientOrThrow(UUID clientUuid) {

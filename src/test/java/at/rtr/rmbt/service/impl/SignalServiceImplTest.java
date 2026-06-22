@@ -29,6 +29,8 @@ import java.util.*;
 
 import static at.rtr.rmbt.TestConstants.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -107,6 +109,28 @@ public class SignalServiceImplTest {
                 uuidGenerator, clientRepository, signalMapper, radioSignalRepository, geoLocationRepository, testMapper,
                 geoLocationService, radioCellService, radioSignalService, signalRepository, fencesService,
                 testServerService, settingsRepository, loopModeSettingsService, cellLocationService);
+    }
+
+    @Test
+    public void fencesContainPing_whenNoFences_returnsFalse() {
+        assertFalse(SignalServiceImpl.fencesContainPing(null));
+        assertFalse(SignalServiceImpl.fencesContainPing(Collections.emptyList()));
+    }
+
+    @Test
+    public void fencesContainPing_whenAllFencesWithoutPing_returnsFalse() {
+        List<FencesRequest> fences = List.of(
+                FencesRequest.builder().build(),
+                FencesRequest.builder().avgPingMs(null).build());
+        assertFalse(SignalServiceImpl.fencesContainPing(fences));
+    }
+
+    @Test
+    public void fencesContainPing_whenAtLeastOneFenceHasPing_returnsTrue() {
+        List<FencesRequest> fences = List.of(
+                FencesRequest.builder().build(),
+                FencesRequest.builder().avgPingMs(4.42).build());
+        assertTrue(SignalServiceImpl.fencesContainPing(fences));
     }
 
     @Test
