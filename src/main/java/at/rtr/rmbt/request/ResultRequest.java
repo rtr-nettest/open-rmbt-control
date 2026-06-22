@@ -178,6 +178,10 @@ public class ResultRequest {
     @JsonProperty(value = "pings")
     private final List<PingRequest> pings;
 
+    @Schema(description = "UDP pings array (loaded ping, one per ~100 ms over the whole measurement)")
+    @JsonProperty(value = "udp_pings")
+    private final List<UdpPingRequest> udpPings;
+
     @Schema(description = "RadioInfo array")
     @JsonProperty(value = "radioInfo")
     private final RadioInfoRequest radioInfo;

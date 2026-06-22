@@ -43,6 +43,7 @@ public class ResultServiceImpl implements ResultService {
     private final SignalService signalService;
     private final NetworkTypeRepository networkTypeRepository;
     private final PingService pingService;
+    private final UdpPingService udpPingService;
     private final SpeedService speedService;
     private final ApplicationProperties applicationProperties;
     private final TestMapper testMapper;
@@ -220,6 +221,9 @@ public class ResultServiceImpl implements ResultService {
     private void processPingData(ResultRequest resultRequest, Test test) {
         if (Objects.nonNull(resultRequest.getPings())) {
             pingService.savePingRequests(resultRequest.getPings(), test);
+        }
+        if (Objects.nonNull(resultRequest.getUdpPings())) {
+            udpPingService.saveUdpPingRequests(resultRequest.getUdpPings(), test);
         }
     }
 
