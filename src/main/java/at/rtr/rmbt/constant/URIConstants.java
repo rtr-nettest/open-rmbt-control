@@ -13,6 +13,9 @@ public interface URIConstants {
     String ADMIN_SET_IMPLAUSIBLE = "/admin/setImplausible";
     String COVERAGE_REQUEST = "/coverageRequest";
     String COVERAGE_RESULT = "/coverageResult";
+    // Debug-only: client posts the internal per-fence data (signals/pings/technologies) right after
+    // each fence completes, so the fence "summary" compilation can be inspected server-side.
+    String COVERAGE_FENCE_DEBUG = "/coverageFenceDebug";
     String ADMIN_SIGNAL = "/reports/signal";
     String TEST_SERVER = "/measurementServer";
     String TEST = "/test";

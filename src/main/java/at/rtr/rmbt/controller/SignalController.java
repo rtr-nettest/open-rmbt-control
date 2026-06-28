@@ -2,6 +2,7 @@ package at.rtr.rmbt.controller;
 
 
 import at.rtr.rmbt.constant.URIConstants;
+import at.rtr.rmbt.request.CoverageFenceDebugRequest;
 import at.rtr.rmbt.request.SignalMeasurementRegisterRequest;
 import at.rtr.rmbt.request.SignalMeasurementResultRequest;
 import at.rtr.rmbt.response.*;
@@ -63,6 +64,18 @@ public class SignalController {
         return Collections.emptyMap(); // Returns "{}" as JSON
     }
 
-
+    @PostMapping(URIConstants.COVERAGE_FENCE_DEBUG)
+    @Operation(summary = "Debug: dump the internal per-fence data (signals/pings/technologies) used to compile the coverage submission")
+    @ResponseStatus(HttpStatus.OK)
+    public Map<String, Object> processCoverageFenceDebug(@RequestBody CoverageFenceDebugRequest request) {
+        log.info("Coverage fence debug [test_uuid={} seq={}] signals={} technologies={} pings={} :: {}",
+                request.getTestUuid(),
+                request.getSequenceNumber(),
+                request.getSignals() == null ? 0 : request.getSignals().size(),
+                request.getTechnologies() == null ? 0 : request.getTechnologies().size(),
+                request.getPings() == null ? 0 : request.getPings().size(),
+                request);
+        return Collections.emptyMap(); // Returns "{}" as JSON
+    }
 
 }
