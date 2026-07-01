@@ -86,9 +86,10 @@ public class RtrAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ErrorResponse handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-        // This will log the exact parameter that caused parsing to fail
+        // Client-side input error (always a 4xx): log the offending parameter/value at WARN
+        // without the full stack trace, which would otherwise be misleading noise at ERROR level.
         Throwable rootCause = ex.getMostSpecificCause();
-        log.error("Failed to parse JSON request. Problem with parameter in request body. Root cause: ", rootCause);
+        log.warn("Rejected unparseable JSON request body: {}", rootCause.getMessage());
 
         // Return a clean error message to client
         return new ErrorResponse("Invalid request format: " + rootCause.getMessage());
