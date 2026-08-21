@@ -1,5 +1,6 @@
 package at.rtr.rmbt.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -59,4 +60,9 @@ public class SettingResponse {
                     "{\"download_kbit\":{\"2\":5000,\"3\":10000,\"4\":100000},\"upload_kbit\":{\"2\":10000,\"3\":20000,\"4\":30000},\"ping_ms\":{\"2\":75,\"3\":25,\"4\":10},\"signal_mobile\":{\"2\":-101,\"3\":-85,\"4\":-75},\"signal_mobile_rsrp\":{\"2\":-111,\"3\":-95,\"4\":-85},\"signal_wifi\":{\"2\":-76,\"3\":-61,\"4\":-51}}"
     )
     private JsonNode classificationThresholds;
+
+    @Schema(description = "Whether signal measurement is available")
+    @JsonProperty(value = "signal_measurement_available")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private final Boolean signalMeasurementAvailable;
 }

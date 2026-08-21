@@ -164,6 +164,59 @@ public class RtrSettingsServiceImplTest {
         assertEquals(getServerWsResponseList(), response.getSettings().get(0).getServerWSResponseList());
         assertEquals(getServerQosResponseList(), response.getSettings().get(0).getServerQosResponseList());
         assertEquals(getUrlsResponse(), response.getSettings().get(0).getUrls());
+        Assert.assertNull(response.getSettings().get(0).getSignalMeasurementAvailable());
+    }
+
+    @Test
+    public void getSettings_whenSignalMeasurementAvailableTrue_expectFlagTrue() {
+        stubMinimalAndroidSettings();
+        var settings = new ArrayList<>(getDefaultSettings());
+        settings.add(new Settings(null, Config.SIGNAL_MEASUREMENT_AVAILABLE_KEY, TestConstants.DEFAULT_LANGUAGE, "TrUe"));
+        when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
+                .thenReturn(settings);
+
+        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
+
+        assertEquals(Boolean.TRUE, response.getSettings().get(0).getSignalMeasurementAvailable());
+    }
+
+    @Test
+    public void getSettings_whenSignalMeasurementAvailableFalse_expectFlagFalse() {
+        stubMinimalAndroidSettings();
+        var settings = new ArrayList<>(getDefaultSettings());
+        settings.add(new Settings(null, Config.SIGNAL_MEASUREMENT_AVAILABLE_KEY, TestConstants.DEFAULT_LANGUAGE, "FALSE"));
+        when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
+                .thenReturn(settings);
+
+        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
+
+        assertEquals(Boolean.FALSE, response.getSettings().get(0).getSignalMeasurementAvailable());
+    }
+
+    @Test
+    public void getSettings_whenSignalMeasurementAvailableInvalid_expectFlagNull() {
+        stubMinimalAndroidSettings();
+        var settings = new ArrayList<>(getDefaultSettings());
+        settings.add(new Settings(null, Config.SIGNAL_MEASUREMENT_AVAILABLE_KEY, TestConstants.DEFAULT_LANGUAGE, "yes"));
+        when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
+                .thenReturn(settings);
+
+        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
+
+        Assert.assertNull(response.getSettings().get(0).getSignalMeasurementAvailable());
+    }
+
+    private void stubMinimalAndroidSettings() {
+        when(rtrSettingsRequest.getName()).thenReturn(TestConstants.DEFAULT_CLIENT_NAME);
+        when(rtrSettingsRequest.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(rtrSettingsRequest.getPlatform()).thenReturn(TestConstants.DEFAULT_ANDROID_PLATFORM);
+        when(rtrSettingsRequest.getLanguage()).thenReturn(TestConstants.DEFAULT_LANGUAGE);
+        when(rtrSettingsRequest.getTermsAndConditionsAcceptedVersion()).thenReturn(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION);
+        when(rtrClient.getTermsAndConditionsAcceptedVersion()).thenReturn(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION - 1);
+        when(clientService.getClientByUUID(TestConstants.DEFAULT_CLIENT_UUID)).thenReturn(rtrClient);
+        when(clientService.saveClient(rtrClient)).thenReturn(savedRtrClient);
+        when(savedRtrClient.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
+        when(savedRtrClient.getUid()).thenReturn(TestConstants.DEFAULT_UID);
     }
 
     @Test

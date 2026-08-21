@@ -95,6 +95,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .mapServerResponse(getMapServerResponse(settings))
                 .versions(getVersionResponse())
                 .classificationThresholds(getClassificationThresholdsResponse(settings))
+                .signalMeasurementAvailable(getSignalMeasurementAvailable(settings))
                 .build();
 
         return SettingsResponse.builder()
@@ -342,6 +343,21 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 return null;
             }
         }
+    }
+
+    // Only expose the flag when the setting explicitly holds "true"/"false" (case-insensitive); omit it otherwise.
+    private Boolean getSignalMeasurementAvailable(Map<String, String> settings) {
+        String value = settings.get(Config.SIGNAL_MEASUREMENT_AVAILABLE_KEY);
+        if (value == null) {
+            return null;
+        }
+        if (value.equalsIgnoreCase("true")) {
+            return Boolean.TRUE;
+        }
+        if (value.equalsIgnoreCase("false")) {
+            return Boolean.FALSE;
+        }
+        return null;
     }
 
     private AdminSettingsMapServerResponse getAdminSettingsMapServerResponse(Map<String, String> settings) {
