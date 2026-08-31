@@ -31,7 +31,8 @@ public class GeoLocationServiceImpl implements GeoLocationService {
     public void processGeoLocationRequests(Collection<GeoLocationRequest> geoLocationRequests, Test test) {
 
         Double minAccuracy = Double.MAX_VALUE;
-        GeoLocation firstAccuratePosition = null;
+        GeoLocation bestAccuracyPosition = null;   // fallback: position with the best (lowest) accuracy value
+        GeoLocation firstAccuratePosition = null;  // first position whose accuracy is within the threshold
 
         List<GeoLocation> geoLocations = new LinkedList<>();
 
@@ -42,6 +43,9 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 
                 if (geoLoc.getAccuracy() < minAccuracy) {
                     minAccuracy = geoLoc.getAccuracy();
+                    bestAccuracyPosition = geoLoc;
+                }
+                if (Objects.isNull(firstAccuratePosition) && geoLoc.getAccuracy() <= Config.LOCATION_ACCURACY_THRESHOLD_M) {
                     firstAccuratePosition = geoLoc;
                 }
                 geoLocations.add(geoLoc);
@@ -50,8 +54,11 @@ public class GeoLocationServiceImpl implements GeoLocationService {
         }
         geoLocationRepository.saveAll(geoLocations);
 
-        if (Objects.nonNull(firstAccuratePosition)) {
-            updateTestGeo(test, firstAccuratePosition);
+        // Prefer the first position that is accurate enough (within the +/- threshold), falling back
+        // to the position with the best accuracy when none of them meets the threshold.
+        GeoLocation selectedPosition = Objects.nonNull(firstAccuratePosition) ? firstAccuratePosition : bestAccuracyPosition;
+        if (Objects.nonNull(selectedPosition)) {
+            updateTestGeo(test, selectedPosition);
         }
     }
 

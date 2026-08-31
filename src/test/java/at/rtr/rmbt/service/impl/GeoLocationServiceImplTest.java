@@ -77,6 +77,60 @@ public class GeoLocationServiceImplTest {
     }
 
     @Test
+    public void processGeoLocationRequests_whenFirstPositionWithinThreshold_expectFirstUsedOverMoreAccurateLater() {
+        var requests = List.of(geoLocationRequestFirst, geoLocationRequestSecond);
+        stubValidRequest(geoLocationRequestFirst);
+        stubValidRequest(geoLocationRequestSecond);
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestFirst, test)).thenReturn(geoLocationFirst);
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestSecond, test)).thenReturn(geoLocationSecond);
+        // First position is already accurate enough (within the +/- threshold) ...
+        when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_WITHIN_THRESHOLD);
+        when(geoLocationFirst.getGeoLocationUUID()).thenReturn(TestConstants.DEFAULT_GEO_LOCATION_UUID);
+        when(geoLocationFirst.getGeoLong()).thenReturn(TestConstants.DEFAULT_LONGITUDE);
+        when(geoLocationFirst.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE);
+        when(geoLocationFirst.getProvider()).thenReturn(TestConstants.DEFAULT_PROVIDER);
+        // ... even though the second position has a better accuracy value.
+        when(geoLocationSecond.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_BEST);
+
+        geoLocationService.processGeoLocationRequests(requests, test);
+
+        verify(geoLocationRepository).saveAll(List.of(geoLocationFirst, geoLocationSecond));
+        verify(test).setGeoLocationUuid(TestConstants.DEFAULT_GEO_LOCATION_UUID);
+        verify(test).setGeoProvider(TestConstants.DEFAULT_PROVIDER);
+        verify(test).setGeoAccuracy(TestConstants.DEFAULT_ACCURACY_WITHIN_THRESHOLD);
+        verify(test).setLongitude(TestConstants.DEFAULT_LONGITUDE);
+        verify(test).setLatitude(TestConstants.DEFAULT_LATITUDE);
+    }
+
+    @Test
+    public void processGeoLocationRequests_whenNoPositionWithinThreshold_expectBestAccuracyUsed() {
+        var requests = List.of(geoLocationRequestFirst, geoLocationRequestSecond);
+        stubValidRequest(geoLocationRequestFirst);
+        stubValidRequest(geoLocationRequestSecond);
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestFirst, test)).thenReturn(geoLocationFirst);
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestSecond, test)).thenReturn(geoLocationSecond);
+        // Neither position is within the threshold, so the more accurate (second) one wins.
+        when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_SECOND);
+        when(geoLocationSecond.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_FIRST);
+        when(geoLocationSecond.getGeoLocationUUID()).thenReturn(TestConstants.DEFAULT_GEO_LOCATION_UUID);
+        when(geoLocationSecond.getGeoLong()).thenReturn(TestConstants.DEFAULT_LONGITUDE_SECOND);
+        when(geoLocationSecond.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE_SECOND);
+        when(geoLocationSecond.getProvider()).thenReturn(TestConstants.DEFAULT_PROVIDER);
+
+        geoLocationService.processGeoLocationRequests(requests, test);
+
+        verify(test).setGeoAccuracy(TestConstants.DEFAULT_ACCURACY_FIRST);
+        verify(test).setLongitude(TestConstants.DEFAULT_LONGITUDE_SECOND);
+        verify(test).setLatitude(TestConstants.DEFAULT_LATITUDE_SECOND);
+    }
+
+    private void stubValidRequest(GeoLocationRequest request) {
+        when(request.getTstamp()).thenReturn(TestConstants.DEFAULT_TIME_NS);
+        when(request.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE);
+        when(request.getGeoLong()).thenReturn(TestConstants.DEFAULT_LONGITUDE);
+    }
+
+    @Test
     public void updateGeoLocation_whenCommonData_expectGeoLocationUpdated() {
         when(resultUpdateRequest.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_FIRST);
         when(resultUpdateRequest.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE);

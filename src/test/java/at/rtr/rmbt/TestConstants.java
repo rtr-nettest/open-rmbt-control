@@ -145,6 +145,10 @@ public interface TestConstants {
     Double DEFAULT_ACCURACY_FIRST = 19.0;
     String DEFAULT_SIGNAL_STRENGTH_ACCURACY_RESPONSE = FormatUtils.format(Constants.SIGNAL_STRENGTH_ACCURACY_TEMPLATE, DEFAULT_ACCURACY_FIRST);
     Double DEFAULT_ACCURACY_SECOND = 20.0;
+    // Accuracy within the +/- threshold (LOCATION_ACCURACY_THRESHOLD_M = 8m); the more accurate value
+    // BELOW is what the best-accuracy fallback would otherwise pick.
+    Double DEFAULT_ACCURACY_WITHIN_THRESHOLD = 5.0;
+    Double DEFAULT_ACCURACY_BEST = 2.0;
     Double DEFAULT_SPEED = 26.0;
     String DEFAULT_SIGNAL_STRENGTH_SPEED_RESPONSE = FormatUtils.format(Constants.SIGNAL_STRENGTH_SPEED_TEMPLATE, DEFAULT_SPEED);
     Long DEFAULT_MNC = 5L;

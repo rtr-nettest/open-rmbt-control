@@ -116,4 +116,7 @@ public interface Config {
             TestStatus.SIGNAL);
     List<TestStatus> TEST_RESULT_STATUSES = TEST_RESULT_DETAIL_STATUSES;
     Integer SIGNIFICANT_PLACES = 2;
+    // Accuracy threshold (in meters, "+/-Xm" radius) below which a reported position is considered
+    // good enough to be used as the measurement location without waiting for a more accurate one.
+    Double LOCATION_ACCURACY_THRESHOLD_M = 10.0;
 }
