@@ -25,7 +25,7 @@ public class TestMapperImpl implements TestMapper {
 
     @Override
     public void updateTestWithResultRequest(ResultRequest resultRequest, Test test) {
-        test.setClientVersion(StringUtils.left(resultRequest.getClientVersion(), 10));
+        test.setClientVersion(StringUtils.left(resultRequest.getClientVersion(), 50));
         test.setClientName(resultRequest.getClientName());
         test.setClientLanguage(resultRequest.getClientLanguage());
         test.setUploadSpeed(resultRequest.getUploadSpeed());
