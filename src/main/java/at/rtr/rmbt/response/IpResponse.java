@@ -19,4 +19,19 @@ public class IpResponse {
     @JsonProperty(value = "nat_type")
     private final String natType;
 
+    @JsonProperty(value = "is_proxy")
+    private final boolean proxy;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty(value = "proxy_country")
+    private final String proxyCountry;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty(value = "proxy_region")
+    private final String proxyRegion;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty(value = "proxy_city")
+    private final String proxyCity;
+
 }

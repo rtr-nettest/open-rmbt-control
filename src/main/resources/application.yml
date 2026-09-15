@@ -27,12 +27,26 @@ test-server-quality:
   # is also accepted.
   public-ipv4: ""
   public-ipv6: ""
+icloud-egress:
+  # Scheduled download of Apple's iCloud Private Relay egress IP ranges into Redis; the /ip endpoint
+  # uses it to flag proxied clients. Set enabled=false to disable the download entirely.
+  enabled: ${ICLOUD_EGRESS_ENABLED:true}
+  url: ${ICLOUD_EGRESS_URL:https://mask-api.icloud.com/egress-ip-ranges.csv}
+  # ISO-8601 durations. First run 20 s after start-up, then every 24 h.
+  initial-delay: PT20S
+  fixed-delay: PT24H
 spring:
   # Default profile - used when spring.profiles.active is not set
   main:
     allow-bean-definition-overriding: true
   application:
     name: rtr-control-backend
+  data:
+    redis:
+      host: ${CONTROL_REDIS_HOST:127.0.0.1}
+      port: ${CONTROL_REDIS_PORT:6379}
+      # Uncomment / set via env when the Redis instance requires auth:
+      # password: ${CONTROL_REDIS_PASSWORD:}
   datasource:
     poolSize: 20
     minIdle: 1
