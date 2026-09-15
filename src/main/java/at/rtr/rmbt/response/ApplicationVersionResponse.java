@@ -28,4 +28,8 @@ public class ApplicationVersionResponse {
     @JsonProperty(value = "geoip")
     private final String geoip;
 
+    /** Cache backend in use: {@code "redis"} when a reachable Redis is configured, else {@code "none"}. */
+    @JsonProperty(value = "cache")
+    private final String cache;
+
 }
