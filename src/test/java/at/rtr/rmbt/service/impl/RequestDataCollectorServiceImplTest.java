@@ -4,6 +4,7 @@ import at.rtr.rmbt.TestConstants;
 import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.IpRequest;
+import at.rtr.rmbt.service.PrivateRelayService;
 import at.rtr.rmbt.service.RequestDataCollectorService;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,9 +32,12 @@ public class RequestDataCollectorServiceImplTest {
     @Mock
     private TestRepository testRepository;
 
+    @Mock
+    private PrivateRelayService privateRelayService;
+
     @Before
     public void setUp() {
-        requestDataCollectorService = new RequestDataCollectorServiceImpl(testRepository);
+        requestDataCollectorService = new RequestDataCollectorServiceImpl(testRepository, privateRelayService);
         headers.put("User-Agent", TestConstants.DEFAULT_USER_AGENT_STRING);
     }
 

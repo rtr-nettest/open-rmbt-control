@@ -11,11 +11,16 @@ import at.rtr.rmbt.utils.GeoIpHelper;
 import at.rtr.rmbt.Version;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ApplicationVersionServiceImpl implements ApplicationVersionService {
 
@@ -29,6 +34,9 @@ public class ApplicationVersionServiceImpl implements ApplicationVersionService 
 
     private final SettingsRepository settingsRepository;
 
+    /** Optional: present only when Redis is configured (it is here for the /ip proxy cache), kept optional/robust. */
+    private final ObjectProvider<RedisConnectionFactory> redisConnectionFactory;
+
     @Override
     public ApplicationVersionResponse getApplicationVersion() {
 
@@ -39,7 +47,36 @@ public class ApplicationVersionServiceImpl implements ApplicationVersionService 
                 .host(applicationHost)
                 .profile(activeProfile)
                 .geoip(GeoIpHelper.isAvailable() ? "present" : "none")
+                .cache(detectCache())
                 .build();
+    }
+
+    /**
+     * Reports the cache backend: {@code "redis"} when a Redis connection factory is configured and
+     * reachable (ping succeeds), otherwise {@code "none"}.
+     */
+    private String detectCache() {
+        final RedisConnectionFactory factory = redisConnectionFactory.getIfAvailable();
+        if (factory == null) {
+            return "none";
+        }
+        RedisConnection connection = null;
+        try {
+            connection = factory.getConnection();
+            connection.ping();
+            return "redis";
+        } catch (Exception e) {
+            log.debug("Redis not reachable for /version cache check: {}", e.getMessage());
+            return "none";
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Exception ignored) {
+                    // best-effort close
+                }
+            }
+        }
     }
 
     /**

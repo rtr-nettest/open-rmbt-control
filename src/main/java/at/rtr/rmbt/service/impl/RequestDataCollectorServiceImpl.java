@@ -2,10 +2,12 @@ package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.constant.Constants;
 import at.rtr.rmbt.enums.TestStatus;
+import at.rtr.rmbt.model.ProxyInfo;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.request.IpRequest;
 import at.rtr.rmbt.response.DataCollectorResponse;
 import at.rtr.rmbt.response.IpResponse;
+import at.rtr.rmbt.service.PrivateRelayService;
 import at.rtr.rmbt.service.RequestDataCollectorService;
 import at.rtr.rmbt.utils.GeoIpHelper;
 import at.rtr.rmbt.utils.HeaderExtrudeUtil;
@@ -23,6 +25,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +38,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class RequestDataCollectorServiceImpl implements RequestDataCollectorService {
 
     private final TestRepository testRepository;
+    private final PrivateRelayService privateRelayService;
 
     @Override
     public DataCollectorResponse getDataCollectorResponse(HttpServletRequest request, Map<String, String> headers) {
@@ -101,11 +105,18 @@ public class RequestDataCollectorServiceImpl implements RequestDataCollectorServ
         }
 
 
-        return IpResponse.builder()
+        Optional<ProxyInfo> proxyInfo = privateRelayService.lookup(clientAddress);
+
+        IpResponse.IpResponseBuilder responseBuilder = IpResponse.builder()
                 .ip(clientIpRaw)
                 .version(ipVersion)
                 .natType(natType)
-                .build();
+                .proxy(proxyInfo.isPresent());
+        proxyInfo.ifPresent(info -> responseBuilder
+                .proxyCountry(info.proxyCountry())
+                .proxyRegion(info.proxyRegion())
+                .proxyCity(info.proxyCity()));
+        return responseBuilder.build();
     }
 
     private String getVersion(InetAddress clientAddress) {
