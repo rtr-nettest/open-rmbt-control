@@ -119,4 +119,12 @@ public interface Config {
     // Accuracy threshold (in meters, "+/-Xm" radius) below which a reported position is considered
     // good enough to be used as the measurement location without waiting for a more accurate one.
     Double LOCATION_ACCURACY_THRESHOLD_M = 10.0;
+    // Fallback window for the reference location: when NO in-test location (time_ns >= 0) exists,
+    // only locations recorded at most 10 s before the test start (time_ns > -10 s) may be used,
+    // and the newest of those is taken. Value is in nanoseconds (matches GeoLocationRequest.time_ns).
+    long LOCATION_FALLBACK_MIN_TIME_NS = -10_000_000_000L;
+    // Upper accuracy bound (meters) for reference-location selection: a position with accuracy of this
+    // value or worse is ignored entirely as a reference candidate. Mirrors the statistics server's
+    // RMBT_GEO_ACCURACY_DETAIL_LIMIT so the chosen reference is always present in its location output.
+    Double RMBT_GEO_ACCURACY_DETAIL_LIMIT = 10000D;
 }

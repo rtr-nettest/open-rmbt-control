@@ -31,32 +31,60 @@ public class GeoLocationServiceImpl implements GeoLocationService {
     public void processGeoLocationRequests(Collection<GeoLocationRequest> geoLocationRequests, Test test) {
 
         Double minAccuracy = Double.MAX_VALUE;
-        GeoLocation bestAccuracyPosition = null;   // fallback: position with the best (lowest) accuracy value
-        GeoLocation firstAccuratePosition = null;  // first position whose accuracy is within the threshold
+        GeoLocation bestAccuracyPosition = null;   // best (lowest) accuracy among in-test (time_ns >= 0) positions
+        GeoLocation firstAccuratePosition = null;  // first in-test position whose accuracy is within the threshold
+
+        // Last-resort fallback (only when NO in-test position exists): newest position recorded within the
+        // 10 s pre-start window (time_ns > LOCATION_FALLBACK_MIN_TIME_NS). Selected by time, not accuracy.
+        GeoLocation newestPreStartPosition = null;
+        Long newestPreStartTimeNs = null;
 
         List<GeoLocation> geoLocations = new LinkedList<>();
 
         for (GeoLocationRequest geoDataItem : geoLocationRequests) {
-            if (Objects.nonNull(geoDataItem.getTstamp()) && Objects.nonNull(geoDataItem.getGeoLat()) && Objects.nonNull(geoDataItem.getGeoLong())) {
-//                if (geoDataItem.getTimeNs() > -20000000000L) {// todo update to another value from RTR branch
-                GeoLocation geoLoc = geoLocationMapper.geoLocationRequestToGeoLocation(geoDataItem, test);
+            if (Objects.nonNull(geoDataItem.getTstamp()) &&
+                    Objects.nonNull(geoDataItem.getGeoLat()) && Objects.nonNull(geoDataItem.getGeoLong())) {
 
-                if (geoLoc.getAccuracy() < minAccuracy) {
-                    minAccuracy = geoLoc.getAccuracy();
-                    bestAccuracyPosition = geoLoc;
+                GeoLocation geoLoc = geoLocationMapper.geoLocationRequestToGeoLocation(geoDataItem, test);
+                geoLocations.add(geoLoc); // every valid position is stored, regardless of its time
+
+                final Long timeNs = geoDataItem.getTimeNs();
+                // A position worse than the accuracy limit is ignored entirely for reference selection
+                // (all three cases below), so the chosen reference matches the statistics location output.
+                final boolean accurateEnough = geoLoc.getAccuracy() < Config.RMBT_GEO_ACCURACY_DETAIL_LIMIT;
+                if (accurateEnough && timeNs != null && timeNs >= 0L) {
+                    // In-test position (at or after test start): eligible as reference location.
+                    if (geoLoc.getAccuracy() < minAccuracy) {
+                        minAccuracy = geoLoc.getAccuracy();
+                        bestAccuracyPosition = geoLoc;
+                    }
+                    if (Objects.isNull(firstAccuratePosition) &&
+                            geoLoc.getAccuracy() <= Config.LOCATION_ACCURACY_THRESHOLD_M) {
+                        firstAccuratePosition = geoLoc;
+                    }
+                } else if (accurateEnough && timeNs != null && timeNs > Config.LOCATION_FALLBACK_MIN_TIME_NS) {
+                    // Pre-start position within the tolerance window: only a candidate for the fallback below.
+                    if (newestPreStartTimeNs == null || timeNs > newestPreStartTimeNs) {
+                        newestPreStartTimeNs = timeNs;
+                        newestPreStartPosition = geoLoc;
+                    }
                 }
-                if (Objects.isNull(firstAccuratePosition) && geoLoc.getAccuracy() <= Config.LOCATION_ACCURACY_THRESHOLD_M) {
-                    firstAccuratePosition = geoLoc;
-                }
-                geoLocations.add(geoLoc);
-                //                }
             }
         }
         geoLocationRepository.saveAll(geoLocations);
 
-        // Prefer the first position that is accurate enough (within the +/- threshold), falling back
-        // to the position with the best accuracy when none of them meets the threshold.
-        GeoLocation selectedPosition = Objects.nonNull(firstAccuratePosition) ? firstAccuratePosition : bestAccuracyPosition;
+        // Reference location selection, in order of preference:
+        //  1) first in-test position within the accuracy threshold;
+        //  2) otherwise the best-accuracy in-test position;
+        //  3) only if no in-test position exists at all: the newest position within the 10 s pre-start window.
+        final GeoLocation selectedPosition;
+        if (Objects.nonNull(firstAccuratePosition)) {
+            selectedPosition = firstAccuratePosition;
+        } else if (Objects.nonNull(bestAccuracyPosition)) {
+            selectedPosition = bestAccuracyPosition;
+        } else {
+            selectedPosition = newestPreStartPosition; // may be null when nothing qualifies
+        }
         if (Objects.nonNull(selectedPosition)) {
             updateTestGeo(test, selectedPosition);
         }

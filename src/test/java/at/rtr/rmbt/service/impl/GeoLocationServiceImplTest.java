@@ -17,6 +17,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -125,9 +127,133 @@ public class GeoLocationServiceImplTest {
     }
 
     private void stubValidRequest(GeoLocationRequest request) {
+        stubValidRequest(request, TestConstants.DEFAULT_TIME_NS); // positive -> in-test position
+    }
+
+    private void stubValidRequest(GeoLocationRequest request, Long timeNs) {
         when(request.getTstamp()).thenReturn(TestConstants.DEFAULT_TIME_NS);
         when(request.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE);
         when(request.getGeoLong()).thenReturn(TestConstants.DEFAULT_LONGITUDE);
+        when(request.getTimeNs()).thenReturn(timeNs);
+    }
+
+    @Test
+    public void processGeoLocationRequests_whenTimeNsZero_expectPositionUsed() {
+        // A position at exactly time_ns == 0 is "at test start" and must be treated as valid.
+        var requests = List.of(geoLocationRequestFirst);
+        stubValidRequest(geoLocationRequestFirst, 0L);
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestFirst, test)).thenReturn(geoLocationFirst);
+        when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_WITHIN_THRESHOLD);
+        when(geoLocationFirst.getGeoLocationUUID()).thenReturn(TestConstants.DEFAULT_GEO_LOCATION_UUID);
+        when(geoLocationFirst.getGeoLong()).thenReturn(TestConstants.DEFAULT_LONGITUDE);
+        when(geoLocationFirst.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE);
+        when(geoLocationFirst.getProvider()).thenReturn(TestConstants.DEFAULT_PROVIDER);
+
+        geoLocationService.processGeoLocationRequests(requests, test);
+
+        verify(test).setGeoLocationUuid(TestConstants.DEFAULT_GEO_LOCATION_UUID);
+        verify(test).setGeoAccuracy(TestConstants.DEFAULT_ACCURACY_WITHIN_THRESHOLD);
+    }
+
+    @Test
+    public void processGeoLocationRequests_whenBestAccuracyIsPreStart_expectPreStartExcluded() {
+        // The most accurate position is before test start; it must NOT become the reference.
+        var requests = List.of(geoLocationRequestFirst, geoLocationRequestSecond);
+        stubValidRequest(geoLocationRequestFirst, -1_000_000_000L); // pre-start (-1 s), best accuracy
+        stubValidRequest(geoLocationRequestSecond, TestConstants.DEFAULT_TIME_NS); // in-test, worse accuracy
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestFirst, test)).thenReturn(geoLocationFirst);
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestSecond, test)).thenReturn(geoLocationSecond);
+        when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_BEST);   // 2.0, but pre-start
+        when(geoLocationSecond.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_SECOND); // 20.0, in-test
+        when(geoLocationSecond.getGeoLocationUUID()).thenReturn(TestConstants.DEFAULT_GEO_LOCATION_UUID);
+        when(geoLocationSecond.getGeoLong()).thenReturn(TestConstants.DEFAULT_LONGITUDE_SECOND);
+        when(geoLocationSecond.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE_SECOND);
+        when(geoLocationSecond.getProvider()).thenReturn(TestConstants.DEFAULT_PROVIDER);
+
+        geoLocationService.processGeoLocationRequests(requests, test);
+
+        // in-test second wins despite worse accuracy
+        verify(test).setGeoAccuracy(TestConstants.DEFAULT_ACCURACY_SECOND);
+        verify(test).setLatitude(TestConstants.DEFAULT_LATITUDE_SECOND);
+    }
+
+    @Test
+    public void processGeoLocationRequests_whenNullTimeNs_expectNoExceptionAndNotSelected() {
+        // A null time_ns must not cause an NPE and must not be selected as reference.
+        var requests = List.of(geoLocationRequestFirst);
+        stubValidRequest(geoLocationRequestFirst, null);
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestFirst, test)).thenReturn(geoLocationFirst);
+        when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_WITHIN_THRESHOLD);
+
+        geoLocationService.processGeoLocationRequests(requests, test);
+
+        verify(geoLocationRepository).saveAll(List.of(geoLocationFirst)); // still stored
+        verify(test, never()).setGeoLocationUuid(any());                  // but never used as reference
+    }
+
+    @Test
+    public void processGeoLocationRequests_whenOnlyPreStartWithinWindow_expectNewestSelectedNotMostAccurate() {
+        // No in-test position exists. Fallback: among positions within the 10 s pre-start window,
+        // the NEWEST is taken (by time), NOT the most accurate.
+        var requests = List.of(geoLocationRequestFirst, geoLocationRequestSecond);
+        stubValidRequest(geoLocationRequestFirst, -5_000_000_000L);  // -5 s, most accurate
+        stubValidRequest(geoLocationRequestSecond, -1_000_000_000L); // -1 s (newest), least accurate
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestFirst, test)).thenReturn(geoLocationFirst);
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestSecond, test)).thenReturn(geoLocationSecond);
+        when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_BEST);    // 2.0
+        when(geoLocationSecond.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_SECOND); // 20.0, but newer
+        when(geoLocationSecond.getGeoLocationUUID()).thenReturn(TestConstants.DEFAULT_GEO_LOCATION_UUID);
+        when(geoLocationSecond.getGeoLong()).thenReturn(TestConstants.DEFAULT_LONGITUDE_SECOND);
+        when(geoLocationSecond.getGeoLat()).thenReturn(TestConstants.DEFAULT_LATITUDE_SECOND);
+        when(geoLocationSecond.getProvider()).thenReturn(TestConstants.DEFAULT_PROVIDER);
+
+        geoLocationService.processGeoLocationRequests(requests, test);
+
+        // newest pre-start (second) selected, not the more accurate first
+        verify(test).setGeoAccuracy(TestConstants.DEFAULT_ACCURACY_SECOND);
+        verify(test).setLatitude(TestConstants.DEFAULT_LATITUDE_SECOND);
+    }
+
+    @Test
+    public void processGeoLocationRequests_whenInTestButAccuracyOverLimit_expectIgnored() {
+        // In-test position but accuracy == 10000 m (not < limit) -> ignored, no reference set.
+        var requests = List.of(geoLocationRequestFirst);
+        stubValidRequest(geoLocationRequestFirst, TestConstants.DEFAULT_TIME_NS);
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestFirst, test)).thenReturn(geoLocationFirst);
+        when(geoLocationFirst.getAccuracy()).thenReturn(10000.0);
+
+        geoLocationService.processGeoLocationRequests(requests, test);
+
+        verify(geoLocationRepository).saveAll(List.of(geoLocationFirst)); // stored
+        verify(test, never()).setGeoLocationUuid(any());                  // but not a reference
+    }
+
+    @Test
+    public void processGeoLocationRequests_whenPreStartAccuracyOverLimit_expectIgnored() {
+        // Only position is pre-start within the window but accuracy is worse than the limit -> ignored.
+        var requests = List.of(geoLocationRequestFirst);
+        stubValidRequest(geoLocationRequestFirst, -1_000_000_000L);
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestFirst, test)).thenReturn(geoLocationFirst);
+        when(geoLocationFirst.getAccuracy()).thenReturn(15000.0);
+
+        geoLocationService.processGeoLocationRequests(requests, test);
+
+        verify(geoLocationRepository).saveAll(List.of(geoLocationFirst)); // stored
+        verify(test, never()).setGeoLocationUuid(any());                  // but not a reference
+    }
+
+    @Test
+    public void processGeoLocationRequests_whenPreStartOutsideWindow_expectNoReference() {
+        // The only position is more than 10 s before start -> outside the fallback window -> no reference set.
+        var requests = List.of(geoLocationRequestFirst);
+        stubValidRequest(geoLocationRequestFirst, -20_000_000_000L); // -20 s, outside the -10 s window
+        when(geoLocationMapper.geoLocationRequestToGeoLocation(geoLocationRequestFirst, test)).thenReturn(geoLocationFirst);
+        when(geoLocationFirst.getAccuracy()).thenReturn(TestConstants.DEFAULT_ACCURACY_BEST);
+
+        geoLocationService.processGeoLocationRequests(requests, test);
+
+        verify(geoLocationRepository).saveAll(List.of(geoLocationFirst)); // stored
+        verify(test, never()).setGeoLocationUuid(any());                  // but never used as reference
     }
 
     @Test
