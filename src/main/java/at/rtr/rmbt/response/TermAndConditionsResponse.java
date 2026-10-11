@@ -15,7 +15,4 @@ public class TermAndConditionsResponse {
 
     @JsonProperty(value = "url")
     private final String url;
-
-    @JsonProperty(value = "ndt_url")
-    private final String ndtUrl;
 }

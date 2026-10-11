@@ -72,7 +72,6 @@ public class RTRSettingsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.settings[0].terms_and_conditions.version").value(DEFAULT_TERM_AND_CONDITION_VERSION))
                 .andExpect(jsonPath("$.settings[0].terms_and_conditions.url").value(DEFAULT_TERM_AND_CONDITION_URL))
-                .andExpect(jsonPath("$.settings[0].terms_and_conditions.ndt_url").value(DEFAULT_TERM_AND_CONDITION_NDT_URL))
                 .andExpect(jsonPath("$.settings[0].urls.url_share").value(DEFAULT_URLS_URL_SHARE))
                 .andExpect(jsonPath("$.settings[0].urls.url_ipv6_check").value(DEFAULT_URLS_URL_IPV6_CHECK))
                 .andExpect(jsonPath("$.settings[0].urls.control_ipv4_only").value(DEFAULT_URLS_CONTROL_IPV4_ONLY))
@@ -112,7 +111,6 @@ public class RTRSettingsControllerTest {
             .andExpect(jsonPath("$.termsAndConditions.tcVersion").value(DEFAULT_TERM_AND_CONDITION_VERSION))
             .andExpect(jsonPath("$.termsAndConditions.tcVersionIOS").value(DEFAULT_TERM_AND_CONDITION_VERSION_IOS))
             .andExpect(jsonPath("$.termsAndConditions.tcVersionAndroid").value(DEFAULT_TERM_AND_CONDITION_VERSION_ANDROID))
-            .andExpect(jsonPath("$.termsAndConditions.tcNdtUrlAndroid").value(DEFAULT_TERM_AND_CONDITION_NDT_URL))
             .andExpect(jsonPath("$.urls.urlShare").value(DEFAULT_URLS_URL_SHARE))
             .andExpect(jsonPath("$.urls.urlIpV4Check").value(DEFAULT_URLS_URL_IPV4_CHECK))
             .andExpect(jsonPath("$.urls.urlIpV6Check").value(DEFAULT_URLS_URL_IPV6_CHECK))
@@ -167,7 +165,6 @@ public class RTRSettingsControllerTest {
             .tcVersion(String.valueOf(DEFAULT_TERM_AND_CONDITION_VERSION))
             .tcVersionIOS(String.valueOf(DEFAULT_TERM_AND_CONDITION_VERSION_IOS))
             .tcVersionAndroid(String.valueOf(DEFAULT_TERM_AND_CONDITION_VERSION_ANDROID))
-            .tcNdtUrlAndroid(DEFAULT_TERM_AND_CONDITION_NDT_URL)
             .build();
         var urls = AdminSettingsUrlsResponse.builder()
             .urlShare(DEFAULT_URLS_URL_SHARE)
@@ -221,7 +218,6 @@ public class RTRSettingsControllerTest {
             .tcUrl(DEFAULT_TC_URL_ANDROID_VALUE)
             .tcVersion(DEFAULT_TC_VERSION_VALUE)
             .tcUrlAndroid(DEFAULT_TC_URL_ANDROID_VALUE)
-            .tcNdtUrlAndroid(DEFAULT_TC_NDT_URL_ANDROID_VALUE)
             .tcVersionAndroid(DEFAULT_TC_VERSION_ANDROID_VALUE)
             .tcUrlIOS(DEFAULT_TC_URL_IOS_VALUE)
             .tcVersionIOS(DEFAULT_TC_VERSION_IOS_VALUE)
@@ -278,7 +274,6 @@ public class RTRSettingsControllerTest {
         var termAndConditionsResponse = TermAndConditionsResponse.builder()
                 .version(DEFAULT_TERM_AND_CONDITION_VERSION)
                 .url(DEFAULT_TERM_AND_CONDITION_URL)
-                .ndtUrl(DEFAULT_TERM_AND_CONDITION_NDT_URL)
                 .build();
 
         var urls = UrlsResponse.builder()

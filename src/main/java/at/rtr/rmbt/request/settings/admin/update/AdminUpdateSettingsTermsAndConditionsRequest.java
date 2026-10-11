@@ -23,10 +23,6 @@ public class AdminUpdateSettingsTermsAndConditionsRequest {
     @JsonProperty(value = "tcUrlAndroid")
     private final String tcUrlAndroid;
 
-    @Schema(description = "URL of terms and conditions for the usage of NDT tests for Android", example = "https://www.netztest.at/en/tc_android.html")
-    @JsonProperty(value = "tcNdtUrlAndroid")
-    private final String tcNdtUrlAndroid;
-
     @Schema(description = "Terms and conditions version number for Android", example = "6")
     @JsonProperty(value = "tcVersionAndroid")
     private final String tcVersionAndroid;

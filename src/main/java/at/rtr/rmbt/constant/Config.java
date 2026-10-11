@@ -22,7 +22,6 @@ public interface Config {
     String TERM_AND_CONDITION_URL_KEY = "tc_url";
     String TERM_AND_CONDITION_URL_IOS_KEY = "tc_url_ios";
     String TERM_AND_CONDITION_URL_ANDROID_KEY = "tc_url_android";
-    String TERM_AND_CONDITION_NDT_URL_KEY = "tc_ndt_url_android";
     String URL_OPEN_DATA_PREFIX_KEY = "url_open_data_prefix";
     String URL_SHARE_KEY = "url_share";
     String CLASSIFICATION_THRESHOLDS_KEY = "classification_thresholds";
@@ -61,7 +60,6 @@ public interface Config {
         TERM_AND_CONDITION_URL_KEY,
         TERM_AND_CONDITION_URL_IOS_KEY,
         TERM_AND_CONDITION_URL_ANDROID_KEY,
-        TERM_AND_CONDITION_NDT_URL_KEY,
         URL_OPEN_DATA_PREFIX_KEY,
         URL_SHARE_KEY,
         URL_STATISTIC_KEY,
@@ -72,7 +70,6 @@ public interface Config {
         URL_MAP_SERVER_KEY
     );
     List<String> SETTINGS_KEYS = List.of("tc_url_android",
-        "tc_ndt_url_android",
         "tc_version_android",
         "tc_url_ios",
         "tc_version_ios",

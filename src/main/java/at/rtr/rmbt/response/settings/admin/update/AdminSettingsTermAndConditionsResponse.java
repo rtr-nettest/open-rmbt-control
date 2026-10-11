@@ -27,7 +27,4 @@ public class AdminSettingsTermAndConditionsResponse {
 
     @Schema(description = "Terms and conditions version number for Android", example = "6")
     private final String tcVersionAndroid;
-
-    @Schema(description = "URL of terms and conditions for the usage of NDT tests for Android", example = "https://www.netztest.at/en/tc_android.html")
-    private final String tcNdtUrlAndroid;
 }

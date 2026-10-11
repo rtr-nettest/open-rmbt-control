@@ -374,7 +374,6 @@ public class RtrSettingsServiceImplTest {
         when(adminUpdateSettingsTermsAndConditionsRequest.getTcVersion()).thenReturn(String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION));
         when(adminUpdateSettingsTermsAndConditionsRequest.getTcVersionIOS()).thenReturn(String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION_IOS));
         when(adminUpdateSettingsTermsAndConditionsRequest.getTcVersionAndroid()).thenReturn(String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION_ANDROID));
-        when(adminUpdateSettingsTermsAndConditionsRequest.getTcNdtUrlAndroid()).thenReturn(TestConstants.DEFAULT_TERM_AND_CONDITION_NDT_URL);
 
 
         when(adminUpdateSettingsUrlsRequest.getControlIpV4Only()).thenReturn(TestConstants.DEFAULT_URLS_CONTROL_IPV4_ONLY);
@@ -424,7 +423,6 @@ public class RtrSettingsServiceImplTest {
                 .tcVersion(DEFAULT_TERM_AND_CONDITION_VERSION.toString())
                 .tcVersionIOS(DEFAULT_TERM_AND_CONDITION_VERSION_IOS.toString())
                 .tcVersionAndroid(DEFAULT_TERM_AND_CONDITION_VERSION_ANDROID.toString())
-                .tcNdtUrlAndroid(DEFAULT_TERM_AND_CONDITION_NDT_URL)
                 .build();
         var urls = AdminSettingsUrlsResponse.builder()
                 .urlShare(DEFAULT_URLS_URL_SHARE)
@@ -473,7 +471,6 @@ public class RtrSettingsServiceImplTest {
         addSettingToList(Config.TERM_AND_CONDITION_VERSION_KEY, String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION), settings);
         addSettingToList(Config.TERM_AND_CONDITION_VERSION_IOS_KEY, String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION_IOS), settings);
         addSettingToList(Config.TERM_AND_CONDITION_VERSION_ANDROID_KEY, String.valueOf(TestConstants.DEFAULT_TERM_AND_CONDITION_VERSION_ANDROID), settings);
-        addSettingToList(Config.TERM_AND_CONDITION_NDT_URL_KEY, TestConstants.DEFAULT_TERM_AND_CONDITION_NDT_URL, settings);
         addSettingToList(Config.URL_OPEN_DATA_PREFIX_KEY, TestConstants.DEFAULT_URLS_OPEN_DATA_PREFIX, settings);
         addSettingToList(Config.URL_SHARE_KEY, TestConstants.DEFAULT_URLS_URL_SHARE, settings);
         addSettingToList(Config.URL_STATISTIC_KEY, TestConstants.DEFAULT_URLS_STATISTICS, settings);
@@ -541,7 +538,6 @@ public class RtrSettingsServiceImplTest {
     private TermAndConditionsResponse getAndroidTermAndConditionsResponse() {
         return TermAndConditionsResponse.builder()
                 .url(TestConstants.DEFAULT_TC_URL_ANDROID_VALUE)
-                .ndtUrl(TestConstants.DEFAULT_TC_NDT_URL_ANDROID_VALUE)
                 .version(Long.valueOf(TestConstants.DEFAULT_TC_VERSION_ANDROID_VALUE))
                 .build();
     }
@@ -589,7 +585,6 @@ public class RtrSettingsServiceImplTest {
 
     private List<Settings> getDefaultSettings() {
         var tcUrlAndroid = new Settings(null, "tc_url_android", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_TC_URL_ANDROID_VALUE);
-        var tcNdtUrlAndroid = new Settings(null, "tc_ndt_url_android", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_TC_NDT_URL_ANDROID_VALUE);
         var tcVersionAndroid = new Settings(null, "tc_version_android", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_TC_VERSION_ANDROID_VALUE);
         var tcUrlIOS = new Settings(null, "tc_url_ios", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_TC_URL_IOS_VALUE);
         var tcVersionIOS = new Settings(null, "tc_version_ios", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_TC_VERSION_IOS_VALUE);
@@ -606,7 +601,7 @@ public class RtrSettingsServiceImplTest {
         var urlIpv4Check = new Settings(null, "url_ipv4_check", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_URLS_URL_IPV4_CHECK);
         var urlIpv6Check = new Settings(null, "url_ipv6_check", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_URLS_URL_IPV6_CHECK);
         var urlMapServer = new Settings(null, "url_map_server", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_URLS_URL_MAP_SERVER);
-        return List.of(tcUrlAndroid, tcNdtUrlAndroid, tcVersionAndroid,
+        return List.of(tcUrlAndroid, tcVersionAndroid,
                 tcUrlIOS, tcVersionIOS,
                 tcVersion, tcUrl, hostMapServer,
                 sslMapServer, portMapServer, urlOpenDataPrefix, urlShare,

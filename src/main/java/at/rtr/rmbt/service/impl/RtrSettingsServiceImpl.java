@@ -142,7 +142,6 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                     updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_KEY, tcRequest.getTcVersion(), updateSettings);
                     updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_IOS_KEY, tcRequest.getTcVersionIOS(), updateSettings);
                     updateSettings(settingsActual, Config.TERM_AND_CONDITION_VERSION_ANDROID_KEY, tcRequest.getTcVersionAndroid(), updateSettings);
-                    updateSettings(settingsActual, Config.TERM_AND_CONDITION_NDT_URL_KEY, tcRequest.getTcNdtUrlAndroid(), updateSettings);
                 });
 
         Optional.ofNullable(adminUpdateSettingsRequest.getAdminUpdateSettingsUrlsRequest())
@@ -223,7 +222,6 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .tcVersion(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_KEY))
                 .tcVersionIOS(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_IOS_KEY))
                 .tcVersionAndroid(actualSettings.get(Config.TERM_AND_CONDITION_VERSION_ANDROID_KEY))
-                .tcNdtUrlAndroid(actualSettings.get(Config.TERM_AND_CONDITION_NDT_URL_KEY))
                 .build();
     }
 
@@ -278,11 +276,9 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
 
     private TermAndConditionsResponse getTermAndConditionResponse(String platform, Map<String, String> settings) {
         String tcUrl = null;
-        String tcNdtUrl = null;
         Long tcVersion = null;
         if (Objects.nonNull(platform) && platform.equalsIgnoreCase("android")) {
             tcUrl = settings.get("tc_url_android");
-            tcNdtUrl = settings.get("tc_ndt_url_android");
             tcVersion = LongUtils.parseLong(settings.get("tc_version_android"));
         } else if (Objects.nonNull(platform) && platform.equalsIgnoreCase("ios")) {
             tcUrl = settings.get("tc_url_ios");
@@ -302,7 +298,6 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
 
         return TermAndConditionsResponse.builder()
                 .version(tcVersion)
-                .ndtUrl(tcNdtUrl)
                 .url(tcUrl)
                 .build();
     }

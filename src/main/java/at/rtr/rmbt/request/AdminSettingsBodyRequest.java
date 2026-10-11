@@ -23,10 +23,6 @@ public class AdminSettingsBodyRequest {
     @JsonProperty(value = "tc_url_android")
     private final String tcUrlAndroid;
 
-    @Schema(description = "URL of terms and conditions for the usage of NDT tests for Android", example = "https://www.netztest.at/en/tc_android.html")
-    @JsonProperty(value = "tc_ndt_url_android")
-    private final String tcNdtUrlAndroid;
-
     @Schema(description = "Terms and conditions version number for Android", example = "6")
     @JsonProperty(value = "tc_version_android")
     private final String tcVersionAndroid;
