@@ -3,8 +3,10 @@ package at.rtr.rmbt.service.impl;
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.mapper.GeoLocationMapper;
 import at.rtr.rmbt.model.GeoLocation;
+import at.rtr.rmbt.model.Settings;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.repository.GeoLocationRepository;
+import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.GeoLocationRequest;
 import at.rtr.rmbt.request.ResultUpdateRequest;
 import at.rtr.rmbt.service.GeoLocationService;
@@ -26,6 +28,7 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 
     private final GeoLocationMapper geoLocationMapper;
     private final GeoLocationRepository geoLocationRepository;
+    private final SettingsRepository settingsRepository;
 
     @Override
     public void processGeoLocationRequests(Collection<GeoLocationRequest> geoLocationRequests, Test test) {
@@ -39,6 +42,9 @@ public class GeoLocationServiceImpl implements GeoLocationService {
         GeoLocation newestPreStartPosition = null;
         Long newestPreStartTimeNs = null;
 
+        // Accuracy bound for reference-location selection, from settings with a hard-coded fallback.
+        final double accuracyLimit = getGeoAccuracyDetailLimit();
+
         List<GeoLocation> geoLocations = new LinkedList<>();
 
         for (GeoLocationRequest geoDataItem : geoLocationRequests) {
@@ -51,7 +57,7 @@ public class GeoLocationServiceImpl implements GeoLocationService {
                 final Long timeNs = geoDataItem.getTimeNs();
                 // A position worse than the accuracy limit is ignored entirely for reference selection
                 // (all three cases below), so the chosen reference matches the statistics location output.
-                final boolean accurateEnough = geoLoc.getAccuracy() < Config.RMBT_GEO_ACCURACY_DETAIL_LIMIT;
+                final boolean accurateEnough = geoLoc.getAccuracy() < accuracyLimit;
                 if (accurateEnough && timeNs != null && timeNs >= 0L) {
                     // In-test position (at or after test start): eligible as reference location.
                     if (geoLoc.getAccuracy() < minAccuracy) {
@@ -87,6 +93,21 @@ public class GeoLocationServiceImpl implements GeoLocationService {
         }
         if (Objects.nonNull(selectedPosition)) {
             updateTestGeo(test, selectedPosition);
+        }
+    }
+
+    // Accuracy bound (meters) for reference-location selection, read from the
+    // GEO_ACCURACY_DETAIL_LIMIT_KEY setting; falls back to the hard-coded constant when the row is
+    // absent or its value is not a valid number.
+    private double getGeoAccuracyDetailLimit() {
+        try {
+            return settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
+                            Config.GEO_ACCURACY_DETAIL_LIMIT_KEY, Config.GEO_ACCURACY_DETAIL_LIMIT_KEY, null)
+                    .map(Settings::getValue)
+                    .map(Double::parseDouble)
+                    .orElse(Config.RMBT_GEO_ACCURACY_DETAIL_LIMIT);
+        } catch (NumberFormatException e) {
+            return Config.RMBT_GEO_ACCURACY_DETAIL_LIMIT;
         }
     }
 

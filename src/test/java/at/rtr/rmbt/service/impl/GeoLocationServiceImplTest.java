@@ -5,6 +5,7 @@ import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.mapper.GeoLocationMapper;
 import at.rtr.rmbt.model.GeoLocation;
 import at.rtr.rmbt.repository.GeoLocationRepository;
+import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.GeoLocationRequest;
 import at.rtr.rmbt.request.ResultUpdateRequest;
 import at.rtr.rmbt.service.GeoLocationService;
@@ -30,6 +31,8 @@ public class GeoLocationServiceImplTest {
     private GeoLocationMapper geoLocationMapper;
     @MockitoBean
     private GeoLocationRepository geoLocationRepository;
+    @MockitoBean
+    private SettingsRepository settingsRepository;
 
     @Mock
     private GeoLocationRequest geoLocationRequestFirst;
@@ -46,7 +49,7 @@ public class GeoLocationServiceImplTest {
 
     @Before
     public void setUp() {
-        geoLocationService = new GeoLocationServiceImpl(geoLocationMapper, geoLocationRepository);
+        geoLocationService = new GeoLocationServiceImpl(geoLocationMapper, geoLocationRepository, settingsRepository);
     }
 
     @Test

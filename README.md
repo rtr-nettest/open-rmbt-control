@@ -294,6 +294,12 @@ them.
 | `max_coverage_session_seconds`     | Max duration of a whole signal/coverage session                |
 | `signal_measurement_available`     | Feature flag; only emitted when the value is `true` or `false` |
 
+### Reference location
+
+| Key                         | Purpose                                                                     |
+|-----------------------------|-----------------------------------------------------------------------------|
+| `geo_accuracy_limit_detail` | Accuracy bound (m) for reference-location selection (fallback `10000`)      |
+
 ### Classification
 
 | Key                         | Purpose                                                              |
@@ -315,6 +321,9 @@ them.
   any other value (or a missing row) causes the field to be omitted.
 * **`classification_thresholds`** – the stored value (JSON) is returned as-is; if the row is
   missing or does not parse as valid JSON, a hard-coded default is returned instead.
+* **`geo_accuracy_limit_detail`** – read when selecting the reference location; if the row is
+  missing or its value is not a valid number, the hard-coded `10000` m bound is used. The value
+  mirrors the statistics server, so both servers agree on which locations are valid.
 
 ### Unused / obsolete keys
 
@@ -325,5 +334,4 @@ server**:
 |-----------------------------|---------------------------------------------------------------------|
 | `tc_url_android_v4`         | Obsolete – the Android app-version 4.x T&amp;C override was removed |
 | `geo_accuracy_limit_map`    | Not read by the control server (used by the map/statistics servers) |
-| `geo_accuracy_limit_detail` | Not read by the control server (used by the map/statistics servers) |
 | `system_name`               | Not read anywhere in the control server                             |

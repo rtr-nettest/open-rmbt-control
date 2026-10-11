@@ -123,5 +123,8 @@ public interface Config {
     // Upper accuracy bound (meters) for reference-location selection: a position with accuracy of this
     // value or worse is ignored entirely as a reference candidate. Mirrors the statistics server's
     // RMBT_GEO_ACCURACY_DETAIL_LIMIT so the chosen reference is always present in its location output.
+    // This is the hard-coded fallback; the live value is read from the GEO_ACCURACY_DETAIL_LIMIT_KEY setting.
     Double RMBT_GEO_ACCURACY_DETAIL_LIMIT = 10000D;
+    // Settings key holding the accuracy bound above; when the row is absent the fallback constant is used.
+    String GEO_ACCURACY_DETAIL_LIMIT_KEY = "geo_accuracy_limit_detail";
 }
