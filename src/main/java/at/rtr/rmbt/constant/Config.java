@@ -74,7 +74,6 @@ public interface Config {
     List<String> SETTINGS_KEYS = List.of("tc_url_android",
         "tc_ndt_url_android",
         "tc_version_android",
-        "tc_url_android_v4",
         "tc_url_ios",
         "tc_version_ios",
         "tc_version",

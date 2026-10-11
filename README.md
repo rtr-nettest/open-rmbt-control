@@ -158,3 +158,74 @@ This example logs to both Logstash and console:
 
 </configuration>
 ```
+
+Terms &amp; Conditions version and platform matching
+--------------------
+
+The `POST /RMBTControlServer/settings` endpoint returns the currently valid Terms &amp; Conditions
+(T&amp;C) version and URL for the requesting client. Which values are returned depends on the
+`platform` field of the request, so that each client platform can be served its own T&amp;C
+document and version number.
+
+### Request
+
+The relevant request field is:
+
+* `platform` – the client platform. The legacy misspelling `plattform` (double *t*) is accepted as
+  an alias for the same field.
+
+Matching is **case-insensitive**, so `android`, `Android` and `ANDROID` are treated identically.
+
+### Settings keys
+
+The response values are read from the `settings` table (per language, with a language-neutral
+fallback). The relevant keys are:
+
+| Platform (`platform`)            | Version key          | URL key             | Extra URL keys        |
+|----------------------------------|----------------------|---------------------|-----------------------|
+| `android`                        | `tc_version_android` | `tc_url_android`    | `tc_ndt_url_android`  |
+| `ios`                            | `tc_version_ios`     | `tc_url_ios`        | –                     |
+| `linux`, `darwin`, `windows_nt`  | `tc_version_desktop` | `tc_url_desktop`    | –                     |
+| *anything else / missing*        | `tc_version`         | `tc_url`            | –                     |
+
+### Resolution rules
+
+1. The platform-specific keys are looked up first (e.g. `tc_version_android` / `tc_url_android`
+   for Android).
+2. **Fallback:** if the platform-specific *version* is absent (key missing or not a valid number),
+   the generic `tc_version` is used. Independently, if the platform-specific *URL* is absent, the
+   generic `tc_url` is used. This is why a client that sends no `platform`, or an unrecognized one,
+   always receives `tc_version` / `tc_url`.
+
+The `tc_ndt_url` field in the response is only ever populated for Android (from
+`tc_ndt_url_android`); it stays empty for all other platforms.
+
+### Response
+
+The values appear under `settings[0].terms_and_conditions`:
+
+```json
+{
+  "settings": [
+    {
+      "terms_and_conditions": {
+        "version": 10,
+        "url": "https://www.example.com/en/tc_android.html",
+        "ndt_url": "https://www.example.com/en/tc_ndt_android.html"
+      }
+    }
+  ]
+}
+```
+
+### Example
+
+Request the Android T&amp;C version (`name` must be one of the configured client names):
+
+```bash
+curl -s -X POST 'https://control.example.com/RMBTControlServer/settings' \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"RMBT","language":"en","platform":"Android"}'
+```
+
+returns `settings[0].terms_and_conditions.version` from `tc_version_android`.

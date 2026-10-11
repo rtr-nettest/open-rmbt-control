@@ -591,7 +591,6 @@ public class RtrSettingsServiceImplTest {
         var tcUrlAndroid = new Settings(null, "tc_url_android", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_TC_URL_ANDROID_VALUE);
         var tcNdtUrlAndroid = new Settings(null, "tc_ndt_url_android", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_TC_NDT_URL_ANDROID_VALUE);
         var tcVersionAndroid = new Settings(null, "tc_version_android", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_TC_VERSION_ANDROID_VALUE);
-        var tcUrlAndroidV4 = new Settings(null, "tc_url_android_v4", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_TC_URL_ANDROID_V4_VALUE);
         var tcUrlIOS = new Settings(null, "tc_url_ios", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_TC_URL_IOS_VALUE);
         var tcVersionIOS = new Settings(null, "tc_version_ios", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_TC_VERSION_IOS_VALUE);
         var tcVersion = new Settings(null, "tc_version", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_TC_VERSION_VALUE);
@@ -608,7 +607,7 @@ public class RtrSettingsServiceImplTest {
         var urlIpv6Check = new Settings(null, "url_ipv6_check", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_URLS_URL_IPV6_CHECK);
         var urlMapServer = new Settings(null, "url_map_server", TestConstants.DEFAULT_LANGUAGE, TestConstants.DEFAULT_URLS_URL_MAP_SERVER);
         return List.of(tcUrlAndroid, tcNdtUrlAndroid, tcVersionAndroid,
-                tcUrlAndroidV4, tcUrlIOS, tcVersionIOS,
+                tcUrlIOS, tcVersionIOS,
                 tcVersion, tcUrl, hostMapServer,
                 sslMapServer, portMapServer, urlOpenDataPrefix, urlShare,
                 urlStatistics, controlIpv4Only, controlIpv6Only,

@@ -20,7 +20,6 @@ import at.rtr.rmbt.utils.LongUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
@@ -84,7 +83,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .orElse(null);
 
         var setting = SettingResponse.builder()
-                .termAndConditionsResponse(getTermAndConditionResponse(request.getPlatform(), request.getSoftwareVersionName(), settings))
+                .termAndConditionsResponse(getTermAndConditionResponse(request.getPlatform(), settings))
                 .uuid(getUuid(savedClient))
                 .qosTestTypeDescResponse(qosTestTypeDescService.getAll(lang))
                 .urls(getUrlsResponse(settings))
@@ -277,7 +276,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .build();
     }
 
-    private TermAndConditionsResponse getTermAndConditionResponse(String platform, String softwareVersionName, Map<String, String> settings) {
+    private TermAndConditionsResponse getTermAndConditionResponse(String platform, Map<String, String> settings) {
         String tcUrl = null;
         String tcNdtUrl = null;
         Long tcVersion = null;
@@ -285,13 +284,6 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
             tcUrl = settings.get("tc_url_android");
             tcNdtUrl = settings.get("tc_ndt_url_android");
             tcVersion = LongUtils.parseLong(settings.get("tc_version_android"));
-
-            if (Objects.nonNull(tcUrl) && Objects.nonNull(softwareVersionName) && softwareVersionName.startsWith("4.")) {
-                String newUrl = settings.get("tc_url_android_v4");
-                if (!Strings.isNullOrEmpty(newUrl)) {
-                    tcUrl = newUrl;
-                }
-            }
         } else if (Objects.nonNull(platform) && platform.equalsIgnoreCase("ios")) {
             tcUrl = settings.get("tc_url_ios");
             tcVersion = LongUtils.parseLong(settings.get("tc_version_ios"));
