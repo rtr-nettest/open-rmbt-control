@@ -225,3 +225,105 @@ curl -s -X POST 'https://control.example.com/RMBTControlServer/settings' \
 ```
 
 returns `settings[0].terms_and_conditions.version` from `tc_version_android`.
+
+Settings table keys
+--------------------
+
+All runtime configuration lives in the `settings` table (`key`, `value`, `lang`; a `NULL`
+`lang` row is the language-neutral default). The keys below are the ones the **control server**
+actually reads. Keys may be present in the database that no longer have any effect — see
+*Unused / obsolete keys* at the end.
+
+### Terms &amp; Conditions
+
+Served by `POST /settings` and the admin settings endpoints. See
+*Terms &amp; Conditions version and platform matching* above for how the platform selects between
+them.
+
+| Key                  | Purpose                                            |
+|----------------------|----------------------------------------------------|
+| `tc_url`             | Default/fallback T&amp;C URL                       |
+| `tc_version`         | Default/fallback T&amp;C version                   |
+| `tc_url_android`     | Android T&amp;C URL                                |
+| `tc_version_android` | Android T&amp;C version                            |
+| `tc_url_ios`         | iOS T&amp;C URL                                    |
+| `tc_version_ios`     | iOS T&amp;C version                                |
+| `tc_url_desktop`     | Desktop (`linux`/`darwin`/`windows_nt`) T&amp;C URL     |
+| `tc_version_desktop` | Desktop T&amp;C version                            |
+
+### URLs (`settings[0].urls`)
+
+| Key                        | Purpose                                      |
+|----------------------------|----------------------------------------------|
+| `url_open_data_prefix`     | Base URL for open-data result links          |
+| `url_share`                | Base URL for sharing results                 |
+| `url_statistics`           | Statistics URL                               |
+| `control_ipv4_only`        | Control-server host forcing IPv4             |
+| `control_ipv6_only`        | Control-server host forcing IPv6             |
+| `url_ipv4_check`           | IPv4 check URL                               |
+| `url_ipv6_check`           | IPv6 check URL                               |
+| `url_map_server`           | Map-server URL                               |
+| `url_statistic_server`     | Statistic-server URL                         |
+| `url_web_statistic_server` | Web statistic-server URL                     |
+| `url_web_open_data_server` | Web open-data-server URL                     |
+| `url_web_recent_server`    | Web recent-tests-server URL                  |
+| `url_web_basemap_tiles`    | Basemap tile URL                             |
+| `url_web_osm_tiles`        | OpenStreetMap tile URL                       |
+
+### Map server (`settings[0].map_server`)
+
+| Key               | Purpose                     |
+|-------------------|-----------------------------|
+| `host_map_server` | Map-server hostname         |
+| `ssl_map_server`  | Use SSL (`true`/`false`)    |
+| `port_map_server` | Map-server port             |
+
+### Measurement parameters
+
+| Key                     | Purpose                                                           |
+|-------------------------|-------------------------------------------------------------------|
+| `rmbt_num_threads`      | Default number of test threads (fallback `3`)                     |
+| `rmbt_duration_seconds` | Test duration in seconds (fallback `7`)                           |
+| `rmbt_min_pings`        | Minimum number of pings (fallback `10`)                           |
+
+### Signal / coverage measurement
+
+| Key                                | Purpose                                                        |
+|------------------------------------|----------------------------------------------------------------|
+| `max_coverage_measurement_seconds` | Max duration of a single signal/coverage measurement           |
+| `max_coverage_session_seconds`     | Max duration of a whole signal/coverage session                |
+| `signal_measurement_available`     | Feature flag; only emitted when the value is `true` or `false` |
+
+### Classification
+
+| Key                         | Purpose                                                              |
+|-----------------------------|----------------------------------------------------------------------|
+| `classification_thresholds` | Quality classification thresholds (JSON), returned by `/settings`    |
+
+### System
+
+| Key           | Purpose                                                   |
+|---------------|-----------------------------------------------------------|
+| `system_UUID` | Server identity, reported by the `/version` endpoint      |
+
+### Notes on special cases
+
+* **`rmbt_duration`** – exposed through the admin settings endpoints (read/written), but the
+  *actual* test duration served to clients comes from `rmbt_duration_seconds`. The plain
+  `rmbt_duration` value is not used to configure measurements.
+* **`signal_measurement_available`** – only emitted when the value is exactly `true` or `false`;
+  any other value (or a missing row) causes the field to be omitted.
+* **`classification_thresholds`** – the stored value (JSON) is returned as-is; if the row is
+  missing or does not parse as valid JSON, a hard-coded default is returned instead.
+
+### Unused / obsolete keys
+
+The following keys may still exist in the `settings` table but are **not processed by the control
+server**:
+
+| Key                         | Status                                                              |
+|-----------------------------|---------------------------------------------------------------------|
+| `tc_url_android_v4`         | Obsolete – the Android app-version 4.x T&amp;C override was removed |
+| `geo_accuracy_limit_map`    | Not read by the control server (used by the map/statistics servers) |
+| `geo_accuracy_limit_detail` | Not read by the control server (used by the map/statistics servers) |
+| `system_name`               | Not read anywhere in the control server                             |
