@@ -94,6 +94,7 @@ public interface Config {
         "url_web_recent_server",
         "url_web_basemap_tiles",
         "url_web_osm_tiles",
+        CLASSIFICATION_THRESHOLDS_KEY,
         SIGNAL_MEASUREMENT_AVAILABLE_KEY
     );
     List<ServerType> SERVER_TEST_SERVER_TYPES = List.of(ServerType.RMBT);
