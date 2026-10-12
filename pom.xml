@@ -35,6 +35,10 @@
         <!-- log4j2.version is intentionally NOT pinned: the old 2.16.0 override was a stale post-Log4Shell
              workaround that downgraded the log4j-api/log4j-to-slf4j bridge (log4j-core is not on the
              classpath; the backend is Logback). Let the Spring Boot BOM manage the current version. -->
+        <!-- Set outputTimestamp explicitly to the build time: newer Maven versions default it to
+             1980-02-01T00:00:00Z, which git-commit-id then reports as git.build.time in /version. -->
+        <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
+        <project.build.outputTimestamp>${maven.build.timestamp}</project.build.outputTimestamp>
     </properties>
 
     <dependencies>
