@@ -40,6 +40,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
     private final ClientTypeService clientTypeService;
     private final ClientService clientService;
     private final SettingsRepository settingsRepository;
+    private final SettingsCache settingsCache;
     private final QosTestTypeDescService qosTestTypeDescService;
     private final TestService testService;
     private final TestServerService testServerService;
@@ -113,6 +114,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .forEach(entry -> updateOrCreateSettings(adminSettingsRequest.getLanguage(), settingsActual, updatedSettings, entry));
 
         settingsRepository.saveAll(updatedSettings);
+        settingsCache.refreshAfterCommit();
     }
 
     @Override
@@ -170,7 +172,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                     updateSettings(settingsActual, Config.TEST_RESULT_QOS_URL_KEY, testRequest.getResultQosUrl(), updateSettings);
                     updateSettings(settingsActual, Config.TEST_DURATION_KEY, testRequest.getTestDuration(), updateSettings);
                     updateSettings(settingsActual, Config.TEST_NUM_THREADS_KEY, testRequest.getTestNumThreads(), updateSettings);
-                    updateSettings(settingsActual, Config.TEST_NUM_PINGS_KEY, testRequest.getTestNumPings(), updateSettings);
+                    updateSettings(settingsActual, Config.TEST_MIN_PINGS_KEY, testRequest.getTestNumPings(), updateSettings);
                 });
 
         Optional.ofNullable(adminUpdateSettingsRequest.getAdminUpdateSettingsSignalTestRequest())
@@ -179,6 +181,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 });
 
         settingsRepository.saveAll(updateSettings);
+        settingsCache.refreshAfterCommit();
     }
 
     private UUID getUuid(RtrClient savedClient) {
@@ -208,10 +211,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
     }
 
     private Map<String, String> getAdminSettingsMap() {
-        return settingsRepository.findAllByLangOrLangIsNullAndKeyIn("en", Config.ADMIN_SETTINGS_KEYS).stream()
-                .collect(Collectors.toMap(Settings::getKey,
-                        Settings::getValue,
-                        (x1, x2) -> x1));
+        return settingsCache.getAll(Config.ADMIN_SETTINGS_KEYS, "en");
     }
 
     private AdminSettingsTermAndConditionsResponse getAdminTermAndConditionResponse(Map<String, String> actualSettings) {
@@ -230,7 +230,7 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .resultQosUrl(actualSettings.get(Config.TEST_RESULT_QOS_URL_KEY))
                 .resultUrl(actualSettings.get(Config.TEST_RESULT_URL_KEY))
                 .testDuration(actualSettings.get(Config.TEST_DURATION_KEY))
-                .testNumPings(actualSettings.get(Config.TEST_NUM_PINGS_KEY))
+                .testNumPings(actualSettings.get(Config.TEST_MIN_PINGS_KEY))
                 .testNumThreads(actualSettings.get(Config.TEST_NUM_THREADS_KEY))
                 .build();
     }
@@ -417,12 +417,15 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
     }
 
     private Map<String, String> getSettingsURLMapByLanguageAndKeys(String lang, List<String> keys) {
-        return settingsRepository.findAllByLangOrLangIsNullAndKeyIn(lang, keys).stream()
-                .collect(Collectors.toMap(Settings::getKey, Settings::getValue, (val1, val2) -> val1));
+        return settingsCache.getAll(keys, lang);
     }
 
+    // entities for updating, therefore read from the database and not from the cache. If a key has
+    // a row for the language and a language-neutral row, the language row is updated - the same row
+    // SettingsCache.get(key, lang) returns.
     private Map<String, Settings> getSettingsMapByLanguageAndKeys(String lang, List<String> keys) {
         return settingsRepository.findAllByLangOrLangIsNullAndKeyIn(lang, keys).stream()
-                .collect(Collectors.toMap(Settings::getKey, Function.identity(), (val1, val2) -> val1));
+                .collect(Collectors.toMap(Settings::getKey, Function.identity(),
+                        (val1, val2) -> Objects.equals(lang, val2.getLang()) && !Objects.equals(lang, val1.getLang()) ? val2 : val1));
     }
 }

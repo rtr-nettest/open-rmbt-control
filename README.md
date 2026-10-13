@@ -234,6 +234,30 @@ All runtime configuration lives in the `settings` table (`key`, `value`, `lang`;
 actually reads. Keys may be present in the database that no longer have any effect — see
 *Unused / obsolete keys* at the end.
 
+### Caching and reload
+
+The settings table is not queried per request. `SettingsCache` (identical class in the control,
+map and statistics servers) loads the whole table into memory at startup and reloads it
+periodically:
+
+```yaml
+app:
+  settings:
+    refreshRate: PT10M   # ISO-8601 duration, default PT10M
+```
+
+* Changes made directly in the database become visible after at most one refresh interval
+  (or a restart).
+* Changes made through the admin settings endpoints are visible immediately on the instance that
+  handled the request (the cache reloads after the transaction commits); other instances pick
+  them up with their next refresh.
+* If a reload fails (e.g. database unavailable), the previously loaded values stay in use.
+* Language lookup: for a request language, a row with that `lang` wins; otherwise the
+  language-neutral row (`lang` `NULL` or empty) is used. Numeric parameters (measurement,
+  coverage, reference location) are read from the language-neutral row only.
+* A missing or non-numeric value for a numeric key falls back to the documented default; an
+  invalid value is logged once as a warning.
+
 ### Terms &amp; Conditions
 
 Served by `POST /settings` and the admin settings endpoints. See
@@ -284,7 +308,7 @@ them.
 |-------------------------|-------------------------------------------------------------------|
 | `rmbt_num_threads`      | Default number of test threads (fallback `3`)                     |
 | `rmbt_duration_seconds` | Test duration in seconds (fallback `7`)                           |
-| `rmbt_min_pings`        | Minimum number of pings (fallback `10`)                           |
+| `rmbt_min_pings`        | Minimum number of pings (fallback `10`); admin field `testNumPings` |
 
 ### Signal / coverage measurement
 
@@ -310,20 +334,28 @@ them.
 
 | Key           | Purpose                                                   |
 |---------------|-----------------------------------------------------------|
-| `system_UUID` | Server identity, reported by the `/version` endpoint      |
+| `system_UUID` | Server identity, reported by the `/version` endpoint (also read by the map and statistics servers) |
 
 ### Notes on special cases
 
 * **`rmbt_duration`** – exposed through the admin settings endpoints (read/written), but the
   *actual* test duration served to clients comes from `rmbt_duration_seconds`. The plain
   `rmbt_duration` value is not used to configure measurements.
+* **Admin endpoints and `lang`** – the admin update changes the `en` row of a key, or the
+  language-neutral row if there is no `en` row (the same row the admin read shows); if neither
+  exists, it creates a new row with `lang = 'en'`.
+  Such a row is *not* used for the numeric measurement parameters (e.g. `rmbt_min_pings`,
+  `rmbt_num_threads`), which are read from the language-neutral row only. Create the
+  language-neutral row once in the database before editing these values via the admin API.
 * **`signal_measurement_available`** – only emitted when the value is exactly `true` or `false`;
   any other value (or a missing row) causes the field to be omitted.
 * **`classification_thresholds`** – the stored value (JSON) is returned as-is; if the row is
   missing or does not parse as valid JSON, a hard-coded default is returned instead.
 * **`geo_accuracy_limit_detail`** – read when selecting the reference location; if the row is
-  missing or its value is not a valid number, the hard-coded `10000` m bound is used. The value
-  mirrors the statistics server, so both servers agree on which locations are valid.
+  missing or its value is not a valid number, the hard-coded `10000` m bound is used. The
+  statistics server reads the same key, so both servers agree on which locations are valid.
+  The test-detail view (`/testresultdetail`) and the map button in `/testresult` still use the
+  YAML values `app.rmbt.accuracyDetailLimit` (10000) and `app.rmbt.accuracyButtonLimit` (2000).
 
 ### Unused / obsolete keys
 
@@ -333,5 +365,6 @@ server**:
 | Key                         | Status                                                              |
 |-----------------------------|---------------------------------------------------------------------|
 | `tc_url_android_v4`         | Obsolete – the Android app-version 4.x T&amp;C override was removed |
-| `geo_accuracy_limit_map`    | Not read by the control server (used by the map/statistics servers) |
-| `system_name`               | Not read anywhere in the control server                             |
+| `rmbt_num_pings`            | Obsolete – replaced by `rmbt_min_pings` (also in the admin API)     |
+| `geo_accuracy_limit_map`    | Not read by any server (control, map or statistics)                 |
+| `system_name`               | Not read by any server (control, map or statistics)                 |

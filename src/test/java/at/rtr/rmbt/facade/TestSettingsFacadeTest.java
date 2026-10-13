@@ -99,6 +99,7 @@ public class TestSettingsFacadeTest {
     private final MessageSource messageSource = mock(MessageSource.class);
     private final RollBackService rollBackService = mock(RollBackService.class);
     private final SettingsRepository settingsRepository = mock(SettingsRepository.class);
+    private final SettingsCache settingsCache = new SettingsCache(settingsRepository);
 
     private final TestSettingsFacade facade = new TestSettingsFacade(
             loopModeSettingsService,
@@ -110,7 +111,7 @@ public class TestSettingsFacadeTest {
             messageSource,
             TestUtils.mapper,
             rollBackService,
-            settingsRepository
+            settingsCache
     );
 
     private MockHttpServletRequest request;
@@ -256,10 +257,9 @@ public class TestSettingsFacadeTest {
             return argument.toBuilder().uid(23L).build();
         });
         Settings minPing = new Settings(1L,"rmbt_min_pings",null,DEFAULT_MIN_PINGS.toString());
-        when(settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang("rmbt_min_pings", "rmbt_min_pings", null)).thenReturn(Optional.of(minPing));
-
         Settings duration = new Settings(2L,"rmbt_duration_seconds",null,DEFAULT_DURATION_SECONDS.toString());
-        when(settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang("rmbt_duration_seconds", "rmbt_duration_seconds", null)).thenReturn(Optional.of(duration));
+        when(settingsRepository.findAll()).thenReturn(List.of(minPing, duration));
+        settingsCache.refresh();
     }
 
     private void verifyUpdateTestSettings(ArgumentCaptor<at.rtr.rmbt.model.Test> testArgumentCaptor, TestSettingsResponse result) {

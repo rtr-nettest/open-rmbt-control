@@ -2,7 +2,7 @@ package at.rtr.rmbt.service.impl;
 
 import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.model.Settings;
-import at.rtr.rmbt.repository.SettingsRepository;
+import at.rtr.rmbt.service.SettingsCache;
 import at.rtr.rmbt.response.ApplicationVersionResponse;
 import at.rtr.rmbt.service.ApplicationVersionService;
 import at.rtr.rmbt.utils.GeoIpHelper;
@@ -32,7 +32,7 @@ public class ApplicationVersionServiceImpl implements ApplicationVersionService 
     @Value("${spring.profiles.active:default}")
     private String activeProfile;
 
-    private final SettingsRepository settingsRepository;
+    private final SettingsCache settingsCache;
 
     /** Optional: present only when Redis is configured (it is here for the /ip proxy cache), kept optional/robust. */
     private final ObjectProvider<RedisConnectionFactory> redisConnectionFactory;
@@ -104,8 +104,6 @@ public class ApplicationVersionServiceImpl implements ApplicationVersionService 
     }
 
     private String getSystemUUID() {
-        return settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(Config.SYSTEM_UUID_KEY, Config.SYSTEM_UUID_KEY, StringUtils.EMPTY)
-                .map(Settings::getValue)
-                .orElse(null);
+        return settingsCache.get(Config.SYSTEM_UUID_KEY).orElse(null);
     }
 }

@@ -1,13 +1,13 @@
 package at.rtr.rmbt.facade;
 
 import at.rtr.rmbt.config.RollBackService;
+import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.enums.TestStatus;
 import at.rtr.rmbt.enums.TestStatusParser;
 import at.rtr.rmbt.exception.TestServerNotFoundException;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
-import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.TestSettingsRequest;
 import at.rtr.rmbt.response.ErrorResponse;
 import at.rtr.rmbt.response.TestSettingsResponse;
@@ -65,7 +65,7 @@ public class TestSettingsFacade {
 
     private final RollBackService rollBackService;
 
-    private final SettingsRepository settingsRepository;
+    private final SettingsCache settingsCache;
 
 
     @Value("${application-version.server-url}")
@@ -75,7 +75,7 @@ public class TestSettingsFacade {
     public TestSettingsFacade(LoopModeSettingsService loopModeSettingsService, ClientTypeService clientTypeService,
                               ClientService clientService, TestServerService testServerService, TestService testService,
                               ApplicationProperties applicationProperties, MessageSource messageSource, ObjectMapper objectMapper,
-                              RollBackService rollBackService, SettingsRepository settingsRepository) {
+                              RollBackService rollBackService, SettingsCache settingsCache) {
         this.loopModeSettingsService = loopModeSettingsService;
         this.clientTypeService = clientTypeService;
         this.clientService = clientService;
@@ -85,7 +85,7 @@ public class TestSettingsFacade {
         this.messageSource = messageSource;
         this.objectMapper = objectMapper;
         this.rollBackService = rollBackService;
-        this.settingsRepository = settingsRepository;
+        this.settingsCache = settingsCache;
     }
 
     @Transactional
@@ -442,49 +442,18 @@ public class TestSettingsFacade {
         if (numberOfThreads != null && numberOfThreads > 0 && numberOfThreads < 10)
             return numberOfThreads;
 
-        // get default number of threads from settings
-        Optional<Settings> numberOfThreadsSetting =
-                settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
-                        "rmbt_num_threads", "rmbt_num_threads", null);
-
-        // set default, fallback if no setting
-        numberOfThreads = 3;
-        if (numberOfThreadsSetting.isPresent()) {
-            numberOfThreads = Integer.parseInt(numberOfThreadsSetting.get().getValue());
-        }
-        return numberOfThreads;
+        // get default number of threads from settings, fallback if no setting
+        return settingsCache.getInt("rmbt_num_threads", 3);
     }
 
     private Integer getDuration() {
-
-        int duration;
-        // get default duration from settings
-        Optional<Settings> durationSetting =
-                settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
-                        "rmbt_duration_seconds", "rmbt_duration_seconds", null);
-
-        // set default, fallback if no setting
-        duration = 7;
-        if (durationSetting.isPresent()) {
-            duration = Integer.parseInt(durationSetting.get().getValue());
-        }
-        return duration;
+        // get default duration from settings, fallback if no setting
+        return settingsCache.getInt("rmbt_duration_seconds", 7);
     }
 
     private Integer getMinNumberOfPings() {
-
-        int minNumberOfPings;
-        // get default minimum number of pings from settings
-        Optional<Settings> minNumberOfPingsSetting =
-                settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
-                        "rmbt_min_pings", "rmbt_min_pings", null);
-
-        // set default, fallback if no setting
-        minNumberOfPings = 10;
-        if (minNumberOfPingsSetting.isPresent()) {
-            minNumberOfPings = Integer.parseInt(minNumberOfPingsSetting.get().getValue());
-        }
-        return minNumberOfPings;
+        // get default minimum number of pings from settings, fallback if no setting
+        return settingsCache.getInt(Config.TEST_MIN_PINGS_KEY, 10);
     }
 
     private String getLanguageIfSupportedOrDefault(String language) {

@@ -9,6 +9,7 @@ import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.request.GeoLocationRequest;
 import at.rtr.rmbt.request.ResultUpdateRequest;
 import at.rtr.rmbt.service.GeoLocationService;
+import at.rtr.rmbt.service.SettingsCache;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +50,7 @@ public class GeoLocationServiceImplTest {
 
     @Before
     public void setUp() {
-        geoLocationService = new GeoLocationServiceImpl(geoLocationMapper, geoLocationRepository, settingsRepository);
+        geoLocationService = new GeoLocationServiceImpl(geoLocationMapper, geoLocationRepository, new SettingsCache(settingsRepository));
     }
 
     @Test

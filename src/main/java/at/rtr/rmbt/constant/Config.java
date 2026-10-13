@@ -11,7 +11,7 @@ public interface Config {
     String TEST_RESULT_QOS_URL_KEY = "test_result_qos_url";
     String TEST_RESULT_URL_KEY = "test_result_url";
     String TEST_DURATION_KEY = "rmbt_duration";
-    String TEST_NUM_PINGS_KEY = "rmbt_num_pings";
+    String TEST_MIN_PINGS_KEY = "rmbt_min_pings";
     String TEST_NUM_THREADS_KEY = "rmbt_num_threads";
     String MAP_SERVER_HOST_KEY = "host_map_server";
     String MAP_SERVER_SSL_KEY = "ssl_map_server";
@@ -48,7 +48,7 @@ public interface Config {
         TEST_RESULT_QOS_URL_KEY,
         TEST_RESULT_URL_KEY,
         TEST_DURATION_KEY,
-        TEST_NUM_PINGS_KEY,
+        TEST_MIN_PINGS_KEY,
         TEST_NUM_THREADS_KEY,
         MAP_SERVER_HOST_KEY,
         MAP_SERVER_SSL_KEY,

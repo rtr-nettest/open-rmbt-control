@@ -64,7 +64,7 @@ public class SignalServiceImpl implements SignalService {
     private final SignalRepository signalRepository;
     private final FencesService fencesService;
     private final TestServerService testServerService;
-    private final SettingsRepository settingsRepository;
+    private final SettingsCache settingsCache;
     private final LoopModeSettingsService loopModeSettingsService;
     private final CellLocationService cellLocationService;
 
@@ -523,10 +523,7 @@ public class SignalServiceImpl implements SignalService {
 
     /** Reads a numeric {@code settings} value (language-agnostic) by key, falling back to a default. */
     long getLongSettingOrDefault(final String key, final long defaultValue) {
-        return settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(key, key, null)
-                .map(Settings::getValue)
-                .map(Long::parseLong)
-                .orElse(defaultValue);
+        return settingsCache.getLong(key, defaultValue);
     }
 
     private UUID getTestUUID(SignalMeasurementResultRequest signalMeasurementResultRequest) {

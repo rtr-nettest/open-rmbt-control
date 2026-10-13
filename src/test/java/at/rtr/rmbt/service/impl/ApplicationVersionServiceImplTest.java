@@ -5,10 +5,10 @@ import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.model.Settings;
 import at.rtr.rmbt.repository.SettingsRepository;
 import at.rtr.rmbt.service.ApplicationVersionService;
+import at.rtr.rmbt.service.SettingsCache;
 
 //no inspection
 import at.rtr.rmbt.Version;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +19,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Optional;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -32,24 +32,22 @@ public class ApplicationVersionServiceImplTest {
     @MockitoBean
     private SettingsRepository settingsRepository;
 
-    @MockitoBean
-    private Settings settings;
+    private SettingsCache settingsCache;
 
     @SuppressWarnings("unchecked")
     private final ObjectProvider<RedisConnectionFactory> redisConnectionFactory = mock(ObjectProvider.class);
 
     @Before
     public void setUp() {
-        applicationVersionService = new ApplicationVersionServiceImpl(settingsRepository, redisConnectionFactory);
+        settingsCache = new SettingsCache(settingsRepository);
+        applicationVersionService = new ApplicationVersionServiceImpl(settingsCache, redisConnectionFactory);
         ReflectionTestUtils.setField(applicationVersionService, "applicationHost", TestConstants.DEFAULT_APPLICATION_HOST);
         ReflectionTestUtils.setField(applicationVersionService, "activeProfile", "default"); // Set default profile if needed
     }
 
     @Test
     public void getApplicationVersion_whenCommonData_expectApplicationVersionResponse() {
-        when(settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(Config.SYSTEM_UUID_KEY, Config.SYSTEM_UUID_KEY, StringUtils.EMPTY))
-                .thenReturn(Optional.of(settings));
-        when(settings.getValue()).thenReturn(TestConstants.DEFAULT_SYSTEM_UUID_VALUE);
+        mockSystemUuidSetting();
 
         var response = applicationVersionService.getApplicationVersion();
 
@@ -68,9 +66,7 @@ public class ApplicationVersionServiceImplTest {
         // Set a custom active profile
         ReflectionTestUtils.setField(applicationVersionService, "activeProfile", "test-profile");
 
-        when(settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(Config.SYSTEM_UUID_KEY, Config.SYSTEM_UUID_KEY, StringUtils.EMPTY))
-                .thenReturn(Optional.of(settings));
-        when(settings.getValue()).thenReturn(TestConstants.DEFAULT_SYSTEM_UUID_VALUE);
+        mockSystemUuidSetting();
 
         var response = applicationVersionService.getApplicationVersion();
 
@@ -101,5 +97,11 @@ public class ApplicationVersionServiceImplTest {
         when(factory.getConnection()).thenThrow(new RuntimeException("connection refused"));
 
         assertEquals("none", applicationVersionService.getApplicationVersion().getCache());
+    }
+
+    private void mockSystemUuidSetting() {
+        when(settingsRepository.findAll()).thenReturn(List.of(
+                Settings.builder().id(1L).key(Config.SYSTEM_UUID_KEY).value(TestConstants.DEFAULT_SYSTEM_UUID_VALUE).build()));
+        settingsCache.refresh();
     }
 }

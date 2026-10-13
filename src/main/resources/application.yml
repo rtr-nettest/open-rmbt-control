@@ -76,6 +76,9 @@ auth0:
   apiAudience: https://example.com
 origin: ${CONTROL_ALLOWED_ORIGIN:*}
 app:
+  settings:
+    # reload interval of the settings table cache (SettingsCache), ISO_8601
+    refreshRate: PT10M
   rmbt:
     accuracyDetailLimit: 10000
     accuracyButtonLimit: 2000

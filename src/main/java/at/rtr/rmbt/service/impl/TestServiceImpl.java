@@ -16,7 +16,7 @@ import at.rtr.rmbt.mapper.TestMapper;
 import at.rtr.rmbt.model.*;
 import at.rtr.rmbt.properties.ApplicationProperties;
 import at.rtr.rmbt.repository.ClientRepository;
-import at.rtr.rmbt.repository.SettingsRepository;
+import at.rtr.rmbt.service.SettingsCache;
 import at.rtr.rmbt.repository.TestHistoryRepository;
 import at.rtr.rmbt.repository.TestRepository;
 import at.rtr.rmbt.request.*;
@@ -52,7 +52,7 @@ public class TestServiceImpl implements TestService {
     private final ApplicationProperties applicationProperties;
     private final GeoAnalyticsService geoAnalyticsService;
     private final MessageSource messageSource;
-    private final SettingsRepository settingsRepository;
+    private final SettingsCache settingsCache;
     private final QoeClassificationService qoeClassificationService;
     private final ClientRepository clientRepository;
     private final TestHistoryRepository testHistoryRepository;
@@ -508,9 +508,7 @@ public class TestServiceImpl implements TestService {
     }
 
     private String getUrlShareString(Test test, Locale locale) {
-        return settingsRepository.findAllByLangOrLangIsNullAndKeyIn(locale.getLanguage(), List.of(Config.URL_SHARE_KEY)).stream()
-                .findFirst()
-                .map(Settings::getValue)
+        return settingsCache.get(Config.URL_SHARE_KEY, locale.getLanguage())
                 .map(value -> String.join(StringUtils.EMPTY, value, OPEN_TEST_UUID_PREFIX, test.getOpenTestUuid().toString()))
                 .orElse(StringUtils.EMPTY);
     }

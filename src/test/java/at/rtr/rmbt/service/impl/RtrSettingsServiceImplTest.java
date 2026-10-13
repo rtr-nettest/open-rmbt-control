@@ -55,6 +55,7 @@ public class RtrSettingsServiceImplTest {
     private ClientService clientService;
     @MockitoBean
     private SettingsRepository settingsRepository;
+    private SettingsCache settingsCache;
     @MockitoBean
     private QosTestTypeDescService qosTestTypeDescService;
     @MockitoBean
@@ -109,9 +110,14 @@ public class RtrSettingsServiceImplTest {
     @Before
     public void setUp() {
         clock = Clock.fixed(Instant.parse(TestConstants.DEFAULT_INSTANT_EXPECTED), ZoneId.of("UTC"));
+        // the cache loads the rows the tests stub for findAllByLangOrLangIsNullAndKeyIn
+        when(settingsRepository.findAll()).thenAnswer(invocation ->
+                settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS));
+        settingsCache = new SettingsCache(settingsRepository);
         rtrSettingsService = new RtrSettingsServiceImpl(clientTypeService,
                 clientService,
                 settingsRepository,
+                settingsCache,
                 qosTestTypeDescService,
                 testService,
                 testServerService,
@@ -125,7 +131,7 @@ public class RtrSettingsServiceImplTest {
     @Test(expected = NotSupportedClientVersionException.class)
     public void getSettings_whenNotSupportedName_expectNotSupportedClientVersionException() {
         when(rtrSettingsRequest.getName()).thenReturn(TestConstants.DEFAULT_TEXT);
-        rtrSettingsService.getSettings(rtrSettingsRequest);
+        getSettings(rtrSettingsRequest);
     }
 
     @Test
@@ -152,7 +158,7 @@ public class RtrSettingsServiceImplTest {
         when(testServerService.getServersWs()).thenReturn(getServerWsResponseList());
         when(testServerService.getServersQos()).thenReturn(getServerQosResponseList());
 
-        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
+        var response = getSettings(rtrSettingsRequest);
 
         assertEquals(TestConstants.DEFAULT_CLIENT_UUID, response.getSettings().get(0).getUuid());
         assertEquals(getAndroidTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());
@@ -175,7 +181,7 @@ public class RtrSettingsServiceImplTest {
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(settings);
 
-        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
+        var response = getSettings(rtrSettingsRequest);
 
         assertEquals(Boolean.TRUE, response.getSettings().get(0).getSignalMeasurementAvailable());
     }
@@ -188,7 +194,7 @@ public class RtrSettingsServiceImplTest {
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(settings);
 
-        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
+        var response = getSettings(rtrSettingsRequest);
 
         assertEquals(Boolean.FALSE, response.getSettings().get(0).getSignalMeasurementAvailable());
     }
@@ -201,7 +207,7 @@ public class RtrSettingsServiceImplTest {
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(settings);
 
-        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
+        var response = getSettings(rtrSettingsRequest);
 
         Assert.assertNull(response.getSettings().get(0).getSignalMeasurementAvailable());
     }
@@ -245,7 +251,7 @@ public class RtrSettingsServiceImplTest {
         when(testServerService.getServersQos()).thenReturn(getServerQosResponseList());
         when(clientTypeService.findByClientType(ClientType.DESKTOP)).thenReturn(Optional.empty());
 
-        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
+        var response = getSettings(rtrSettingsRequest);
 
         verify(clientService).saveClient(clientArgumentCaptor.capture());
         Assert.assertEquals(TestConstants.DEFAULT_CLIENT_UUID_GENERATED, clientArgumentCaptor.getValue().getUuid());
@@ -276,7 +282,7 @@ public class RtrSettingsServiceImplTest {
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
 
-        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
+        var response = getSettings(rtrSettingsRequest);
 
         assertEquals(TestConstants.DEFAULT_CLIENT_UUID, response.getSettings().get(0).getUuid());
         assertEquals(getIOSTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());
@@ -297,7 +303,7 @@ public class RtrSettingsServiceImplTest {
         when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
                 .thenReturn(getDefaultSettings());
 
-        var response = rtrSettingsService.getSettings(rtrSettingsRequest);
+        var response = getSettings(rtrSettingsRequest);
 
         assertEquals(TestConstants.DEFAULT_CLIENT_UUID, response.getSettings().get(0).getUuid());
         assertEquals(getAndroidTermAndConditionsResponse(), response.getSettings().get(0).getTermAndConditionsResponse());
@@ -403,6 +409,26 @@ public class RtrSettingsServiceImplTest {
         assertEquals(getAdminSettingsList(), settingsArgumentCaptor.getValue());
     }
 
+    @Test
+    public void updateSettings_whenLanguageAndNeutralRowExist_expectLanguageRowUpdated() {
+        Settings neutral = Settings.builder().id(1L).key(Config.TEST_MIN_PINGS_KEY).lang(null).value("10").build();
+        Settings english = Settings.builder().id(2L).key(Config.TEST_MIN_PINGS_KEY).lang("en").value("11").build();
+        when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn("en", Config.ADMIN_SETTINGS_KEYS))
+                .thenReturn(List.of(neutral, english));
+        when(adminUpdateSettingsRequest.getAdminUpdateSettingsTestRequest()).thenReturn(adminUpdateSettingsTestRequest);
+        when(adminUpdateSettingsTestRequest.getTestNumPings()).thenReturn("12");
+
+        rtrSettingsService.updateSettings(adminUpdateSettingsRequest);
+
+        verify(settingsRepository).saveAll(settingsArgumentCaptor.capture());
+        Settings saved = settingsArgumentCaptor.getValue().stream()
+                .filter(s -> Config.TEST_MIN_PINGS_KEY.equals(s.getKey()))
+                .findFirst().orElseThrow();
+        assertEquals(Long.valueOf(2L), saved.getId());
+        assertEquals("12", saved.getValue());
+        assertEquals("10", neutral.getValue());
+    }
+
     @Ignore("Git removed")
     @Test
     public void getAllSettings_whenCommonRequest_expectAdminSettingsResponse() {
@@ -463,6 +489,12 @@ public class RtrSettingsServiceImplTest {
                 .build();
     }
 
+    /** Loads the stubbed settings into the cache, then calls the service. */
+    private SettingsResponse getSettings(RtrSettingsRequest request) {
+        settingsCache.refresh();
+        return rtrSettingsService.getSettings(request);
+    }
+
     private List<Settings> getAdminSettingsList() {
         List<Settings> settings = new ArrayList<>();
         addSettingToList(Config.TERM_AND_CONDITION_URL_KEY, TestConstants.DEFAULT_TERM_AND_CONDITION_URL, settings);
@@ -486,7 +518,7 @@ public class RtrSettingsServiceImplTest {
         addSettingToList(Config.TEST_RESULT_QOS_URL_KEY, TestConstants.DEFAULT_TEST_REQUEST_RESULT_QOS_URL, settings);
         addSettingToList(Config.TEST_DURATION_KEY, TestConstants.DEFAULT_TEST_REQUEST_TEST_DURATION, settings);
         addSettingToList(Config.TEST_NUM_THREADS_KEY, TestConstants.DEFAULT_TEST_REQUEST_TEST_NUM_THREADS, settings);
-        addSettingToList(Config.TEST_NUM_PINGS_KEY, TestConstants.DEFAULT_TEST_REQUEST_TEST_NUM_PINGS, settings);
+        addSettingToList(Config.TEST_MIN_PINGS_KEY, TestConstants.DEFAULT_TEST_REQUEST_TEST_NUM_PINGS, settings);
         addSettingToList(Config.SIGNAL_RESULT_URL_KEY, TestConstants.DEFAULT_SIGNAL_TEST_REQUEST_RESULT_URL, settings);
 
         return settings;

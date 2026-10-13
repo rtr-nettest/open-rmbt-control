@@ -6,7 +6,7 @@ import at.rtr.rmbt.model.GeoLocation;
 import at.rtr.rmbt.model.Settings;
 import at.rtr.rmbt.model.Test;
 import at.rtr.rmbt.repository.GeoLocationRepository;
-import at.rtr.rmbt.repository.SettingsRepository;
+import at.rtr.rmbt.service.SettingsCache;
 import at.rtr.rmbt.request.GeoLocationRequest;
 import at.rtr.rmbt.request.ResultUpdateRequest;
 import at.rtr.rmbt.service.GeoLocationService;
@@ -28,7 +28,7 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 
     private final GeoLocationMapper geoLocationMapper;
     private final GeoLocationRepository geoLocationRepository;
-    private final SettingsRepository settingsRepository;
+    private final SettingsCache settingsCache;
 
     @Override
     public void processGeoLocationRequests(Collection<GeoLocationRequest> geoLocationRequests, Test test) {
@@ -100,15 +100,7 @@ public class GeoLocationServiceImpl implements GeoLocationService {
     // GEO_ACCURACY_DETAIL_LIMIT_KEY setting; falls back to the hard-coded constant when the row is
     // absent or its value is not a valid number.
     private double getGeoAccuracyDetailLimit() {
-        try {
-            return settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
-                            Config.GEO_ACCURACY_DETAIL_LIMIT_KEY, Config.GEO_ACCURACY_DETAIL_LIMIT_KEY, null)
-                    .map(Settings::getValue)
-                    .map(Double::parseDouble)
-                    .orElse(Config.RMBT_GEO_ACCURACY_DETAIL_LIMIT);
-        } catch (NumberFormatException e) {
-            return Config.RMBT_GEO_ACCURACY_DETAIL_LIMIT;
-        }
+        return settingsCache.getDouble(Config.GEO_ACCURACY_DETAIL_LIMIT_KEY, Config.RMBT_GEO_ACCURACY_DETAIL_LIMIT);
     }
 
     @Override

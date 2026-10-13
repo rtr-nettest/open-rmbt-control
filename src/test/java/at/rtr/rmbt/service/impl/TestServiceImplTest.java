@@ -23,6 +23,7 @@ import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.service.GeoAnalyticsService;
 import at.rtr.rmbt.service.GeoLocationService;
 import at.rtr.rmbt.service.QoeClassificationService;
+import at.rtr.rmbt.service.SettingsCache;
 import at.rtr.rmbt.service.TestService;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
@@ -113,7 +114,7 @@ public class TestServiceImplTest {
         reloadableResourceBundleMessageSource.setDefaultEncoding("UTF-8");
         messageSource = reloadableResourceBundleMessageSource;
         testService = new TestServiceImpl(testRepository, testMapper, applicationProperties, geoAnalyticsService,
-                messageSource, settingsRepository, qoeClassificationService, clientRepository, testHistoryRepository,
+                messageSource, new SettingsCache(settingsRepository), qoeClassificationService, clientRepository, testHistoryRepository,
                 testHistoryMapper, geoLocationService);
     }
 

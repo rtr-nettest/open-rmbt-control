@@ -103,12 +103,15 @@ public class SignalServiceImplTest {
     @Mock
     private Signal signalSecond;
 
+    private SettingsCache settingsCache;
+
     @Before
     public void setUp() {
+        settingsCache = new SettingsCache(settingsRepository);
         signalService = new SignalServiceImpl(testRepository, providerRepository,
                 uuidGenerator, clientRepository, signalMapper, radioSignalRepository, geoLocationRepository, testMapper,
                 geoLocationService, radioCellService, radioSignalService, signalRepository, fencesService,
-                testServerService, settingsRepository, loopModeSettingsService, cellLocationService);
+                testServerService, settingsCache, loopModeSettingsService, cellLocationService);
     }
 
     @Test
@@ -215,11 +218,9 @@ public class SignalServiceImplTest {
 
     @Test
     public void getLongSettingOrDefault_whenSettingPresent_returnsParsedValue() {
-        Settings setting = mock(Settings.class);
-        when(setting.getValue()).thenReturn("5000");
-        when(settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
-                "max_coverage_session_seconds", "max_coverage_session_seconds", null))
-                .thenReturn(Optional.of(setting));
+        when(settingsRepository.findAll()).thenReturn(List.of(
+                Settings.builder().id(1L).key("max_coverage_session_seconds").value("5000").build()));
+        settingsCache.refresh();
 
         long value = ((SignalServiceImpl) signalService)
                 .getLongSettingOrDefault("max_coverage_session_seconds", 99L);
@@ -229,9 +230,8 @@ public class SignalServiceImplTest {
 
     @Test
     public void getLongSettingOrDefault_whenSettingAbsent_returnsDefault() {
-        when(settingsRepository.findFirstByKeyAndLangIsNullOrKeyAndLangOrderByLang(
-                "missing_key", "missing_key", null))
-                .thenReturn(Optional.empty());
+        when(settingsRepository.findAll()).thenReturn(List.of());
+        settingsCache.refresh();
 
         long value = ((SignalServiceImpl) signalService)
                 .getLongSettingOrDefault("missing_key", 99L);
