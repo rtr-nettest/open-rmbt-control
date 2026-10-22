@@ -21,12 +21,10 @@ test-server-quality:
   cron: "0 */5 * * * *"
   # Empty = server's default time zone (e.g. set "Europe/Vienna" if the JVM runs in UTC).
   zone: ""
-  # Optional: this control server's own public IPv4/IPv6.
-  # When set, the UDP ping token is signed with the correct source IP and only a source-verified
-  # reply (RR01) is accepted. When empty, a placeholder IP is used and an RE01 (IP-mismatch) reply
-  # is also accepted.
-  public-ipv4: ""
-  public-ipv6: ""
+  # This control server's own public IPv4/IPv6 are read from the "public_ipv4"/"public_ipv6" settings
+  # (settings table). When set, ping tokens are signed with the correct source IP (UDP requires an
+  # RR01 reply; RMBThttp gets the v2 token new servers need). When unset, UDP uses a placeholder and
+  # accepts RE01, and RMBThttp sends a v1-only token.
 icloud-egress:
   # Scheduled download of Apple's iCloud Private Relay egress IP ranges into Redis; the /ip endpoint
   # uses it to flag proxied clients. Set enabled=false to disable the download entirely.

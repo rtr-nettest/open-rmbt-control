@@ -39,6 +39,10 @@ public interface Config {
     String URL_WEB_OSM_SERVER_KEY = "url_web_osm_tiles";
     String SIGNAL_MEASUREMENT_AVAILABLE_KEY = "signal_measurement_available";
     String SYSTEM_UUID_KEY = "system_UUID";
+    // Public source IPs of this control server, as seen by the measurement servers. Read from the
+    // settings table and used to build the v2 token for the RMBThttp test-server quality check.
+    String PUBLIC_IPV4_KEY = "public_ipv4";
+    String PUBLIC_IPV6_KEY = "public_ipv6";
     String GEO_PROVIDER_MANUAL = "manual";
     String GEO_PROVIDER_GEOCODER = "geocoder";
     String GEO_PROVIDER_GPS = "gps";

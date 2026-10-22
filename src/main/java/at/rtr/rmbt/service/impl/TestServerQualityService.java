@@ -1,10 +1,12 @@
 package at.rtr.rmbt.service.impl;
 
+import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.model.TestServerQuality;
 import at.rtr.rmbt.repository.TestServerQualityRepository;
 import at.rtr.rmbt.repository.TestServerRepository;
+import at.rtr.rmbt.service.SettingsCache;
 import at.rtr.rmbt.service.quality.PingOutcome;
 import at.rtr.rmbt.service.quality.RmbtPinger;
 import at.rtr.rmbt.service.quality.QosTlsPinger;
@@ -14,13 +16,13 @@ import at.rtr.rmbt.utils.RmbtUdpTokenFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +41,10 @@ import java.util.UUID;
  *
  * <ul>
  *   <li><b>RMBThttp</b>: RMBT protocol over WebSocket/TLS on {@code port_ssl}, HMAC token signed with
- *       the server's {@code key} ({@link RmbtPinger}).</li>
+ *       the server's {@code key} ({@link RmbtPinger}). New servers require the v2 token
+ *       ({@code <v1>_#v2#<base64 udp token>}); its source-IP HMAC must match this control server's
+ *       public IP, read from the {@code public_ipv4}/{@code public_ipv6} settings — when unset no v2
+ *       token is sent and new servers reply {@code ERR}.</li>
  *   <li><b>RMBTudp</b>: {@code open-rmbt-udp-ping} on {@code port_ssl} ({@link RmbtUdpPinger}).
  *       The IP HMAC normally will not match our (unknown) public source IP, so the server answers
  *       {@code RE01} — which still confirms reachability.</li>
@@ -75,17 +80,7 @@ public class TestServerQualityService {
     private final RmbtPinger webSocketPinger;
     private final RmbtUdpPinger udpPinger;
     private final QosTlsPinger qosPinger;
-
-    /**
-     * Optional public IPs of <b>this</b> control server, as seen by the UDP test servers. When set, the
-     * RMBTudp token's IP HMAC is built with the correct source IP and only an {@code RR01} (source-IP
-     * confirmed) reply is accepted. When blank, a placeholder IP is used and {@code RE01} is accepted too.
-     */
-    @Value("${test-server-quality.public-ipv4:}")
-    private String publicIpv4;
-
-    @Value("${test-server-quality.public-ipv6:}")
-    private String publicIpv6;
+    private final SettingsCache settingsCache;
 
     @Scheduled(
             cron = "${test-server-quality.cron:0 * * * * *}",
@@ -148,8 +143,7 @@ public class TestServerQualityService {
                 log.warn("Test-server quality: '{}' has no key, cannot build token, skipping IPv{}", server.getName(), protocol);
                 return null;
             }
-            final String token = RmbtTokenFactory.createToken(
-                    server.getKey(), UUID.randomUUID(), Instant.now().getEpochSecond());
+            final String token = buildRmbtHttpToken(server, protocol);
             return webSocketPinger.ping(host, server.getPortSsl(), token);
         }
         if (type == ServerType.QoS) {
@@ -171,9 +165,10 @@ public class TestServerQualityService {
                 return null;
             }
             final int port = server.getPort();
-            // If our public IP for this family is configured, sign the token with it and demand an
-            // RR01 (source-IP confirmed) reply; otherwise use a placeholder and accept RE01 too.
-            final InetAddress publicIp = resolvePublicIp(protocol == 4 ? publicIpv4 : publicIpv6);
+            // If our public IP for this family is set (public_ipv4/public_ipv6 settings), sign the token
+            // with it and demand an RR01 (source-IP confirmed) reply; otherwise use a placeholder and
+            // accept RE01 too (the server cannot verify our source IP, but still confirms reachability).
+            final InetAddress publicIp = publicIpForFamily(protocol);
             final boolean requireIpMatch = publicIp != null;
             final InetAddress sourceIp = requireIpMatch ? publicIp : PLACEHOLDER_SOURCE_IP;
             final byte[] request = RmbtUdpTokenFactory.createRequestPacket(
@@ -182,6 +177,43 @@ public class TestServerQualityService {
         }
         log.debug("Test-server quality: '{}' has unsupported server_type {}, skipping", server.getName(), type);
         return null;
+    }
+
+    /**
+     * Builds the token for the RMBThttp (RMBT-over-WebSocket) reachability check.
+     *
+     * <p>New measurement servers require the v2 token appended to the classic v1 token as
+     * {@code <v1>_#v2#<base64 udp token>} and reject a v1-only token with {@code ERR}. On the TCP/TLS
+     * path the server validates the v2 token's source-IP HMAC against the real peer address (there is
+     * no {@code RE01}-style tolerance as for UDP), so the v2 part is only valid when this control
+     * server's public IP for the probed family is known. That IP is read from the {@code public_ipv4}
+     * / {@code public_ipv6} settings; when the matching setting is absent (or not a valid address) no
+     * v2 token is appended and the plain v1 token is sent (still accepted by old servers, which ignore
+     * the {@code #v2#} field).
+     */
+    private String buildRmbtHttpToken(final TestServer server, final int protocol) {
+        final long now = Instant.now().getEpochSecond();
+        String token = RmbtTokenFactory.createToken(server.getKey(), UUID.randomUUID(), now);
+        final InetAddress publicIp = publicIpForFamily(protocol);
+        if (publicIp != null) {
+            final byte[] udpToken = RmbtUdpTokenFactory.createToken(server.getKey(), publicIp, now);
+            token = token + "_#v2#" + Base64.getEncoder().encodeToString(udpToken);
+        } else {
+            log.warn("Test-server quality: '{}' setting is unset/invalid; sending a v1-only token, which "
+                    + "new measurement servers reject with ERR",
+                    protocol == 4 ? Config.PUBLIC_IPV4_KEY : Config.PUBLIC_IPV6_KEY);
+        }
+        return token;
+    }
+
+    /**
+     * This control server's public IP for the given family, read from the {@code public_ipv4} /
+     * {@code public_ipv6} settings. Returns {@code null} when the setting is absent or not a valid
+     * address, in which case callers fall back (UDP: placeholder + {@code RE01}; RMBThttp: v1-only token).
+     */
+    private InetAddress publicIpForFamily(final int protocol) {
+        final String key = protocol == 4 ? Config.PUBLIC_IPV4_KEY : Config.PUBLIC_IPV6_KEY;
+        return resolvePublicIp(settingsCache.get(key).orElse(null));
     }
 
     /** Parses a configured public IP, or returns {@code null} when blank/invalid (→ unverified probe). */

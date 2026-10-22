@@ -1,10 +1,12 @@
 package at.rtr.rmbt.service.impl;
 
+import at.rtr.rmbt.constant.Config;
 import at.rtr.rmbt.enums.ServerType;
 import at.rtr.rmbt.model.TestServer;
 import at.rtr.rmbt.model.TestServerQuality;
 import at.rtr.rmbt.repository.TestServerQualityRepository;
 import at.rtr.rmbt.repository.TestServerRepository;
+import at.rtr.rmbt.service.SettingsCache;
 import at.rtr.rmbt.service.quality.PingOutcome;
 import at.rtr.rmbt.service.quality.RmbtPinger;
 import at.rtr.rmbt.service.quality.QosTlsPinger;
@@ -15,10 +17,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -51,6 +53,8 @@ class TestServerQualityServiceTest {
     private RmbtUdpPinger udpPinger;
     @Mock
     private QosTlsPinger qosPinger;
+    @Mock
+    private SettingsCache settingsCache;
 
     @InjectMocks
     private TestServerQualityService service;
@@ -111,6 +115,25 @@ class TestServerQualityServiceTest {
     }
 
     @Test
+    void measureAll_httpServer_appendsV2TokenOnlyWhenPublicIpConfigured() {
+        // public_ipv4 set, public_ipv6 unset: v4 gets the v2 token, v6 stays v1-only.
+        when(testServerRepository.findByServerTypeInAndActiveTrue(anyList()))
+                .thenReturn(List.of(httpServer("v4.example.com", "v6.example.com")));
+        when(settingsCache.get(Config.PUBLIC_IPV4_KEY)).thenReturn(Optional.of("203.0.113.5"));
+        when(webSocketPinger.ping(anyString(), eq(443), anyString())).thenReturn(PingOutcome.reachable(1.0));
+
+        service.measureAll();
+
+        final ArgumentCaptor<String> v4Token = ArgumentCaptor.forClass(String.class);
+        verify(webSocketPinger).ping(eq("v4.example.com"), eq(443), v4Token.capture());
+        assertTrue(v4Token.getValue().contains("_#v2#"), "v4 token must carry the v2 field");
+
+        final ArgumentCaptor<String> v6Token = ArgumentCaptor.forClass(String.class);
+        verify(webSocketPinger).ping(eq("v6.example.com"), eq(443), v6Token.capture());
+        assertFalse(v6Token.getValue().contains("_#v2#"), "v6 token must be v1-only when public_ipv6 is unset");
+    }
+
+    @Test
     void measureAll_udpServer_usesUdpPingerOnSSLPort_unverifiedWhenNoPublicIp() {
         when(testServerRepository.findByServerTypeInAndActiveTrue(anyList()))
                 .thenReturn(List.of(udpServer("v4.example.com", null)));
@@ -131,10 +154,10 @@ class TestServerQualityServiceTest {
 
     @Test
     void measureAll_udpServer_withConfiguredPublicIpv4_requiresIpMatch() {
-        ReflectionTestUtils.setField(service, "publicIpv4", "203.0.113.5");
+        when(settingsCache.get(Config.PUBLIC_IPV4_KEY)).thenReturn(Optional.of("203.0.113.5"));
         when(testServerRepository.findByServerTypeInAndActiveTrue(anyList()))
                 .thenReturn(List.of(udpServer("v4.example.com", null)));
-        // Public IPv4 configured → requireIpMatch = true (only RR01 counts).
+        // Public IPv4 set in settings → requireIpMatch = true (only RR01 counts).
         when(udpPinger.ping(eq("v4.example.com"), eq(444), any(byte[].class), eq(true))).thenReturn(PingOutcome.reachable(9.0));
 
         service.measureAll();
