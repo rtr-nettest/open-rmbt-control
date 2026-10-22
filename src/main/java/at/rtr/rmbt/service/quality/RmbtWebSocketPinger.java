@@ -76,7 +76,7 @@ public class RmbtWebSocketPinger implements RmbtPinger {
             return PingOutcome.reachable(latencyMs);
         } catch (Exception e) {
             log.debug("RMBT ping {}:{} failed: {}", host, port, e.toString());
-            return PingOutcome.unreachable();
+            return PingOutcome.unreachable(PingOutcome.reason(e));
         }
     }
 

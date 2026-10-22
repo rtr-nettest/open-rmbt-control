@@ -46,6 +46,7 @@ public class RmbtUdpPinger {
             double bestMs = Double.POSITIVE_INFINITY;
             int valid = 0;
             int consecutiveTimeouts = 0;
+            boolean sawUnacceptedReply = false;
 
             // Send several pings and keep the MINIMUM round-trip — the first packet pays the ARP/route
             // resolution cost (see class doc), later ones are clean. Bail out early if the server is
@@ -61,11 +62,14 @@ public class RmbtUdpPinger {
                         valid++;
                         consecutiveTimeouts = 0;
                         bestMs = Math.min(bestMs, rttNs / 1_000_000.0);
-                    } else if (valid == 0) {
-                        // Reply received but not accepted (e.g. RE01 while requireIpMatch) — it will not
-                        // change, so stop probing.
-                        log.debug("UDP ping {}:{} unaccepted response (requireIpMatch={})", host, port, requireIpMatch);
-                        break;
+                    } else {
+                        sawUnacceptedReply = true;
+                        if (valid == 0) {
+                            // Reply received but not accepted (e.g. RE01 while requireIpMatch) — it will
+                            // not change, so stop probing.
+                            log.debug("UDP ping {}:{} unaccepted response (requireIpMatch={})", host, port, requireIpMatch);
+                            break;
+                        }
                     }
                 } catch (SocketTimeoutException e) {
                     if (valid == 0 && ++consecutiveTimeouts >= 2) {
@@ -75,14 +79,17 @@ public class RmbtUdpPinger {
             }
 
             if (valid == 0) {
-                log.debug("UDP ping {}:{} unreachable", host, port);
-                return PingOutcome.unreachable();
+                final String detail = sawUnacceptedReply
+                        ? "RE01 unaccepted (source-IP HMAC mismatch)"
+                        : "no reply (timeout)";
+                log.debug("UDP ping {}:{} unreachable: {}", host, port, detail);
+                return PingOutcome.unreachable(detail);
             }
             log.debug("UDP ping {}:{} reachable, latency={}ms (min of {} replies)", host, port, bestMs, valid);
             return PingOutcome.reachable(bestMs);
         } catch (Exception e) {
             log.debug("UDP ping {}:{} failed: {}", host, port, e.toString());
-            return PingOutcome.unreachable();
+            return PingOutcome.unreachable(PingOutcome.reason(e));
         }
     }
 

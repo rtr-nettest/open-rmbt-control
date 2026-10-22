@@ -52,14 +52,14 @@ public class QosTlsPinger {
                 final String greeting = readLine(ssl.getInputStream());
                 if (!isQosGreeting(greeting)) {
                     log.debug("QoS ping {}:{} unexpected greeting: {}", host, port, greeting);
-                    return PingOutcome.unreachable();
+                    return PingOutcome.unreachable("unexpected greeting: " + greeting);
                 }
                 log.debug("QoS ping {}:{} reachable, latency={}ms (greeting '{}')", host, port, latencyMs, greeting);
                 return PingOutcome.reachable(latencyMs);
             }
         } catch (Exception e) {
             log.debug("QoS ping {}:{} failed: {}", host, port, e.toString());
-            return PingOutcome.unreachable();
+            return PingOutcome.unreachable(PingOutcome.reason(e));
         } finally {
             try {
                 plain.close();

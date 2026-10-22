@@ -118,7 +118,7 @@ public class TestServerQualityService {
         } catch (Exception e) {
             // Pingers should never throw, but be defensive so one bad server can't break the loop.
             log.warn("Test-server quality: '{}' IPv{} ping raised {}", server.getName(), protocol, e.toString());
-            save(server, protocol, PingOutcome.unreachable());
+            save(server, protocol, PingOutcome.unreachable(PingOutcome.reason(e)));
             return;
         }
 
@@ -127,7 +127,8 @@ public class TestServerQualityService {
             log.info("Test-server quality: '{}' [{}]  IPv{} reachable, latency={} ms",
                     server.getName(), host, protocol, outcome.latencyMs());
         } else {
-            log.info("Test-server quality: '{}' [{}] IPv{} UNREACHABLE", server.getName(), host , protocol);
+            log.info("Test-server quality: '{}' [{}] IPv{} UNREACHABLE{}", server.getName(), host, protocol,
+                    outcome.detail() != null ? " (" + outcome.detail() + ")" : "");
         }
     }
 
@@ -143,8 +144,10 @@ public class TestServerQualityService {
                 log.warn("Test-server quality: '{}' has no key, cannot build token, skipping IPv{}", server.getName(), protocol);
                 return null;
             }
-            final String token = buildRmbtHttpToken(server, protocol);
-            return webSocketPinger.ping(host, server.getPortSsl(), token);
+            final InetAddress publicIp = publicIpForFamily(protocol);
+            final String token = buildRmbtHttpToken(server, publicIp, protocol);
+            final PingOutcome outcome = webSocketPinger.ping(host, server.getPortSsl(), token);
+            return withSourceIp(outcome, publicIp != null ? publicIp.getHostAddress() : "none (v1-only token)");
         }
         if (type == ServerType.QoS) {
             // QoS servers speak a TLS line protocol; a TLS handshake + greeting confirms reachability
@@ -173,7 +176,8 @@ public class TestServerQualityService {
             final InetAddress sourceIp = requireIpMatch ? publicIp : PLACEHOLDER_SOURCE_IP;
             final byte[] request = RmbtUdpTokenFactory.createRequestPacket(
                     server.getKey(), sourceIp, 1, Instant.now().getEpochSecond());
-            return udpPinger.ping(host, port, request, requireIpMatch);
+            final PingOutcome outcome = udpPinger.ping(host, port, request, requireIpMatch);
+            return withSourceIp(outcome, sourceIp.getHostAddress());
         }
         log.debug("Test-server quality: '{}' has unsupported server_type {}, skipping", server.getName(), type);
         return null;
@@ -191,10 +195,9 @@ public class TestServerQualityService {
      * v2 token is appended and the plain v1 token is sent (still accepted by old servers, which ignore
      * the {@code #v2#} field).
      */
-    private String buildRmbtHttpToken(final TestServer server, final int protocol) {
+    private String buildRmbtHttpToken(final TestServer server, final InetAddress publicIp, final int protocol) {
         final long now = Instant.now().getEpochSecond();
         String token = RmbtTokenFactory.createToken(server.getKey(), UUID.randomUUID(), now);
-        final InetAddress publicIp = publicIpForFamily(protocol);
         if (publicIp != null) {
             final byte[] udpToken = RmbtUdpTokenFactory.createToken(server.getKey(), publicIp, now);
             token = token + "_#v2#" + Base64.getEncoder().encodeToString(udpToken);
@@ -204,6 +207,20 @@ public class TestServerQualityService {
                     protocol == 4 ? Config.PUBLIC_IPV4_KEY : Config.PUBLIC_IPV6_KEY);
         }
         return token;
+    }
+
+    /**
+     * Appends the source IP that was fed into the token's IP HMAC to an unreachable outcome's detail,
+     * so the log shows the exact address the measurement server will have checked against (e.g. a
+     * {@code RE01}/{@code ERR} means this address did not match the peer the server actually saw).
+     * Reachable outcomes are returned unchanged.
+     */
+    private PingOutcome withSourceIp(final PingOutcome outcome, final String sourceLabel) {
+        if (outcome.reachable()) {
+            return outcome;
+        }
+        final String base = outcome.detail();
+        return PingOutcome.unreachable((base == null ? "" : base + " ") + "[token src IP: " + sourceLabel + "]");
     }
 
     /**
