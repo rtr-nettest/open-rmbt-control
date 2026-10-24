@@ -1,0 +1,5 @@
+# Restore automatic Mockito @Mock field initialization for Spring-managed tests, which Spring Boot 4
+# no longer provides (its MockitoTestExecutionListener was removed with @MockBean/@SpyBean). Spring
+# merges this entry with the framework's default TestExecutionListeners.
+org.springframework.test.context.TestExecutionListener=\
+  at.rtr.rmbt.test.MockitoFieldInitTestExecutionListener

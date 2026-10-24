@@ -66,6 +66,15 @@ spring:
     enabled: false
   jackson:
     default-property-inclusion: non_null
+  http:
+    converters:
+      # This application uses Jackson 2 (com.fasterxml.*) with custom Jackson 2 Modules (JtsModule for
+      # PostGIS geometry, lenient-UUID in JacksonConfig). Spring Boot 4 defaults HTTP message conversion
+      # to Jackson 3 (tools.jackson.*) — which cannot be removed from the classpath (springdoc and
+      # spring-boot-jackson2 both pull it in) and would ignore those modules and change date
+      # serialization (epoch -> ISO). Pin the Jackson 2 converter to keep the REST API byte-for-byte
+      # compatible. NOTE: 'jackson2' is deprecated in Boot 4; migrating to Jackson 3 is a separate task.
+      preferred-json-mapper: jackson2
 # used in src/main/java/at/rtr/rmbt/service/impl/QosMeasurementServiceImpl.java
 RMBT_SECRETKEY: RMBT_SECRETKEY
 

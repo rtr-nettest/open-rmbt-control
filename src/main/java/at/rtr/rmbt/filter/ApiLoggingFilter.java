@@ -393,6 +393,12 @@ public class ApiLoggingFilter implements Filter {
             original.sendRedirect(location);
         }
 
+        // Added in Servlet 6.1 (Jakarta EE 11 / Spring Boot 4); delegate like the other methods.
+        @Override
+        public void sendRedirect(String location, int sc, boolean clearBuffer) throws IOException {
+            original.sendRedirect(location, sc, clearBuffer);
+        }
+
         @Override
         public void setDateHeader(String name, long date) {
             original.setDateHeader(name, date);

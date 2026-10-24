@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -39,6 +40,9 @@ public class TestControllerTest {
         TestController testController = new TestController(testService);
         mockMvc = MockMvcBuilders.standaloneSetup(testController)
                 .setControllerAdvice(new RtrAdvice())
+                // Spring Framework 7's default standalone converter is Jackson 3 (ISO dates); pin the
+                // Jackson 2 converter the test builds its expectations with (epoch timestamps).
+                .setMessageConverters(new MappingJackson2HttpMessageConverter(TestUtils.mapper))
                 .build();
     }
 

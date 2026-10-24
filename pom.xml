@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.14</version>
+        <version>4.1.2</version>
         <relativePath/>
     </parent>
 
@@ -44,9 +44,9 @@
     <dependencies>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <!-- springdoc and Spring Boot MVC are tightly coupled: 2.8.x is required for Spring Boot -->
+            <!-- springdoc 3.x is the line that supports Spring Boot 4 / Spring Framework 7. -->
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.8.15</version>
+            <version>3.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -83,8 +83,22 @@
             <artifactId>janino</artifactId>
         </dependency>
         <dependency>
+            <!-- Spring Boot 4 renamed spring-boot-starter-web to spring-boot-starter-webmvc. -->
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Boot 4 Jackson 2 compatibility module. This application is built entirely on Jackson 2
+                 (com.fasterxml.*) with custom Jackson 2 Modules (JtsModule for PostGIS geometry,
+                 lenient-UUID in JacksonConfig). Boot 4 defaults HTTP message conversion to Jackson 3
+                 (tools.jackson.*) — which cannot be removed (springdoc and this module both pull it in)
+                 and would ignore those modules and change date serialization (epoch -> ISO). This module
+                 provides the Jackson 2 ObjectMapper auto-configuration; the Jackson 2 converter is then
+                 selected via spring.http.converters.preferred-json-mapper=jackson2 in application.yml,
+                 keeping the REST API byte-for-byte compatible. Jackson 2 support is deprecated in Boot 4;
+                 migrating the codebase to Jackson 3 is a separate, larger effort. -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-jackson2</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -105,6 +119,12 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-spatial</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Spring Boot 4 moved Flyway auto-configuration (incl. FlywayMigrationStrategy) out of
+                 spring-boot-autoconfigure into this dedicated module; it is no longer pulled in transitively. -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-flyway</artifactId>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>

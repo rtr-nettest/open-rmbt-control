@@ -17,10 +17,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,7 +48,10 @@ public class NewsListControllerTest {
         NewsListController newsListController = new NewsListController(newsListService);
         mockMvc = MockMvcBuilders.standaloneSetup(newsListController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-            .setViewResolvers((viewName, locale) -> new MappingJackson2JsonView())
+            // Spring Framework 7's default standalone converter is Jackson 3 (ISO dates); pin the
+            // Jackson 2 converter the test builds its expectations with (epoch timestamps). This is a
+            // @RestController, so responses use message converters, not a JSON view.
+            .setMessageConverters(new MappingJackson2HttpMessageConverter(TestUtils.mapper))
             .setControllerAdvice(new RtrAdvice())
             .build();
     }
