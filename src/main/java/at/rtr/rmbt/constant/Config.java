@@ -30,6 +30,11 @@ public interface Config {
     String URL_CONTROL_IPV6_ONLY_KEY = "control_ipv6_only";
     String URL_IPV4_CHECK_KEY = "url_ipv4_check";
     String URL_IPV6_CHECK_KEY = "url_ipv6_check";
+    // Optional lists of alternative IPv4/IPv6 /ip check URLs, stored as PostgreSQL text arrays
+    // (e.g. {https://vie1-httpv4.netztest.at/ip,https://vie2-httpv4.netztest.at/ip}). When present
+    // each is exposed in the settings response as a JSON array of strings.
+    String URL_ALTERNATIVE_IPV4_CHECK_KEY = "url_alternative_ipv4_check";
+    String URL_ALTERNATIVE_IPV6_CHECK_KEY = "url_alternative_ipv6_check";
     String URL_MAP_SERVER_KEY = "url_map_server";
     String URL_STATISTIC_SERVER_KEY = "url_statistic_server";
     String URL_WEB_STATISTIC_SERVER_KEY = "url_web_statistic_server";
@@ -88,6 +93,8 @@ public interface Config {
         "control_ipv6_only",
         "url_ipv4_check",
         "url_ipv6_check",
+        URL_ALTERNATIVE_IPV4_CHECK_KEY,
+        URL_ALTERNATIVE_IPV6_CHECK_KEY,
         "url_map_server",
         "host_map_server",
         "ssl_map_server",

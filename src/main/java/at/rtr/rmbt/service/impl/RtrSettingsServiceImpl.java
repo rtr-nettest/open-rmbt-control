@@ -17,6 +17,7 @@ import at.rtr.rmbt.response.*;
 import at.rtr.rmbt.response.settings.admin.update.*;
 import at.rtr.rmbt.service.*;
 import at.rtr.rmbt.utils.LongUtils;
+import at.rtr.rmbt.utils.PostgresArrayUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -374,6 +375,8 @@ public class RtrSettingsServiceImpl implements RtrSettingsService {
                 .controlIPV4Only(settings.get(Config.URL_CONTROL_IPV4_ONLY_KEY))
                 .controlIPV6Only(settings.get(Config.URL_CONTROL_IPV6_ONLY_KEY))
                 .urlIPV4Check(settings.get(Config.URL_IPV4_CHECK_KEY))
+                .urlAlternativeIPV4Check(PostgresArrayUtils.parseStringArray(settings.get(Config.URL_ALTERNATIVE_IPV4_CHECK_KEY)))
+                .urlAlternativeIPV6Check(PostgresArrayUtils.parseStringArray(settings.get(Config.URL_ALTERNATIVE_IPV6_CHECK_KEY)))
                 .urlIPV6Check(settings.get(Config.URL_IPV6_CHECK_KEY))
                 .urlMapServer(settings.get(Config.URL_MAP_SERVER_KEY))
                 .urlStatisticServer(settings.get(Config.URL_STATISTIC_SERVER_KEY))

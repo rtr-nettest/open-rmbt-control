@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.util.List;
+
 @Builder
 @Getter
 @EqualsAndHashCode
@@ -27,6 +29,12 @@ public class UrlsResponse {
 
     @JsonProperty(value = "url_ipv4_check")
     private final String urlIPV4Check;
+
+    @JsonProperty(value = "url_alternative_ipv4_check")
+    private final List<String> urlAlternativeIPV4Check;
+
+    @JsonProperty(value = "url_alternative_ipv6_check")
+    private final List<String> urlAlternativeIPV6Check;
 
     @JsonProperty(value = "control_ipv6_only")
     private final String controlIPV6Only;

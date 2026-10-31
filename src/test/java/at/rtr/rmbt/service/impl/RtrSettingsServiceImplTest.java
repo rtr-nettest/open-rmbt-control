@@ -212,6 +212,41 @@ public class RtrSettingsServiceImplTest {
         Assert.assertNull(response.getSettings().get(0).getSignalMeasurementAvailable());
     }
 
+    @Test
+    public void getSettings_whenAlternativeIpv4AndIpv6CheckPresent_expectJsonLists() {
+        stubMinimalAndroidSettings();
+        var settings = new ArrayList<>(getDefaultSettings());
+        settings.add(new Settings(null, Config.URL_ALTERNATIVE_IPV4_CHECK_KEY, TestConstants.DEFAULT_LANGUAGE,
+                "{https://vie1-httpv4.netztest.at/ip,https://vie2-httpv4.netztest.at/ip,https://vie3-httpv4.netztest.at/ip}"));
+        settings.add(new Settings(null, Config.URL_ALTERNATIVE_IPV6_CHECK_KEY, TestConstants.DEFAULT_LANGUAGE,
+                "{https://vie1-httpv6.netztest.at/ip,https://vie2-httpv6.netztest.at/ip,https://vie3-httpv6.netztest.at/ip}"));
+        when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
+                .thenReturn(settings);
+
+        var response = getSettings(rtrSettingsRequest);
+
+        assertEquals(List.of("https://vie1-httpv4.netztest.at/ip",
+                        "https://vie2-httpv4.netztest.at/ip",
+                        "https://vie3-httpv4.netztest.at/ip"),
+                response.getSettings().get(0).getUrls().getUrlAlternativeIPV4Check());
+        assertEquals(List.of("https://vie1-httpv6.netztest.at/ip",
+                        "https://vie2-httpv6.netztest.at/ip",
+                        "https://vie3-httpv6.netztest.at/ip"),
+                response.getSettings().get(0).getUrls().getUrlAlternativeIPV6Check());
+    }
+
+    @Test
+    public void getSettings_whenAlternativeCheckAbsent_expectNull() {
+        stubMinimalAndroidSettings();
+        when(settingsRepository.findAllByLangOrLangIsNullAndKeyIn(TestConstants.DEFAULT_LANGUAGE, Config.SETTINGS_KEYS))
+                .thenReturn(getDefaultSettings());
+
+        var response = getSettings(rtrSettingsRequest);
+
+        Assert.assertNull(response.getSettings().get(0).getUrls().getUrlAlternativeIPV4Check());
+        Assert.assertNull(response.getSettings().get(0).getUrls().getUrlAlternativeIPV6Check());
+    }
+
     private void stubMinimalAndroidSettings() {
         when(rtrSettingsRequest.getName()).thenReturn(TestConstants.DEFAULT_CLIENT_NAME);
         when(rtrSettingsRequest.getUuid()).thenReturn(TestConstants.DEFAULT_CLIENT_UUID);
