@@ -209,7 +209,10 @@
         </dependency>
         <dependency>
             <groupId>net.bull.javamelody</groupId>
-            <artifactId>javamelody-spring-boot-starter</artifactId>
+            <!-- Spring Boot 4 variant: the plain javamelody-spring-boot-starter is Boot 3 only and
+                 fails at deploy on Boot 4 (JavaMelodyAutoConfiguration references the removed
+                 org.springframework.boot.autoconfigure.quartz.SchedulerFactoryBeanCustomizer). -->
+            <artifactId>javamelody-spring-boot4-starter</artifactId>
             <version>2.9.0</version>
         </dependency>
         <dependency>
