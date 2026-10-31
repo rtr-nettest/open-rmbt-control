@@ -17,6 +17,10 @@ cleanup-task:
   statements:
     - "select version()"
 test-server-quality:
+  # Master switch for the scheduled test-server quality check. Set to false on a hot-backup control
+  # server so it does not duplicate the primary's checks (duplicate test_server_quality rows); when
+  # false the service bean is not created and nothing is scheduled. Defaults to true.
+  enabled: ${TEST_SERVER_QUALITY_ENABLED:true}
   # Spring cron (sec min hour day month weekday); every 5 minutes. Set to "-" to disable the check.
   cron: "0 */5 * * * *"
   # Empty = server's default time zone (e.g. set "Europe/Vienna" if the JVM runs in UTC).

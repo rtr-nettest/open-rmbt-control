@@ -16,6 +16,7 @@ import at.rtr.rmbt.utils.RmbtUdpTokenFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -54,9 +55,15 @@ import java.util.UUID;
  *
  * <p>The network/protocol work is delegated to the pingers (so this orchestration is unit-testable
  * and a ping failure never breaks the loop or the scheduler thread).
+ *
+ * <p><b>Active/active deployments:</b> when two control servers run (e.g. a primary and a hot
+ * backup) both would otherwise run this check and write duplicate {@code test_server_quality} rows.
+ * Set {@code test-server-quality.enabled=false} on the backup to silence it there — the bean is then
+ * not created and the scheduled task never registers. Defaults to enabled.
  */
 @Slf4j
 @Service
+@ConditionalOnProperty(prefix = "test-server-quality", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class TestServerQualityService {
 
