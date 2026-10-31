@@ -64,17 +64,20 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: false
-  jackson:
+  # Configuration for the Jackson 2 ObjectMapper used by the REST API. Spring Boot 4 binds the Jackson 2
+  # compat mapper to the 'spring.jackson2.*' prefix ('spring.jackson.*' configures the Jackson 3 mapper,
+  # which this app does not use for HTTP). The Jackson 2 converter is installed explicitly in
+  # WebMvcConfiguration, because @EnableWebMvc disables Boot's message-converter auto-configuration
+  # (so 'spring.http.converters.preferred-json-mapper' has no effect and Spring MVC would otherwise use
+  # the Framework 7 default, Jackson 3). Jackson 2 is required for the custom Modules (JtsModule for
+  # PostGIS geometry, lenient-UUID in JacksonConfig) and the epoch-timestamp date contract.
+  jackson2:
+    # Omit null fields from responses (e.g. url_alternative_ipv4_check when the setting is unset).
     default-property-inclusion: non_null
-  http:
-    converters:
-      # This application uses Jackson 2 (com.fasterxml.*) with custom Jackson 2 Modules (JtsModule for
-      # PostGIS geometry, lenient-UUID in JacksonConfig). Spring Boot 4 defaults HTTP message conversion
-      # to Jackson 3 (tools.jackson.*) — which cannot be removed from the classpath (springdoc and
-      # spring-boot-jackson2 both pull it in) and would ignore those modules and change date
-      # serialization (epoch -> ISO). Pin the Jackson 2 converter to keep the REST API byte-for-byte
-      # compatible. NOTE: 'jackson2' is deprecated in Boot 4; migrating to Jackson 3 is a separate task.
-      preferred-json-mapper: jackson2
+    serialization:
+      # Preserve the long-standing REST contract of EPOCH timestamps for java.time values; Spring Boot
+      # otherwise serializes them as ISO-8601 strings. Matches the mapper the API has always used.
+      write-dates-as-timestamps: true
 # used in src/main/java/at/rtr/rmbt/service/impl/QosMeasurementServiceImpl.java
 RMBT_SECRETKEY: RMBT_SECRETKEY
 

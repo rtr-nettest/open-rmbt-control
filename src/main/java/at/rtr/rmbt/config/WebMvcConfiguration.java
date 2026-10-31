@@ -1,5 +1,6 @@
 package at.rtr.rmbt.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -9,6 +10,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -30,11 +33,36 @@ import static at.rtr.rmbt.constant.URIConstants.*;
 @Slf4j
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
+    /**
+     * The Spring Boot auto-configured Jackson 2 ObjectMapper (com.fasterxml.*). It carries the
+     * application's Jackson 2 Modules (JtsModule, lenient-UUID — see {@link JacksonConfig}) and the
+     * {@code spring.jackson2.*} settings (non_null inclusion, epoch timestamps).
+     */
+    private final ObjectMapper jackson2ObjectMapper;
+
+    public WebMvcConfiguration(ObjectMapper jackson2ObjectMapper) {
+        this.jackson2ObjectMapper = jackson2ObjectMapper;
+    }
+
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         final PageableHandlerMethodArgumentResolver pageableResolver = new PageableHandlerMethodArgumentResolver();
         pageableResolver.setOneIndexedParameters(true);
         argumentResolvers.add(pageableResolver);
+    }
+
+    /**
+     * Forces the REST API to use Jackson 2 for JSON. {@code @EnableWebMvc} disables Spring Boot's
+     * message-converter auto-configuration, so {@code spring.http.converters.preferred-json-mapper}
+     * has no effect and Spring MVC would otherwise install the Framework 7 default Jackson 3 converter.
+     * Jackson 3 ignores this app's Jackson 2 Modules, changes date serialization (epoch -> ISO) and is
+     * stricter on deserialization (it rejects a JSON null bound to a primitive, e.g.
+     * {@code {"user_server_selection": null}}). Prepending a Jackson 2 converter makes it win for JSON
+     * (converters are tried in order), so behaviour matches the pre-Boot-4 API.
+     */
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(0, new MappingJackson2HttpMessageConverter(jackson2ObjectMapper));
     }
 
     @Value("#{'${origin}'.split(',')}")
